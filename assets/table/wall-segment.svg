@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 56" role="img" aria-label="Mahjong wall segment">
+  <defs>
+    <linearGradient id="top" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#f8cf36"/>
+      <stop offset="1" stop-color="#d99b16"/>
+    </linearGradient>
+  </defs>
+  <g filter="drop-shadow(0 6px 5px rgba(0,0,0,.25))">
+    <rect x="4" y="18" width="272" height="28" rx="5" fill="#f7f3e8" stroke="#9c8d73" stroke-width="2"/>
+    <rect x="4" y="6" width="272" height="22" rx="5" fill="url(#top)" stroke="#8b6613" stroke-width="2"/>
+    <path d="M17 7v38M30 7v38M43 7v38M56 7v38M69 7v38M82 7v38M95 7v38M108 7v38M121 7v38M134 7v38M147 7v38M160 7v38M173 7v38M186 7v38M199 7v38M212 7v38M225 7v38M238 7v38M251 7v38M264 7v38" stroke="#8d7d66" stroke-width="1.2" opacity=".58"/>
+    <path d="M5 28h270" stroke="#d2c7ad" stroke-width="2"/>
+  </g>
+</svg>

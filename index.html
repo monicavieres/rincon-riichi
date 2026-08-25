@@ -1,71 +1,252 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>El Rincón de Mahjong</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Mahjong Corner</title>
+    <link rel="icon" type="image/svg+xml" href="assets/logo-rincon-riichi.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+    <link rel="stylesheet" href="css/styles.css?v=hero-clean-1">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="background-animation">
-        <div class="floating-petal"></div>
-        <div class="floating-petal"></div>
-        <div class="floating-petal"></div>
-        <div class="floating-petal"></div>
-        <div class="floating-petal"></div>
-        <div class="floating-petal"></div>
+    <div class="soft-bg" aria-hidden="true">
+        <span class="bubble bubble-green"></span>
+        <span class="bubble bubble-pink"></span>
+        <span class="bubble bubble-blue"></span>
+        <span class="tile-float tile-a">發</span>
+        <span class="tile-float tile-b">中</span>
+        <span class="tile-float tile-c">東</span>
+        <span class="sparkle s1">✦</span>
+        <span class="sparkle s2">✿</span>
+        <span class="sparkle s3">♡</span>
     </div>
 
-    <main class="home-container">
-        <header class="hero">
-            <div class="hero-content">
-                <h1 class="title-main">Bienvenido al</h1>
-                <h1 class="title-highlight">Rincón de Mahjong</h1>
-                <p class="subtitle">Aprende, practica y domina el arte del Mahjong</p>
+    <main class="app-shell">
+        <nav class="topbar" id="topbar" aria-label="Navegación principal" data-i18n-aria-label="navLabel">
+            <a class="brand" href="#inicio">
+                <img class="brand-logo" src="assets/logo-rincon-riichi.svg" alt="Rincón Riichi"><img class="brand-mark" src="assets/favicon-64.png" alt="Rincón Riichi">
+            </a>
+            <button class="menu-toggle" id="menuToggle" aria-label="Menú" aria-expanded="false" aria-controls="topbar-controls"><span class="menu-bars" aria-hidden="true"></span></button>
+            <div class="topbar-controls" id="topbar-controls">
+                <div class="nav-actions">
+                    <a class="pill pink" href="#aprender">
+                        <span data-i18n="nav.learn">Aprender</span>
+                    </a>
+                    <a class="pill green" href="#practicar">
+                        <span data-i18n="nav.practice">Practicar</span>
+                    </a>
+                </div>
+                <label class="language-picker">
+                    <span data-i18n="language.short">Idioma</span>
+                    <select id="languageSelect" aria-label="Seleccionar idioma" data-i18n-aria-label="language.label">
+                        <option value="es">ES</option>
+                        <option value="en">EN</option>
+                        <option value="pt">PT</option>
+                    </select>
+                </label>
+                <div class="theme-radio" role="radiogroup" aria-label="Tema" title="Tema"><label class="theme-option"><input type="radio" name="theme" value="light" aria-label="Tema claro"><span class="theme-option-pill" aria-hidden="true">☀️</span></label><label class="theme-option"><input type="radio" name="theme" value="dark" aria-label="Tema oscuro"><span class="theme-option-pill" aria-hidden="true">🌙</span></label></div>
             </div>
-            <div class="decorative-line">
-                <span class="line-gold"></span>
-                <span class="flower-icon">🀄</span>
-                <span class="line-gold"></span>
-            </div>
-        </header>
+        </nav>
 
-        <section class="cards-section">
-            <div class="card" data-target="fichas">
-                <div class="card-inner">
-                    <div class="card-icon">🀄</div>
-                    <h2 class="card-title">Fichas</h2>
-                    <p class="card-desc">Conoce todas las fichas del Mahjong: caracteres, bambúes, círculos, vientos y dragones</p>
-                    <span class="card-arrow">→</span>
+        <section class="hero" id="inicio" data-home-section>
+            <div class="hero-copy sticker-panel">
+                <p class="eyebrow" data-i18n="hero.eyebrow">Mahjong riichi</p>
+                <h1 data-i18n="hero.title">Aprende, practica y mejora</h1>
+                <p class="subtitle" data-i18n="hero.subtitle">Módulos claros y ejercicios con corrección inmediata para entender cada mano y jugar mejor.</p>
+                <div class="hero-actions">
+                    <a class="big-button pink" href="#aprender">
+                        <span data-i18n="actions.learn">Aprender</span>
+                    </a>
+                    <a class="big-button green" href="#practicar">
+                        <span data-i18n="actions.practice">Practicar</span>
+                    </a>
                 </div>
             </div>
 
-            <div class="card" data-target="yakus">
-                <div class="card-inner">
-                    <div class="card-icon">🏆</div>
-                    <h2 class="card-title">Yakus</h2>
-                    <p class="card-desc">Descubre las manos ganadoras (yaku) y sus valores de han para formar combinaciones válidas</p>
-                    <span class="card-arrow">→</span>
+            <aside class="coach-zone" aria-label="Asistente chibi" data-i18n-aria-label="coach.label">
+                <img class="hero-chibi sticker-img" src="assets/chibi-coach.png" alt="Chibi guía de mahjong sosteniendo una ficha y un libro" data-i18n-alt="coach.alt">
+                <div class="hero-chips">
+                    <span class="hero-chip" data-i18n="hero.chip1">Módulos guiados</span>
+                    <span class="hero-chip" data-i18n="hero.chip2">3 idiomas</span>
+                    <span class="hero-chip" data-i18n="hero.chip3">Gratis</span>
                 </div>
-            </div>
-
-            <div class="card" data-target="puntaje">
-                <div class="card-inner">
-                    <div class="card-icon">🧮</div>
-                    <h2 class="card-title">Puntaje</h2>
-                    <p class="card-desc">Aprende a calcular el puntaje: fu, han, y la tabla de pagos según la dificultad</p>
-                    <span class="card-arrow">→</span>
-                </div>
-            </div>
+            </aside>
         </section>
 
-        <footer class="footer">
-            <p>Próximamente: mini-juegos interactivos para practicar cada concepto</p>
-            <div class="social-hint">Hecho con ♡ para la comunidad de Mahjong</div>
+        <section class="section-heading" id="aprender" data-home-section>
+            <h2 data-i18n="modules.title">Aprender</h2>
+            <p data-i18n="modules.subtitle">Haz click para acceder a los distintos módulos.</p>
+        </section>
+
+        <section class="module-grid section-grid" aria-label="Secciones principales" data-i18n-aria-label="modules.label">
+            <article class="module-card pink-card featured" data-module="tutorial">
+                <span class="module-icon icon-tutorial" aria-hidden="true"></span>
+                <span class="status ready" data-i18n="status.mvp">MVP</span>
+                <h3 data-i18n="module.tutorial.title">Tutorial</h3>
+                <p data-i18n="module.tutorial.desc">Guía paso a paso: mesa, muro, fichas y yakus.</p>
+            </article>
+            <article class="module-card green-card featured" data-module="fichas">
+                <span class="module-icon icon-tiles" aria-hidden="true"></span>
+                <span class="status ready" data-i18n="status.mvp">MVP</span>
+                <h3 data-i18n="module.fichas.title">Fichas</h3>
+                <p data-i18n="module.fichas.desc">Manzu, pinzu, souzu, vientos, dragones y aka dora.</p>
+            </article>
+            <article class="module-card yellow-card featured" data-module="machi">
+                <span class="module-icon icon-machi" aria-hidden="true"></span>
+                <span class="status ready" data-i18n="status.mvp">MVP</span>
+                <h3 data-i18n="module.machi.title">Tipos de Espera</h3>
+                <p data-i18n="module.machi.desc">Ryanmen, kanchan, penchan, tanki, nobetan y más esperas.</p>
+            </article>
+            <article class="module-card green-card featured" data-module="yaku-ref">
+                <span class="module-icon icon-yaku" aria-hidden="true"></span>
+                <span class="status ready" data-i18n="status.mvp">MVP</span>
+                <h3 data-i18n="module.yakuRef.title">Guía de Yakus</h3>
+                <p data-i18n="module.yakuRef.desc">Todos los yaku con su valor y ejemplo de fichas.</p>
+            </article>
+            <article class="module-card green-card featured" data-module="dora">
+                <span class="module-icon icon-dora" aria-hidden="true"></span>
+                <span class="status ready" data-i18n="status.mvp">MVP</span>
+                <h3 data-i18n="module.dora.title">Dora</h3>
+                <p data-i18n="module.dora.desc">Indicador, ciclos, aka, ura y kan dora.</p>
+            </article>
+            <article class="module-card blue-card featured" data-module="eficiencia">
+                <span class="module-icon icon-eficiencia" aria-hidden="true"></span>
+                <span class="status ready" data-i18n="status.mvp">MVP</span>
+                <h3 data-i18n="module.eficiencia.title">Eficiencia de Fichas</h3>
+                <p data-i18n="module.eficiencia.desc">Bloques, ukeire y la teoría de 5 bloques.</p>
+            </article>
+            <article class="module-card pink-card featured" data-module="defensa">
+                <span class="module-icon icon-defensa" aria-hidden="true"></span>
+                <span class="status ready" data-i18n="status.mvp">MVP</span>
+                <h3 data-i18n="module.defensa.title">Defensa</h3>
+                <p data-i18n="module.defensa.desc">Genbutsu, suji, kabe, one-chance y fold.</p>
+            </article>
+            <article class="module-card red-card featured" data-module="reglas">
+                <span class="module-icon icon-reglas" aria-hidden="true"></span>
+                <span class="status ready" data-i18n="status.mvp">MVP</span>
+                <h3 data-i18n="module.reglas.title">Reglas Especiales</h3>
+                <p data-i18n="module.reglas.desc">Empates, chombo, pao y otras reglas poco comunes.</p>
+            </article>
+            <article class="module-card orange-card" data-module="puntaje">
+                <span class="module-icon icon-score" aria-hidden="true"></span>
+                <span class="status ready" data-i18n="status.mvp">MVP</span>
+                <h3 data-i18n="module.puntaje.title">Puntajes</h3>
+                <p data-i18n="module.puntaje.desc">Tablas de pagos, fu y honba.</p>
+            </article>
+        </section>
+
+        <section class="section-heading compact minigame-heading" id="practicar" data-home-section>
+            <h2 data-i18n="modules.minigamesTitle">Practicar</h2>
+            <p data-i18n="modules.minigamesSubtitle">Practica con manos concretas y feedback inmediato.</p>
+        </section>
+
+        <section class="module-grid minigame-grid" aria-label="Minijuegos" data-i18n-aria-label="modules.minigamesLabel">
+            <article class="module-card blue-card featured" data-module="que-ficha-es">
+                <span class="module-icon icon-tile-name" aria-hidden="true"></span>
+                <span class="status ready" data-i18n="status.mvp">MVP</span>
+                <h3 data-i18n="module.queFichaEs.title">¿Qué ficha es?</h3>
+                <p data-i18n="module.queFichaEs.desc">Mira una ficha y elige su nombre correcto.</p>
+            </article>
+            <article class="module-card green-card featured" data-module="yaku">
+                <span class="module-icon icon-yaku" aria-hidden="true"></span>
+                <span class="status ready" data-i18n="status.mvp">MVP</span>
+                <h3 data-i18n="module.yaku.title">Identifica el Yaku</h3>
+                <p data-i18n="module.yaku.desc">Reconoce patrones ganadores con pistas visuales.</p>
+            </article>
+            <article class="module-card blue-card featured" data-module="espera">
+                <span class="module-icon icon-waits" aria-hidden="true"></span>
+                <span class="status ready" data-i18n="status.mvp">MVP</span>
+                <h3 data-i18n="module.espera.title">Encuentra la Espera</h3>
+                <p data-i18n="module.espera.desc">Marca qué fichas completan tu mano.</p>
+            </article>
+            <article class="module-card yellow-card featured" data-module="fu">
+                <span class="module-icon icon-fu" aria-hidden="true"></span>
+                <span class="status ready" data-i18n="status.mvp">MVP</span>
+                <h3 data-i18n="module.fu.title">Cuenta los Fu</h3>
+                <p data-i18n="module.fu.desc">Desglosa minipuntos paso a paso.</p>
+            </article>
+            <article class="module-card purple-card featured" data-module="han">
+                <span class="module-icon icon-han" aria-hidden="true"></span>
+                <span class="status ready" data-i18n="status.mvp">MVP</span>
+                <h3 data-i18n="module.han.title">Cuenta los Han</h3>
+                <p data-i18n="module.han.desc">Identifica los yaku y suma el valor en han.</p>
+            </article>
+            <article class="module-card orange-card featured" data-module="calc">
+                <span class="module-icon icon-calc" aria-hidden="true"></span>
+                <span class="status ready" data-i18n="status.mvp">MVP</span>
+                <h3 data-i18n="module.calc.title">Cuenta el Puntaje</h3>
+                <p data-i18n="module.calc.desc">De la mano al pago final en puntos.</p>
+            </article>
+            <article class="module-card pink-card featured" data-module="valores">
+                <span class="module-icon icon-valores" aria-hidden="true"></span>
+                <span class="status ready" data-i18n="status.mvp">MVP</span>
+                <h3 data-i18n="module.valores.title">Tabla de Valores</h3>
+                <p data-i18n="module.valores.desc">Practica han + fu + dealer para acertar el pago.</p>
+            </article>
+            <article class="module-card red-card featured" data-module="furiten">
+                <span class="module-icon icon-furiten" aria-hidden="true"></span>
+                <span class="status ready" data-i18n="status.mvp">MVP</span>
+                <h3 data-i18n="module.furiten.title">¿Estoy en Furiten?</h3>
+                <p data-i18n="module.furiten.desc">Revisa los descartes y decide si tu espera está bloqueada.</p>
+            </article>
+            <article class="module-card yellow-card featured" data-module="espera-tipo">
+                <span class="module-icon icon-espera-tipo" aria-hidden="true"></span>
+                <span class="status ready" data-i18n="status.mvp">MVP</span>
+                <h3 data-i18n="module.esperaTipo.title">¿Qué espera es?</h3>
+                <p data-i18n="module.esperaTipo.desc">Reconoce el nombre de la espera de la mano.</p>
+            </article>
+            <article class="module-card pink-card featured" data-module="espera-fichas">
+                <span class="module-icon icon-espera-fichas" aria-hidden="true"></span>
+                <span class="status ready" data-i18n="status.mvp">MVP</span>
+                <h3 data-i18n="module.esperaFichas.title">¿Qué fichas esperas?</h3>
+                <p data-i18n="module.esperaFichas.desc">Marca todas las fichas que completan tu mano.</p>
+            </article>
+        </section>
+
+        <section class="section-heading" id="recursos" data-home-section>
+            <h2 data-i18n="resources.title">Recursos y Relacionados</h2>
+            <p data-i18n="resources.subtitle">Fuentes, comunidades, sitios para jugar y bibliotecas para seguir aprendiendo.</p>
+        </section>
+
+        <section class="module-grid resources-grid" aria-label="Recursos externos" data-i18n-aria-label="resources.label">
+            <a class="resource-card" href="recursos/fuentes.html">
+                <span class="module-icon icon-fuentes" aria-hidden="true"></span>
+                <h3 data-i18n="resources.credits.title">Fuentes y Créditos</h3>
+                <p data-i18n="resources.credits.desc">Richi Mahjong Wiki y las fuentes usadas para fichas y datos del sitio.</p>
+                <span class="card-arrow">→</span>
+            </a>
+            <a class="resource-card" href="recursos/comunidades.html">
+                <span class="module-icon icon-comunidades" aria-hidden="true"></span>
+                <h3 data-i18n="resources.communities.title">Comunidades</h3>
+                <p data-i18n="resources.communities.desc">Foros, Discord y clubes de mahjong de distintos países.</p>
+                <span class="card-arrow">→</span>
+            </a>
+            <a class="resource-card" href="recursos/jugar.html">
+                <span class="module-icon icon-jugar" aria-hidden="true"></span>
+                <h3 data-i18n="resources.play.title">Jugar Online</h3>
+                <p data-i18n="resources.play.desc">Tenhou, Riichi City, Mahjong Soul y otros servidores.</p>
+                <span class="card-arrow">→</span>
+            </a>
+            <a class="resource-card" href="recursos/bibliotecas.html">
+                <span class="module-icon icon-bibliotecas" aria-hidden="true"></span>
+                <h3 data-i18n="resources.libraries.title">Bibliotecas y Organizaciones</h3>
+                <p data-i18n="resources.libraries.desc">Reglamentos, federaciones y bibliotecas públicas de mahjong.</p>
+                <span class="card-arrow">→</span>
+            </a>
+        </section>
+
+        <footer class="site-credit">
+            <span data-i18n="credits.owner">© 2026 monicavieres. Rincón Riichi es un sitio creado por mí. Todos los derechos reservados.</span>
+            <a href="https://github.com/monicavieres" target="_blank" rel="noopener noreferrer">GitHub: monicavieres</a>
         </footer>
+
     </main>
 
-    <script src="script.js"></script>
+    <script src="js/script.js?v=hero-clean-1"></script>
+    <script src="js/menu.js?v=theme-radio-1"></script>
 </body>
 </html>

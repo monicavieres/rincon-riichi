@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 660" role="img" aria-label="Riichi mahjong table with walls, point sticks, and wind indicator">
+  <defs>
+    <linearGradient id="felt" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#0aa39c"/>
+      <stop offset=".55" stop-color="#078983"/>
+      <stop offset="1" stop-color="#066e6f"/>
+    </linearGradient>
+    <linearGradient id="rail" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#1f2d3d"/>
+      <stop offset=".55" stop-color="#0d1824"/>
+      <stop offset="1" stop-color="#050b12"/>
+    </linearGradient>
+    <linearGradient id="tileTop" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#f8cf36"/>
+      <stop offset="1" stop-color="#d89b16"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#06111a" flood-opacity=".35"/>
+    </filter>
+  </defs>
+
+  <rect x="16" y="18" width="948" height="624" rx="34" fill="url(#rail)" filter="url(#softShadow)"/>
+  <rect x="78" y="78" width="824" height="504" rx="18" fill="url(#felt)" stroke="#093a42" stroke-width="8"/>
+
+  <g opacity=".96">
+    <rect x="96" y="38" width="150" height="36" rx="8" fill="#101b27"/>
+    <rect x="294" y="38" width="150" height="36" rx="8" fill="#101b27"/>
+    <rect x="536" y="38" width="150" height="36" rx="8" fill="#101b27"/>
+    <rect x="734" y="38" width="150" height="36" rx="8" fill="#101b27"/>
+    <rect x="96" y="586" width="150" height="36" rx="8" fill="#101b27"/>
+    <rect x="294" y="586" width="150" height="36" rx="8" fill="#101b27"/>
+    <rect x="536" y="586" width="150" height="36" rx="8" fill="#101b27"/>
+    <rect x="734" y="586" width="150" height="36" rx="8" fill="#101b27"/>
+    <rect x="34" y="128" width="36" height="150" rx="8" fill="#101b27"/>
+    <rect x="34" y="382" width="36" height="150" rx="8" fill="#101b27"/>
+    <rect x="910" y="128" width="36" height="150" rx="8" fill="#101b27"/>
+    <rect x="910" y="382" width="36" height="150" rx="8" fill="#101b27"/>
+  </g>
+
+  <g fill="#f7f1df" stroke="#25201b" stroke-width="2">
+    <rect x="115" y="49" width="108" height="10" rx="5"/>
+    <rect x="320" y="49" width="98" height="10" rx="5"/>
+    <rect x="565" y="49" width="98" height="10" rx="5"/>
+    <rect x="760" y="49" width="100" height="10" rx="5"/>
+    <rect x="115" y="601" width="108" height="10" rx="5"/>
+    <rect x="320" y="601" width="98" height="10" rx="5"/>
+    <rect x="565" y="601" width="98" height="10" rx="5"/>
+    <rect x="760" y="601" width="100" height="10" rx="5"/>
+    <rect x="47" y="151" width="10" height="104" rx="5"/>
+    <rect x="47" y="405" width="10" height="104" rx="5"/>
+    <rect x="923" y="151" width="10" height="104" rx="5"/>
+    <rect x="923" y="405" width="10" height="104" rx="5"/>
+  </g>
+  <g fill="#9f2323">
+    <circle cx="169" cy="54" r="2"/><circle cx="369" cy="54" r="2"/><circle cx="614" cy="54" r="2"/><circle cx="810" cy="54" r="2"/>
+    <circle cx="169" cy="606" r="2"/><circle cx="369" cy="606" r="2"/><circle cx="614" cy="606" r="2"/><circle cx="810" cy="606" r="2"/>
+    <circle cx="52" cy="203" r="2"/><circle cx="52" cy="457" r="2"/><circle cx="928" cy="203" r="2"/><circle cx="928" cy="457" r="2"/>
+  </g>
+
+  <g filter="url(#softShadow)">
+    <g transform="translate(286 132)">
+      <use href="#wallRow"/>
+    </g>
+    <g transform="translate(286 484)">
+      <use href="#wallRow"/>
+    </g>
+    <g transform="translate(176 188) rotate(90)">
+      <use href="#wallCol"/>
+    </g>
+    <g transform="translate(804 188) rotate(90)">
+      <use href="#wallCol"/>
+    </g>
+  </g>
+
+  <defs>
+    <g id="wallRow">
+      <rect x="0" y="18" width="408" height="28" rx="5" fill="#f7f3e8" stroke="#9c8d73" stroke-width="2"/>
+      <rect x="0" y="0" width="408" height="23" rx="5" fill="url(#tileTop)" stroke="#8b6613" stroke-width="2"/>
+      <path d="M17 1v44M34 1v44M51 1v44M68 1v44M85 1v44M102 1v44M119 1v44M136 1v44M153 1v44M170 1v44M187 1v44M204 1v44M221 1v44M238 1v44M255 1v44M272 1v44M289 1v44M306 1v44M323 1v44M340 1v44M357 1v44M374 1v44M391 1v44" stroke="#8d7d66" stroke-width="1.2" opacity=".58"/>
+      <path d="M1 24h406" stroke="#d2c7ad" stroke-width="2"/>
+    </g>
+    <g id="wallCol">
+      <rect x="0" y="18" width="288" height="28" rx="5" fill="#f7f3e8" stroke="#9c8d73" stroke-width="2"/>
+      <rect x="0" y="0" width="288" height="23" rx="5" fill="url(#tileTop)" stroke="#8b6613" stroke-width="2"/>
+      <path d="M18 1v44M36 1v44M54 1v44M72 1v44M90 1v44M108 1v44M126 1v44M144 1v44M162 1v44M180 1v44M198 1v44M216 1v44M234 1v44M252 1v44M270 1v44" stroke="#8d7d66" stroke-width="1.2" opacity=".58"/>
+      <path d="M1 24h286" stroke="#d2c7ad" stroke-width="2"/>
+    </g>
+  </defs>
+
+  <g transform="translate(410 242)" filter="url(#softShadow)">
+    <rect x="0" y="0" width="160" height="160" rx="18" fill="#59c5d6" stroke="#123844" stroke-width="7"/>
+    <circle cx="80" cy="80" r="35" fill="#113e4b"/>
+    <text x="80" y="47" text-anchor="middle" font-size="22" font-weight="900" font-family="serif" fill="#111">北</text>
+    <text x="80" y="128" text-anchor="middle" font-size="22" font-weight="900" font-family="serif" fill="#9f2323">東</text>
+    <text x="38" y="88" text-anchor="middle" font-size="22" font-weight="900" font-family="serif" fill="#111">西</text>
+    <text x="122" y="88" text-anchor="middle" font-size="22" font-weight="900" font-family="serif" fill="#111">南</text>
+  </g>
+
+  <g transform="translate(395 438)" fill="#fffdf7" stroke="#25201b" stroke-width="2" filter="url(#softShadow)">
+    <rect x="0" y="0" width="32" height="46" rx="5"/><text x="16" y="30" text-anchor="middle" font-size="20" font-family="serif" fill="#9f2323">中</text>
+    <rect x="40" y="0" width="32" height="46" rx="5"/><text x="56" y="30" text-anchor="middle" font-size="18" font-family="serif" fill="#111">東</text>
+    <rect x="80" y="0" width="32" height="46" rx="5"/><circle cx="96" cy="22" r="7" fill="none" stroke="#27313f" stroke-width="2"/><circle cx="96" cy="22" r="3" fill="#9f2323"/>
+    <rect x="120" y="0" width="32" height="46" rx="5"/><path d="M136 9v28M130 16h12M130 24h12M130 32h12" stroke="#243f36" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <g fill="#df4e35" opacity=".95">
+    <rect x="72" y="88" width="42" height="28" rx="6"/>
+    <rect x="866" y="88" width="42" height="28" rx="6"/>
+    <rect x="72" y="544" width="42" height="28" rx="6"/>
+    <rect x="866" y="544" width="42" height="28" rx="6"/>
+  </g>
+</svg>

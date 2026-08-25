@@ -1,0 +1,150 @@
+.machi-body {
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.machi-shell {
+    width: min(1400px, calc(100% - clamp(1.2rem, 5vw, 5rem)));
+    padding: clamp(0.8rem, 1.6vw, 1.4rem) 0 clamp(1.1rem, 2vw, 1.8rem);
+}
+
+.machi-hero {
+    margin-top: 0.75rem;
+    padding: clamp(1rem, 2.5vw, 2.2rem);
+    text-align: center;
+}
+
+.machi-hero h1 {
+    margin: 0.2rem 0 0.4rem;
+    color: var(--purple-dark);
+    font-family: "Fredoka", "Nunito", sans-serif;
+    font-size: clamp(2.4rem, 5vw, 4.2rem);
+    line-height: 0.95;
+}
+
+.machi-hero .subtitle {
+    margin: 0 auto;
+    max-width: 720px;
+}
+
+.machi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: clamp(0.7rem, 1.2vw, 1rem);
+    margin-top: clamp(0.9rem, 1.8vw, 1.3rem);
+}
+
+.machi-card {
+    display: grid;
+    gap: 0.55rem;
+    padding: clamp(0.85rem, 1.6vw, 1.2rem);
+    border: 0.18rem solid var(--sticker-border);
+    border-radius: 1.1rem;
+    background: var(--sticker-bg);
+    box-shadow: 0 0.5rem 0 var(--shadow);
+}
+
+.machi-card.is-rare {
+    border-color: rgba(143, 88, 255, 0.5);
+    background: linear-gradient(160deg, rgba(143, 88, 255, 0.10), var(--sticker-bg));
+}
+
+.machi-card-head {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.machi-card-head h2 {
+    margin: 0;
+    color: var(--green-dark);
+    font-family: "Fredoka", "Nunito", sans-serif;
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+.machi-kanji {
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.machi-rare {
+    margin-left: auto;
+    padding: 0.14rem 0.5rem;
+    border-radius: 999px;
+    color: #ffffff;
+    background: linear-gradient(180deg, #ad83ff, var(--purple));
+    font-size: 0.72rem;
+    font-weight: 900;
+}
+
+.machi-desc {
+    margin: 0;
+    color: var(--ink);
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.machi-minilabel {
+    display: block;
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.machi-pattern,
+.machi-wait {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.5rem 0.8rem;
+    min-width: 0;
+}
+
+.machi-tiles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.22rem;
+    align-items: center;
+    min-width: 0;
+}
+
+.machi-wait {
+    padding: 0.55rem 0.6rem;
+    border-radius: 0.8rem;
+    background: rgba(255, 200, 61, 0.12);
+    border: 0.14rem solid rgba(245, 158, 11, 0.4);
+}
+
+.machi-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.machi-badge {
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    color: var(--purple-dark);
+    background: var(--card-bg);
+    border: 0.12rem solid var(--sticker-border);
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.machi-badge strong {
+    color: var(--ink);
+    font-weight: 900;
+}
+
+[data-theme="dark"] .machi-card-head h2 {
+    color: var(--green);
+}
+
+[data-theme="dark"] .machi-desc {
+    color: var(--ink);
+}

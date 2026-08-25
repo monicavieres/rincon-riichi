@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 150" role="img" aria-labelledby="title desc">
+  <title id="title">Rincón Riichi</title>
+  <desc id="desc">Logo colorido de Rincón Riichi con ficha de dragón rojo, hoja verde y estilo redondeado.</desc>
+  <defs>
+    <linearGradient id="tileFace" x1="18" y1="18" x2="112" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fffef8"/>
+      <stop offset="0.56" stop-color="#fffaf0"/>
+      <stop offset="1" stop-color="#f4eadb"/>
+    </linearGradient>
+    <linearGradient id="greenPop" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#44e484"/>
+      <stop offset="1" stop-color="#0f9d55"/>
+    </linearGradient>
+    <linearGradient id="pinkPop" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff8fc5"/>
+      <stop offset="1" stop-color="#db347a"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-30%" width="150%" height="170%">
+      <feDropShadow dx="0" dy="9" stdDeviation="7" flood-color="#513463" flood-opacity="0.2"/>
+      <feDropShadow dx="0" dy="3" stdDeviation="0" flood-color="#513463" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#softShadow)">
+    <path d="M28 107C49 51 99 22 164 27c48 4 78 23 116 20 43-3 76-27 121-16 41 10 69 43 75 82 2 15-9 27-24 27H48c-16 0-26-15-20-33Z" fill="#ffffff" opacity="0.88"/>
+    <path d="M169 34c53 9 82 28 124 24 51-4 78-29 122-10 19 8 35 23 45 42" fill="none" stroke="#cef6df" stroke-width="15" stroke-linecap="round"/>
+  </g>
+
+  <g transform="translate(34 20) rotate(-5 48 54)" filter="url(#softShadow)">
+    <rect x="0" y="0" width="92" height="112" rx="13" fill="#c58b45"/>
+    <rect x="0" y="0" width="92" height="104" rx="13" fill="url(#tileFace)" stroke="#332926" stroke-width="5"/>
+    <rect x="10" y="10" width="72" height="84" rx="8" fill="#fffdf8" opacity="0.7"/>
+    <text x="46" y="69" text-anchor="middle" font-family="serif" font-size="52" font-weight="900" fill="#bd2b2b">中</text>
+    <text x="75" y="23" text-anchor="middle" font-family="Nunito, Arial, sans-serif" font-size="17" font-weight="900" fill="#bd2b2b">C</text>
+  </g>
+
+  <g transform="translate(82 78)">
+    <path d="M4 29C17 5 44-4 73 5c-7 25-31 40-61 35 18-5 33-14 43-29C34 20 19 26 4 29Z" fill="url(#greenPop)"/>
+    <circle cx="72" cy="10" r="8" fill="#ffd95b" stroke="#fff" stroke-width="4"/>
+  </g>
+
+  <g font-family="Fredoka, Nunito, Arial, sans-serif" font-weight="700">
+    <text x="145" y="72" font-size="48" fill="#2c1e3f">Rincón</text>
+    <text x="146" y="116" font-size="45" fill="#139a55">Riichi</text>
+  </g>
+
+  <g>
+    <path d="M449 23l5 12 13 4-12 6-2 13-9-10-13 1 7-11-5-12 12 4Z" fill="#ffd95b" stroke="#fff" stroke-width="4"/>
+    <path d="M405 108c12-16 32-16 44 0-14 14-31 14-44 0Z" fill="url(#pinkPop)" opacity="0.9"/>
+    <circle cx="426" cy="107" r="6" fill="#fff4a6"/>
+    <circle cx="390" cy="34" r="7" fill="#8bd1ff" stroke="#fff" stroke-width="4"/>
+  </g>
+</svg>

@@ -1,0 +1,129 @@
+.yakuref-body {
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.yakuref-shell {
+    width: min(1400px, calc(100% - clamp(1.2rem, 5vw, 5rem)));
+    padding: clamp(0.8rem, 1.6vw, 1.4rem) 0 clamp(1.1rem, 2vw, 1.8rem);
+}
+
+.yakuref-hero {
+    margin-top: 0.75rem;
+    padding: clamp(1rem, 2.5vw, 2.2rem);
+    text-align: center;
+}
+
+.yakuref-hero h1 {
+    margin: 0.2rem 0 0.4rem;
+    color: var(--purple-dark);
+    font-family: "Fredoka", "Nunito", sans-serif;
+    font-size: clamp(2.4rem, 5vw, 4.2rem);
+    line-height: 0.95;
+}
+
+.yakuref-hero .subtitle {
+    margin: 0 auto;
+    max-width: 760px;
+}
+
+.yakuref-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: clamp(0.7rem, 1.2vw, 1rem);
+    margin-top: clamp(0.9rem, 1.8vw, 1.3rem);
+}
+
+.yakuref-card {
+    display: grid;
+    gap: 0.5rem;
+    padding: clamp(0.85rem, 1.6vw, 1.2rem);
+    border: 0.18rem solid var(--sticker-border);
+    border-radius: 1.1rem;
+    background: var(--sticker-bg);
+    box-shadow: 0 0.5rem 0 var(--shadow);
+}
+
+.yakuref-card-head {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.yakuref-card-head h2 {
+    margin: 0;
+    color: var(--green-dark);
+    font-family: "Fredoka", "Nunito", sans-serif;
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.yakuref-kanji {
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.yakuref-value {
+    justify-self: start;
+    padding: 0.22rem 0.7rem;
+    border-radius: 999px;
+    color: #ffffff;
+    background: linear-gradient(180deg, #4be185, var(--green));
+    box-shadow: 0 0.22rem 0 rgba(21, 136, 74, 0.2);
+    font-size: 0.82rem;
+    font-weight: 900;
+    text-shadow: 0 0.08rem 0 rgba(0, 0, 0, 0.12);
+}
+
+.yakuref-desc {
+    margin: 0;
+    color: var(--ink);
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.yakuref-minilabel {
+    display: block;
+    color: var(--muted);
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.yakuref-example {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.4rem 0.7rem;
+    padding: 0.5rem 0.55rem;
+    border-radius: 0.8rem;
+    background: rgba(40, 199, 111, 0.08);
+    border: 0.14rem solid rgba(40, 199, 111, 0.18);
+}
+
+.yakuref-tiles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem;
+    align-items: center;
+    min-width: 0;
+}
+
+.yakuref-note {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.32;
+}
+
+[data-theme="dark"] .yakuref-card-head h2 {
+    color: var(--green);
+}
+
+[data-theme="dark"] .yakuref-desc {
+    color: var(--ink);
+}

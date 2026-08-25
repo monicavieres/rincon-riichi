@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 24" role="img" aria-label="Riichi point stick">
+  <rect x="4" y="5" width="172" height="14" rx="7" fill="#f7f1df" stroke="#26241f" stroke-width="2"/>
+  <circle cx="78" cy="12" r="2.6" fill="#8f1d24"/>
+  <circle cx="90" cy="12" r="2.6" fill="#8f1d24"/>
+  <circle cx="102" cy="12" r="2.6" fill="#8f1d24"/>
+  <path d="M24 12h32M124 12h32" stroke="#26241f" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+</svg>

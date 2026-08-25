@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jugar Online</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/logo-rincon-riichi.svg">
+    <link rel="stylesheet" href="../css/styles.css?v=hero-clean-1">
+    <link rel="stylesheet" href="../css/links.css?v=links-1">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="links-body">
+    <div class="soft-bg" aria-hidden="true"><span class="bubble bubble-green"></span><span class="bubble bubble-pink"></span><span class="bubble bubble-blue"></span></div>
+    <main class="app-shell links-shell">
+        <nav class="topbar" id="topbar">
+            <a class="brand" href="../index.html#recursos"><img class="brand-logo" src="../assets/logo-rincon-riichi.svg" alt="Rincón Riichi"><img class="brand-mark" src="../assets/favicon-64.png" alt="Rincón Riichi"></a>
+            <button class="menu-toggle" id="menuToggle" aria-label="Menú" aria-expanded="false" aria-controls="topbar-controls"><span class="menu-bars" aria-hidden="true"></span></button>
+            <div class="topbar-controls" id="topbar-controls"><a class="pill blue" href="../index.html#recursos" data-i18n="back">← Back</a><label class="language-picker"><span data-i18n="language">Language</span><select id="languageSelect"><option value="es">ES</option><option value="en">EN</option><option value="pt">PT</option></select></label><div class="theme-radio" role="radiogroup" aria-label="Tema" title="Tema"><label class="theme-option"><input type="radio" name="theme" value="light" aria-label="Tema claro"><span class="theme-option-pill" aria-hidden="true">☀️</span></label><label class="theme-option"><input type="radio" name="theme" value="dark" aria-label="Tema oscuro"><span class="theme-option-pill" aria-hidden="true">🌙</span></label></div></div>
+        </nav>
+        <section class="links-hero sticker-panel">
+            <p class="eyebrow" data-i18n="eyebrow">Recursos</p>
+            <h1 data-i18n="title">Jugar Online</h1>
+            <p class="subtitle" data-i18n="subtitle">Servidores para jugar riichi mahjong contra otras personas.</p>
+        </section>
+        <section class="links-grid" id="linksGrid"></section>
+    </main>
+    <script>
+        const defaultLanguage = "en";
+        const supportedLanguages = ["es", "en", "pt"];
+        const languageStorageKey = "rincon-riichi-language";
+        const ui = {
+            es: { back: "← Volver", language: "Idioma", eyebrow: "Recursos", title: "Jugar Online", subtitle: "Servidores para jugar riichi mahjong contra otras personas.", jap: "Servidor japonés", app: "Juego móvil/pc", libre: "Open source" },
+            en: { back: "← Back", language: "Language", eyebrow: "Resources", title: "Play Online", subtitle: "Servers to play riichi mahjong against other people.", jap: "Japanese server", app: "Mobile/PC game", libre: "Open source" },
+            pt: { back: "← Voltar", language: "Idioma", eyebrow: "Recursos", title: "Jogar Online", subtitle: "Servidores para jogar riichi mahjong contra outras pessoas.", jap: "Servidor japonês", app: "Jogo mobile/pc", libre: "Open source" }
+        };
+        const links = [
+            { tag: "jap", name: "Tenhou", desc: "El servidor japonés clásico, sin cuenta y con reglas estándar. Referencia para jugadores serios.", url: "https://tenhou.net" },
+            { tag: "app", name: "Mahjong Soul", desc: "Juego gratuito con modo riichi pulido, ranking y eventos. Muy popular en todo el mundo.", url: "https://mahjongsoul.game.yo-star.com/" },
+            { tag: "app", name: "Riichi City", desc: "Cliente de riichi con interfaz moderna, misiones y torneos en línea.", url: "https://riichicity.com" },
+            { tag: "libre", name: "Tenhou / WRC — reglamento", desc: "Reglamento de referencia y calculadoras de puntuación para practicar.", url: "https://riichi.wiki/Scoring" }
+        ];
+        let currentLanguage = getInitialLanguage();
+        function getInitialLanguage() { const s = localStorage.getItem(languageStorageKey); return supportedLanguages.includes(s) ? s : defaultLanguage; }
+        function applyLanguage() { const dict = ui[currentLanguage] || ui[defaultLanguage]; document.documentElement.lang = currentLanguage; document.title = dict.title; document.querySelectorAll("[data-i18n]").forEach((el) => { const v = dict[el.dataset.i18n]; if (typeof v === "string") el.textContent = v; }); }
+        document.addEventListener("DOMContentLoaded", () => {
+            const themeToggle = document.querySelector("#themeToggle");
+            const savedTheme = document.documentElement.getAttribute("data-theme") || localStorage.getItem("theme") || "light";
+            document.documentElement.setAttribute("data-theme", savedTheme);
+            if (themeToggle) themeToggle.addEventListener("click", () => { const cur = document.documentElement.getAttribute("data-theme"); const next = cur === "dark" ? "light" : "dark"; document.documentElement.setAttribute("data-theme", next); localStorage.setItem("theme", next); });
+            const ls = document.querySelector("#languageSelect");
+            ls.value = currentLanguage;
+            ls.addEventListener("change", (e) => { currentLanguage = e.target.value; localStorage.setItem(languageStorageKey, currentLanguage); applyLanguage(); render(); });
+            applyLanguage();
+            render();
+        });
+        function render() { const grid = document.querySelector("#linksGrid"); grid.replaceChildren(...links.map(linkCard)); }
+        function linkCard(l) { const dict = ui[currentLanguage] || ui[defaultLanguage]; const a = document.createElement("a"); a.className = "link-card"; a.href = l.url; a.target = "_blank"; a.rel = "noopener noreferrer"; const tag = document.createElement("span"); tag.className = "link-tag"; tag.textContent = dict[l.tag] || l.tag; const name = document.createElement("h3"); name.textContent = l.name; const desc = document.createElement("p"); desc.textContent = l.desc; const dom = document.createElement("span"); dom.className = "link-domain"; dom.textContent = new URL(l.url).hostname; a.append(tag, name, desc, dom); return a; }
+    </script>
+    <script src="../js/menu.js?v=theme-radio-1"></script>
+</body>
+</html>

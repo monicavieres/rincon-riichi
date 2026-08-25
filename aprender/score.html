@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scores</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/logo-rincon-riichi.svg">
+    <link rel="stylesheet" href="../css/styles.css?v=hero-clean-1">
+    <link rel="stylesheet" href="../css/score.css?v=mobile-responsive-2">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="score-body">
+    <div class="soft-bg" aria-hidden="true">
+        <span class="bubble bubble-green"></span>
+        <span class="bubble bubble-pink"></span>
+        <span class="bubble bubble-blue"></span>
+    </div>
+
+    <main class="app-shell score-shell">
+        <nav class="topbar" id="topbar">
+            <a class="brand" href="../index.html#practicar">
+                <img class="brand-logo" src="../assets/logo-rincon-riichi.svg" alt="Rincón Riichi"><img class="brand-mark" src="../assets/favicon-64.png" alt="Rincón Riichi">
+            </a>
+            <button class="menu-toggle" id="menuToggle" aria-label="Menú" aria-expanded="false" aria-controls="topbar-controls"><span class="menu-bars" aria-hidden="true"></span></button>
+            <span class="topbar-title">Puntajes</span>
+            <div class="topbar-controls" id="topbar-controls">
+                <a class="pill blue" href="../index.html#practicar" data-i18n="back">← Back</a>
+                <label class="language-picker">
+                    <span data-i18n="language">Language</span>
+                    <select id="languageSelect" aria-label="Select language">
+                        <option value="es">ES</option>
+                        <option value="en">EN</option>
+                        <option value="pt">PT</option>
+                    </select>
+                </label>
+                <div class="theme-radio" role="radiogroup" aria-label="Tema" title="Tema"><label class="theme-option"><input type="radio" name="theme" value="light" aria-label="Tema claro"><span class="theme-option-pill" aria-hidden="true">☀️</span></label><label class="theme-option"><input type="radio" name="theme" value="dark" aria-label="Tema oscuro"><span class="theme-option-pill" aria-hidden="true">🌙</span></label></div>
+            </div>
+        </nav>
+
+        <section class="score-page sticker-panel">
+            <header class="score-header">
+                <div>
+                    <p class="eyebrow" data-i18n="eyebrow">Quick reference</p>
+                    <h1 data-i18n="title">Scores</h1>
+                </div>
+            </header>
+
+            <div class="score-tabs" role="tablist" aria-label="Score sections">
+                <button class="score-tab is-active" type="button" data-panel="dealer" data-i18n="tabDealer">Dealer</button>
+                <button class="score-tab" type="button" data-panel="nonDealer" data-i18n="tabNonDealer">Non-dealer</button>
+                <button class="score-tab" type="button" data-panel="fu" data-i18n="tabFu">Fu table</button>
+            </div>
+
+            <section class="score-panel is-active" id="dealerPanel">
+                <div class="torpedo-board" id="dealerBoard"></div>
+            </section>
+
+            <section class="score-panel" id="nonDealerPanel">
+                <div class="torpedo-board" id="nonDealerBoard"></div>
+            </section>
+
+            <section class="score-panel" id="fuPanel">
+                <div class="panel-heading">
+                    <h2 data-i18n="fuTitle">What gives fu?</h2>
+                    <p data-i18n="fuHelp">Fu are minipoints. Add them, then round up to the next ten, except special hands like chiitoitsu.</p>
+                </div>
+                <aside class="fu-base-note">
+                    <strong data-i18n="fuBaseNoteTitle">Every hand starts at 20 fu</strong>
+                    <span data-i18n="fuBaseNoteText">Then add only the bonuses that actually apply.</span>
+                </aside>
+                <div class="fu-grid" id="fuGrid"></div>
+            </section>
+        </section>
+    </main>
+
+    <script src="../js/score.js?v=tab-keyboard-1"></script>
+    <script src="../js/menu.js?v=theme-radio-1"></script>
+</body>
+</html>

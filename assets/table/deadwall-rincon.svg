@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 300" role="img" aria-label="Dead wall">
+  <defs>
+    <linearGradient id="dw-felt" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#0aa39c"/>
+      <stop offset="1" stop-color="#066e6f"/>
+    </linearGradient>
+    <linearGradient id="dw-top" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#f8cf36"/>
+      <stop offset="1" stop-color="#d99b16"/>
+    </linearGradient>
+    <g id="dw-back">
+      <rect x="0" y="30" width="42" height="28" rx="5" fill="#f7f3e8" stroke="#9c8d73" stroke-width="2"/>
+      <rect x="0" y="6" width="42" height="26" rx="5" fill="url(#dw-top)" stroke="#8b6613" stroke-width="2"/>
+    </g>
+  </defs>
+
+  <rect x="0" y="0" width="920" height="300" rx="24" fill="url(#dw-felt)"/>
+  <rect x="0" y="0" width="920" height="300" rx="24" fill="none" stroke="#044b47" stroke-width="6"/>
+
+  <text x="460" y="270" text-anchor="middle" font-family="Nunito, sans-serif" font-size="30" font-weight="900" fill="#eafffb" letter-spacing="2">MURO MUERTO · DEAD WALL</text>
+
+  <g filter="drop-shadow(0 5px 4px rgba(0,0,0,.28))">
+    <use href="#dw-back" x="30"/>
+    <use href="#dw-back" x="76"/>
+    <use href="#dw-back" x="122"/>
+    <use href="#dw-back" x="168"/>
+    <use href="#dw-back" x="214"/>
+
+    <use href="#dw-back" x="348"/>
+    <use href="#dw-back" x="394"/>
+    <use href="#dw-back" x="440"/>
+    <use href="#dw-back" x="486"/>
+    <use href="#dw-back" x="532"/>
+    <use href="#dw-back" x="578"/>
+    <use href="#dw-back" x="624"/>
+    <use href="#dw-back" x="670"/>
+    <use href="#dw-back" x="716"/>
+
+    <use href="#dw-back" x="826"/>
+    <use href="#dw-back" x="872"/>
+  </g>
+
+  <g transform="translate(290 12) rotate(-90)" filter="drop-shadow(0 6px 5px rgba(0,0,0,.3))">
+    <rect x="0" y="0" width="62" height="46" rx="7" fill="#fffdf4" stroke="#4a2c16" stroke-width="3"/>
+    <rect x="7" y="7" width="48" height="32" rx="4" fill="#f3ece0" stroke="#8b2b2b" stroke-width="2"/>
+    <circle cx="31" cy="23" r="12" fill="#1f4a8f"/>
+  </g>
+
+  <path d="M282 20 v140" stroke="#ffe27a" stroke-width="4" stroke-dasharray="8 6"/>
+  <text x="248" y="180" text-anchor="middle" font-family="Nunito, sans-serif" font-size="18" font-weight="900" fill="#ffe27a">IN</text>
+
+  <text x="150" y="110" text-anchor="middle" font-family="Nunito, sans-serif" font-size="16" font-weight="900" fill="#eafffb">MURO</text>
+  <text x="580" y="110" text-anchor="middle" font-family="Nunito, sans-serif" font-size="16" font-weight="900" fill="#eafffb">MURO MUERTO</text>
+  <text x="828" y="150" text-anchor="middle" font-family="Nunito, sans-serif" font-size="16" font-weight="900" fill="#c9f7ef">+ MURO</text>
+</svg>

@@ -1,0 +1,16 @@
+function dora(term, value, es, en, pt, tiles, note) {
+    return { term, value, es, en, pt, tiles: tiles || [], note };
+}
+
+window.doraReference = [
+    dora("Dora indicator", "1 ficha levantada", "Ficha boca arriba al final del muro muerto. Marca cuál es la ficha dora.", "Tile flipped up at the end of the dead wall. It marks which tile is the dora.", "Peça virada no final do muro morto. Marca qual é a peça dora.", ["4m"], "El dora real es la ficha SIGUIENTE al indicador."),
+    dora("Dora = siguiente", "suma han", "Si el indicador es 4m, el dora es 5m (el siguiente número en el mismo palo).", "If the indicator is 4m, the dora is 5m (the next number in the same suit).", "Se o indicador é 4m, a dora é 5m (o próximo número no mesmo naipe).", ["4m", "5m"], "Cada copia de la ficha dora que tengas suma +1 han."),
+    dora("Ciclo 9 → 1", "suma han", "Tras el 9 el ciclo vuelve al 1: indicador 9m → dora 1m.", "After 9 the cycle wraps to 1: indicator 9m → dora 1m.", "Depois do 9 o ciclo volta ao 1: indicador 9m → dora 1m.", ["9m", "1m"], ""),
+    dora("Ciclo de vientos", "suma han", "Los vientos siguen Este → Sur → Oeste → Norte. Norte vuelve a Este.", "Winds follow East → South → West → North. North wraps to East.", "Ventos seguem Leste → Sul → Oeste → Norte. Norte volta a Leste.", ["1z", "2z", "3z", "4z"], ""),
+    dora("Ciclo de dragones", "suma han", "El orden de dragones es verde → rojo → blanco (no vuelve).", "The dragon order is green → red → white (it does not wrap).", "A ordem dos dragões é verde → vermelho → branco (não volta).", ["5z", "6z", "7z"], ""),
+    dora("Aka dora", "5 rojo = +1", "Uno de los 5 de cada palo es rojo (aka). Cuenta como dora y es un 5.", "One of the 5s in each suit is red (aka). It counts as dora and is a 5.", "Um dos 5 de cada naipe é vermelho (aka). Conta como dora e é um 5.", ["0p"], "Se indica con 0 (0p, 0s, 0m)."),
+    dora("Ura dora", "tras riichi", "El dora oculto que se revela solo si ganas con riichi. Está debajo del dora indicator.", "The hidden dora revealed only if you win with riichi. It sits under the dora indicator.", "A dora oculta revelada só se vencer com riichi. Fica sob o indicador.", [], "No es yaku; sin riichi no se ve."),
+    dora("Kan dora", "al hacer kan", "Declarar un kan levanta una nueva ficha en el muro muerto y añade una dora extra.", "Declaring a kan flips a new tile in the dead wall and adds an extra dora.", "Declarar um kan vira uma nova peça no muro morto e adiciona uma dora extra.", [], "Cada kan añade una nuevo indicador."),
+    dora("Dora no es yaku", "no gana sin yaku", "El dora suma han PERO no cuenta como yaku: sin yaku real no puedes ganar aunque tengas dora.", "Dora adds han BUT does not count as yaku: without a real yaku you cannot win even with dora.", "Dora soma han MAS não conta como yaku: sem yaku real não pode vencer mesmo com dora.", [], ""),
+    dora("Contar dora", "sumar han", "Cuenta cuántas copias de la ficha dora tienes en total (mano + melds) y sumalas al han.", "Count how many copies of the dora tile you own in total (hand + melds) and add them to the han.", "Conte quantas cópias da peça dora você tem no total (mão + chamadas) e some ao han.", ["5p", "5p", "5p"], "Tener 3 dora = +3 han.")
+];

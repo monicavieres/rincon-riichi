@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Identify the Yaku</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/logo-rincon-riichi.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="../assets/favicon-64.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
+    <link rel="stylesheet" href="../css/styles.css?v=hero-clean-1">
+    <link rel="stylesheet" href="../css/yaku.css?v=mobile-fit-5">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="yaku-body">
+    <div class="soft-bg" aria-hidden="true">
+        <span class="bubble bubble-green"></span>
+        <span class="bubble bubble-pink"></span>
+        <span class="bubble bubble-blue"></span>
+        <span class="tile-float tile-a">發</span>
+        <span class="tile-float tile-b">中</span>
+        <span class="sparkle s1">✦</span>
+        <span class="sparkle s2">♡</span>
+    </div>
+
+    <main class="app-shell yaku-shell">
+        <nav class="topbar" id="topbar">
+            <a class="brand" href="../index.html#practicar">
+                <img class="brand-logo" src="../assets/logo-rincon-riichi.svg" alt="Rincón Riichi"><img class="brand-mark" src="../assets/favicon-64.png" alt="Rincón Riichi">
+            </a>
+            <button class="menu-toggle" id="menuToggle" aria-label="Menú" aria-expanded="false" aria-controls="topbar-controls"><span class="menu-bars" aria-hidden="true"></span></button>
+            <span class="topbar-title">Identifica el Yaku</span>
+            <div class="topbar-controls" id="topbar-controls">
+                <a class="pill blue" href="../index.html#practicar" data-i18n="back">← Back</a>
+                <label class="language-picker">
+                    <span data-i18n="language">Language</span>
+                    <select id="languageSelect" aria-label="Select language">
+                        <option value="es">ES</option>
+                        <option value="en">EN</option>
+                        <option value="pt">PT</option>
+                    </select>
+                </label>
+                <div class="theme-radio" role="radiogroup" aria-label="Tema" title="Tema"><label class="theme-option"><input type="radio" name="theme" value="light" aria-label="Tema claro"><span class="theme-option-pill" aria-hidden="true">☀️</span></label><label class="theme-option"><input type="radio" name="theme" value="dark" aria-label="Tema oscuro"><span class="theme-option-pill" aria-hidden="true">🌙</span></label></div>
+            </div>
+        </nav>
+
+        <section class="yaku-hero sticker-panel" id="startView">
+            <div class="yaku-intro">
+                <p class="eyebrow" data-i18n="eyebrow">Playable module</p>
+                <h1 data-i18n="title">Identify the Yaku</h1>
+                <p class="subtitle" data-i18n="subtitle">Ten quick hands. Choose the yaku you recognize, get instant feedback, and see your score at the end.</p>
+                <div class="start-chips" aria-label="Quiz details">
+                    <span data-i18n="startChipOne">10 hands</span>
+                    <span data-i18n="startChipTwo">Multiple choice</span>
+                    <span data-i18n="startChipThree">Instant feedback</span>
+                </div>
+                <button class="big-button green start-button" id="startButton" data-i18n="start">Start</button>
+            </div>
+            <aside class="yaku-coach">
+                <div class="speech-bubble" id="coachSpeech" data-i18n="coachReady">Look for the shape first. Monique is here to help.</div>
+                <img class="mini-chibi sticker-img" id="coachImage" src="../assets/chibi-thinking.png" alt="Monique thinking">
+            </aside>
+        </section>
+
+        <section class="quiz-card sticker-panel" id="quizCard" aria-live="polite" hidden>
+            <div class="quiz-topline">
+                <span class="status ready" id="questionCounter">1 / 10</span>
+                <span class="score-pill" id="scoreLabel">Score: 0</span>
+            </div>
+
+            <div class="hand-card">
+                <p class="eyebrow" data-i18n="handLabel">Hand</p>
+                <div class="round-context" id="roundContext"></div>
+                <div class="quiz-hand" id="quizHand"></div>
+            </div>
+
+            <div class="answer-zone">
+                <h2 data-i18n="question">Which yaku do you see?</h2>
+                <p class="answer-help" data-i18n="selectHelp">Select one or more options, then submit.</p>
+                <div class="answer-grid" id="answerGrid"></div>
+            </div>
+
+            <div class="feedback-panel" id="feedbackPanel" hidden>
+                <strong id="feedbackTitle"></strong>
+                <p id="feedbackText"></p>
+            </div>
+
+            <div class="quiz-actions">
+                <button class="big-button green" id="submitButton" data-i18n="submit">Submit</button>
+                <button class="big-button green" id="nextButton" data-i18n="next" hidden>Next hand</button>
+                <button class="big-button pink" id="restartButton" data-i18n="restart" hidden>Play again</button>
+            </div>
+        </section>
+
+        <section class="final-card sticker-panel" id="finalCard" hidden>
+            <div>
+                <p class="eyebrow" data-i18n="finalEyebrow">Session complete</p>
+                <h2 id="finalTitle">Final result</h2>
+                <p id="finalText"></p>
+                <button class="big-button pink" id="restartFinalButton" data-i18n="restart">Play again</button>
+            </div>
+            <img class="mini-chibi sticker-img" src="../assets/chibi-correct.png" alt="Chibi celebrating">
+        </section>
+    </main>
+
+    <script src="../js/yaku.js"></script>
+    <script src="../js/menu.js?v=theme-radio-1"></script>
+</body>
+</html>

@@ -1,23 +1,31 @@
-# El Rincón de Mahjong
+# Rincón Riichi
 
-Sitio web para aprender Mahjong con estilo tradicional pero moderno.
+Sitio web para aprender y practicar conceptos de mahjong riichi con enfoque visual, ejercicios cortos y guía chibi.
 
 ## Características
 
-- **Home** con bienvenida y 3 secciones principales: Fichas, Yakus, Puntaje
-- **Diseño**: Paleta rosa/dorado, femenina, moderna y elegante
-- **Animaciones**: Pétalos flotantes, hover 3D en tarjetas, micro-interacciones
-- **Accesibilidad**: Respeta `prefers-reduced-motion`, navegación por teclado, ARIA labels
-- **Responsive**: Mobile-first, funciona en todos los dispositivos
+- **Home** orientada a aprender y practicar, no a jugar partidas completas
+- **Aprender**: fichas, tutorial paso a paso, tipos de espera, guía de yakus, dora, eficiencia, defensa y reglas especiales
+- **Practicar**: yaku, esperas, fu, han, puntajes, valores, furiten y reconocimiento de fichas
+- **Recursos**: fuentes y créditos, comunidades, sitios para jugar y bibliotecas
+- **Idiomas**: selector ES / EN / PT
+- **Fichas**: set visual basado en tiles de dominio público
+- **Diseño**: responsive, tema claro/oscuro, botones coloridos y chibis
+- **Accesibilidad**: respeta `prefers-reduced-motion`, navegación por teclado, ARIA labels
 
 ## Estructura
 
 ```
-mahjong-rincon/
-├── index.html      # Página principal
-├── styles.css      # Estilos y animaciones
-├── script.js       # Interacciones JavaScript
-└── README.md
+rincon-riichi/
+├── index.html        # Página principal
+├── aprender/         # Módulos de aprendizaje (machi, yaku, dora, tutorial, …)
+├── practicar/        # Módulos de práctica (waits, fu, han, calc, …)
+├── recursos/         # Fuentes, comunidades, jugar, bibliotecas
+├── css/              # Estilos por módulo + shared
+├── js/               # Lógica por módulo + shared (menu, tutorial, …)
+├── data/             # Datos de referencia (yaku-data, dora-data, …)
+├── assets/           # Chibis, fichas y mesa
+└── tools/            # Scripts de build / reorganización
 ```
 
 ## Desarrollo local
@@ -43,12 +51,10 @@ Luego abre `http://localhost:8000`
 4. Branch: **main** / **root**
 5. Save
 
-Tu sitio estará en: `https://tu-usuario.github.io/mahjong-rincon/`
+Tu sitio estará en: `https://tu-usuario.github.io/rincon-riichi/`
 
 ## Próximos pasos
 
-- [ ] Implementar sección Fichas (mini-juego de reconocimiento)
-- [ ] Implementar sección Yakus (buscador interactivo)
-- [ ] Implementar sección Puntaje (calculadora con ejemplos)
-- [ ] Añadir modo oscuro automático
-- [ ] PWA para instalación móvil
+- [ ] Mejorar motor de manos para yaku, esperas y validación de victoria
+- [ ] Guardar progreso local por concepto
+- [ ] Añadir más lecciones cortas en Aprender
