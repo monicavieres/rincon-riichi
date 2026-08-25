@@ -502,8 +502,8 @@
     align-items: center;
     justify-content: center;
     width: min-content;
-    min-width: 4.2rem;
-    padding: 0.2rem;
+    min-width: 5.4rem;
+    padding: 0.24rem;
     border-radius: 0.7rem;
     background: rgba(255, 255, 255, 0.74);
     box-shadow: inset 0 0 0 0.08rem rgba(97, 66, 112, 0.08);
@@ -514,8 +514,8 @@
     display: inline-grid;
     place-items: center;
     flex: 0 0 auto;
-    width: clamp(1.18rem, 1.35vw, 1.42rem);
-    height: clamp(1.65rem, 1.9vw, 2rem);
+    width: clamp(1.7rem, 2.1vw, 2.1rem);
+    height: clamp(2.3rem, 2.9vw, 2.9rem);
 }
 
 .fu-tile::after {
@@ -540,8 +540,8 @@
 }
 
 .fu-tile.is-sideways {
-    width: clamp(1.65rem, 1.9vw, 2rem);
-    height: clamp(1.18rem, 1.35vw, 1.42rem);
+    width: clamp(2.3rem, 2.9vw, 2.9rem);
+    height: clamp(1.7rem, 2.1vw, 2.1rem);
     margin-inline: 0.08rem;
 }
 
@@ -553,8 +553,8 @@
 }
 
 .fu-tile.is-sideways img {
-    width: clamp(1.18rem, 1.35vw, 1.42rem);
-    height: clamp(1.65rem, 1.9vw, 2rem);
+    width: clamp(1.7rem, 2.1vw, 2.1rem);
+    height: clamp(2.3rem, 2.9vw, 2.9rem);
     transform: rotate(90deg);
 }
 

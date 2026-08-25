@@ -6,7 +6,7 @@
     <title>Scores</title>
     <link rel="icon" type="image/svg+xml" href="../assets/logo-rincon-riichi.svg">
     <link rel="stylesheet" href="../css/styles.css?v=hero-clean-2">
-    <link rel="stylesheet" href="../css/score.css?v=mobile-responsive-2">
+    <link rel="stylesheet" href="../css/score.css?v=score-fix-1">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="score-body">
@@ -38,13 +38,6 @@
         </nav>
 
         <section class="score-page sticker-panel">
-            <header class="score-header">
-                <div>
-                    <p class="eyebrow" data-i18n="eyebrow">Quick reference</p>
-                    <h1 data-i18n="title">Scores</h1>
-                </div>
-            </header>
-
             <div class="score-tabs" role="tablist" aria-label="Score sections">
                 <button class="score-tab is-active" type="button" data-panel="dealer" data-i18n="tabDealer">Dealer</button>
                 <button class="score-tab" type="button" data-panel="nonDealer" data-i18n="tabNonDealer">Non-dealer</button>
@@ -64,10 +57,6 @@
                     <h2 data-i18n="fuTitle">What gives fu?</h2>
                     <p data-i18n="fuHelp">Fu are minipoints. Add them, then round up to the next ten, except special hands like chiitoitsu.</p>
                 </div>
-                <aside class="fu-base-note">
-                    <strong data-i18n="fuBaseNoteTitle">Every hand starts at 20 fu</strong>
-                    <span data-i18n="fuBaseNoteText">Then add only the bonuses that actually apply.</span>
-                </aside>
                 <div class="fu-grid" id="fuGrid"></div>
             </section>
         </section>
