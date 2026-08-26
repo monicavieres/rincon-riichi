@@ -3,25 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía de Yakus</title>
+    <title>Visual Guide</title>
     <link rel="icon" type="image/svg+xml" href="../assets/logo-rincon-riichi.svg">
     <link rel="stylesheet" href="../css/styles.css?v=module-cards-1">
-    <link rel="stylesheet" href="../css/yaku-reference.css?v=hero-clean-2">
+    <link rel="stylesheet" href="../css/visual-guide.css?v=visual-guide-1">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="yakuref-body">
+<body class="visual-guide-body">
     <div class="soft-bg" aria-hidden="true"><span class="bubble bubble-green"></span><span class="bubble bubble-pink"></span><span class="bubble bubble-blue"></span></div>
-    <main class="app-shell yakuref-shell">
+    <main class="app-shell visual-guide-shell">
         <nav class="topbar" id="topbar">
             <a class="brand" href="../index.html#aprender"><img class="brand-logo" src="../assets/logo-rincon-riichi.svg" alt="Rincón Riichi"><img class="brand-mark" src="../assets/favicon-64.png" alt="Rincón Riichi"></a>
             <button class="menu-toggle" id="menuToggle" aria-label="Menú" aria-expanded="false" aria-controls="topbar-controls"><span class="menu-bars" aria-hidden="true"></span></button>
-            <span class="topbar-title">Guía de Yakus</span>
+            <span class="topbar-title" data-i18n="topbarTitle">Visual Guide</span>
             <div class="topbar-controls" id="topbar-controls"><a class="pill blue" href="../index.html#aprender" data-i18n="back">← Back</a><label class="language-picker"><span data-i18n="language">Language</span><select id="languageSelect"><option value="es">ES</option><option value="en">EN</option><option value="pt">PT</option></select></label><div class="theme-radio" role="radiogroup" aria-label="Tema" title="Tema"><label class="theme-option"><input type="radio" name="theme" value="light" aria-label="Tema claro"><span class="theme-option-pill" aria-hidden="true">☀️</span></label><label class="theme-option"><input type="radio" name="theme" value="dark" aria-label="Tema oscuro"><span class="theme-option-pill" aria-hidden="true">🌙</span></label></div></div>
         </nav>
-                <section class="yakuref-grid" id="yakurefGrid" aria-label="Yakus"></section>
+
+        <section class="visual-guide" aria-live="polite">
+            <header class="visual-guide-header">
+                <div>
+                    <p class="eyebrow" data-i18n="eyebrow">Riichi basics</p>
+                    <h1 data-i18n="title">Visual Riichi Guide</h1>
+                </div>
+                <p class="subtitle" data-i18n="subtitle">A fast picture-first tour of the table, the hand, calls, waits and scoring.</p>
+            </header>
+
+            <section class="guide-stage sticker-panel">
+                <button class="guide-arrow guide-prev" id="guidePrev" aria-label="Previous">←</button>
+                <article class="guide-card" id="guideCard"></article>
+                <button class="guide-arrow guide-next" id="guideNext" aria-label="Next">→</button>
+            </section>
+
+            <footer class="guide-footer">
+                <div class="guide-progress"><span id="guideCounter">1 / 1</span><div class="guide-dots" id="guideDots"></div></div>
+                <p data-i18n="hint">Use ← → or the buttons to move through the guide.</p>
+            </footer>
+        </section>
     </main>
-    <script src="../data/yaku-data.js"></script>
-    <script src="../js/yaku-reference.js?v=yaku-ref-1"></script>
+
+    <script src="../js/visual-guide.js?v=visual-guide-1"></script>
     <script src="../js/menu.js?v=theme-radio-1"></script>
 </body>
 </html>

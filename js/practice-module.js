@@ -1097,6 +1097,7 @@ function submit() {
     const allowEmpty = state.page === "chinitsu";
     if (!state.selected || (multi && !state.selected.length && !allowEmpty)) {
         els.feedback.hidden = false;
+        ensureFeedbackCoach();
         els.feedbackTitle.textContent = `! ${t("choose")}`;
         els.feedbackText.textContent = "";
         return;
@@ -1134,6 +1135,7 @@ function submit() {
         showTileExplainModal(question, correct);
     } else {
         els.feedback.hidden = false;
+        ensureFeedbackCoach();
         els.feedbackTitle.textContent = correct ? `✓ ${t("correct")}` : `× ${t("incorrect")}`;
         els.feedbackText.textContent = question.explain ? localized(question.explain) : "";
         revealWait(question);
@@ -1298,4 +1300,31 @@ function resolveI18n(dict, path) {
 
 function t(key) {
     return ui[state.language][key] || ui[defaultLanguage][key] || key;
+}
+
+const FEEDBACK_COACH = {
+    waits: "chibi-wait",
+    esperaTipo: "chibi-wait",
+    esperaFichas: "chibi-wait",
+    furiten: "chibi-wait",
+    fu: "chibi-score",
+    han: "chibi-score",
+    calc: "chibi-score",
+    valores: "chibi-score",
+    chinitsu: "chibi-thinking"
+};
+
+function getFeedbackCoach() {
+    const file = FEEDBACK_COACH[state.page];
+    return `../assets/${file || "chibi-thinking"}.png`;
+}
+
+function ensureFeedbackCoach() {
+    if (!els.feedback || els.feedback.dataset.coachInjected) return;
+    const img = document.createElement("img");
+    img.className = "feedback-coach sticker-img";
+    img.src = getFeedbackCoach();
+    img.alt = "Monique coach";
+    els.feedback.prepend(img);
+    els.feedback.dataset.coachInjected = "true";
 }

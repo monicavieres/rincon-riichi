@@ -114,6 +114,10 @@
     max-height: min(52vh, 480px);
 }
 
+.yaku-coach .mini-chibi.is-sad {
+    filter: saturate(0.55);
+}
+
 .quiz-card {
     display: grid;
     grid-template-rows: auto minmax(8.2rem, 0.82fr) minmax(8rem, 0.72fr) auto auto;
@@ -262,6 +266,19 @@
     border-radius: 1rem;
     background: rgba(255, 255, 255, 0.78);
     box-shadow: 0 0.45rem 0 rgba(77, 45, 88, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.feedback-panel .feedback-coach {
+    width: clamp(3.6rem, 6.5vw, 5.4rem);
+    flex: 0 0 auto;
+}
+
+.feedback-panel .feedback-copy {
+    min-width: 0;
+    flex: 1 1 auto;
 }
 
 .feedback-panel strong {
@@ -510,4 +527,10 @@
 
 [data-theme="dark"] .feedback-panel p {
     color: var(--muted);
+}
+
+@media (max-width: 420px) {
+    .feedback-panel .feedback-coach {
+        display: none;
+    }
 }

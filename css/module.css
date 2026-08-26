@@ -803,6 +803,22 @@
     border-radius: 1rem;
     background: rgba(255, 255, 255, 0.78);
     box-shadow: 0 0.45rem 0 rgba(77, 45, 88, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.feedback-coach {
+    width: clamp(3.6rem, 6.5vw, 5.4rem);
+    margin: 0 clamp(0.5rem, 1.2vw, 1rem) 0 0;
+    align-self: center;
+    flex: 0 0 auto;
+}
+
+.feedback-panel strong,
+.feedback-panel p {
+    min-width: 0;
+    flex: 1 1 auto;
 }
 
 .feedback-panel strong {
@@ -924,6 +940,10 @@
         border-radius: 1rem;
     }
 
+    .feedback-coach {
+        width: clamp(3rem, 20vw, 4rem);
+    }
+
     .module-hand-card {
         min-height: 6.2rem;
     }
@@ -1038,6 +1058,10 @@
 
     .module-question-card h1 {
         font-size: clamp(1.62rem, 10vw, 2.25rem);
+    }
+
+    .feedback-coach {
+        display: none;
     }
 }
 

@@ -1601,6 +1601,7 @@ a {
 
 .icon-tiles::after { content: "中"; }
 .icon-tutorial::after { content: "初"; }
+.icon-visual-guide::after { content: "図"; }
 .icon-tile-name::after { content: "名"; }
 .icon-concepts::after { content: "学"; }
 .icon-yaku::after { content: "役"; }
@@ -2369,4 +2370,156 @@ a {
 
 [data-theme="dark"] .brand-logo {
     filter: drop-shadow(0 0.55rem 0.9rem rgba(0, 0, 0, 0.4));
+}
+
+/* thin accent bar on the left, clipped by the card's rounded corner */
+.module-card,
+[data-theme="dark"] .module-card {
+    min-height: 13rem;
+    padding: 1.15rem 1.2rem 1.2rem;
+    border: 0.12rem solid var(--sticker-border);
+    border-radius: 1.1rem;
+    background: var(--card-bg);
+    box-shadow: 0 0.3rem 0 rgba(76, 38, 91, 0.1), 0 0.9rem 1.6rem rgba(76, 38, 91, 0.09);
+    overflow: hidden;
+}
+
+[data-theme="dark"] .module-card {
+    box-shadow: 0 0.3rem 0 rgba(0, 0, 0, 0.45), 0 0.9rem 1.6rem rgba(0, 0, 0, 0.28);
+}
+
+/* soft tint accent (replaces full pastel fill) */
+[data-theme="light"] .module-card {
+    background: linear-gradient(180deg, var(--card-bg) 0%, rgba(255, 255, 255, 0.85) 100%);
+}
+[data-theme="light"] .green-card { background: var(--card-bg); }
+[data-theme="light"] .blue-card { background: var(--card-bg); }
+[data-theme="light"] .pink-card { background: var(--card-bg); }
+[data-theme="light"] .yellow-card { background: var(--card-bg); }
+[data-theme="light"] .orange-card { background: var(--card-bg); }
+[data-theme="light"] .purple-card { background: var(--card-bg); }
+[data-theme="light"] .red-card { background: var(--card-bg); }
+[data-theme="dark"] .green-card,
+[data-theme="dark"] .blue-card,
+[data-theme="dark"] .pink-card,
+[data-theme="dark"] .yellow-card,
+[data-theme="dark"] .orange-card,
+[data-theme="dark"] .purple-card,
+[data-theme="dark"] .red-card {
+    background: var(--card-bg);
+}
+
+/* thin accent bar on the left, full height, curved by card clipping */
+.module-card::before {
+    inset: 0 auto 0 0;
+    width: 0.3rem;
+    z-index: 2;
+    border-radius: inherit;
+    background: linear-gradient(180deg, var(--module-accent), color-mix(in srgb, var(--module-accent) 55%, transparent));
+    box-shadow: none;
+}
+[data-theme="dark"] .module-card::before {
+    box-shadow: none;
+}
+
+/* scale down the inner white wash */
+.module-card::after {
+    inset: 0.35rem;
+    z-index: -1;
+    background: var(--card-bg);
+    border-radius: 0.85rem;
+}
+[data-theme="dark"] .module-card::after {
+    background: var(--card-bg);
+}
+
+/* icon: accent-tinted chip, thinner, cleaner */
+.module-card .module-icon {
+    width: 2.9rem;
+    height: 2.9rem;
+    border: 0.1rem solid color-mix(in srgb, var(--module-accent) 28%, transparent);
+    border-radius: 0.8rem;
+    color: var(--module-accent);
+    background: color-mix(in srgb, var(--module-accent) 11%, var(--card-bg));
+    box-shadow: 0 0.2rem 0 rgba(76, 38, 91, 0.08);
+}
+.module-card .module-icon::before {
+    inset: 0.26rem;
+    border: 0.1rem solid color-mix(in srgb, var(--module-accent) 18%, transparent);
+    border-radius: 0.55rem;
+    background: transparent;
+}
+.module-card .module-icon::after {
+    font-size: 1.32rem;
+}
+[data-theme="dark"] .module-card .module-icon {
+    border-color: color-mix(in srgb, var(--module-accent) 30%, transparent);
+    background: color-mix(in srgb, var(--module-accent) 16%, var(--card-bg));
+}
+[data-theme="dark"] .module-card .module-icon::before {
+    border-color: color-mix(in srgb, var(--module-accent) 20%, transparent);
+}
+
+/* title: cleaner, less display-heavy */
+[data-theme="light"] .module-card h3,
+[data-theme="dark"] .module-card h3 {
+    font-family: "Nunito", "Fredoka", sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: 0.01em;
+}
+[data-theme="light"] .module-card p {
+    color: color-mix(in srgb, var(--ink) 62%, transparent);
+    font-weight: 600;
+}
+
+/* MVP badge: discreet capsule */
+.module-card .status {
+    top: 0.95rem;
+    right: 0.95rem;
+    min-height: 1.45rem;
+    padding: 0.12rem 0.5rem;
+    border: 0.1rem solid color-mix(in srgb, var(--module-accent) 36%, transparent);
+    border-radius: 999px;
+    color: var(--module-accent);
+    background: color-mix(in srgb, var(--module-accent) 8%, var(--card-bg));
+    box-shadow: none;
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+.module-card .status.ready {
+    background: color-mix(in srgb, var(--green-dark) 10%, var(--card-bg));
+    border-color: color-mix(in srgb, var(--green-dark) 34%, transparent);
+    color: var(--green-dark);
+}
+[data-theme="dark"] .module-card .status {
+    background: color-mix(in srgb, var(--module-accent) 14%, var(--card-bg));
+    color: color-mix(in srgb, var(--module-accent) 82%, #fff);
+}
+[data-theme="dark"] .module-card .status.ready {
+    background: color-mix(in srgb, var(--green) 16%, var(--card-bg));
+    border-color: color-mix(in srgb, var(--green) 34%, transparent);
+    color: color-mix(in srgb, var(--green) 85%, #fff);
+}
+
+/* hover: gentle lift + accent intensify */
+.module-card:hover {
+    transform: translateY(-0.16rem);
+    box-shadow: 0 0.44rem 0 rgba(76, 38, 91, 0.12), 0 1.15rem 1.7rem rgba(76, 38, 91, 0.12);
+    filter: none;
+}
+[data-theme="dark"] .module-card:hover {
+    box-shadow: 0 0.44rem 0 rgba(0, 0, 0, 0.5), 0 1.15rem 1.7rem rgba(0, 0, 0, 0.32);
+}
+
+/* mobile: horizontal card—accent moves to the front edge */
+@media (max-width: 899px) {
+    .module-card {
+        padding-left: 1.05rem;
+    }
+    .module-card::before {
+        inset: 0 auto 0 0;
+        width: 0.3rem;
+    }
 }

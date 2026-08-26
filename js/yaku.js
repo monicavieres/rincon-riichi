@@ -18,7 +18,8 @@ const copy = {
         start: "Empezar",
         coachReady: "Mira primero la forma de la mano. Este módulo te va a ir guiando.",
         coachCorrect: "¡Correcto! Esa lectura estuvo fina.",
-        coachWrong: "Casi. Mira la respuesta y prueba la siguiente.",
+        coachAlmost: "¡Casi! Marcaste el que era, pero no quedó completo.",
+        coachWrong: "Se te escapó. Mira la respuesta y prueba la siguiente.",
         coachDone: "¡Terminaste! Revisa tu puntaje y vuelve a intentarlo cuando quieras.",
         handLabel: "Mano",
         question: "¿Qué yaku ves?",
@@ -70,7 +71,8 @@ const copy = {
         start: "Start",
         coachReady: "Look for the shape first. This module will guide you.",
         coachCorrect: "Correct! Nice read.",
-        coachWrong: "Almost. Check the answer and try the next one.",
+        coachAlmost: "So close! You had it, but it's not complete.",
+        coachWrong: "Missed it. Check the answer and try the next one.",
         coachDone: "Finished! Check your score and run it again whenever you want.",
         handLabel: "Hand",
         question: "Which yaku do you see?",
@@ -122,7 +124,8 @@ const copy = {
         start: "Começar",
         coachReady: "Observe primeiro a forma da mão. Este módulo vai te guiando.",
         coachCorrect: "Correto! Boa leitura.",
-        coachWrong: "Quase. Veja a resposta e tente a próxima.",
+        coachAlmost: "Quase! Você marcou o certo, mas ficou incompleto.",
+        coachWrong: "Passou. Veja a resposta e tente a próxima.",
         coachDone: "Terminou! Veja sua pontuação e tente de novo quando quiser.",
         handLabel: "Mão",
         question: "Que yaku você vê?",
@@ -306,6 +309,7 @@ document.addEventListener("DOMContentLoaded", () => {
         quizHand: document.querySelector("#quizHand"),
         answerGrid: document.querySelector("#answerGrid"),
         feedbackPanel: document.querySelector("#feedbackPanel"),
+        feedbackCoach: document.querySelector("#feedbackCoach"),
         feedbackTitle: document.querySelector("#feedbackTitle"),
         feedbackText: document.querySelector("#feedbackText"),
         submitButton: document.querySelector("#submitButton"),
@@ -350,7 +354,7 @@ function showStartView() {
     els.startView.hidden = false;
     els.quizCard.hidden = true;
     els.finalCard.hidden = true;
-    setCoach("thinking", t("coachReady"));
+    setCoach("ready", t("coachReady"));
 }
 
 function startGame() {
@@ -365,7 +369,7 @@ function startGame() {
     els.finalCard.hidden = true;
     els.startView.hidden = true;
     els.quizCard.hidden = false;
-    setCoach("thinking", t("coachReady"));
+    setCoach("ready", t("coachReady"));
     renderQuestion();
     els.quizCard.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -468,7 +472,7 @@ function submitAnswer() {
         els.feedbackPanel.hidden = false;
         els.feedbackTitle.textContent = `! ${t("chooseOne")}`;
         els.feedbackText.textContent = "";
-        setCoach("wrong", t("chooseOne"));
+        setCoach("incorrect", t("chooseOne"));
         return;
     }
 
@@ -491,6 +495,11 @@ function submitAnswer() {
         if (!correct && isSelectedButton) button.classList.add("is-wrong");
     });
 
+    const almost = !correct && missedIds.length < correctIds.length && selectedIds.some((id) => correctIds.includes(id));
+    const stateMode = correct ? "correct" : almost ? "almost" : "incorrect";
+    const coachLine = correct ? t("coachCorrect") : almost ? t("coachAlmost") : t("coachWrong");
+    setCoach(stateMode, coachLine);
+
     els.scoreLabel.textContent = `${t("score")}: ${state.score}`;
     els.feedbackPanel.hidden = false;
     els.feedbackTitle.textContent = correct ? `✓ ${t("correct")}` : `× ${t("incorrect")}`;
@@ -507,7 +516,6 @@ function submitAnswer() {
     const answerFeedback = details.join(" ");
     const isFinalRound = state.round === state.questions.length - 1;
     els.feedbackText.textContent = answerFeedback;
-    setCoach(correct ? "correct" : "wrong", correct ? t("coachCorrect") : t("coachWrong"));
     els.submitButton.hidden = true;
 
     if (isFinalRound) {
@@ -522,7 +530,7 @@ function submitAnswer() {
 
 function nextQuestion() {
     state.round += 1;
-    setCoach("thinking", t("coachReady"));
+    setCoach("ready", t("coachReady"));
     renderQuestion();
 }
 
@@ -577,8 +585,19 @@ function t(key) {
 }
 
 function setCoach(mode, text) {
+    const image = mode === "correct" ? "chibi-correct"
+        : mode === "almost" ? "chibi-almost"
+        : mode === "ready" ? "chibi-yaku"
+        : mode === "think" ? "chibi-thinking"
+        : "chibi-incorrect";
     els.coachSpeech.textContent = text;
-    els.coachImage.src = mode === "correct" ? "../assets/chibi-correct.png" : "../assets/chibi-thinking.png";
+    const src = `../assets/${image}.png`;
+    els.coachImage.src = src;
+    if (els.feedbackCoach) {
+        els.feedbackCoach.src = src;
+        els.feedbackCoach.classList.toggle("is-sad", mode === "incorrect");
+    }
+    els.coachImage.classList.toggle("is-sad", mode === "incorrect");
 }
 
 function shuffle(items) {

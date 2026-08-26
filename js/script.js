@@ -131,6 +131,11 @@ const translations = {
                 desc: "Aprende Riichi Mahjong desde cero, paso a paso.",
                 message: "Tutorial: ruta guiada para empezar desde cero."
             },
+            visualGuide: {
+                title: "Guía visual",
+                desc: "Riichi explicado con escenas y fichas FluffyStuff.",
+                message: "Guía visual: recorrido rápido para entender cómo se ve una partida."
+            },
             yakuRef: {
                 title: "Guía de Yakus",
                 desc: "Todos los yaku con su valor y ejemplo de fichas.",
@@ -440,6 +445,11 @@ const translations = {
                 title: "Tutorial",
                 desc: "Learn Riichi Mahjong from zero, step by step.",
                 message: "Tutorial: a guided path to start from zero."
+            },
+            visualGuide: {
+                title: "Visual Guide",
+                desc: "Riichi explained with scenes and FluffyStuff tiles.",
+                message: "Visual Guide: a quick tour to understand what a game looks like."
             },
             yakuRef: {
                 title: "Yaku Guide",
@@ -751,6 +761,11 @@ const translations = {
                 desc: "Aprenda Riichi Mahjong do zero, passo a passo.",
                 message: "Tutorial: caminho guiado para começar do zero."
             },
+            visualGuide: {
+                title: "Guia visual",
+                desc: "Riichi explicado com cenas e peças FluffyStuff.",
+                message: "Guia visual: passeio rápido para entender como uma partida aparece."
+            },
             yakuRef: {
                 title: "Guia de Yaku",
                 desc: "Todos os yaku com seu valor e exemplo de peças.",
@@ -977,8 +992,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const moduleRoutes = {
                 tutorial: "aprender/tutorial.html",
+                "visual-guide": "aprender/visual-guide.html",
                 machi: "aprender/machi.html",
-                tutorial: "aprender/tutorial.html",
                 "yaku-ref": "aprender/yaku-reference.html",
                 dora: "aprender/dora.html",
                 eficiencia: "aprender/eficiencia.html",
