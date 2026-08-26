@@ -1852,7 +1852,11 @@ a {
 
 @media (max-width: 640px) {
     .topbar-title {
-        font-size: clamp(1.1rem, 5vw, 1.4rem);
+        font-size: clamp(1rem, 4.2vw, 1.3rem);
+        max-width: 58vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }
 
@@ -1906,18 +1910,19 @@ a {
     }
 
     .brand-logo {
-        display: block;
-        width: clamp(7.6rem, 42vw, 10rem);
-    }
-
-    .brand {
-        flex: 1 1 auto;
-        min-width: 0;
-        margin-right: 0;
+        display: none;
     }
 
     .brand-mark {
-        display: none;
+        display: block;
+        width: 2.6rem;
+        height: 2.6rem;
+    }
+
+    .brand {
+        flex: 0 0 auto;
+        min-width: 0;
+        margin-right: 0;
     }
 
     .menu-toggle {

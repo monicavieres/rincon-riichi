@@ -24,6 +24,37 @@
     flex-direction: column;
 }
 
+@media (max-width: 899px) {
+    .module-body {
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .module-shell {
+        height: auto;
+        min-height: 100vh;
+        overflow: hidden;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .tile-start-inner {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .tile-modes {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .tile-mode {
+        min-width: 0;
+        max-width: 100%;
+    }
+}
+
 /* Start / mode-select screen for tile-name quiz */
 .tile-start {
     flex: 1;
@@ -32,7 +63,8 @@
     padding: clamp(1rem, 2.5vw, 2rem);
     display: grid;
     place-items: center;
-    overflow: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .tile-start-inner {
@@ -158,6 +190,79 @@
     color: #d9c2ff;
     background: var(--card-bg);
     box-shadow: 0 0.36rem 0 var(--shadow);
+}
+
+@media (max-width: 640px) {
+    .tile-start {
+        align-content: start;
+        place-items: start stretch;
+        padding: 0.85rem 0.8rem 1.1rem;
+        overflow: visible;
+    }
+
+    .tile-start-inner {
+        gap: 0.65rem;
+        align-items: stretch;
+    }
+
+    .tile-coach {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        text-align: left;
+    }
+
+    .tile-coach .speech-bubble {
+        flex: 1 1 auto;
+        font-size: 0.88rem;
+        padding: 0.62rem 0.72rem;
+    }
+
+    .tile-coach .mini-chibi {
+        flex: 0 0 auto;
+        width: clamp(3.6rem, 20vw, 5rem);
+        max-height: clamp(90px, 18vw, 130px);
+    }
+
+    .tile-start h1 {
+        font-size: clamp(1.9rem, 7vw, 2.6rem);
+        line-height: 0.95;
+        overflow-wrap: anywhere;
+        width: 100%;
+    }
+
+    .tile-start .subtitle {
+        font-size: 0.92rem;
+    }
+
+    .tile-modes {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.55rem;
+    }
+
+    .tile-mode {
+        padding: 0.7rem 0.5rem;
+        gap: 0.5rem;
+    }
+
+    .tile-mode img {
+        width: clamp(2.4rem, 13vw, 3rem);
+    }
+
+    .tile-mode span {
+        font-size: 0.82rem;
+        overflow-wrap: anywhere;
+    }
+
+    .tile-start-chips {
+        gap: 0.5rem;
+    }
+
+    .tile-start-chips span {
+        min-height: 2.2rem;
+        font-size: 0.8rem;
+    }
 }
 
 @media (max-width: 560px) {
