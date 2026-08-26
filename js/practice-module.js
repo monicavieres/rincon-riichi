@@ -547,7 +547,7 @@ function buildChinitsuQuestion(isTrick) {
     if (!data) {
         return buildChinitsuQuestion(!isTrick);
     }
-    const hand = data.hand;
+    const hand = sortHand(data.hand);
     const waits = data.waits;
 
     const tileChoices = shuffledChinitsuChoices(suit, waits);
