@@ -383,7 +383,7 @@ function renderFuSetCell(tiles, amount) {
     examples.replaceChildren(...tiles.map(tileImage));
     const value = document.createElement("span");
     value.className = "fu-amount";
-    value.textContent = amount;
+    value.textContent = `+${amount}`;
     cell.append(examples, value);
     return cell;
 }

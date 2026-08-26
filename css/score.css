@@ -132,26 +132,32 @@
 .fu-base-note {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
-    gap: 0.75rem;
+    gap: 0.6rem;
     align-items: center;
-    padding: 0.55rem 0.8rem;
-    border: 0.18rem solid #ffffff;
-    border-radius: 1rem;
-    background: linear-gradient(90deg, rgba(223, 251, 234, 0.96), rgba(255, 255, 255, 0.9), rgba(255, 242, 224, 0.78));
-    box-shadow: 0 0.32rem 0 rgba(77, 45, 88, 0.08);
+    padding: 0.42rem 0.7rem;
+    border: 0.14rem solid var(--line);
+    border-radius: 0.8rem;
+    background: rgba(255, 255, 255, 0.55);
+    box-shadow: none;
 }
 
 .fu-base-note strong {
     color: var(--green-dark);
     font-family: "Fredoka", "Nunito", sans-serif;
-    font-size: clamp(1.1rem, 1.55vw, 1.45rem);
+    font-size: 0.95rem;
     line-height: 1;
 }
 
 .fu-base-note span {
     color: var(--muted);
-    font-weight: 900;
+    font-weight: 800;
+    font-size: 0.85rem;
     line-height: 1.15;
+}
+
+[data-theme="dark"] .fu-base-note {
+    background: var(--card-bg);
+    border-color: var(--sticker-border);
 }
 
 .torpedo-board {
@@ -416,7 +422,7 @@
 .fu-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    grid-template-rows: minmax(62vh, auto) minmax(calc(100vh - 8.5rem), auto);
+    grid-template-rows: auto auto;
     gap: 1rem 0.6rem;
     max-height: none;
     overflow: visible;
@@ -436,7 +442,7 @@
 }
 
 .fu-section:not(.fu-sets) {
-    min-height: 62vh;
+    min-height: 0;
 }
 
 .fu-section h3 {
@@ -472,7 +478,7 @@
 
 .fu-sets {
     grid-column: 1 / -1;
-    min-height: calc(100vh - 8.5rem);
+    min-height: 0;
 }
 
 .fu-rows {
@@ -601,8 +607,7 @@
 .fu-set-table {
     display: grid;
     grid-template-columns: minmax(8rem, 0.7fr) repeat(2, minmax(0, 1fr));
-    grid-template-rows: auto repeat(4, minmax(0, 1fr));
-    height: 100%;
+    grid-template-rows: auto repeat(4, auto);
 }
 
 .fu-set-head {
@@ -624,7 +629,7 @@
 
 .fu-set-kind,
 .fu-set-cell {
-    min-height: clamp(3.55rem, 5.8vh, 4.45rem);
+    min-height: clamp(3.9rem, 6.5vh, 4.9rem);
     border-top: 0.1rem solid rgba(97, 66, 112, 0.1);
     border-left: 0.1rem solid rgba(97, 66, 112, 0.1);
     background: linear-gradient(90deg, rgba(255, 255, 255, 0.88), rgba(255, 250, 241, 0.75));
@@ -643,20 +648,23 @@
 
 .fu-set-cell {
     display: flex;
-    gap: 0.65rem;
+    gap: 0.8rem;
     align-items: center;
-    justify-content: space-between;
-    padding: 0.38rem 0.58rem;
+    justify-content: center;
+    padding: 0.6rem 0.7rem;
 }
 
 .fu-set-cell .fu-example-tiles {
     width: auto;
     min-width: 6.75rem;
-    min-height: 2.55rem;
+    min-height: 2.9rem;
 }
 
 .fu-set-cell .fu-amount {
     flex: 0 0 auto;
+    min-width: 3.15rem;
+    min-height: 2.35rem;
+    font-size: 1.12rem;
 }
 
 @media (max-width: 1180px) {
