@@ -532,23 +532,42 @@ function sameFamilyTiles(tileId) {
     return TILE_NAME_IDS.filter((candidate) => candidate[candidate.length - 1] === suit);
 }
 
-function buildChinitsuQuestions(count = 8) {
-    const questions = [];
-    for (let i = 0; i < count; i++) {
-        const trick = Math.random() < 0.35;
-        questions.push(buildChinitsuQuestion(trick));
-    }
-    return questions;
+function buildChinitsuQuestions(count = 10) {
+    const pool = buildChinitsuPool(100, 20);
+    const picked = shuffled(pool).slice(0, count);
+    return picked.map((entry) => buildChinitsuQuestion(entry.hand, entry.waits, entry.trick));
 }
 
-function buildChinitsuQuestion(isTrick) {
-    const suit = "mps"[rint(0, 2)];
-    const data = isTrick ? buildChinitsuTrick(suit) : buildChinitsuTenpai(suit);
-    if (!data) {
-        return buildChinitsuQuestion(!isTrick);
+function buildChinitsuPool(maxValid = 100, maxTrick = 20) {
+    const valid = [];
+    const tricks = [];
+    const seenValid = new Set();
+    const seenTrick = new Set();
+    const suits = ["m", "p", "s"];
+    let guard = 0;
+    while ((valid.length < maxValid || tricks.length < maxTrick) && guard < 200000) {
+        guard++;
+        const suit = suits[rint(0, 2)];
+        const needTrick = tricks.length < maxTrick && Math.random() < 0.2;
+        const data = needTrick ? buildChinitsuTrick(suit) : buildChinitsuTenpai(suit);
+        if (!data) continue;
+        const key = `${data.hand.join(",")}|${data.waits.join(",")}`;
+        if (data.trick || data.waits.length === 0) {
+            if (seenTrick.has(key) || tricks.length >= maxTrick) continue;
+            seenTrick.add(key);
+            tricks.push({ hand: data.hand, waits: [], trick: true });
+        } else {
+            if (seenValid.has(key) || valid.length >= maxValid) continue;
+            seenValid.add(key);
+            valid.push({ hand: data.hand, waits: data.waits, trick: false });
+        }
     }
-    const hand = sortHand(data.hand);
-    const waits = data.waits;
+    return [...valid, ...tricks];
+}
+
+function buildChinitsuQuestion(hand, waits, isTrick) {
+    const suit = hand[0][hand[0].length - 1];
+    const sortedHand = sortHand(hand);
 
     const tileChoices = shuffledChinitsuChoices(suit, waits);
     const explain = isTrick
@@ -570,7 +589,7 @@ function buildChinitsuQuestion(isTrick) {
         });
 
     return {
-        hand,
+        hand: sortedHand,
         waits,
         tileChoices,
         explain
@@ -770,7 +789,7 @@ document.addEventListener("DOMContentLoaded", () => {
         modules.tileName.questions = buildTileNameQuestions(10);
     }
     if (state.page === "chinitsu") {
-        modules.chinitsu.questions = buildChinitsuQuestions(8);
+        modules.chinitsu.questions = buildChinitsuQuestions(10);
     }
 
     els.languageSelect.value = state.language;
@@ -1242,7 +1261,7 @@ function restart() {
         if (els.startView) els.startView.hidden = true;
     }
     if (state.page === "chinitsu") {
-        modules.chinitsu.questions = buildChinitsuQuestions(8);
+        modules.chinitsu.questions = buildChinitsuQuestions(10);
     }
     render();
 }
