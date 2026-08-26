@@ -1,0 +1,105 @@
+<svg width="900" height="900" viewBox="0 0 900 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Indicador de viento Rincon Riichi</title>
+  <desc id="desc">Indicador central de riichi tipo panel digital, mostrando viento Este 1 sin puntos ni dados.</desc>
+  <defs>
+    <filter id="shadow" x="-14%" y="-14%" width="128%" height="136%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="26" stdDeviation="22" flood-color="#211928" flood-opacity=".32"/>
+      <feDropShadow dx="0" dy="7" stdDeviation="4" flood-color="#211928" flood-opacity=".22"/>
+    </filter>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.06 0 0 0 0 0.95 0 0 0 0 0.85 0 0 0 .9 0"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="body" x1="208" y1="166" x2="694" y2="730" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5F606A"/>
+      <stop offset=".48" stop-color="#2C2D38"/>
+      <stop offset="1" stop-color="#171A24"/>
+    </linearGradient>
+    <linearGradient id="bevel" x1="266" y1="228" x2="636" y2="672" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7D7E89"/>
+      <stop offset=".45" stop-color="#41434E"/>
+      <stop offset="1" stop-color="#20232D"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="336" y1="336" x2="564" y2="564" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#25303B"/>
+      <stop offset=".55" stop-color="#151A24"/>
+      <stop offset="1" stop-color="#0B0E15"/>
+    </linearGradient>
+    <linearGradient id="navy" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#242D50"/>
+      <stop offset="1" stop-color="#101728"/>
+    </linearGradient>
+    <linearGradient id="east" x1="302" y1="676" x2="598" y2="802" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF7371"/>
+      <stop offset="1" stop-color="#D93449"/>
+    </linearGradient>
+    <linearGradient id="slot" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#080A10"/>
+      <stop offset=".55" stop-color="#20232D"/>
+      <stop offset="1" stop-color="#090B11"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset=".45" stop-color="#CAD3DA"/>
+      <stop offset="1" stop-color="#F3F7FA"/>
+    </linearGradient>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <path d="M236 220l76-76h276l76 76v78l58 58v188l-58 58v78l-76 76H312l-76-76v-78l-58-58V356l58-58v-78Z" fill="url(#body)"/>
+    <path d="M292 262l54-54h208l54 54v74l50 50v128l-50 50v74l-54 54H346l-54-54v-74l-50-50V386l50-50v-74Z" fill="url(#bevel)"/>
+    <path d="M336 326l34-34h160l34 34v248l-34 34H370l-34-34V326Z" fill="#20232D"/>
+  </g>
+
+  <g filter="url(#shadow)" font-family="'Arial Rounded MT Bold', 'Nunito', system-ui, sans-serif" font-weight="900" text-anchor="middle">
+    <g>
+      <rect x="300" y="96" width="300" height="132" rx="28" fill="url(#slot)"/>
+      <rect x="334" y="118" width="232" height="30" rx="15" fill="url(#metal)"/>
+      <text x="450" y="190" font-size="50" fill="#F3F6FA">北</text>
+      <text x="450" y="218" font-size="21" fill="#B8C2D0">North</text>
+    </g>
+
+    <g>
+      <rect x="96" y="300" width="132" height="300" rx="28" fill="url(#slot)"/>
+      <rect x="117" y="334" width="30" height="232" rx="15" fill="url(#metal)"/>
+      <text x="176" y="432" font-size="44" fill="#F3F6FA">南</text>
+      <text x="176" y="466" font-size="18" fill="#B8C2D0">South</text>
+    </g>
+
+    <g>
+      <rect x="672" y="300" width="132" height="300" rx="28" fill="url(#slot)"/>
+      <rect x="753" y="334" width="30" height="232" rx="15" fill="url(#metal)"/>
+      <text x="724" y="432" font-size="44" fill="#F3F6FA">西</text>
+      <text x="724" y="466" font-size="18" fill="#B8C2D0">West</text>
+    </g>
+
+    <g>
+      <rect x="300" y="672" width="300" height="132" rx="28" fill="url(#east)"/>
+      <rect x="334" y="694" width="232" height="30" rx="15" fill="#FFF0F2"/>
+      <text x="450" y="766" font-size="54" fill="#FFFFFF">東</text>
+      <text x="450" y="794" font-size="21" fill="#FFF5F6">East</text>
+    </g>
+  </g>
+
+  <g>
+    <rect x="354" y="342" width="192" height="216" rx="24" fill="url(#screen)" stroke="#59616F" stroke-width="9"/>
+    <rect x="376" y="365" width="148" height="56" rx="11" fill="#303846" opacity=".74"/>
+    <rect x="376" y="444" width="148" height="56" rx="11" fill="#222A36" opacity=".92"/>
+    <path d="M390 426h120M390 506h120" stroke="#090B10" stroke-width="7" stroke-linecap="round" opacity=".55"/>
+  </g>
+
+  <g font-family="'Arial Rounded MT Bold', 'Nunito', system-ui, sans-serif" font-weight="900" text-anchor="middle">
+    <text x="450" y="406" font-size="39" fill="#50E8EA" filter="url(#glow)">East 1</text>
+    <text x="450" y="483" font-size="38" fill="#55E0DE" filter="url(#glow)">東 1 局</text>
+    <text x="450" y="535" font-size="20" fill="#B6C8D9">Current round wind</text>
+  </g>
+
+  <g opacity=".36" stroke-linecap="round">
+    <path d="M286 286l-54-54M614 286l54-54M286 614l-54 54M614 614l54 54" stroke="#B8C0CE" stroke-width="8"/>
+    <path d="M450 278v-42M450 622v42M278 450h-42M622 450h42" stroke="#0A0D13" stroke-width="8"/>
+  </g>
+</svg>

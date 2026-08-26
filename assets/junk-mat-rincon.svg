@@ -1,0 +1,96 @@
+<svg width="1100" height="1100" viewBox="0 0 1100 1100" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Junk mat cuadrado Rincon Riichi</title>
+  <desc id="desc">Junk mat cuadrado con borde delgado, paño verde y cuatro ranuras por lado para tenbou.</desc>
+  <defs>
+    <filter id="shadow" x="-8%" y="-8%" width="116%" height="118%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="22" stdDeviation="18" flood-color="#2C2532" flood-opacity=".25"/>
+      <feDropShadow dx="0" dy="6" stdDeviation="4" flood-color="#2C2532" flood-opacity=".18"/>
+    </filter>
+    <filter id="slotShadow" x="-25%" y="-35%" width="150%" height="170%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#000000" flood-opacity=".42"/>
+    </filter>
+    <linearGradient id="outer" x1="122" y1="112" x2="982" y2="988" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3F4047"/>
+      <stop offset=".48" stop-color="#202229"/>
+      <stop offset="1" stop-color="#10131A"/>
+    </linearGradient>
+    <linearGradient id="felt" x1="206" y1="170" x2="910" y2="936" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#24A99B"/>
+      <stop offset=".5" stop-color="#108E7B"/>
+      <stop offset="1" stop-color="#06695F"/>
+    </linearGradient>
+    <pattern id="feltNoise" width="34" height="34" patternUnits="userSpaceOnUse">
+      <path d="M2 8c8 5 16-4 28 3M4 22c10-6 19 5 28-3M17 1c-5 11 4 18-2 32" stroke="#C2FFF3" stroke-opacity=".075" stroke-width="2" stroke-linecap="round"/>
+    </pattern>
+    <linearGradient id="slot" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#05070B"/>
+      <stop offset=".54" stop-color="#161A22"/>
+      <stop offset="1" stop-color="#33353D"/>
+    </linearGradient>
+    <linearGradient id="slotFloor" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#05070B"/>
+      <stop offset=".55" stop-color="#171A21"/>
+      <stop offset="1" stop-color="#3C3D43"/>
+    </linearGradient>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <rect x="112" y="112" width="876" height="876" rx="18" fill="url(#outer)"/>
+    <rect x="158" y="158" width="784" height="784" rx="8" fill="#151820"/>
+    <rect x="190" y="190" width="720" height="720" rx="5" fill="url(#felt)" stroke="#071014" stroke-width="7"/>
+    <rect x="202" y="202" width="696" height="696" rx="3" fill="url(#feltNoise)"/>
+
+    <path d="M112 112h162l-40 46h-76v76l-46 40V112Z" fill="#55565C" opacity=".72"/>
+    <path d="M988 112H826l40 46h76v76l46 40V112Z" fill="#30323A" opacity=".9"/>
+    <path d="M112 988h162l-40-46h-76v-76l-46-40v162Z" fill="#13161D" opacity=".95"/>
+    <path d="M988 988H826l40-46h76v-76l46-40v162Z" fill="#090B10" opacity=".95"/>
+  </g>
+
+  <g filter="url(#slotShadow)">
+    <g id="top-racks">
+      <rect x="254" y="126" width="108" height="34" rx="5" fill="url(#slot)"/>
+      <rect x="416" y="126" width="108" height="34" rx="5" fill="url(#slot)"/>
+      <rect x="578" y="126" width="108" height="34" rx="5" fill="url(#slot)"/>
+      <rect x="740" y="126" width="108" height="34" rx="5" fill="url(#slot)"/>
+      <rect x="270" y="137" width="76" height="10" rx="4" fill="url(#slotFloor)"/>
+      <rect x="432" y="137" width="76" height="10" rx="4" fill="url(#slotFloor)"/>
+      <rect x="594" y="137" width="76" height="10" rx="4" fill="url(#slotFloor)"/>
+      <rect x="756" y="137" width="76" height="10" rx="4" fill="url(#slotFloor)"/>
+    </g>
+    <g id="bottom-racks">
+      <rect x="254" y="940" width="108" height="34" rx="5" fill="url(#slot)"/>
+      <rect x="416" y="940" width="108" height="34" rx="5" fill="url(#slot)"/>
+      <rect x="578" y="940" width="108" height="34" rx="5" fill="url(#slot)"/>
+      <rect x="740" y="940" width="108" height="34" rx="5" fill="url(#slot)"/>
+      <rect x="270" y="951" width="76" height="10" rx="4" fill="url(#slotFloor)"/>
+      <rect x="432" y="951" width="76" height="10" rx="4" fill="url(#slotFloor)"/>
+      <rect x="594" y="951" width="76" height="10" rx="4" fill="url(#slotFloor)"/>
+      <rect x="756" y="951" width="76" height="10" rx="4" fill="url(#slotFloor)"/>
+    </g>
+    <g id="left-racks">
+      <rect x="126" y="254" width="34" height="108" rx="5" fill="url(#slot)"/>
+      <rect x="126" y="416" width="34" height="108" rx="5" fill="url(#slot)"/>
+      <rect x="126" y="578" width="34" height="108" rx="5" fill="url(#slot)"/>
+      <rect x="126" y="740" width="34" height="108" rx="5" fill="url(#slot)"/>
+      <rect x="137" y="270" width="10" height="76" rx="4" fill="url(#slotFloor)"/>
+      <rect x="137" y="432" width="10" height="76" rx="4" fill="url(#slotFloor)"/>
+      <rect x="137" y="594" width="10" height="76" rx="4" fill="url(#slotFloor)"/>
+      <rect x="137" y="756" width="10" height="76" rx="4" fill="url(#slotFloor)"/>
+    </g>
+    <g id="right-racks">
+      <rect x="940" y="254" width="34" height="108" rx="5" fill="url(#slot)"/>
+      <rect x="940" y="416" width="34" height="108" rx="5" fill="url(#slot)"/>
+      <rect x="940" y="578" width="34" height="108" rx="5" fill="url(#slot)"/>
+      <rect x="940" y="740" width="34" height="108" rx="5" fill="url(#slot)"/>
+      <rect x="951" y="270" width="10" height="76" rx="4" fill="url(#slotFloor)"/>
+      <rect x="951" y="432" width="10" height="76" rx="4" fill="url(#slotFloor)"/>
+      <rect x="951" y="594" width="10" height="76" rx="4" fill="url(#slotFloor)"/>
+      <rect x="951" y="756" width="10" height="76" rx="4" fill="url(#slotFloor)"/>
+    </g>
+  </g>
+
+  <g opacity=".34">
+    <path d="M232 232h636M232 868h636M232 232v636M868 232v636" stroke="#BDFBEE" stroke-width="2"/>
+    <path d="M268 268h564M268 832h564M268 268v564M832 268v564" stroke="#061B19" stroke-opacity=".42" stroke-width="3"/>
+  </g>
+</svg>

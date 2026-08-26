@@ -132,9 +132,33 @@
     filter: drop-shadow(0 0.24rem 0 rgba(77, 45, 88, 0.14));
 }
 
-.tutor-hand,
-.tutor-group,
+.tutor-wall-wrap {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: min(100%, 27rem);
+}
+
+.tutor-mat-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 1.1rem;
+}
+
 .tutor-wall {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.18rem;
+    padding: 0 18%;
+}
+
+.tutor-hand,
+.tutor-group {
     display: flex;
     align-items: center;
     justify-content: center;

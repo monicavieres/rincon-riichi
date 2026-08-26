@@ -237,12 +237,15 @@
   function wallScene(data) {
     const count = data.backs || 13;
     const backs = Array.from({ length: count }, (_, i) => `<img src="${tileBack}" alt="tile back" class="tutor-back">`).join("");
-    return `<div class="tutor-wall">${backs}</div>`;
+    return `<div class="tutor-wall-wrap">
+      <img src="../assets/junk-mat-rincon.svg" alt="${localized({ es: "Paño de mesa", en: "Table mat", pt: "Pano de mesa" })}" class="tutor-mat-img">
+      <div class="tutor-wall">${backs}</div>
+    </div>`;
   }
 
   function windScene() {
     return `<div class="tutor-wind">
-      <img src="../assets/table/wind-indicator.svg" alt="${localized({ es: "Indicador de vientos", en: "Wind indicator", pt: "Indicador de ventos" })}" class="tutor-wind-img">
+      <img src="../assets/wind-indicator-rincon.svg" alt="${localized({ es: "Indicador de vientos", en: "Wind indicator", pt: "Indicador de ventos" })}" class="tutor-wind-img">
       <div class="tutor-wind-info">
         <span class="tutor-wind-row"><em>${localized({ es: "Viento de ronda", en: "Round", pt: "Rodada" })}</em>${tileHtml("1z")} ${localized({ es: "Este", en: "East", pt: "Leste" })}</span>
         <span class="tutor-wind-row"><em>${localized({ es: "Tu viento", en: "Your wind", pt: "Seu vento" })}</em>${tileHtml("2z")} ${localized({ es: "Sur", en: "South", pt: "Sul" })}</span>
@@ -268,7 +271,7 @@
     const label = data.dealer ? "dealer" : "non-dealer";
     const pts = data.points.toLocaleString("es-ES");
     return `<div class="tutor-score">
-      <img src="../assets/table/point-stick.svg" alt="point stick" class="tutor-points-img">
+      <img src="../assets/tenbou-set-rincon.svg" alt="${localized({ es: "Bastones de puntos", en: "Point sticks", pt: "Bastões de pontos" })}" class="tutor-points-img">
       <div class="tutor-score-box">
         <span class="tutor-score-row"><b>${data.han}</b> han · <b>${data.fu}</b> fu</span>
         <span class="tutor-score-row tutor-score-em">${data.win.toUpperCase()} · ${localized({ es: label === "dealer" ? "dador" : "no dador", en: label === "dealer" ? "dealer" : "non-dealer", pt: label === "dealer" ? "dador" : "não dador" })}</span>

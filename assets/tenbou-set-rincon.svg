@@ -1,0 +1,110 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Set de tenbou Rincon Riichi</title>
+  <desc id="desc">Palitos de puntos de riichi: cien, mil, cinco mil y diez mil puntos.</desc>
+  <defs>
+    <filter id="stickShadow" x="-8%" y="-40%" width="116%" height="190%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="11" stdDeviation="8" flood-color="#302538" flood-opacity=".2"/>
+      <feDropShadow dx="0" dy="3" stdDeviation="2" flood-color="#302538" flood-opacity=".2"/>
+    </filter>
+    <linearGradient id="bone" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FFFDF5"/>
+      <stop offset=".52" stop-color="#FFF7E7"/>
+      <stop offset="1" stop-color="#EFE5D0"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FF6A68"/>
+      <stop offset="1" stop-color="#D93449"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#52B8FF"/>
+      <stop offset="1" stop-color="#3068D9"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#41D985"/>
+      <stop offset="1" stop-color="#169B56"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FFD45A"/>
+      <stop offset="1" stop-color="#F18A24"/>
+    </linearGradient>
+    <symbol id="stick" viewBox="0 0 760 74">
+      <rect x="4" y="4" width="752" height="66" rx="33" fill="url(#bone)" stroke="#DED5C8" stroke-width="8"/>
+      <path d="M42 37h156M562 37h156" stroke="#CFC2B5" stroke-width="7" stroke-linecap="round" opacity=".45"/>
+    </symbol>
+  </defs>
+
+  <rect x="24" y="24" width="1232" height="672" rx="42" fill="#FFFFFF" fill-opacity=".72" stroke="#EAE4EF" stroke-width="4"/>
+  <text x="74" y="92" font-family="'Arial Rounded MT Bold', 'Nunito', system-ui, sans-serif" font-size="42" font-weight="900" fill="#159755">Tenbou / palitos de puntos</text>
+  <text x="76" y="130" font-family="'Arial Rounded MT Bold', 'Nunito', system-ui, sans-serif" font-size="22" font-weight="800" fill="#735F7D">Referencia visual para riichi mahjong</text>
+
+  <g font-family="'Arial Rounded MT Bold', 'Nunito', system-ui, sans-serif" font-weight="900">
+    <g transform="translate(94 184)" filter="url(#stickShadow)">
+      <use href="#stick" width="560" height="55"/>
+      <circle cx="280" cy="27.5" r="10" fill="#273041"/>
+      <text x="610" y="38" font-size="24" fill="#32243D">100</text>
+    </g>
+
+    <g transform="translate(94 292)" filter="url(#stickShadow)">
+      <use href="#stick" width="560" height="55"/>
+      <circle cx="240" cy="27.5" r="10" fill="url(#red)"/>
+      <circle cx="280" cy="27.5" r="10" fill="url(#red)"/>
+      <circle cx="320" cy="27.5" r="10" fill="url(#red)"/>
+      <text x="610" y="38" font-size="24" fill="#32243D">1.000</text>
+    </g>
+
+    <g transform="translate(94 400)" filter="url(#stickShadow)">
+      <use href="#stick" width="560" height="55"/>
+      <circle cx="210" cy="27.5" r="10" fill="url(#blue)"/>
+      <circle cx="245" cy="27.5" r="10" fill="url(#blue)"/>
+      <circle cx="280" cy="27.5" r="10" fill="url(#red)"/>
+      <circle cx="315" cy="27.5" r="10" fill="url(#blue)"/>
+      <circle cx="350" cy="27.5" r="10" fill="url(#blue)"/>
+      <text x="610" y="38" font-size="24" fill="#32243D">5.000</text>
+    </g>
+
+    <g transform="translate(94 508)" filter="url(#stickShadow)">
+      <use href="#stick" width="560" height="55"/>
+      <circle cx="190" cy="27.5" r="10" fill="url(#green)"/>
+      <circle cx="220" cy="27.5" r="10" fill="url(#green)"/>
+      <circle cx="250" cy="27.5" r="10" fill="url(#red)"/>
+      <circle cx="280" cy="27.5" r="10" fill="url(#gold)"/>
+      <circle cx="310" cy="27.5" r="10" fill="url(#red)"/>
+      <circle cx="340" cy="27.5" r="10" fill="url(#green)"/>
+      <circle cx="370" cy="27.5" r="10" fill="url(#green)"/>
+      <text x="610" y="38" font-size="24" fill="#32243D">10.000</text>
+    </g>
+  </g>
+
+  <g transform="translate(840 184)">
+    <rect x="0" y="0" width="314" height="392" rx="36" fill="#F7FFFB" stroke="#DDF4E8" stroke-width="4"/>
+    <text x="157" y="64" text-anchor="middle" font-family="'Arial Rounded MT Bold', 'Nunito', system-ui, sans-serif" font-size="28" font-weight="900" fill="#159755">Vista compacta</text>
+    <g transform="translate(49 106) rotate(-8)" filter="url(#stickShadow)">
+      <use href="#stick" width="220" height="22"/>
+      <circle cx="110" cy="11" r="4" fill="#273041"/>
+    </g>
+    <g transform="translate(49 168) rotate(6)" filter="url(#stickShadow)">
+      <use href="#stick" width="220" height="22"/>
+      <circle cx="96" cy="11" r="4" fill="url(#red)"/>
+      <circle cx="110" cy="11" r="4" fill="url(#red)"/>
+      <circle cx="124" cy="11" r="4" fill="url(#red)"/>
+    </g>
+    <g transform="translate(49 230) rotate(-5)" filter="url(#stickShadow)">
+      <use href="#stick" width="220" height="22"/>
+      <circle cx="82" cy="11" r="4" fill="url(#blue)"/>
+      <circle cx="96" cy="11" r="4" fill="url(#blue)"/>
+      <circle cx="110" cy="11" r="4" fill="url(#red)"/>
+      <circle cx="124" cy="11" r="4" fill="url(#blue)"/>
+      <circle cx="138" cy="11" r="4" fill="url(#blue)"/>
+    </g>
+    <g transform="translate(49 292) rotate(8)" filter="url(#stickShadow)">
+      <use href="#stick" width="220" height="22"/>
+      <circle cx="74" cy="11" r="4" fill="url(#green)"/>
+      <circle cx="86" cy="11" r="4" fill="url(#green)"/>
+      <circle cx="98" cy="11" r="4" fill="url(#red)"/>
+      <circle cx="110" cy="11" r="4" fill="url(#gold)"/>
+      <circle cx="122" cy="11" r="4" fill="url(#red)"/>
+      <circle cx="134" cy="11" r="4" fill="url(#green)"/>
+      <circle cx="146" cy="11" r="4" fill="url(#green)"/>
+    </g>
+  </g>
+</svg>
