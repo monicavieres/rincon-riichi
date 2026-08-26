@@ -9,7 +9,7 @@
     <link rel="icon" type="image/png" sizes="64x64" href="../assets/favicon-64.png">
     <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
     <link rel="stylesheet" href="../css/styles.css?v=module-cards-1">
-    <link rel="stylesheet" href="../css/tiles.css?v=tiles-clean-2">
+    <link rel="stylesheet" href="../css/tiles.css?v=tile-modal-1">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="tiles-body">
@@ -64,9 +64,28 @@
                 <button class="big-button green" id="nextButton" data-i18n="next">Next</button>
             </div>
         </section>
+
+        <div class="tile-modal" id="tileModal" role="dialog" aria-modal="true" aria-labelledby="tileModalTitle" hidden>
+            <div class="tile-modal-backdrop" id="tileModalBackdrop"></div>
+            <div class="tile-modal-card sticker-panel">
+                <button class="tile-modal-close" id="tileModalClose" aria-label="Cerrar">✕</button>
+                <div class="tile-modal-tile">
+                    <img id="tileModalImage" src="" alt="">
+                </div>
+                <div class="tile-modal-copy">
+                    <p class="eyebrow" data-i18n="tileModal.label">Ficha</p>
+                    <h3 id="tileModalTitle"></h3>
+                    <p class="tile-modal-fact" id="tileModalFact"></p>
+                    <div class="tile-modal-tip" id="tileModalTip">
+                        <span class="tile-modal-tip-label" data-i18n="tileModal.tipLabel">Para memorizarla</span>
+                        <p id="tileModalMnemonic"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
-    <script src="../js/tiles.js"></script>
+    <script src="../js/tiles.js?v=tile-modal-2"></script>
     <script src="../js/menu.js?v=theme-radio-1"></script>
 </body>
 </html>
