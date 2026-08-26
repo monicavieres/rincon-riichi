@@ -838,6 +838,9 @@ function next() {
 function restart() {
     state.round = 0;
     state.score = 0;
+    if (state.page === "tileName") {
+        modules.tileName.questions = buildTileNameQuestions(10);
+    }
     render();
 }
 
