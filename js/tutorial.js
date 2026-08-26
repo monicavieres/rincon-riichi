@@ -200,7 +200,7 @@
     switch (step.scene) {
       case "hand": return handScene(step.data);
       case "structure": return structureScene(step.data);
-      case "table": return imageScene("../assets/table/riichi-table.svg", localized({ es: "Mesa de riichi", en: "Riichi table", pt: "Mesa de riichi" }));
+      case "table": return tableScene();
       case "wall": return wallScene(step.data);
       case "deadwall": return imageScene("../assets/table/deadwall-rincon.svg", localized({ es: "Muro muerto", en: "Dead wall", pt: "Muro morto" }));
       case "wind": return windScene();
@@ -213,6 +213,10 @@
 
   function imageScene(src, alt) {
     return `<img class="tutor-table-img" src="${src}" alt="${alt}">`;
+  }
+
+  function tableScene() {
+    return imageScene("../assets/table/riichi-table-with-walls-rincon.svg", localized({ es: "Mesa de riichi con muros armados", en: "Riichi table with built walls", pt: "Mesa de riichi com muros montados" }));
   }
 
   function tileHtml(tileId) {

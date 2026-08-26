@@ -1,0 +1,279 @@
+<svg width="1200" height="1000" viewBox="0 0 1200 1000" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Mesa de riichi con muros Rincon Riichi</title>
+  <desc id="desc">Junk mat cuadrado con cuatro muros de 18 pilas dobles de fichas boca abajo, indicador de vientos al centro y placa amarilla de viento de ronda.</desc>
+  <defs>
+    <filter id="tableShadow" x="-8%" y="-8%" width="116%" height="120%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="22" stdDeviation="18" flood-color="#2C2532" flood-opacity=".26"/>
+      <feDropShadow dx="0" dy="6" stdDeviation="4" flood-color="#2C2532" flood-opacity=".18"/>
+    </filter>
+    <filter id="wallShadow" x="-18%" y="-35%" width="136%" height="180%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="5" stdDeviation="3" flood-color="#211827" flood-opacity=".32"/>
+    </filter>
+    <filter id="smallShadow" x="-20%" y="-30%" width="140%" height="160%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#211827" flood-opacity=".22"/>
+    </filter>
+    <linearGradient id="outer" x1="220" y1="70" x2="1010" y2="920" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#44454D"/>
+      <stop offset=".48" stop-color="#202229"/>
+      <stop offset="1" stop-color="#10131A"/>
+    </linearGradient>
+    <linearGradient id="felt" x1="310" y1="165" x2="900" y2="840" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#24A99B"/>
+      <stop offset=".5" stop-color="#108E7B"/>
+      <stop offset="1" stop-color="#06695F"/>
+    </linearGradient>
+    <pattern id="feltNoise" width="34" height="34" patternUnits="userSpaceOnUse">
+      <path d="M2 8c8 5 16-4 28 3M4 22c10-6 19 5 28-3M17 1c-5 11 4 18-2 32" stroke="#C2FFF3" stroke-opacity=".075" stroke-width="2" stroke-linecap="round"/>
+    </pattern>
+    <linearGradient id="rack" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#05070B"/>
+      <stop offset=".54" stop-color="#161A22"/>
+      <stop offset="1" stop-color="#33353D"/>
+    </linearGradient>
+    <linearGradient id="rackInset" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#05070B"/>
+      <stop offset=".55" stop-color="#171A21"/>
+      <stop offset="1" stop-color="#3C3D43"/>
+    </linearGradient>
+    <linearGradient id="tileBack" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#6756DA"/>
+      <stop offset=".54" stop-color="#5143C8"/>
+      <stop offset="1" stop-color="#342C91"/>
+    </linearGradient>
+    <linearGradient id="tileSide" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#3D319C"/>
+      <stop offset="1" stop-color="#1F1B62"/>
+    </linearGradient>
+    <linearGradient id="roundPlate" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FFE881"/>
+      <stop offset=".5" stop-color="#FFD94F"/>
+      <stop offset="1" stop-color="#F2B72D"/>
+    </linearGradient>
+    <g id="wallStackTop">
+      <rect x="0" y="0" width="21" height="7" rx="2.5" fill="url(#tileSide)"/>
+      <rect x="0" y="7" width="21" height="34" rx="4" fill="url(#tileBack)" stroke="#26338F" stroke-width="1.6"/>
+    </g>
+    <g id="wallStackBottom">
+      <rect x="0" y="0" width="21" height="34" rx="4" fill="url(#tileBack)" stroke="#26338F" stroke-width="1.6"/>
+      <rect x="0" y="34" width="21" height="7" rx="2.5" fill="url(#tileSide)"/>
+    </g>
+    <g id="wallStackLeft">
+      <rect x="0" y="0" width="7" height="21" rx="2.5" fill="url(#tileSide)"/>
+      <rect x="7" y="0" width="34" height="21" rx="4" fill="url(#tileBack)" stroke="#26338F" stroke-width="1.6"/>
+    </g>
+    <g id="wallStackRight">
+      <rect x="0" y="0" width="34" height="21" rx="4" fill="url(#tileBack)" stroke="#26338F" stroke-width="1.6"/>
+      <rect x="34" y="0" width="7" height="21" rx="2.5" fill="url(#tileSide)"/>
+    </g>
+  </defs>
+
+  <g filter="url(#tableShadow)">
+    <rect x="190" y="70" width="820" height="820" rx="18" fill="url(#outer)"/>
+    <rect x="232" y="112" width="736" height="736" rx="8" fill="#151820"/>
+    <rect x="262" y="142" width="676" height="676" rx="6" fill="url(#felt)" stroke="#071014" stroke-width="7"/>
+    <rect x="274" y="154" width="652" height="652" rx="4" fill="url(#feltNoise)"/>
+
+    <path d="M190 70h156l-38 42h-76v76l-42 38V70Z" fill="#55565C" opacity=".72"/>
+    <path d="M1010 70H854l38 42h76v76l42 38V70Z" fill="#30323A" opacity=".9"/>
+    <path d="M190 890h156l-38-42h-76v-76l-42-38v156Z" fill="#13161D" opacity=".95"/>
+    <path d="M1010 890H854l38-42h76v-76l42-38v156Z" fill="#090B10" opacity=".95"/>
+  </g>
+
+  <g filter="url(#smallShadow)">
+    <g>
+      <rect x="330" y="85" width="102" height="32" rx="5" fill="url(#rack)"/>
+      <rect x="490" y="85" width="102" height="32" rx="5" fill="url(#rack)"/>
+      <rect x="650" y="85" width="102" height="32" rx="5" fill="url(#rack)"/>
+      <rect x="810" y="85" width="102" height="32" rx="5" fill="url(#rack)"/>
+      <rect x="346" y="96" width="70" height="9" rx="4" fill="url(#rackInset)"/>
+      <rect x="506" y="96" width="70" height="9" rx="4" fill="url(#rackInset)"/>
+      <rect x="666" y="96" width="70" height="9" rx="4" fill="url(#rackInset)"/>
+      <rect x="826" y="96" width="70" height="9" rx="4" fill="url(#rackInset)"/>
+    </g>
+    <g>
+      <rect x="330" y="843" width="102" height="32" rx="5" fill="url(#rack)"/>
+      <rect x="490" y="843" width="102" height="32" rx="5" fill="url(#rack)"/>
+      <rect x="650" y="843" width="102" height="32" rx="5" fill="url(#rack)"/>
+      <rect x="810" y="843" width="102" height="32" rx="5" fill="url(#rack)"/>
+      <rect x="346" y="854" width="70" height="9" rx="4" fill="url(#rackInset)"/>
+      <rect x="506" y="854" width="70" height="9" rx="4" fill="url(#rackInset)"/>
+      <rect x="666" y="854" width="70" height="9" rx="4" fill="url(#rackInset)"/>
+      <rect x="826" y="854" width="70" height="9" rx="4" fill="url(#rackInset)"/>
+    </g>
+    <g>
+      <rect x="205" y="250" width="32" height="102" rx="5" fill="url(#rack)"/>
+      <rect x="205" y="400" width="32" height="102" rx="5" fill="url(#rack)"/>
+      <rect x="205" y="550" width="32" height="102" rx="5" fill="url(#rack)"/>
+      <rect x="205" y="700" width="32" height="102" rx="5" fill="url(#rack)"/>
+      <rect x="216" y="266" width="9" height="70" rx="4" fill="url(#rackInset)"/>
+      <rect x="216" y="416" width="9" height="70" rx="4" fill="url(#rackInset)"/>
+      <rect x="216" y="566" width="9" height="70" rx="4" fill="url(#rackInset)"/>
+      <rect x="216" y="716" width="9" height="70" rx="4" fill="url(#rackInset)"/>
+    </g>
+    <g>
+      <rect x="963" y="250" width="32" height="102" rx="5" fill="url(#rack)"/>
+      <rect x="963" y="400" width="32" height="102" rx="5" fill="url(#rack)"/>
+      <rect x="963" y="550" width="32" height="102" rx="5" fill="url(#rack)"/>
+      <rect x="963" y="700" width="32" height="102" rx="5" fill="url(#rack)"/>
+      <rect x="974" y="266" width="9" height="70" rx="4" fill="url(#rackInset)"/>
+      <rect x="974" y="416" width="9" height="70" rx="4" fill="url(#rackInset)"/>
+      <rect x="974" y="566" width="9" height="70" rx="4" fill="url(#rackInset)"/>
+      <rect x="974" y="716" width="9" height="70" rx="4" fill="url(#rackInset)"/>
+    </g>
+  </g>
+
+  <g opacity=".34">
+    <path d="M314 186h572M314 774h572M314 186v588M886 186v588" stroke="#BDFBEE" stroke-width="2"/>
+    <path d="M356 228h488M356 732h488M356 228v504M844 228v504" stroke="#061B19" stroke-opacity=".42" stroke-width="3"/>
+  </g>
+
+  <g filter="url(#wallShadow)">
+    <g id="top-wall">
+      <use href="#wallStackTop" x="384" y="218"/>
+      <use href="#wallStackTop" x="408" y="218"/>
+      <use href="#wallStackTop" x="432" y="218"/>
+      <use href="#wallStackTop" x="456" y="218"/>
+      <use href="#wallStackTop" x="480" y="218"/>
+      <use href="#wallStackTop" x="504" y="218"/>
+      <use href="#wallStackTop" x="528" y="218"/>
+      <use href="#wallStackTop" x="552" y="218"/>
+      <use href="#wallStackTop" x="576" y="218"/>
+      <use href="#wallStackTop" x="600" y="218"/>
+      <use href="#wallStackTop" x="624" y="218"/>
+      <use href="#wallStackTop" x="648" y="218"/>
+      <use href="#wallStackTop" x="672" y="218"/>
+      <use href="#wallStackTop" x="696" y="218"/>
+      <use href="#wallStackTop" x="720" y="218"/>
+      <use href="#wallStackTop" x="744" y="218"/>
+      <use href="#wallStackTop" x="768" y="218"/>
+      <use href="#wallStackTop" x="792" y="218"/>
+    </g>
+    <g id="bottom-wall">
+      <use href="#wallStackBottom" x="384" y="701"/>
+      <use href="#wallStackBottom" x="408" y="701"/>
+      <use href="#wallStackBottom" x="432" y="701"/>
+      <use href="#wallStackBottom" x="456" y="701"/>
+      <use href="#wallStackBottom" x="480" y="701"/>
+      <use href="#wallStackBottom" x="504" y="701"/>
+      <use href="#wallStackBottom" x="528" y="701"/>
+      <use href="#wallStackBottom" x="552" y="701"/>
+      <use href="#wallStackBottom" x="576" y="701"/>
+      <use href="#wallStackBottom" x="600" y="701"/>
+      <use href="#wallStackBottom" x="624" y="701"/>
+      <use href="#wallStackBottom" x="648" y="701"/>
+      <use href="#wallStackBottom" x="672" y="701"/>
+      <use href="#wallStackBottom" x="696" y="701"/>
+      <use href="#wallStackBottom" x="720" y="701"/>
+      <use href="#wallStackBottom" x="744" y="701"/>
+      <use href="#wallStackBottom" x="768" y="701"/>
+      <use href="#wallStackBottom" x="792" y="701"/>
+    </g>
+    <g id="left-wall">
+      <use href="#wallStackLeft" x="318" y="286"/>
+      <use href="#wallStackLeft" x="318" y="310"/>
+      <use href="#wallStackLeft" x="318" y="334"/>
+      <use href="#wallStackLeft" x="318" y="358"/>
+      <use href="#wallStackLeft" x="318" y="382"/>
+      <use href="#wallStackLeft" x="318" y="406"/>
+      <use href="#wallStackLeft" x="318" y="430"/>
+      <use href="#wallStackLeft" x="318" y="454"/>
+      <use href="#wallStackLeft" x="318" y="478"/>
+      <use href="#wallStackLeft" x="318" y="502"/>
+      <use href="#wallStackLeft" x="318" y="526"/>
+      <use href="#wallStackLeft" x="318" y="550"/>
+      <use href="#wallStackLeft" x="318" y="574"/>
+      <use href="#wallStackLeft" x="318" y="598"/>
+      <use href="#wallStackLeft" x="318" y="622"/>
+      <use href="#wallStackLeft" x="318" y="646"/>
+      <use href="#wallStackLeft" x="318" y="670"/>
+      <use href="#wallStackLeft" x="318" y="694"/>
+    </g>
+    <g id="right-wall">
+      <use href="#wallStackRight" x="841" y="286"/>
+      <use href="#wallStackRight" x="841" y="310"/>
+      <use href="#wallStackRight" x="841" y="334"/>
+      <use href="#wallStackRight" x="841" y="358"/>
+      <use href="#wallStackRight" x="841" y="382"/>
+      <use href="#wallStackRight" x="841" y="406"/>
+      <use href="#wallStackRight" x="841" y="430"/>
+      <use href="#wallStackRight" x="841" y="454"/>
+      <use href="#wallStackRight" x="841" y="478"/>
+      <use href="#wallStackRight" x="841" y="502"/>
+      <use href="#wallStackRight" x="841" y="526"/>
+      <use href="#wallStackRight" x="841" y="550"/>
+      <use href="#wallStackRight" x="841" y="574"/>
+      <use href="#wallStackRight" x="841" y="598"/>
+      <use href="#wallStackRight" x="841" y="622"/>
+      <use href="#wallStackRight" x="841" y="646"/>
+      <use href="#wallStackRight" x="841" y="670"/>
+      <use href="#wallStackRight" x="841" y="694"/>
+    </g>
+  </g>
+
+  <g id="discards" filter="url(#smallShadow)">
+    <g id="top-discards">
+      <image href="../tiles-fluffystuff-composite/1m.svg" x="500" y="332" width="26" height="36" transform="rotate(180 513 350)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/2m.svg" x="529" y="332" width="26" height="36" transform="rotate(180 542 350)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/3m.svg" x="558" y="332" width="26" height="36" transform="rotate(180 571 350)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/4m.svg" x="587" y="332" width="26" height="36" transform="rotate(180 600 350)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/5m.svg" x="616" y="332" width="26" height="36" transform="rotate(180 629 350)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/6m.svg" x="645" y="332" width="26" height="36" transform="rotate(180 658 350)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/7p.svg" x="500" y="371" width="26" height="36" transform="rotate(180 513 389)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/8p.svg" x="529" y="371" width="26" height="36" transform="rotate(180 542 389)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/9p.svg" x="558" y="371" width="26" height="36" transform="rotate(180 571 389)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/1z.svg" x="587" y="371" width="26" height="36" transform="rotate(180 600 389)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/2z.svg" x="616" y="371" width="26" height="36" transform="rotate(180 629 389)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/3z.svg" x="645" y="371" width="26" height="36" transform="rotate(180 658 389)" preserveAspectRatio="xMidYMid meet"/>
+    </g>
+
+    <g id="bottom-discards">
+      <image href="../tiles-fluffystuff-composite/1m.svg" x="500" y="588" width="26" height="36" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/2m.svg" x="529" y="588" width="26" height="36" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/3m.svg" x="558" y="588" width="26" height="36" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/4m.svg" x="587" y="588" width="26" height="36" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/5m.svg" x="616" y="588" width="26" height="36" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/6m.svg" x="645" y="588" width="26" height="36" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/7s.svg" x="500" y="627" width="26" height="36" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/8s.svg" x="529" y="627" width="26" height="36" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/9s.svg" x="558" y="627" width="26" height="36" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/5z.svg" x="587" y="627" width="26" height="36" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/6z.svg" x="616" y="627" width="26" height="36" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/7z.svg" x="645" y="627" width="26" height="36" preserveAspectRatio="xMidYMid meet"/>
+    </g>
+
+    <g id="left-discards">
+      <image href="../tiles-fluffystuff-composite/1p.svg" x="419" y="413" width="26" height="36" transform="rotate(90 432 431)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/2p.svg" x="419" y="442" width="26" height="36" transform="rotate(90 432 460)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/3p.svg" x="419" y="471" width="26" height="36" transform="rotate(90 432 489)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/4p.svg" x="419" y="500" width="26" height="36" transform="rotate(90 432 518)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/5p.svg" x="419" y="529" width="26" height="36" transform="rotate(90 432 547)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/6p.svg" x="419" y="558" width="26" height="36" transform="rotate(90 432 576)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/2s.svg" x="458" y="413" width="26" height="36" transform="rotate(90 471 431)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/3s.svg" x="458" y="442" width="26" height="36" transform="rotate(90 471 460)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/4s.svg" x="458" y="471" width="26" height="36" transform="rotate(90 471 489)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/5s.svg" x="458" y="500" width="26" height="36" transform="rotate(90 471 518)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/6s.svg" x="458" y="529" width="26" height="36" transform="rotate(90 471 547)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/7s.svg" x="458" y="558" width="26" height="36" transform="rotate(90 471 576)" preserveAspectRatio="xMidYMid meet"/>
+    </g>
+
+    <g id="right-discards">
+      <image href="../tiles-fluffystuff-composite/9m.svg" x="755" y="413" width="26" height="36" transform="rotate(-90 768 431)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/8m.svg" x="755" y="442" width="26" height="36" transform="rotate(-90 768 460)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/7m.svg" x="755" y="471" width="26" height="36" transform="rotate(-90 768 489)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/6m.svg" x="755" y="500" width="26" height="36" transform="rotate(-90 768 518)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/5m.svg" x="755" y="529" width="26" height="36" transform="rotate(-90 768 547)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/4m.svg" x="755" y="558" width="26" height="36" transform="rotate(-90 768 576)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/1z.svg" x="716" y="413" width="26" height="36" transform="rotate(-90 729 431)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/2z.svg" x="716" y="442" width="26" height="36" transform="rotate(-90 729 460)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/3z.svg" x="716" y="471" width="26" height="36" transform="rotate(-90 729 489)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/4z.svg" x="716" y="500" width="26" height="36" transform="rotate(-90 729 518)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/5z.svg" x="716" y="529" width="26" height="36" transform="rotate(-90 729 547)" preserveAspectRatio="xMidYMid meet"/>
+      <image href="../tiles-fluffystuff-composite/6z.svg" x="716" y="558" width="26" height="36" transform="rotate(-90 729 576)" preserveAspectRatio="xMidYMid meet"/>
+    </g>
+  </g>
+
+  <g filter="url(#smallShadow)">
+    <image href="../wind-indicator-rincon.svg" x="520" y="400" width="160" height="160" preserveAspectRatio="xMidYMid meet"/>
+    <image href="../round-wind-east.svg" x="270" y="772" width="92" height="52" preserveAspectRatio="xMidYMid meet"/>
+  </g>
+</svg>

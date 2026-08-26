@@ -3,7 +3,6 @@
     const supportedLanguages = ["es", "en", "pt"];
     const languageStorageKey = "rincon-riichi-language";
     const tileBasePath = "../assets/tiles-fluffystuff-composite/";
-    const tileBack = "../assets/tile-back-rincon.svg";
 
     const ui = {
         es: {
@@ -280,11 +279,7 @@
             </div>`;
         }
         if (scene === "table") {
-            const wall = Array.from({ length: 12 }, () => `<img src="${tileBack}" alt="">`).join("");
-            return `<div class="guide-table">
-                <div class="wall top">${wall}</div><div class="wall right">${wall}</div><div class="wall bottom">${wall}</div><div class="wall left">${wall}</div>
-                <div class="table-center">${ui[language].center}</div>
-            </div>`;
+            return `<img class="guide-table-img" src="../assets/table/riichi-table-with-walls-rincon.svg" alt="${localized({ es: "Mesa de riichi con muros armados", en: "Riichi table with built walls", pt: "Mesa de riichi com muros montados" })}">`;
         }
         if (scene === "families") {
             return `<div class="guide-families">

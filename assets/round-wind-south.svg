@@ -1,0 +1,22 @@
+<svg width="240" height="132" viewBox="0 0 240 132" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Viento de ronda Sur</title>
+  <desc id="desc">Placa amarilla rectangular que indica viento de ronda Sur.</desc>
+  <defs>
+    <filter id="shadow" x="-18%" y="-20%" width="136%" height="150%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#5A3B05" flood-opacity=".22"/>
+      <feDropShadow dx="0" dy="3" stdDeviation="2" flood-color="#5A3B05" flood-opacity=".18"/>
+    </filter>
+    <linearGradient id="plate" x1="28" y1="22" x2="214" y2="112" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE881"/>
+      <stop offset=".48" stop-color="#FFD94F"/>
+      <stop offset="1" stop-color="#F2B72D"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#shadow)">
+    <rect x="24" y="22" width="192" height="88" rx="11" fill="url(#plate)"/>
+    <rect x="24" y="22" width="192" height="88" rx="11" stroke="#F8D96A" stroke-width="4"/>
+    <path d="M38 34H202" stroke="#FFF6B8" stroke-width="4" stroke-linecap="round" opacity=".55"/>
+    <path d="M40 104H200" stroke="#B9881E" stroke-width="4" stroke-linecap="round" opacity=".28"/>
+  </g>
+  <text x="120" y="82" text-anchor="middle" font-family="Hiragino Mincho ProN, Yu Mincho, Noto Serif CJK JP, serif" font-size="55" font-weight="900" fill="#111111">南</text>
+</svg>

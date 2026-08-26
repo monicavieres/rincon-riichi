@@ -107,30 +107,8 @@ const modules = {
     },
     valores: {
         title: { es: "Tabla de Valores", en: "Value Table", pt: "Tabela de Valores" },
-        help: { es: "Dados han + fu + dealer/non-dealer + honba, elige los puntos correctos por Ron.", en: "Given han + fu + dealer/non-dealer + honba, pick the correct Ron points.", pt: "Dados han + fu + dealer/não-dealer + honba, escolha os pontos corretos por Ron." },
-        questions: [
-            {
-                hand: [],
-                context: { win: "Ron", han: 1, fu: 30, dealer: false, honba: 0, calls: [] },
-                choices: ["1000", "1300", "1600", "2000"],
-                answer: "1000",
-                explain: { es: "1 han 30 fu, no-dealer Ron, 0 honba = 1000.", en: "1 han 30 fu, non-dealer Ron, 0 honba = 1000.", pt: "1 han 30 fu, não-dealer Ron, 0 honba = 1000." }
-            },
-            {
-                hand: [],
-                context: { win: "Ron", han: 1, fu: 30, dealer: false, honba: 1, calls: [] },
-                choices: ["1000", "1300", "1600", "1900"],
-                answer: "1300",
-                explain: { es: "1 han 30 fu, no-dealer Ron (1000) + 1 honba (300) = 1300.", en: "1 han 30 fu, non-dealer Ron (1000) + 1 honba (300) = 1300.", pt: "1 han 30 fu, não-dealer Ron (1000) + 1 honba (300) = 1300." }
-            },
-            {
-                hand: [],
-                context: { win: "Ron", han: 2, fu: 30, dealer: true, honba: 2, calls: [] },
-                choices: ["2900", "3200", "3500", "3900"],
-                answer: "3500",
-                explain: { es: "2 han 30 fu, dealer Ron (2900) + 2 honba (600) = 3500.", en: "2 han 30 fu, dealer Ron (2900) + 2 honba (600) = 3500.", pt: "2 han 30 fu, dealer Ron (2900) + 2 honba (600) = 3500." }
-            }
-        ]
+        help: { es: "Dados han + fu + dealer/no-dealer + honba, elige los puntos correctos según ganes por Ron o Tsumo.", en: "Given han + fu + dealer/non-dealer + honba, pick the correct points for Ron or Tsumo.", pt: "Dados han + fu + dealer/não-dealer + honba, escolha os pontos corretos por Ron ou Tsumo." },
+        questions: []
     },
     fu: {
         title: { es: "Cuenta los Fu", en: "Count Fu", pt: "Conte os Fu" },
@@ -791,6 +769,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (state.page === "chinitsu") {
         modules.chinitsu.questions = buildChinitsuQuestions(10);
     }
+    if (state.page === "valores") {
+        modules.valores.questions = pickValoresRound(10);
+    }
 
     els.languageSelect.value = state.language;
     els.languageSelect.addEventListener("change", (event) => {
@@ -972,6 +953,7 @@ function renderContext(context = defaultContext) {
             contextChip("Han", data.han),
             contextChip("Fu", data.fu),
             contextChip(t("position"), data.dealer ? "Dealer" : "No dealer"),
+            contextChip(t("win"), data.win),
             honbaChip(data.honba || 0)
         ];
         els.roundContext.classList.add("context-lg");
@@ -1195,6 +1177,11 @@ function next() {
         showResults();
         return;
     }
+    if (state.page === "valores" && state.round >= modules.valores.questions.length) {
+        state.round = 0;
+        state.score = 0;
+        modules.valores.questions = pickValoresRound(10);
+    }
     render();
 }
 
@@ -1265,6 +1252,9 @@ function restart() {
     if (state.page === "chinitsu") {
         modules.chinitsu.questions = buildChinitsuQuestions(10);
     }
+    if (state.page === "valores") {
+        modules.valores.questions = pickValoresRound(10);
+    }
     render();
 }
 
@@ -1327,4 +1317,145 @@ function ensureFeedbackCoach() {
     img.alt = "Monique coach";
     els.feedback.prepend(img);
     els.feedback.dataset.coachInjected = "true";
+}
+
+/* ===== Scoring / value-table pool (valores) ===== */
+const VALUE_HANS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+const VALUE_FUS = [20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110];
+const HONBA_VARIANTS = [0, 1, 2, 3];
+const WIN_VARIANTS = ["Ron", "Tsumo"];
+
+function ceilHundred(value) {
+    return Math.ceil(value / 100) * 100;
+}
+
+function scoreLimit(han) {
+    if (han >= 13) return { name: "yakuman", multiplier: 4 };
+    if (han >= 11) return { name: "sanbaiman", multiplier: 3 };
+    if (han >= 8) return { name: "baiman", multiplier: 2 };
+    if (han >= 6) return { name: "haneman", multiplier: 1.5 };
+    return null;
+}
+
+function basePoints(han, fu) {
+    const limit = scoreLimit(han);
+    if (limit) return 2000 * limit.multiplier;
+    const fuValue = Math.max(fu, 20);
+    const raw = fuValue * Math.pow(2, 2 + han);
+    return Math.min(raw, 2000);
+}
+
+function scorePayments({ han, fu, dealer, win }) {
+    const base = basePoints(han, fu);
+    let payments;
+    if (win === "Tsumo") {
+        if (dealer) {
+            const each = ceilHundred(base * 2);
+            payments = { text: `${each} all`, split: [each, each, each] };
+        } else {
+            const nonDealer = ceilHundred(base * 1);
+            const dealerPay = ceilHundred(base * 2);
+            payments = nonDealer === dealerPay
+                ? { text: `${nonDealer} all`, split: [nonDealer, nonDealer, nonDealer] }
+                : { text: `${nonDealer}/${dealerPay}`, split: [nonDealer, nonDealer, dealerPay] };
+        }
+    } else {
+        const total = ceilHundred(dealer ? base * 6 : base * 4);
+        payments = { text: `${total}`, split: [total] };
+    }
+    return payments;
+}
+
+function describeScore(han, fu, dealer, win, honba) {
+    const basePay = scorePayments({ han, fu, dealer, win });
+    const honbaTotal = honba * 300;
+    let main;
+    if (win === "Tsumo") {
+        const perPerson = honba * 100;
+        if (basePay.split[0] === basePay.split[2]) {
+            main = `${basePay.split[0] + perPerson} all`;
+        } else {
+            const dealerAdd = basePay.split[2] + perPerson;
+            const nonDealerAdd = basePay.split[0] + perPerson;
+            main = `${nonDealerAdd}/${dealerAdd}`;
+        }
+    } else {
+        main = `${basePay.split[0] + honbaTotal}`;
+    }
+    const limit = scoreLimit(han);
+    return { baseText: basePay.text, text: main, isLimit: Boolean(limit), limitName: limit ? limit.name : null };
+}
+
+function buildDistractors(correctText, han, fu, dealer, win, honba) {
+    const candidates = new Set([correctText]);
+    const attempts = 3;
+    const variants = [
+        { han: Math.max(1, han - 1), fu, dealer, win, honba },
+        { han: han + 1, fu, dealer, win, honba },
+        { han, fu: Math.max(20, fu - 10), dealer, win, honba },
+        { han, fu: fu + 10, dealer, win, honba },
+        { han, fu, dealer: !dealer, win, honba },
+        { han, fu, dealer, win: win === "Ron" ? "Tsumo" : "Ron", honba },
+        { han, fu, dealer, win, honba: Math.min(3, honba + 1) }
+    ];
+    variants.forEach((variant) => {
+        if (candidates.size >= attempts + 1) return;
+        try {
+            const text = describeScore(variant.han, variant.fu, variant.dealer, variant.win, variant.honba).text;
+            if (text !== correctText) candidates.add(text);
+        } catch (e) { /* skip invalid */ }
+    });
+    while (candidates.size < attempts + 1) {
+        const randomHan = pickRandom(VALUE_HANS);
+        const randomFu = pickRandom(VALUE_FUS);
+        const randomDealer = Math.random() < 0.5;
+        const randomWin = pickRandom(WIN_VARIANTS);
+        const randomHonba = pickRandom(HONBA_VARIANTS);
+        const text = describeScore(randomHan, randomFu, randomDealer, randomWin, randomHonba).text;
+        if (text !== correctText) candidates.add(text);
+    }
+    return shuffle([...candidates]);
+}
+
+function pickRandom(items) {
+    return items[Math.floor(Math.random() * items.length)];
+}
+
+function validFuForHan(han, fu) {
+    if (han === 1 && fu < 30) return false;
+    if (han >= 4 && fu === 20) return false;
+    return true;
+}
+
+function buildValoresPool() {
+    const pool = [];
+    VALUE_HANS.forEach((han) => {
+        VALUE_FUS.forEach((fu) => {
+            if (!validFuForHan(han, fu)) return;
+            [true, false].forEach((dealer) => {
+                WIN_VARIANTS.forEach((win) => {
+                    HONBA_VARIANTS.forEach((honba) => {
+                        const result = describeScore(han, fu, dealer, win, honba);
+                        const limit = scoreLimit(han);
+                        pool.push({
+                            hand: [],
+                            context: { win, han, fu, dealer, honba, calls: [] },
+                            choices: buildDistractors(result.text, han, fu, dealer, win, honba),
+                            answer: result.text,
+                            explain: {
+                                es: `${han} han ${fu} fu, ${dealer ? "dealer" : "no-dealer"} ${win.toLowerCase()}${limit ? ` · ${limit.name}` : ""}${honba ? ` + ${honba} honba` : ""} = ${result.text}.`,
+                                en: `${han} han ${fu} fu, ${dealer ? "dealer" : "non-dealer"} ${win.toLowerCase()}${limit ? ` · ${limit.name}` : ""}${honba ? ` + ${honba} honba` : ""} = ${result.text}.`,
+                                pt: `${han} han ${fu} fu, ${dealer ? "dealer" : "não-dealer"} ${win.toLowerCase()}${limit ? ` · ${limit.name}` : ""}${honba ? ` + ${honba} honba` : ""} = ${result.text}.`
+                            }
+                        });
+                    });
+                });
+            });
+        });
+    });
+    return pool;
+}
+
+function pickValoresRound(size = 10) {
+    return shuffle(buildValoresPool()).slice(0, size);
 }
