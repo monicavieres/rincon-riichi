@@ -1889,9 +1889,31 @@ a {
     }
 
     .app-shell {
-        width: calc(100vw - 0.75rem);
+        width: calc(100vw - 1.35rem);
         max-width: 1220px;
         padding: 0.35rem 0 2.2rem;
+    }
+
+    .hero h1 {
+        font-size: clamp(2.5rem, 13vw, 3.4rem);
+    }
+
+    .hero .eyebrow {
+        font-size: 0.72rem;
+    }
+
+    .hero .subtitle,
+    .hero a.subtitle,
+    .hero .hero-copy .subtitle {
+        font-size: 0.92rem;
+    }
+
+    .section-heading h2 {
+        font-size: clamp(1.85rem, 9.5vw, 2.5rem);
+    }
+
+    .section-heading p:last-child {
+        font-size: 0.9rem;
     }
 
     .topbar {
@@ -1988,10 +2010,10 @@ a {
     .hero {
         grid-template-columns: 1fr;
         align-content: center;
-        gap: 0.7rem;
+        gap: 0.6rem;
         width: 100%;
         max-width: 100%;
-        min-height: calc(100svh - 5.7rem);
+        min-height: 0;
         height: auto;
         margin: 0.72rem 0 2.1rem;
         padding: clamp(0.95rem, 5vw, 1.25rem);
@@ -2002,7 +2024,7 @@ a {
     .hero h1 {
         max-width: 9ch;
         margin-top: 0.35rem;
-        font-size: clamp(2.75rem, 16vw, 4.35rem);
+        font-size: clamp(2.35rem, 12.5vw, 3.3rem);
         line-height: 0.92;
     }
 
