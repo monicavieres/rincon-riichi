@@ -274,40 +274,153 @@ function tile(n, s) {
     return `${n}${s}`;
 }
 
-function fillGroups(n, suit, withPair) {
-    const result = [];
-    for (let i = 0; i < n; i++) {
-        const a = rint(1, 7);
-        result.push(tile(a, suit), tile(a + 1, suit), tile(a + 2, suit));
+function canWin(tiles) {
+    if (tiles.length % 3 !== 2) return false;
+    const cnt = {};
+    tiles.forEach((t) => { cnt[t] = (cnt[t] || 0) + 1; });
+
+    function removeGroup(set) {
+        const keys = Object.keys(set).filter((k) => set[k] > 0);
+        for (const k of keys) {
+            const n = Number(k[0]);
+            const s = k[k.length - 1];
+            if (set[k] >= 3) {
+                set[k] -= 3;
+                const ok = helper(set);
+                set[k] += 3;
+                if (ok) return true;
+            }
+            if (s !== "z") {
+                const k2 = `${n + 1}${s}`;
+                const k3 = `${n + 2}${s}`;
+                if (set[k2] > 0 && set[k3] > 0) {
+                    set[k] -= 1; set[k2] -= 1; set[k3] -= 1;
+                    const ok = helper(set);
+                    set[k] += 1; set[k2] += 1; set[k3] += 1;
+                    if (ok) return true;
+                }
+            }
+        }
+        return false;
     }
-    if (withPair) {
-        const a = rint(1, 9);
-        result.push(tile(a, suit), tile(a, suit));
+
+    function helper(set) {
+        const keys = Object.keys(set).filter((k) => set[k] > 0);
+        if (keys.length === 0) return true;
+        return removeGroup(set);
     }
-    return result;
+
+    const keys = Object.keys(cnt);
+    for (const k of keys) {
+        if (cnt[k] >= 2) {
+            cnt[k] -= 2;
+            const ok = helper(cnt);
+            cnt[k] += 2;
+            if (ok) return true;
+        }
+    }
+    return false;
 }
 
-function buildWaitByKey(key, s, f) {
-    switch (key) {
-        case "ryanmen": { const a = rint(2, 7); return { hand: [tile(a, s), tile(a + 1, s)].concat(fillGroups(3, f, true)), waits: [tile(a - 1, s), tile(a + 2, s)] }; }
-        case "kanchan": { const a = rint(1, 7); return { hand: [tile(a, s), tile(a + 2, s)].concat(fillGroups(3, f, true)), waits: [tile(a + 1, s)] }; }
-        case "penchan": {
-            if (Math.random() < 0.5) return { hand: [tile(1, s), tile(2, s)].concat(fillGroups(3, f, true)), waits: [tile(3, s)] };
-            return { hand: [tile(8, s), tile(9, s)].concat(fillGroups(3, f, true)), waits: [tile(7, s)] };
+function getWinWaits(hand) {
+    const waits = [];
+    for (let n = 1; n <= 9; n++) {
+        for (const s of "mpsz") {
+            const t = `${n}${s}`;
+            if (hand.filter((x) => x === t).length >= 4) continue;
+            if (canWin([...hand, t])) waits.push(t);
         }
-        case "tanki": { const a = rint(1, 9); return { hand: [tile(a, s)].concat(fillGroups(4, f, false)), waits: [tile(a, s)] }; }
+    }
+    return waits;
+}
+
+function fillHonor(rem) {
+    const honors = shuffled(["1z", "2z", "3z", "4z", "5z", "6z", "7z"]);
+    const fill = [];
+    let idx = 0;
+    const isPair = rem % 3 === 2;
+    const triplets = (rem - (isPair ? 2 : 0)) / 3;
+    for (let i = 0; i < triplets; i++) {
+        const h = honors[idx++];
+        fill.push(h, h, h);
+    }
+    if (isPair) {
+        const p = honors[idx++];
+        fill.push(p, p);
+    }
+    return fill;
+}
+
+/* each wait type: value is a function (s, helper) returning {hand, waits}.
+   The hand = shape tiles + isolated honor fill, so the ONLY real waits are the ones declared. */
+function buildWaitByKey(key, s) {
+    switch (key) {
+        case "ryanmen": {
+            const a = rint(2, 7);
+            const shape = [tile(a, s), tile(a + 1, s)];
+            return { hand: shape.concat(fillHonor(13 - shape.length)), waits: [tile(a - 1, s), tile(a + 2, s)] };
+        }
+        case "kanchan": {
+            const a = rint(1, 7);
+            const shape = [tile(a, s), tile(a + 2, s)];
+            return { hand: shape.concat(fillHonor(13 - shape.length)), waits: [tile(a + 1, s)] };
+        }
+        case "penchan": {
+            const side = Math.random() < 0.5 ? "low" : "high";
+            const shape = side === "low" ? [tile(1, s), tile(2, s)] : [tile(8, s), tile(9, s)];
+            return { hand: shape.concat(fillHonor(13 - shape.length)), waits: [side === "low" ? tile(3, s) : tile(7, s)] };
+        }
+        case "tanki": {
+            const a = rint(1, 9);
+            const shape = [tile(a, s)];
+            return { hand: shape.concat(fillHonor(13 - shape.length)), waits: [tile(a, s)] };
+        }
         case "shanpon": {
             const p = rint(1, 9); let q = rint(1, 9); while (q === p) q = rint(1, 9);
-            return { hand: [tile(p, s), tile(p, s), tile(q, s), tile(q, s)].concat(fillGroups(3, f, false)), waits: [tile(p, s), tile(q, s)] };
+            const shape = [tile(p, s), tile(p, s), tile(q, s), tile(q, s)];
+            return { hand: shape.concat(fillHonor(13 - shape.length)), waits: [tile(p, s), tile(q, s)] };
         }
-        case "nobetan": { const a = rint(1, 6); return { hand: [tile(a, s), tile(a + 1, s), tile(a + 2, s), tile(a + 3, s)].concat(fillGroups(3, f, false)), waits: [tile(a, s), tile(a + 3, s)] }; }
-        case "sanmenchan": { const a = rint(2, 4); return { hand: [tile(a, s), tile(a + 1, s), tile(a + 2, s), tile(a + 3, s), tile(a + 4, s)].concat(fillGroups(2, f, true)), waits: [tile(a - 1, s), tile(a + 2, s), tile(a + 5, s)] }; }
-        case "sanmentan": { const a = rint(1, 3); return { hand: [tile(a, s), tile(a + 1, s), tile(a + 2, s), tile(a + 3, s), tile(a + 4, s), tile(a + 5, s), tile(a + 6, s)].concat(fillGroups(2, f, false)), waits: [tile(a, s), tile(a + 3, s), tile(a + 6, s)] }; }
-        case "entotsu": { const a = rint(2, 7); return { hand: [tile(a, s), tile(a + 1, s), tile(a + 2, s), tile(a + 2, s), tile(a + 2, s)].concat(fillGroups(2, f, true)), waits: [tile(a - 1, s), tile(a + 2, s)] }; }
-        case "ryantan": { return { hand: [tile(4, s), tile(5, s), tile(5, s), tile(5, s)].concat(fillGroups(3, f, false)), waits: [tile(3, s), tile(4, s), tile(6, s)] }; }
-        case "kantan": { return { hand: [tile(3, s), tile(5, s), tile(5, s), tile(5, s)].concat(fillGroups(3, f, false)), waits: [tile(3, s), tile(4, s)] }; }
-        case "aryanmen": { return { hand: [tile(4, s), tile(5, s), tile(6, s), tile(6, s)].concat(fillGroups(3, f, false)), waits: [tile(3, s), tile(6, s)] }; }
-        case "pentan": { return { hand: [tile(1, s), tile(2, s), tile(2, s), tile(2, s)].concat(fillGroups(3, f, false)), waits: [tile(1, s), tile(3, s)] }; }
+        case "nobetan": {
+            const a = rint(1, 6);
+            const shape = [tile(a, s), tile(a + 1, s), tile(a + 2, s), tile(a + 3, s)];
+            return { hand: shape.concat(fillHonor(13 - shape.length)), waits: [tile(a, s), tile(a + 3, s)] };
+        }
+        case "sanmenchan": {
+            const a = rint(2, 4);
+            const shape = [tile(a, s), tile(a + 1, s), tile(a + 2, s), tile(a + 3, s), tile(a + 4, s)];
+            return { hand: shape.concat(fillHonor(13 - shape.length)), waits: [tile(a - 1, s), tile(a + 2, s), tile(a + 5, s)] };
+        }
+        case "sanmentan": {
+            const a = rint(1, 3);
+            const shape = [tile(a, s), tile(a + 1, s), tile(a + 2, s), tile(a + 3, s), tile(a + 4, s), tile(a + 5, s), tile(a + 6, s)];
+            return { hand: shape.concat(fillHonor(13 - shape.length)), waits: [tile(a, s), tile(a + 3, s), tile(a + 6, s)] };
+        }
+        case "entotsu": {
+            const a = rint(2, 7);
+            const shape = [tile(a, s), tile(a + 1, s), tile(a + 2, s), tile(a + 2, s), tile(a + 2, s)];
+            const hand = shape.concat(fillHonor(13 - shape.length));
+            return { hand, waits: getWinWaits(hand) };
+        }
+        case "ryantan": {
+            const a = 4;
+            const shape = [tile(a, s), tile(a + 1, s), tile(a + 1, s), tile(a + 1, s)];
+            return { hand: shape.concat(fillHonor(13 - shape.length)), waits: [tile(3, s), tile(a, s), tile(6, s)] };
+        }
+        case "kantan": {
+            const a = 3;
+            const shape = [tile(a, s), tile(a + 2, s), tile(a + 2, s), tile(a + 2, s)];
+            return { hand: shape.concat(fillHonor(13 - shape.length)), waits: [tile(a, s), tile(a + 1, s)] };
+        }
+        case "aryanmen": {
+            const a = 4;
+            const shape = [tile(a, s), tile(a + 1, s), tile(a + 2, s), tile(a + 2, s)];
+            return { hand: shape.concat(fillHonor(13 - shape.length)), waits: [tile(3, s), tile(a + 2, s)] };
+        }
+        case "pentan": {
+            const a = 2;
+            const shape = [tile(a - 1, s), tile(a, s), tile(a, s), tile(a, s)];
+            return { hand: shape.concat(fillHonor(13 - shape.length)), waits: [tile(a - 1, s), tile(a + 1, s)] };
+        }
     }
 }
 
@@ -324,18 +437,26 @@ function sortHand(tiles) {
 function buildWaitQuestion() {
     const keys = Object.keys(WAIT_TYPE_NAMES);
     const key = keys[rint(0, keys.length - 1)];
+    return buildQuestionForWait(key);
+}
+
+function buildQuestionForWait(key) {
     const s = "mps"[rint(0, 2)];
-    const others = "mps".split("").filter((c) => c !== s);
-    const f = others[rint(0, others.length - 1)];
-    const built = buildWaitByKey(key, s, f);
-    return {
-        hand: sortHand(built.hand),
-        waits: built.waits,
-        waitName: WAIT_TYPE_NAMES[key],
-        waitKey: key,
-        nameChoices: shuffleNames(WAIT_TYPE_NAMES, key, 3),
-        tileChoices: shuffle([...built.waits].concat(randomTiles(6 - built.waits.length, built.waits)))
-    };
+    for (let attempt = 0; attempt < 40; attempt++) {
+        const built = buildWaitByKey(key, s);
+        const expected = [...built.waits].sort();
+        const real = getWinWaits(built.hand).sort();
+        if (expected.join("|") !== real.join("|")) continue;
+        return {
+            hand: sortHand(built.hand),
+            waits: real,
+            waitName: WAIT_TYPE_NAMES[key],
+            waitKey: key,
+            nameChoices: shuffleNames(WAIT_TYPE_NAMES, key, 3),
+            tileChoices: shuffle([...real].concat(randomTiles(6 - real.length, real)))
+        };
+    }
+    return null;
 }
 
 function shuffled(array) {
@@ -377,6 +498,7 @@ function buildWaitQuestions(count, multi) {
     while (questions.length < count && guard < 400) {
         guard++;
         const q = buildWaitQuestion();
+        if (!q) continue;
         const key = q.hand.join("|");
         if (seen.has(key)) continue;
         seen.add(key);
