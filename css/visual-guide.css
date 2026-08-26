@@ -157,6 +157,10 @@
     background: rgba(255, 255, 255, 0.7);
 }
 
+.guide-melds > .meld-block .tile-group .tile-img:last-child {
+    transform: rotate(-90deg);
+}
+
 .guide-melds,
 .guide-families,
 .guide-call-board,

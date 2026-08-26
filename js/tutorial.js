@@ -234,7 +234,7 @@
     const melds = data.melds.map((m) =>
       `<div class="tutor-meld"><span class="tutor-meld-label">${localized(m.label === "chii" ? { es: "chii", en: "chii", pt: "chii" } : { es: "pon", en: "pon", pt: "pon" })}</span><div class="tutor-group">${m.tiles.map(tileHtml).join("")}</div></div>`
     ).join("");
-    const pair = `<div class="tutor-meld"><span class="tutor-meld-label">${localized({ es: "par", en: "pair", pt: "par" })}</span><div class="tutor-group">${data.pair.map(tileHtml).join("")}</div></div>`;
+    const pair = `<div class="tutor-meld is-pair"><span class="tutor-meld-label">${localized({ es: "par", en: "pair", pt: "par" })}</span><div class="tutor-group">${data.pair.map(tileHtml).join("")}</div></div>`;
     return `<div class="tutor-melds">${melds}${pair}</div>`;
   }
 

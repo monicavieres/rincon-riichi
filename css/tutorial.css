@@ -170,6 +170,10 @@
     padding: 0 0.2rem;
 }
 
+.tutor-meld:not(.is-pair) .tutor-group > img:last-child {
+    transform: rotate(-90deg);
+}
+
 .tutor-chip {
     padding: 0.18rem 0.7rem;
     border-radius: 999px;

@@ -1029,9 +1029,8 @@ function meldGroup(call) {
     const group = document.createElement("span");
     group.className = "meld-group";
     group.dataset.call = call.type;
-    call.tiles.forEach((tile, index) => {
+    call.tiles.forEach((tile) => {
         const img = tileImage(tile);
-        if (index === 0) img.classList.add("meld-rotated");
         group.append(img);
     });
     return group;

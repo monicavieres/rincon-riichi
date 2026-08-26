@@ -865,7 +865,7 @@ a {
     font-weight: 900;
 }
 
-.meld-group img.meld-rotated {
+.meld-group > img:last-child {
     transform: rotate(-90deg);
 }
 
