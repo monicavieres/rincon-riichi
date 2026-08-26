@@ -456,7 +456,8 @@ function localizedMap(builder) {
 
 function buildTileNameQuestions(count = 10) {
     return shuffled(TILE_NAME_IDS).slice(0, count).map((tileId) => {
-        const optionIds = shuffled([tileId, ...shuffled(TILE_NAME_IDS.filter((candidate) => candidate !== tileId)).slice(0, 3)]);
+        const distractors = shuffled(sameFamilyTiles(tileId).filter((candidate) => candidate !== tileId)).slice(0, 3);
+        const optionIds = shuffled([tileId, ...distractors]);
         return {
             hand: [tileId],
             choices: localizedMap((language) => optionIds.map((id) => tileDisplayName(id, language))),
@@ -469,6 +470,11 @@ function buildTileNameQuestions(count = 10) {
             })
         };
     });
+}
+
+function sameFamilyTiles(tileId) {
+    const suit = tileId[tileId.length - 1];
+    return TILE_NAME_IDS.filter((candidate) => candidate[candidate.length - 1] === suit);
 }
 
 function shuffle(array) {
