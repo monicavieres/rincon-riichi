@@ -206,6 +206,11 @@ const translations = {
                 desc: "Marca todas las fichas que completan tu mano.",
                 message: "¿Qué fichas esperas?: selecciona las fichas de victoria."
             },
+            chinitsu: {
+                title: "¿Chinitsu?",
+                desc: "Mira la mano y decide: ¿un palo, un palo + honores, simples o nada?",
+                message: "¿Chinitsu?: reconoce un solo palo, honitsu y tanyao."
+            },
             puntaje: {
                 title: "Puntajes",
                 desc: "Tablas de pagos, fu y honba.",
@@ -510,6 +515,11 @@ const translations = {
                 title: "Which Tiles Do You Wait On?",
                 desc: "Mark all the tiles that complete your hand.",
                 message: "Which Tiles Do You Wait On?: select the winning tiles."
+            },
+            chinitsu: {
+                title: "Is It Chinitsu?",
+                desc: "Look at the hand: one suit, one suit + honors, simples, or none?",
+                message: "Is It Chinitsu?: spot a single suit, honitsu, and tanyao."
             },
             puntaje: {
                 title: "Scores",
@@ -816,6 +826,11 @@ const translations = {
                 desc: "Marque todas as peças que completam sua mão.",
                 message: "Quais Peças Você Espera?: selecione as peças de vitória."
             },
+            chinitsu: {
+                title: "É Chinitsu?",
+                desc: "Veja a mão: um só naipe, um naipe + honras, simples ou nada?",
+                message: "É Chinitsu?: reconheça um só naipe, honitsu e tanyao."
+            },
             puntaje: {
                 title: "Pontuação",
                 desc: "Tabelas de pagamento, fu e honba.",
@@ -978,6 +993,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 "que-ficha-es": "practicar/que-ficha-es.html",
                 "espera-tipo": "practicar/espera-tipo.html",
                 "espera-fichas": "practicar/espera-fichas.html",
+                chinitsu: "practicar/chinitsu.html",
                 puntaje: "aprender/score.html"
             };
 

@@ -18,12 +18,30 @@
             <span class="topbar-title">¿Qué ficha es?</span>
             <div class="topbar-controls" id="topbar-controls"><a class="pill blue" href="../index.html#practicar" data-i18n="back">← Back</a><label class="language-picker"><span data-i18n="language">Language</span><select id="languageSelect"><option value="es">ES</option><option value="en">EN</option><option value="pt">PT</option></select></label><div class="theme-radio" role="radiogroup" aria-label="Tema" title="Tema"><label class="theme-option"><input type="radio" name="theme" value="light" aria-label="Tema claro"><span class="theme-option-pill" aria-hidden="true">☀️</span></label><label class="theme-option"><input type="radio" name="theme" value="dark" aria-label="Tema oscuro"><span class="theme-option-pill" aria-hidden="true">🌙</span></label></div></div>
         </nav>
-        <section class="module-card-screen sticker-panel">
+        <section class="tile-start sticker-panel" id="startView">
+            <div class="tile-start-inner">
+                <p class="eyebrow" data-i18n="tileStart.eyebrow">Playable module</p>
+                <h1 data-i18n="tileStart.title">¿Qué ficha es?</h1>
+                <p class="subtitle" data-i18n="tileStart.subtitle">Elige un grupo de fichas y nómbralas. Cada grupo saca 10 fichas al azar.</p>
+                <div class="tile-modes" id="tileModes"></div>
+                <div class="tile-start-chips" aria-hidden="true"><span data-i18n="tileStart.chipOne">10 fichas al azar</span><span data-i18n="tileStart.chipTwo">Opciones del mismo palo</span><span data-i18n="tileStart.chipThree">Feedback al instante</span></div>
+            </div>
+        </section>
+        <section class="module-card-screen sticker-panel" id="quizCard" hidden>
             <div class="module-topline"><span class="status ready" id="roundLabel">1 / 10</span><span class="module-pill" id="scoreLabel">Score: 0</span></div>
             <div class="module-hand-card"><p class="eyebrow" data-i18n="tileLabel">Tile</p><div class="round-context" id="roundContext"></div><div class="module-hand" id="hand"></div><div class="tile-explain-modal" id="tileExplainModal" hidden><div class="tile-explain-tile" id="tileExplainTile"></div><div class="tile-explain-copy"><strong id="tileExplainTitle"></strong><p id="tileExplainText"></p></div></div></div>
             <div class="module-question-card"><p class="eyebrow" data-i18n="eyebrow">Practice</p><h1 id="questionTitle"></h1><p id="questionHelp"></p><div class="choice-grid tile-name-choices" id="choices"></div></div>
             <div class="feedback-panel" id="feedback" hidden><strong id="feedbackTitle"></strong><p id="feedbackText"></p></div>
             <div class="module-actions"><button class="big-button green" id="submitButton" data-i18n="submit">Submit</button><button class="big-button green" id="nextButton" data-i18n="next" hidden>Next</button><button class="big-button pink" id="restartButton" data-i18n="restart" hidden>Again</button></div>
+        </section>
+        <section class="results-card sticker-panel" id="resultsCard" hidden>
+            <div class="results-head">
+                <p class="eyebrow" data-i18n="results.eyebrow">Session complete</p>
+                <h2 data-i18n="results.title">Resultado final</h2>
+                <p class="results-score"><span data-i18n="results.score">Puntaje</span> <strong id="resultsScore">0 / 0</strong></p>
+            </div>
+            <div class="results-body" id="resultsBody"></div>
+            <div class="results-actions"><button class="big-button green" id="replayButton" data-i18n="results.replay">Jugar otra vez</button><button class="big-button pink" id="backModeButton" data-i18n="results.menu">Cambiar de modo</button></div>
         </section>
     </main>
     <script src="../js/practice-module.js?v=tile-modal-1"></script>

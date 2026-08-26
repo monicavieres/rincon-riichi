@@ -4,9 +4,9 @@ const languageStorageKey = "rincon-riichi-language";
 const tileBasePath = "../assets/tiles-fluffystuff-composite/";
 
 const ui = {
-    es: { back: "← Volver", language: "Idioma", handLabel: "Mano", tileLabel: "Ficha", eyebrow: "Práctica", submit: "Enviar", next: "Siguiente", restart: "Otra vez", score: "Puntaje", correct: "Correcto", incorrect: "Revisemos", choose: "Elige una opción antes de enviar.", done: "Resultado final", roundWind: "Ronda", seatWind: "Tu viento", dora: "Dora", win: "Victoria", calls: "Llamadas", closed: "Cerrada", none: "Sin llamadas", wait: "Espera", situation: "Condiciones", position: "Posición", honba: "Honba" },
-    en: { back: "← Back", language: "Language", handLabel: "Hand", tileLabel: "Tile", eyebrow: "Practice", submit: "Submit", next: "Next", restart: "Again", score: "Score", correct: "Correct", incorrect: "Review", choose: "Choose one option before submitting.", done: "Final result", roundWind: "Round", seatWind: "Your wind", dora: "Dora", win: "Win", calls: "Calls", closed: "Closed", none: "No calls", wait: "Wait", situation: "Conditions", position: "Position", honba: "Honba" },
-    pt: { back: "← Voltar", language: "Idioma", handLabel: "Mão", tileLabel: "Peça", eyebrow: "Prática", submit: "Enviar", next: "Próximo", restart: "De novo", score: "Pontuação", correct: "Correto", incorrect: "Vamos revisar", choose: "Escolha uma opção antes de enviar.", done: "Resultado final", roundWind: "Rodada", seatWind: "Seu vento", dora: "Dora", win: "Vitória", calls: "Chamadas", closed: "Fechada", none: "Sem chamadas", wait: "Espera", situation: "Condições", position: "Posição", honba: "Honba" }
+    es: { back: "← Volver", language: "Idioma", handLabel: "Mano", tileLabel: "Ficha", eyebrow: "Práctica", submit: "Enviar", next: "Siguiente", restart: "Otra vez", score: "Puntaje", correct: "Correcto", incorrect: "Revisemos", choose: "Elige una opción antes de enviar.", done: "Resultado final", roundWind: "Ronda", seatWind: "Tu viento", dora: "Dora", win: "Victoria", calls: "Llamadas", closed: "Cerrada", none: "Sin llamadas", wait: "Espera", situation: "Condiciones", position: "Posición", honba: "Honba", tileStart: { eyebrow: "Módulo jugable", title: "¿Qué ficha es?", subtitle: "Elige un grupo de fichas y nómbralas. Cada grupo saca 10 fichas al azar.", chipOne: "10 fichas al azar", chipTwo: "Opciones del mismo palo", chipThree: "Feedback al instante" }, results: { eyebrow: "Sesión completa", title: "Resultado final", score: "Puntaje", replay: "Jugar otra vez", menu: "Cambiar de modo" } },
+    en: { back: "← Back", language: "Language", handLabel: "Hand", tileLabel: "Tile", eyebrow: "Practice", submit: "Submit", next: "Next", restart: "Again", score: "Score", correct: "Correct", incorrect: "Review", choose: "Choose one option before submitting.", done: "Final result", roundWind: "Round", seatWind: "Your wind", dora: "Dora", win: "Win", calls: "Calls", closed: "Closed", none: "No calls", wait: "Wait", situation: "Conditions", position: "Position", honba: "Honba", tileStart: { eyebrow: "Playable module", title: "Which Tile Is It?", subtitle: "Pick a tile group and name the tiles. Each group draws 10 random tiles.", chipOne: "10 random tiles", chipTwo: "Same-suit options", chipThree: "Instant feedback" }, results: { eyebrow: "Session complete", title: "Final result", score: "Score", replay: "Play again", menu: "Change mode" } },
+    pt: { back: "← Voltar", language: "Idioma", handLabel: "Mão", tileLabel: "Peça", eyebrow: "Prática", submit: "Enviar", next: "Próximo", restart: "De novo", score: "Pontuação", correct: "Correto", incorrect: "Vamos revisar", choose: "Escolha uma opção antes de enviar.", done: "Resultado final", roundWind: "Rodada", seatWind: "Seu vento", dora: "Dora", win: "Vitória", calls: "Chamadas", closed: "Fechada", none: "Sem chamadas", wait: "Espera", situation: "Condições", position: "Posição", honba: "Honba", tileStart: { eyebrow: "Módulo jogável", title: "Que peça é?", subtitle: "Escolha um grupo de peças e nomeie-as. Cada grupo sorteia 10 peças aleatórias.", chipOne: "10 peças aleatórias", chipTwo: "Opções do mesmo naipe", chipThree: "Feedback instantâneo" }, results: { eyebrow: "Sessão completa", title: "Resultado final", score: "Pontuação", replay: "Jogar de novo", menu: "Trocar de modo" } }
 };
 
 const defaultContext = { roundWind: "East", seatWind: "South", dora: "4p", win: "Ron", calls: [] };
@@ -205,6 +205,11 @@ const modules = {
     tileName: {
         title: { es: "¿Qué ficha es?", en: "Which Tile Is It?", pt: "Que peça é?" },
         help: { es: "Mira la ficha y elige su nombre. Aka significa cinco rojo.", en: "Look at the tile and choose its name. Aka means red five.", pt: "Veja a peça e escolha seu nome. Aka significa cinco vermelho." },
+        questions: []
+    },
+    chinitsu: {
+        title: { es: "¿Chinitsu?", en: "Is It Chinitsu?", pt: "É Chinitsu?" },
+        help: { es: "Mira la mano y decide su tipo: un solo palo (chinitsu), un palo + honores (honitsu), solo simples (tanyao) o ninguna de esas.", en: "Look at the hand and decide its type: one suit (chinitsu), one suit + honors (honitsu), only simples (tanyao), or none of these.", pt: "Veja a mão e decida o tipo: um só naipe (chinitsu), um naipe + honras (honitsu), só simples (tanyao) ou nenhuma dessas." },
         questions: []
     }
 };
@@ -420,6 +425,16 @@ const TILE_NAME_IDS = [
     "1z", "2z", "3z", "4z", "5z", "6z", "7z"
 ];
 
+const TILE_NAME_MODES = [
+    { id: "all", rep: "5m", label: { es: "Todas las fichas", en: "All tiles", pt: "Todas as peças" }, tiles: () => [...TILE_NAME_IDS] },
+    { id: "manzu", rep: "4m", label: { es: "Solo Manzu", en: "Manzu only", pt: "Só Manzu" }, tiles: () => TILE_NAME_IDS.filter((t) => t.endsWith("m")) },
+    { id: "pinzu", rep: "4p", label: { es: "Solo Pinzu", en: "Pinzu only", pt: "Só Pinzu" }, tiles: () => TILE_NAME_IDS.filter((t) => t.endsWith("p")) },
+    { id: "souzu", rep: "4s", label: { es: "Solo Souzu", en: "Souzu only", pt: "Só Souzu" }, tiles: () => TILE_NAME_IDS.filter((t) => t.endsWith("s")) },
+    { id: "honors", rep: "5z", label: { es: "Solo Honores", en: "Honors only", pt: "Só Honras" }, tiles: () => TILE_NAME_IDS.filter((t) => t.endsWith("z")) },
+    { id: "manzuHonors", rep: "8m", label: { es: "Manzu + Honores", en: "Manzu + Honors", pt: "Manzu + Honras" }, tiles: () => TILE_NAME_IDS.filter((t) => t.endsWith("m") || t.endsWith("z")) },
+    { id: "numbers", rep: "7s", label: { es: "Solo números", en: "Numbers only", pt: "Só números" }, tiles: () => TILE_NAME_IDS.filter((t) => /^[1-9][mps]$/.test(t)) }
+];
+
 const TILE_NAME_COPY = {
     es: {
         suits: { m: "Manzu", p: "Pinzu", s: "Souzu" },
@@ -454,8 +469,8 @@ function localizedMap(builder) {
     }, {});
 }
 
-function buildTileNameQuestions(count = 10) {
-    return shuffled(TILE_NAME_IDS).slice(0, count).map((tileId) => {
+function buildTileNameQuestions(count = 10, pool = TILE_NAME_IDS) {
+    return shuffled(pool).slice(0, count).map((tileId) => {
         const distractors = shuffled(sameFamilyTiles(tileId).filter((candidate) => candidate !== tileId)).slice(0, 3);
         const optionIds = shuffled([tileId, ...distractors]);
         return {
@@ -516,6 +531,80 @@ function sameFamilyTiles(tileId) {
     return TILE_NAME_IDS.filter((candidate) => candidate[candidate.length - 1] === suit);
 }
 
+const CHINITSU_TYPES = [
+    { id: "chinitsu", es: "Chinitsu", en: "Chinitsu", pt: "Chinitsu", han: 6, explain: { es: "Chinitsu: toda la mano es de un solo palo (sin honores). Viene como yaku puro.", en: "Chinitsu: the whole hand is one suit (no honors). It counts as a valuable yaku.", pt: "Chinitsu: toda a mão é de um só naipe (sem honras). Conta como yaku valioso." } },
+    { id: "honitsu", es: "Honitsu", en: "Honitsu", pt: "Honitsu", han: 3, explain: { es: "Honitsu: un solo palo + honores. Un paso menos que chinitsu.", en: "Honitsu: one suit + honors. One step below chinitsu.", pt: "Honitsu: um só naipe + honras. Um passo abaixo de chinitsu." } },
+    { id: "tanyao", es: "Tanyao", en: "Tanyao", pt: "Tanyao", han: 1, explain: { es: "Tanyao: solo fichas simples (2–8), sin terminales ni honores. No es chinitsu porque usa varios palos.", en: "Tanyao: only simples (2–8), no terminals or honors. Not chinitsu because it uses multiple suits.", pt: "Tanyao: apenas peças simples (2–8), sem terminais nem honras. Não é chinitsu porque usa vários naipes." } },
+    { id: "none", es: "Ninguna", en: "None", pt: "Nenhuma", han: 0, explain: { es: "Ninguna de las tres: la mano mezcla terminales, honores o varios palos sin encajar en esos patrones.", en: "None of the three: the hand mixes terminals, honors, or suits without fitting those patterns.", pt: "Nenhuma das três: a mão mistura terminais, honras ou vários naipes sem encaixar nesses padrões." } }
+];
+
+const CHINITSU_LABELS = CHINITSU_TYPES.map((type) => ({
+    id: type.id,
+    label: { es: type.es, en: type.en, pt: type.pt }
+}));
+
+const CHINITSU_TYPE_OPTIONS = {
+    chinitsu: ["honitsu", "tanyao", "none"],
+    honitsu: ["chinitsu", "tanyao", "none"],
+    tanyao: ["chinitsu", "honitsu", "none"],
+    none: ["chinitsu", "honitsu", "tanyao"]
+};
+
+function buildChinitsuQuestions(count = 8) {
+    const questions = [];
+    for (let i = 0; i < count; i++) {
+        const type = CHINITSU_TYPES[rint(0, CHINITSU_TYPES.length - 1)];
+        questions.push(buildChinitsuQuestion(type));
+    }
+    return questions;
+}
+
+function buildChinitsuQuestion(type) {
+    const hand = randomChinitsuHand(type.id);
+    const seen = new Set();
+    const pool = CHINITSU_TYPE_OPTIONS[type.id];
+    const distractors = [];
+    while (distractors.length < 3 && pool.length) {
+        const pick = pool[rint(0, pool.length - 1)];
+        if (pick === type.id || seen.has(pick)) continue;
+        seen.add(pick);
+        distractors.push(CHINITSU_LABELS.find((l) => l.id === pick));
+    }
+    const options = CHINITSU_LABELS.filter((l) => l.id === type.id).concat(distractors);
+    return {
+        hand,
+        choices: localizedMap((language) => shuffled(options).map((o) => o.label[language])),
+        answer: localizedMap((language) => CHINITSU_LABELS.find((l) => l.id === type.id).label[language]),
+        explain: localizedMap((language) => type.explain[language]),
+        subtype: type.id
+    };
+}
+
+function randomChinitsuHand(subtype) {
+    if (subtype === "tanyao") return buildHandOfSuits(2, 8, 3, false, true);
+    if (subtype === "chinitsu") return buildHandOfSuits(1, 9, 1, false, false);
+    if (subtype === "honitsu") return buildHandOfSuits(1, 9, 1, true, false);
+    return buildHandOfSuits(1, 9, 3, rint(0, 1) ? true : false, false);
+}
+
+function buildHandOfSuits(minNum, maxNum, suitCount, useHonors, onlySimples) {
+    const suits = shuffled(["m", "p", "s"]).slice(0, suitCount);
+    const tiles = [];
+    const rng = (min, max) => min + Math.floor(Math.random() * (max - min + 1));
+    while (tiles.length < 13) {
+        const suit = suits[rint(0, suits.length - 1)];
+        let num = rng(minNum, maxNum);
+        if (onlySimples) num = rng(2, 8);
+        if (useHonors && Math.random() < 0.18) {
+            tiles.push(`${rng(1, 7)}z`);
+            continue;
+        }
+        tiles.push(`${num}${suit}`);
+    }
+    if (useHonors) tiles.push("5z");
+    return sortHand(tiles);
+}
+
 function shuffle(array) {
     return shuffled(array);
 }
@@ -526,7 +615,9 @@ const state = {
     round: 0,
     score: 0,
     selected: null,
-    answered: false
+    answered: false,
+    results: [],
+    tileMode: "all"
 };
 
 const els = {};
@@ -545,6 +636,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     Object.assign(els, {
+        langSelect: document.querySelector("#languageSelect"),
+        startView: document.querySelector("#startView"),
+        quizCard: document.querySelector("#quizCard"),
+        tileModes: document.querySelector("#tileModes"),
         languageSelect: document.querySelector("#languageSelect"),
         roundLabel: document.querySelector("#roundLabel"),
         scoreLabel: document.querySelector("#scoreLabel"),
@@ -578,12 +673,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (state.page === "tileName") {
         modules.tileName.questions = buildTileNameQuestions(10);
     }
+    if (state.page === "chinitsu") {
+        modules.chinitsu.questions = buildChinitsuQuestions(8);
+    }
 
     els.languageSelect.value = state.language;
     els.languageSelect.addEventListener("change", (event) => {
         state.language = event.target.value;
         localStorage.setItem(languageStorageKey, state.language);
         applyLanguage();
+        if (state.page === "tileName") applyLanguage();
         render();
     });
     els.submitButton.addEventListener("click", submit);
@@ -591,9 +690,42 @@ document.addEventListener("DOMContentLoaded", () => {
     els.restartButton.addEventListener("click", restart);
     document.addEventListener("keydown", handleKeyboard);
 
+    if (state.page === "tileName" && els.tileModes) {
+        renderTileModes();
+    }
+    if (state.page === "tileName") {
+        const backModeButton = document.querySelector("#backModeButton");
+        if (backModeButton) backModeButton.addEventListener("click", showTileStart);
+        const replayButton = document.querySelector("#replayButton");
+        if (replayButton) replayButton.addEventListener("click", restart);
+    }
+
     applyLanguage();
     render();
 });
+
+function renderTileModes() {
+    els.tileModes.replaceChildren(...TILE_NAME_MODES.map((mode) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "tile-mode";
+        const img = tileImage(mode.rep);
+        img.style.width = "clamp(2.6rem, 3.6vw, 3.4rem)";
+        const label = document.createElement("span");
+        label.textContent = mode.label[state.language] || mode.label[defaultLanguage];
+        button.append(img, label);
+        button.addEventListener("click", () => startTileQuiz(mode.id));
+        return button;
+    }));
+}
+
+function showTileStart() {
+    const resultsCard = document.querySelector("#resultsCard");
+    if (resultsCard) resultsCard.hidden = true;
+    els.quizCard.hidden = true;
+    if (els.startView) els.startView.hidden = false;
+    if (els.tileModes) renderTileModes();
+}
 
 function handleKeyboard(event) {
     const tag = document.activeElement?.tagName;
@@ -641,9 +773,9 @@ function render() {
     if (state.page === "furiten") {
         renderFuriten(question);
     } else {
-        if (state.page !== "esperaTipo" && state.page !== "esperaFichas" && state.page !== "tileName") {
+        if (state.page !== "esperaTipo" && state.page !== "esperaFichas" && state.page !== "tileName" && state.page !== "chinitsu") {
             renderContext(question.context);
-        } else if (state.page === "tileName" && els.roundContext) {
+        } else if ((state.page === "tileName" || state.page === "chinitsu") && els.roundContext) {
             els.roundContext.replaceChildren();
         }
         els.hand.replaceChildren(...renderHand(question));
@@ -861,6 +993,15 @@ function submit() {
         : state.selected === expected;
     if (correct) state.score += 1;
 
+    if (state.page === "tileName") {
+        state.results.push({
+            tile: question.hand[0],
+            correct,
+            userAnswer: state.selected,
+            correctAnswer: expected
+        });
+    }
+
     [...els.choices.children].forEach((button) => {
         button.disabled = true;
         if (multi) {
@@ -882,8 +1023,14 @@ function submit() {
         revealWait(question);
     }
     els.submitButton.hidden = true;
-    if (state.round === module.questions.length - 1) els.restartButton.hidden = false;
-    else els.nextButton.hidden = false;
+    if (state.round === module.questions.length - 1 && state.page === "tileName") {
+        els.restartButton.hidden = true;
+        els.nextButton.hidden = false;
+    } else if (state.round === module.questions.length - 1) {
+        els.restartButton.hidden = false;
+    } else {
+        els.nextButton.hidden = false;
+    }
 }
 
 function showTileExplainModal(question, correct) {
@@ -926,6 +1073,61 @@ function revealWait(question) {
 
 function next() {
     state.round += 1;
+    if (state.page === "tileName" && state.round >= modules[state.page].questions.length) {
+        showResults();
+        return;
+    }
+    render();
+}
+
+function showResults() {
+    els.quizCard.hidden = true;
+    if (els.startView) els.startView.hidden = true;
+    const resultsCard = document.querySelector("#resultsCard");
+    if (resultsCard) resultsCard.hidden = false;
+    renderResultsSummary();
+}
+
+function renderResultsSummary() {
+    const body = document.querySelector("#resultsBody");
+    const scoreEl = document.querySelector("#resultsScore");
+    const score = `${state.score} / ${state.results.length}`;
+    if (scoreEl) scoreEl.textContent = score;
+    if (body) {
+        body.replaceChildren(...state.results.map((entry) => {
+            const row = document.createElement("div");
+            row.className = `results-row${entry.correct ? " is-correct" : " is-wrong"}`;
+            const mark = document.createElement("span");
+            mark.className = "results-mark";
+            mark.textContent = entry.correct ? "✓" : "✕";
+            const tile = document.createElement("span");
+            tile.className = "results-tile";
+            tile.append(tileImage(entry.tile));
+            const correct = document.createElement("span");
+            correct.className = "results-correct";
+            correct.textContent = entry.correctAnswer;
+            const user = document.createElement("span");
+            user.className = "results-user";
+            user.textContent = entry.correct ? entry.userAnswer : entry.userAnswer;
+            row.append(mark, tile, correct, user);
+            return row;
+        }));
+    }
+}
+
+function startTileQuiz(modeId) {
+    const mode = TILE_NAME_MODES.find((m) => m.id === modeId) || TILE_NAME_MODES[0];
+    state.tileMode = mode.id;
+    const pool = mode.tiles();
+    const count = Math.min(10, pool.length);
+    modules.tileName.questions = buildTileNameQuestions(count, pool);
+    state.round = 0;
+    state.score = 0;
+    state.results = [];
+    if (els.startView) els.startView.hidden = true;
+    const resultsCard = document.querySelector("#resultsCard");
+    if (resultsCard) resultsCard.hidden = true;
+    els.quizCard.hidden = false;
     render();
 }
 
@@ -933,7 +1135,17 @@ function restart() {
     state.round = 0;
     state.score = 0;
     if (state.page === "tileName") {
-        modules.tileName.questions = buildTileNameQuestions(10);
+        state.results = [];
+        const mode = TILE_NAME_MODES.find((m) => m.id === state.tileMode) || TILE_NAME_MODES[0];
+        const pool = mode.tiles();
+        modules.tileName.questions = buildTileNameQuestions(Math.min(10, pool.length), pool);
+        const resultsCard = document.querySelector("#resultsCard");
+        if (resultsCard) resultsCard.hidden = true;
+        els.quizCard.hidden = false;
+        if (els.startView) els.startView.hidden = true;
+    }
+    if (state.page === "chinitsu") {
+        modules.chinitsu.questions = buildChinitsuQuestions(8);
     }
     render();
 }
@@ -959,9 +1171,13 @@ function applyLanguage() {
     document.documentElement.lang = state.language;
     document.title = modules[state.page].title[state.language];
     document.querySelectorAll("[data-i18n]").forEach((element) => {
-        const value = dictionary[element.dataset.i18n];
+        const value = resolveI18n(dictionary, element.dataset.i18n);
         if (typeof value === "string") element.textContent = value;
     });
+}
+
+function resolveI18n(dict, path) {
+    return String(path).split(".").reduce((acc, key) => (acc == null ? undefined : acc[key]), dict);
 }
 
 function t(key) {
