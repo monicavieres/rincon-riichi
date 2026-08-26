@@ -10,6 +10,7 @@
 
 .score-page {
     display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
     gap: clamp(0.5rem, 1vw, 0.78rem);
     min-height: calc(100vh - 6.45rem);
     margin-top: 0.45rem;
@@ -162,7 +163,9 @@
 
 .torpedo-board {
     display: grid;
+    grid-template-rows: 1fr;
     gap: 0.55rem;
+    min-height: 100%;
 }
 
 .torpedo-section {
@@ -178,7 +181,7 @@
 }
 
 .score-panel.is-active .torpedo-section {
-    min-height: clamp(20.5rem, 41vh, 27.5rem);
+    min-height: 100%;
 }
 
 .torpedo-section.is-dealer {
@@ -222,6 +225,7 @@
 .torpedo-grid {
     display: grid;
     grid-template-columns: 3.45rem repeat(7, minmax(4.75rem, 1fr));
+    grid-template-rows: auto repeat(4, minmax(0, 1fr));
     gap: 0.22rem;
     min-width: 0;
 }
@@ -278,7 +282,7 @@
 .torpedo-cell {
     display: grid;
     align-content: center;
-    min-height: 3.05rem;
+    min-height: 0;
     padding: 0.28rem 0.34rem;
     overflow: hidden;
 }
@@ -312,7 +316,7 @@
 
 .limit-strip {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-rows: auto repeat(5, minmax(0, 1fr));
     gap: 0.34rem;
     min-width: 0;
 }
@@ -335,7 +339,7 @@
     grid-template-columns: minmax(5.5rem, 0.8fr) minmax(0, 1fr) minmax(5.2rem, 0.8fr);
     gap: 0.45rem;
     align-items: center;
-    min-height: 3.42rem;
+    min-height: 0;
     padding: 0.32rem 0.42rem;
     border: 0.12rem solid rgba(97, 66, 112, 0.1);
     border-radius: 0.78rem;
@@ -952,8 +956,131 @@
     color: var(--muted);
 }
 
-[data-theme="dark"] .torpedo-table {
+[data-theme="dark"] .torpedo-section {
+    border-color: var(--sticker-border);
+    background: linear-gradient(135deg, rgba(30, 32, 36, 0.96), rgba(24, 22, 27, 0.92));
+    box-shadow: 0 0.45rem 0 var(--shadow);
+}
+
+[data-theme="dark"] .torpedo-section.is-dealer {
+    background: linear-gradient(135deg, rgba(30, 32, 36, 0.96), rgba(22, 30, 38, 0.94));
+}
+
+[data-theme="dark"] .torpedo-section.is-non-dealer {
+    background: linear-gradient(135deg, rgba(30, 32, 36, 0.96), rgba(34, 26, 30, 0.94));
+}
+
+[data-theme="dark"] .torpedo-side {
+    color: var(--purple-dark);
+    background: linear-gradient(180deg, rgba(192, 132, 252, 0.16), rgba(95, 42, 203, 0.1));
+    box-shadow: inset 0 0 0 0.14rem rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .is-non-dealer .torpedo-side {
+    color: var(--pink);
+    background: linear-gradient(180deg, rgba(244, 169, 201, 0.16), rgba(221, 54, 127, 0.1));
+}
+
+[data-theme="dark"] .torpedo-side span {
     color: var(--ink);
+}
+
+[data-theme="dark"] .torpedo-side small {
+    color: var(--muted);
+}
+
+[data-theme="dark"] .torpedo-corner,
+[data-theme="dark"] .torpedo-fu,
+[data-theme="dark"] .torpedo-han,
+[data-theme="dark"] .torpedo-cell {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(30, 28, 34, 0.85);
+    box-shadow: 0 0.18rem 0 var(--shadow);
+}
+
+[data-theme="dark"] .torpedo-fu {
+    background: rgba(15, 47, 26, 0.7);
+}
+
+[data-theme="dark"] .torpedo-corner {
+    color: var(--green);
+}
+
+[data-theme="dark"] .torpedo-fu {
+    color: var(--green);
+}
+
+[data-theme="dark"] .torpedo-cell:nth-child(odd) {
+    background: rgba(38, 36, 44, 0.92);
+}
+
+[data-theme="dark"] .torpedo-cell.is-empty {
+    color: var(--muted);
+    background: rgba(24, 22, 27, 0.6);
+}
+
+[data-theme="dark"] .pay-ron {
+    color: var(--ink);
+}
+
+[data-theme="dark"] .pay-tsumo {
+    color: var(--purple-dark);
+}
+
+[data-theme="dark"] .torpedo-fu small,
+[data-theme="dark"] .torpedo-han small,
+[data-theme="dark"] .pay-tsumo small {
+    color: var(--muted);
+}
+
+[data-theme="dark"] .limit-strip > strong {
+    color: var(--orange-dark);
+    background: linear-gradient(90deg, rgba(251, 146, 60, 0.16), rgba(255, 255, 255, 0.04));
+}
+
+[data-theme="dark"] .limit-card {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(90deg, rgba(30, 28, 34, 0.95), rgba(28, 24, 30, 0.88));
+    box-shadow: 0 0.2rem 0 var(--shadow);
+}
+
+[data-theme="dark"] .limit-name span {
+    color: var(--orange-dark);
+}
+
+[data-theme="dark"] .limit-name b {
+    color: var(--ink);
+}
+
+[data-theme="dark"] .limit-card em {
+    color: var(--green);
+    background: rgba(15, 47, 26, 0.66);
+}
+
+[data-theme="dark"] .limit-payments strong {
+    color: var(--ink);
+}
+
+[data-theme="dark"] .limit-payments small {
+    color: var(--purple-dark);
+}
+
+[data-theme="dark"] .torpedo-note {
+    border-color: var(--sticker-border);
+    background: linear-gradient(90deg, rgba(44, 38, 24, 0.94), rgba(30, 32, 36, 0.92), rgba(15, 47, 26, 0.8));
+    box-shadow: 0 0.35rem 0 var(--shadow);
+}
+
+[data-theme="dark"] .torpedo-note strong {
+    color: var(--orange-dark);
+}
+
+[data-theme="dark"] .torpedo-note span {
+    color: var(--ink);
+}
+
+[data-theme="dark"] .torpedo-note small {
+    color: var(--green);
 }
 
 [data-theme="dark"] .score-help {
