@@ -6,6 +6,7 @@
 @media (min-width: 900px) {
     .module-body {
         overflow: hidden;
+        height: 100vh;
     }
 }
 
@@ -15,17 +16,23 @@
 
 .module-shell {
     width: min(1760px, calc(100% - clamp(1rem, 4vw, 3rem)));
+    height: 100vh;
     min-height: 100vh;
-    padding: clamp(0.55rem, 1.5vw, 1.1rem) 0 clamp(1rem, 2vw, 2rem);
+    padding: clamp(0.5rem, 1.3vw, 1rem) 0 clamp(0.7rem, 1.6vw, 1.4rem);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Start / mode-select screen for tile-name quiz */
 .tile-start {
-    min-height: calc(100vh - 7.1rem);
+    flex: 1;
+    min-height: 0;
     margin: 0;
-    padding: clamp(1rem, 2.5vw, 2.2rem);
+    padding: clamp(1rem, 2.5vw, 2rem);
     display: grid;
     place-items: center;
+    overflow: hidden;
 }
 
 .tile-start-inner {
@@ -33,37 +40,55 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: clamp(0.7rem, 1.4vw, 1.1rem);
+    gap: clamp(0.55rem, 1.1vw, 0.9rem);
     text-align: center;
+}
+
+.tile-coach {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.5rem, 1vw, 0.8rem);
+    width: 100%;
+}
+
+.tile-coach .speech-bubble {
+    width: min(100%, 520px);
+    font-size: clamp(0.9rem, 1.2vw, 1.12rem);
+}
+
+.tile-coach .mini-chibi {
+    width: clamp(7rem, 13vw, 10rem);
+    max-height: clamp(120px, 24vh, 190px);
 }
 
 .tile-start h1 {
     margin: 0.2rem 0 0;
     color: var(--green-dark);
     font-family: "Fredoka", "Nunito", sans-serif;
-    font-size: clamp(2.6rem, 6vw, 5rem);
+    font-size: clamp(2.4rem, 5.5vw, 4.6rem);
     line-height: 0.9;
 }
 
 .tile-start .subtitle {
     max-width: 720px;
     margin: 0;
-    font-size: clamp(0.98rem, 1.4vw, 1.28rem);
+    font-size: clamp(0.96rem, 1.35vw, 1.24rem);
 }
 
 .tile-modes {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: clamp(0.6rem, 1.1vw, 0.95rem);
+    gap: clamp(0.55rem, 1vw, 0.9rem);
     width: 100%;
-    margin-top: clamp(0.5rem, 1.2vw, 1rem);
+    margin-top: clamp(0.35rem, 0.9vw, 0.75rem);
 }
 
 .tile-mode {
     display: grid;
-    gap: 0.65rem;
+    gap: 0.55rem;
     justify-items: center;
-    padding: clamp(0.85rem, 1.6vw, 1.2rem) clamp(0.6rem, 1vw, 0.9rem);
+    padding: clamp(0.7rem, 1.3vw, 1rem) clamp(0.55rem, 0.9vw, 0.8rem);
     border: 0.18rem solid #ffffff;
     border-radius: 1.1rem;
     background: rgba(255, 255, 255, 0.82);
@@ -86,13 +111,13 @@
 }
 
 .tile-mode img {
-    width: clamp(2.6rem, 3.6vw, 3.4rem);
+    width: clamp(2.4rem, 3.3vw, 3.2rem);
     height: auto;
     filter: drop-shadow(0 0.3rem 0 rgba(77, 45, 88, 0.14));
 }
 
 .tile-mode span {
-    font-size: clamp(0.86rem, 1.1vw, 1rem);
+    font-size: clamp(0.84rem, 1.05vw, 0.98rem);
     line-height: 1.1;
 }
 
@@ -143,12 +168,14 @@
 
 /* Final results summary for tile-name quiz */
 .results-card {
-    min-height: calc(100vh - 7.1rem);
+    flex: 1;
+    min-height: 0;
     margin: 0;
     padding: clamp(1rem, 2.5vw, 2rem);
     display: grid;
     gap: clamp(0.8rem, 1.6vw, 1.2rem);
     align-content: start;
+    overflow: hidden;
 }
 
 .results-card[hidden] {
@@ -309,17 +336,17 @@
     grid-template-rows: auto auto auto auto;
     align-content: start;
     row-gap: clamp(0.45rem, 0.9vh, 0.7rem);
-    height: auto;
-    min-height: calc(100vh - 7.1rem);
+    flex: 1;
+    min-height: 0;
     margin: 0;
     padding: clamp(0.75rem, 1.7vw, 1.25rem) clamp(1rem, 2.5vw, 2rem);
+    overflow: hidden;
 }
 
 [data-module-page="furiten"] .module-card-screen {
-    grid-template-rows: auto auto auto auto;
-    height: auto;
-    min-height: calc(100vh - 7.1rem);
-    overflow-y: auto;
+    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+    min-height: 0;
+    overflow: hidden;
 }
 
 .module-topline,
@@ -978,9 +1005,10 @@
     position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr);
-    grid-template-rows: minmax(5rem, auto) minmax(5rem, auto) minmax(5rem, auto);
+    grid-template-rows: repeat(3, minmax(0, 1fr));
     gap: clamp(0.4rem, 0.8vw, 0.7rem);
     width: min(100%, 860px);
+    height: 100%;
     margin: 0 auto;
     padding: clamp(0.5rem, 1.1vw, 0.9rem);
     border: 0.18rem solid var(--sticker-border);
