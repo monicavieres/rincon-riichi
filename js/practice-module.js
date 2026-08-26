@@ -209,7 +209,8 @@ const modules = {
     },
     chinitsu: {
         title: { es: "¿Chinitsu?", en: "Is It Chinitsu?", pt: "É Chinitsu?" },
-        help: { es: "Mira la mano y decide su tipo: un solo palo (chinitsu), un palo + honores (honitsu), solo simples (tanyao) o ninguna de esas.", en: "Look at the hand and decide its type: one suit (chinitsu), one suit + honors (honitsu), only simples (tanyao), or none of these.", pt: "Veja a mão e decida o tipo: um só naipe (chinitsu), um naipe + honras (honitsu), só simples (tanyao) ou nenhuma dessas." },
+        help: { es: "Selecciona TODAS las fichas que completan la mano. Toda la mano es de un solo palo. Si ninguna la completa, deja la selección vacía.", en: "Select ALL the tiles that complete the hand. The whole hand is one suit. If no tile completes it, leave the selection empty.", pt: "Selecione TODAS as peças que completam a mão. Toda a mão é de um só naipe. Se nenhuma completar, deixe a seleção vazia." },
+        multi: true,
         questions: []
     }
 };
@@ -531,78 +532,173 @@ function sameFamilyTiles(tileId) {
     return TILE_NAME_IDS.filter((candidate) => candidate[candidate.length - 1] === suit);
 }
 
-const CHINITSU_TYPES = [
-    { id: "chinitsu", es: "Chinitsu", en: "Chinitsu", pt: "Chinitsu", han: 6, explain: { es: "Chinitsu: toda la mano es de un solo palo (sin honores). Viene como yaku puro.", en: "Chinitsu: the whole hand is one suit (no honors). It counts as a valuable yaku.", pt: "Chinitsu: toda a mão é de um só naipe (sem honras). Conta como yaku valioso." } },
-    { id: "honitsu", es: "Honitsu", en: "Honitsu", pt: "Honitsu", han: 3, explain: { es: "Honitsu: un solo palo + honores. Un paso menos que chinitsu.", en: "Honitsu: one suit + honors. One step below chinitsu.", pt: "Honitsu: um só naipe + honras. Um passo abaixo de chinitsu." } },
-    { id: "tanyao", es: "Tanyao", en: "Tanyao", pt: "Tanyao", han: 1, explain: { es: "Tanyao: solo fichas simples (2–8), sin terminales ni honores. No es chinitsu porque usa varios palos.", en: "Tanyao: only simples (2–8), no terminals or honors. Not chinitsu because it uses multiple suits.", pt: "Tanyao: apenas peças simples (2–8), sem terminais nem honras. Não é chinitsu porque usa vários naipes." } },
-    { id: "none", es: "Ninguna", en: "None", pt: "Nenhuma", han: 0, explain: { es: "Ninguna de las tres: la mano mezcla terminales, honores o varios palos sin encajar en esos patrones.", en: "None of the three: the hand mixes terminals, honors, or suits without fitting those patterns.", pt: "Nenhuma das três: a mão mistura terminais, honras ou vários naipes sem encaixar nesses padrões." } }
-];
-
-const CHINITSU_LABELS = CHINITSU_TYPES.map((type) => ({
-    id: type.id,
-    label: { es: type.es, en: type.en, pt: type.pt }
-}));
-
-const CHINITSU_TYPE_OPTIONS = {
-    chinitsu: ["honitsu", "tanyao", "none"],
-    honitsu: ["chinitsu", "tanyao", "none"],
-    tanyao: ["chinitsu", "honitsu", "none"],
-    none: ["chinitsu", "honitsu", "tanyao"]
-};
-
 function buildChinitsuQuestions(count = 8) {
     const questions = [];
     for (let i = 0; i < count; i++) {
-        const type = CHINITSU_TYPES[rint(0, CHINITSU_TYPES.length - 1)];
-        questions.push(buildChinitsuQuestion(type));
+        const trick = Math.random() < 0.35;
+        questions.push(buildChinitsuQuestion(trick));
     }
     return questions;
 }
 
-function buildChinitsuQuestion(type) {
-    const hand = randomChinitsuHand(type.id);
-    const seen = new Set();
-    const pool = CHINITSU_TYPE_OPTIONS[type.id];
-    const distractors = [];
-    while (distractors.length < 3 && pool.length) {
-        const pick = pool[rint(0, pool.length - 1)];
-        if (pick === type.id || seen.has(pick)) continue;
-        seen.add(pick);
-        distractors.push(CHINITSU_LABELS.find((l) => l.id === pick));
+function buildChinitsuQuestion(isTrick) {
+    const suit = "mps"[rint(0, 2)];
+    const data = isTrick ? buildChinitsuTrick(suit) : buildChinitsuTenpai(suit);
+    if (!data) {
+        return buildChinitsuQuestion(!isTrick);
     }
-    const options = CHINITSU_LABELS.filter((l) => l.id === type.id).concat(distractors);
+    const hand = data.hand;
+    const waits = data.waits;
+
+    const tileChoices = shuffledChinitsuChoices(suit, waits);
+    const explain = isTrick
+        ? localizedMap((language) => {
+            const txt = {
+                es: "Esta mano no está en tenpai: ninguna ficha la completa. A veces la mejor respuesta es no ver ninguna espera.",
+                en: "This hand is not in tenpai: no tile completes it. Sometimes the right call is to select no wait.",
+                pt: "Esta mão não está em tenpai: nenhuma peça a completa. Às vezes a resposta certa é não marcar espera."
+            };
+            return txt[language] || txt.en;
+        })
+        : localizedMap((language) => {
+            const txt = {
+                es: `Toda la mano es de un solo palo (chinitsu). Esperas: ${waits.join(", ")}.`,
+                en: `The whole hand is one suit (chinitsu). Waits: ${waits.join(", ")}.`,
+                pt: `Toda a mão é de um só naipe (chinitsu). Esperas: ${waits.join(", ")}.`
+            };
+            return txt[language] || txt.en;
+        });
+
     return {
         hand,
-        choices: localizedMap((language) => shuffled(options).map((o) => o.label[language])),
-        answer: localizedMap((language) => CHINITSU_LABELS.find((l) => l.id === type.id).label[language]),
-        explain: localizedMap((language) => type.explain[language]),
-        subtype: type.id
+        waits,
+        tileChoices,
+        explain
     };
 }
 
-function randomChinitsuHand(subtype) {
-    if (subtype === "tanyao") return buildHandOfSuits(2, 8, 3, false, true);
-    if (subtype === "chinitsu") return buildHandOfSuits(1, 9, 1, false, false);
-    if (subtype === "honitsu") return buildHandOfSuits(1, 9, 1, true, false);
-    return buildHandOfSuits(1, 9, 3, rint(0, 1) ? true : false, false);
+function shuffledChinitsuChoices(suit, waits) {
+    const pool = [];
+    for (let n = 1; n <= 9; n++) {
+        const id = `${n}${suit}`;
+        if (!waits.includes(id)) pool.push(id);
+    }
+    const distractors = shuffled(pool).slice(0, 9 - waits.length);
+    return shuffled([...waits, ...distractors]);
 }
 
-function buildHandOfSuits(minNum, maxNum, suitCount, useHonors, onlySimples) {
-    const suits = shuffled(["m", "p", "s"]).slice(0, suitCount);
-    const tiles = [];
-    const rng = (min, max) => min + Math.floor(Math.random() * (max - min + 1));
-    while (tiles.length < 13) {
-        const suit = suits[rint(0, suits.length - 1)];
-        let num = rng(minNum, maxNum);
-        if (onlySimples) num = rng(2, 8);
-        if (useHonors && Math.random() < 0.18) {
-            tiles.push(`${rng(1, 7)}z`);
-            continue;
+function chinitsuCounts(hand) {
+    const c = {};
+    hand.forEach((t) => { c[t] = (c[t] || 0) + 1; });
+    return c;
+}
+
+function chinitsuCanAdd(c, id) {
+    return (c[id] || 0) < 4;
+}
+
+function chinitsuIsWinning(tiles) {
+    if (tiles.length % 3 !== 2) return false;
+    const counts = {};
+    tiles.forEach((t) => { counts[t] = (counts[t] || 0) + 1; });
+    return chinitsuTryGroups(counts);
+}
+
+function chinitsuTryGroups(counts) {
+    const keys = Object.keys(counts).filter((k) => counts[k] > 0).sort();
+    if (keys.length === 0) return true;
+    const first = keys[0];
+    if (counts[first] >= 2) { counts[first] -= 2; const ok = chinitsuTryGroups(counts); counts[first] += 2; if (ok) return true; }
+    if (counts[first] >= 3) { counts[first] -= 3; const ok = chinitsuTryGroups(counts); counts[first] += 3; if (ok) return true; }
+    const suit = first[first.length - 1];
+    if (suit !== "z") {
+        const n = Number(first.slice(0, -1));
+        if ((counts[`${n + 1}${suit}`] || 0) > 0 && (counts[`${n + 2}${suit}`] || 0) > 0) {
+            counts[first] -= 1; counts[`${n + 1}${suit}`] -= 1; counts[`${n + 2}${suit}`] -= 1;
+            const ok = chinitsuTryGroups(counts);
+            counts[first] += 1; counts[`${n + 1}${suit}`] += 1; counts[`${n + 2}${suit}`] += 1;
+            if (ok) return true;
         }
-        tiles.push(`${num}${suit}`);
     }
-    if (useHonors) tiles.push("5z");
-    return sortHand(tiles);
+    return false;
+}
+
+function chinitsuFindWaits(hand, suit) {
+    const waits = [];
+    for (let n = 1; n <= 9; n++) {
+        const cand = `${n}${suit}`;
+        if (hand.filter((t) => t === cand).length >= 4) continue;
+        if (chinitsuIsWinning([...hand, cand])) waits.push(cand);
+    }
+    return waits;
+}
+
+function chinitsuBuildMelds(suit, c) {
+    const melds = [];
+    for (let m = 0; m < 4; m++) {
+        let meld = null;
+        for (let attempt = 0; attempt < 40 && !meld; attempt++) {
+            if (Math.random() < 0.5) {
+                const a = rint(1, 7);
+                const ids = [`${a}${suit}`, `${a + 1}${suit}`, `${a + 2}${suit}`];
+                if (ids.every((id) => chinitsuCanAdd(c, id))) meld = ids;
+            } else {
+                const a = rint(1, 9);
+                const id = `${a}${suit}`;
+                if (chinitsuCanAdd(c, id)) meld = [id, id, id];
+            }
+        }
+        if (!meld) return null;
+        meld.forEach((id) => { c[id] = (c[id] || 0) + 1; });
+        melds.push(meld);
+    }
+    return melds;
+}
+
+function buildChinitsuTenpai(suit) {
+    for (let trial = 0; trial < 60; trial++) {
+        const c = {};
+        const melds = chinitsuBuildMelds(suit, c);
+        if (!melds) continue;
+        const hand = [];
+        melds.forEach((m) => hand.push(...m));
+        const avail = [];
+        for (let n = 1; n <= 9; n++) {
+            const id = `${n}${suit}`;
+            if (chinitsuCanAdd(c, id)) avail.push(id);
+        }
+        if (!avail.length) continue;
+        const tanki = avail[rint(0, avail.length - 1)];
+        hand.push(tanki);
+        if (hand.length !== 13) continue;
+        const waits = chinitsuFindWaits(hand, suit);
+        if (waits.length > 0) return { hand, waits, isChinitsu: true };
+    }
+    return null;
+}
+
+function buildChinitsuTrick(suit) {
+    for (let trial = 0; trial < 80; trial++) {
+        const c = {};
+        const melds = chinitsuBuildMelds(suit, c);
+        if (!melds) continue;
+        const hand = [];
+        melds.slice(0, 3).forEach((m) => hand.push(...m));
+        for (let i = 0; i < 4; i++) {
+            let id = null;
+            for (let a = 0; a < 30 && !id; a++) {
+                const cand = `${rint(1, 9)}${suit}`;
+                if (chinitsuCanAdd(c, cand)) id = cand;
+            }
+            if (!id) break;
+            c[id] = (c[id] || 0) + 1;
+            hand.push(id);
+        }
+        if (hand.length !== 13) continue;
+        const waits = chinitsuFindWaits(hand, suit);
+        if (waits.length === 0) return { hand, waits: [], isChinitsu: true };
+    }
+    return null;
 }
 
 function shuffle(array) {
@@ -979,7 +1075,8 @@ function submit() {
     const module = modules[state.page];
     const question = module.questions[state.round];
     const multi = module.multi;
-    if (!state.selected || (multi && !state.selected.length)) {
+    const allowEmpty = state.page === "chinitsu";
+    if (!state.selected || (multi && !state.selected.length && !allowEmpty)) {
         els.feedback.hidden = false;
         els.feedbackTitle.textContent = `! ${t("choose")}`;
         els.feedbackText.textContent = "";
@@ -989,7 +1086,7 @@ function submit() {
     state.answered = true;
     const expected = localized(question.answer);
     const correct = multi
-        ? sameSet(state.selected, question.waits)
+        ? sameSet(state.selected || [], question.waits)
         : state.selected === expected;
     if (correct) state.score += 1;
 
@@ -1050,7 +1147,7 @@ function sameSet(a, b) {
 }
 
 function revealWait(question) {
-    if (!question.waits) return;
+    if (!question.waits || question.waits.length === 0) return;
     const block = document.createElement("div");
     block.className = "feedback-reveal";
     const revealTiles = document.createElement("div");
