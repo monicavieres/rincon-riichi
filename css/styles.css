@@ -2308,6 +2308,13 @@ a {
     box-shadow: 0 0 0 0.14rem rgba(255, 255, 255, 0.22), 0.45rem 0 1.2rem var(--module-tint);
 }
 
+[data-theme="dark"] .module-card .status {
+    border-color: rgba(74, 222, 128, 0.34);
+    color: #7dffb4;
+    background: rgba(15, 47, 26, 0.78);
+    box-shadow: 0 0.22rem 0 rgba(0, 0, 0, 0.4);
+}
+
 [data-theme="dark"] .tile-float {
     border-color: rgba(255, 255, 255, 0.28);
     background: #2a2c31;
