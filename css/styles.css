@@ -1615,6 +1615,7 @@ a {
 .icon-machi::after { content: "待"; }
 .icon-espera-tipo::after { content: "問"; }
 .icon-espera-fichas::after { content: "選"; }
+.icon-chinitsu::after { content: "清"; }
 .icon-fuentes::after { content: "典"; }
 .icon-comunidades::after { content: "友"; }
 .icon-jugar::after { content: "局"; }
