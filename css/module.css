@@ -258,11 +258,11 @@
 }
 
 [data-module-page="tileName"] .module-hand {
-    min-height: clamp(8.5rem, 24vh, 13rem);
+    min-height: clamp(6.5rem, 20vh, 10rem);
 }
 
 [data-module-page="tileName"] .module-hand img {
-    width: clamp(5.4rem, 9vw, 7rem);
+    width: clamp(4.2rem, 7vw, 5.4rem);
 }
 
 .tile-name-choices {

@@ -540,10 +540,40 @@ document.addEventListener("DOMContentLoaded", () => {
     els.submitButton.addEventListener("click", submit);
     els.nextButton.addEventListener("click", next);
     els.restartButton.addEventListener("click", restart);
+    document.addEventListener("keydown", handleKeyboard);
 
     applyLanguage();
     render();
 });
+
+function handleKeyboard(event) {
+    const tag = document.activeElement?.tagName;
+    if (["INPUT", "SELECT", "TEXTAREA"].includes(tag)) return;
+
+    if (event.key === "Enter") {
+        event.preventDefault();
+        if (els.restartButton.hidden === false) restart();
+        else if (els.nextButton.hidden === false) next();
+        else submit();
+        return;
+    }
+
+    const choiceButtons = [...els.choices.querySelectorAll(".answer-button")];
+    if (!choiceButtons.length) return;
+    const currentIndex = choiceButtons.findIndex((button) => button.classList.contains("is-selected"));
+    const upKeys = ["ArrowUp", "ArrowLeft"];
+    const downKeys = ["ArrowDown", "ArrowRight"];
+
+    let nextIndex = null;
+    if (upKeys.includes(event.key)) nextIndex = currentIndex < 0 ? choiceButtons.length - 1 : (currentIndex - 1 + choiceButtons.length) % choiceButtons.length;
+    else if (downKeys.includes(event.key)) nextIndex = (currentIndex + 1) % choiceButtons.length;
+    if (nextIndex == null) return;
+
+    event.preventDefault();
+    const button = choiceButtons[nextIndex];
+    button.click();
+    button.focus({ preventScroll: true });
+}
 
 function render() {
     const module = modules[state.page];
