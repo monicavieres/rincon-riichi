@@ -267,7 +267,7 @@ function render() {
     els.slideCount.textContent = `${state.index + 1} / ${families.length}`;
     els.familyTitle.textContent = familyCopy.title;
     els.familyDescription.textContent = familyCopy.desc;
-    els.familyTip.textContent = familyCopy.tip;
+    if (els.familyTip) els.familyTip.textContent = familyCopy.tip;
     els.tileStrip.replaceChildren(...family.tiles.map((tileId) => tileItem(tileId, family.id)));
 
     [...els.familyTabs.children].forEach((button, index) => {
