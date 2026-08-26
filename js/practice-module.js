@@ -462,14 +462,53 @@ function buildTileNameQuestions(count = 10) {
             hand: [tileId],
             choices: localizedMap((language) => optionIds.map((id) => tileDisplayName(id, language))),
             answer: localizedMap((language) => tileDisplayName(tileId, language)),
-            explain: localizedMap((language) => {
-                const name = tileDisplayName(tileId, language);
-                if (language === "es") return `Es ${name}. Código interno: ${tileId}.`;
-                if (language === "pt") return `É ${name}. Código interno: ${tileId}.`;
-                return `It is ${name}. Internal code: ${tileId}.`;
-            })
+            explain: localizedMap((language) => tileExplain(tileId, language))
         };
     });
+}
+
+function tileExplain(tileId, language) {
+    const dict = TILE_NAME_COPY[language] || TILE_NAME_COPY[defaultLanguage];
+    const name = tileDisplayName(tileId, language);
+    if (dict.aka[tileId]) {
+        return tileExplainForSuit(tileId, name, 5, dict, language, true);
+    }
+    if (dict.honors[tileId]) {
+        const kind = tileId[0] <= "4" ? "viento" : "dragón";
+        const msg = {
+            es: `${name}. Es un honor de ${kind}; los honores no pertenecen a ningún palo.`,
+            en: `${name}. It is a ${kind === "viento" ? "wind" : "dragon"} honor; honors belong to no suit.`,
+            pt: `${name}. É um honor de ${kind === "viento" ? "vento" : "dragão"}; os honores não pertencem a nenhum naipe.`
+        };
+        return msg[language] || msg[defaultLanguage];
+    }
+    const number = Number(tileId[0]);
+    return tileExplainForSuit(tileId, name, number, dict, language, false);
+}
+
+function tileExplainForSuit(tileId, name, number, dict, language, isAka) {
+    const suit = tileId[tileId.length - 1];
+    const suitName = dict.suits[suit];
+    let what;
+    if (language === "es") {
+        what = suit === "m" ? "caracteres" : suit === "p" ? "círculos (pin)" : suit === "s" ? "bambúes (sou)" : "";
+        const count = isAka ? 5 : number;
+        return isAka
+            ? `${name}. Es un ${suitName} rojo; aunque vale 5, va pintado en rojo (aka).`
+            : `${name}. Los ${suitName} son ${what}; hay ${count} juntos, así que es el ${count}.`;
+    }
+    if (language === "pt") {
+        what = suit === "m" ? "caracteres" : suit === "p" ? "círculos (pin)" : suit === "s" ? "bambus (sou)" : "";
+        const count = isAka ? 5 : number;
+        return isAka
+            ? `${name}. É um ${suitName} vermelho; embora valha 5, é pintado em vermelho (aka).`
+            : `${name}. Os ${suitName} são ${what}; há ${count} juntos, então é o ${count}.`;
+    }
+    what = suit === "m" ? "characters" : suit === "p" ? "dots (pin)" : suit === "s" ? "bamboo (sou)" : "";
+    const count = isAka ? 5 : number;
+    return isAka
+        ? `${name}. It is a red ${suitName}; even though it counts as 5, it is painted red (aka).`
+        : `${name}. ${suitName} are ${what}; there are ${count} of them, making it the ${count}.`;
 }
 
 function sameFamilyTiles(tileId) {
@@ -520,7 +559,11 @@ document.addEventListener("DOMContentLoaded", () => {
         submitButton: document.querySelector("#submitButton"),
         nextButton: document.querySelector("#nextButton"),
         restartButton: document.querySelector("#restartButton"),
-        furitenTable: document.querySelector("#furitenTable")
+        furitenTable: document.querySelector("#furitenTable"),
+        tileExplainModal: document.querySelector("#tileExplainModal"),
+        tileExplainTile: document.querySelector("#tileExplainTile"),
+        tileExplainTitle: document.querySelector("#tileExplainTitle"),
+        tileExplainText: document.querySelector("#tileExplainText")
     });
 
     if (state.page === "furiten") {
@@ -587,6 +630,7 @@ function render() {
     state.selected = null;
     state.answered = false;
     els.feedback.hidden = true;
+    if (els.tileExplainModal) els.tileExplainModal.hidden = true;
     els.submitButton.hidden = false;
     els.nextButton.hidden = true;
     els.restartButton.hidden = true;
@@ -829,13 +873,27 @@ function submit() {
     });
 
     els.scoreLabel.textContent = `${t("score")}: ${state.score}`;
-    els.feedback.hidden = false;
-    els.feedbackTitle.textContent = correct ? `✓ ${t("correct")}` : `× ${t("incorrect")}`;
-    els.feedbackText.textContent = question.explain ? localized(question.explain) : "";
-    revealWait(question);
+    if (state.page === "tileName" && els.tileExplainModal) {
+        showTileExplainModal(question, correct);
+    } else {
+        els.feedback.hidden = false;
+        els.feedbackTitle.textContent = correct ? `✓ ${t("correct")}` : `× ${t("incorrect")}`;
+        els.feedbackText.textContent = question.explain ? localized(question.explain) : "";
+        revealWait(question);
+    }
     els.submitButton.hidden = true;
     if (state.round === module.questions.length - 1) els.restartButton.hidden = false;
     else els.nextButton.hidden = false;
+}
+
+function showTileExplainModal(question, correct) {
+    const tileId = question.hand[0];
+    els.tileExplainTile.replaceChildren(tileImage(tileId));
+    els.tileExplainTitle.textContent = correct ? `✓ ${t("correct")}` : `× ${t("incorrect")}`;
+    els.tileExplainTitle.classList.toggle("is-correct", correct);
+    els.tileExplainTitle.classList.toggle("is-wrong", !correct);
+    els.tileExplainText.textContent = localized(question.explain);
+    els.tileExplainModal.hidden = false;
 }
 
 function sameSet(a, b) {

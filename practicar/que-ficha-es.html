@@ -6,7 +6,7 @@
     <title>¿Qué ficha es?</title>
     <link rel="icon" type="image/svg+xml" href="../assets/logo-rincon-riichi.svg">
     <link rel="stylesheet" href="../css/styles.css?v=hero-clean-2">
-    <link rel="stylesheet" href="../css/module.css?v=tile-keyboard-1">
+    <link rel="stylesheet" href="../css/module.css?v=tile-modal-1">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="module-body" data-module-page="tileName">
@@ -20,13 +20,13 @@
         </nav>
         <section class="module-card-screen sticker-panel">
             <div class="module-topline"><span class="status ready" id="roundLabel">1 / 10</span><span class="module-pill" id="scoreLabel">Score: 0</span></div>
-            <div class="module-hand-card"><p class="eyebrow" data-i18n="tileLabel">Tile</p><div class="round-context" id="roundContext"></div><div class="module-hand" id="hand"></div></div>
+            <div class="module-hand-card"><p class="eyebrow" data-i18n="tileLabel">Tile</p><div class="round-context" id="roundContext"></div><div class="module-hand" id="hand"></div><div class="tile-explain-modal" id="tileExplainModal" hidden><div class="tile-explain-tile" id="tileExplainTile"></div><div class="tile-explain-copy"><strong id="tileExplainTitle"></strong><p id="tileExplainText"></p></div></div></div>
             <div class="module-question-card"><p class="eyebrow" data-i18n="eyebrow">Practice</p><h1 id="questionTitle"></h1><p id="questionHelp"></p><div class="choice-grid tile-name-choices" id="choices"></div></div>
             <div class="feedback-panel" id="feedback" hidden><strong id="feedbackTitle"></strong><p id="feedbackText"></p></div>
             <div class="module-actions"><button class="big-button green" id="submitButton" data-i18n="submit">Submit</button><button class="big-button green" id="nextButton" data-i18n="next" hidden>Next</button><button class="big-button pink" id="restartButton" data-i18n="restart" hidden>Again</button></div>
         </section>
     </main>
-    <script src="../js/practice-module.js?v=tile-family-1"></script>
+    <script src="../js/practice-module.js?v=tile-modal-1"></script>
     <script src="../js/menu.js?v=theme-radio-1"></script>
 </body>
 </html>

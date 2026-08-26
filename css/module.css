@@ -267,11 +267,74 @@
 
 .tile-name-choices {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.tile-name-choices .answer-button {
+}.tile-name-choices .answer-button {
     text-align: center;
     font-size: clamp(1rem, 1.5vw, 1.25rem);
+}
+
+[data-module-page="tileName"] .module-hand-card {
+    position: relative;
+}
+
+.tile-explain-modal {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.9rem 1.1rem;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    border-radius: 1.2rem;
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: inset 0 0 0 0.14rem rgba(40, 199, 111, 0.16), 0 0.5rem 1.2rem rgba(77, 45, 88, 0.22);
+}
+
+.tile-explain-modal[hidden] {
+    display: none;
+}
+
+.tile-explain-tile img {
+    width: clamp(4rem, 7vw, 5.4rem);
+    height: auto;
+}
+
+.tile-explain-copy strong {
+    display: block;
+    color: var(--green-dark);
+    font-family: "Fredoka", "Nunito", sans-serif;
+    font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+    line-height: 1.05;
+}
+
+.tile-explain-copy strong.is-wrong {
+    color: var(--pink-dark);
+}
+
+.tile-explain-copy strong.is-correct {
+    color: var(--green-dark);
+}
+
+.tile-explain-copy p {
+    margin: 0.35rem 0 0;
+    color: var(--muted);
+    font-weight: 800;
+    font-size: clamp(0.82rem, 1.05vw, 0.98rem);
+    line-height: 1.36;
+}
+
+[data-theme="dark"] .tile-explain-modal {
+    background: rgba(30, 32, 36, 0.98);
+    box-shadow: inset 0 0 0 0.14rem rgba(74, 222, 128, 0.2), 0 0.5rem 1.2rem rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 560px) {
+    .tile-explain-modal {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+    }
 }
 
 .feedback-reveal {
