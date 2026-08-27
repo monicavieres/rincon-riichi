@@ -492,6 +492,58 @@ function randomTiles(count, exclude) {
 }
 
 function buildWaitQuestions(count, multi) {
+    return buildWaitQuestionsAsync(count, multi).catch(() => buildWaitQuestionsLocal(count, multi));
+}
+
+async function buildWaitQuestionsAsync(count, multi) {
+    const api = window.RinconAPI;
+    if (!api || !api.isReachable) return buildWaitQuestionsLocal(count, multi);
+    const waitKeys = Object.keys(WAIT_TYPE_NAMES);
+    const questions = [];
+    const seen = new Set();
+    const keys = [];
+    for (let i = 0; i < count; i++) keys.push(waitKeys[rint(0, waitKeys.length - 1)]);
+    const results = await Promise.all(keys.map((k) => api.generateWait(k).catch(() => null)));
+    results.forEach((res) => {
+        if (!res || !res.tiles) return;
+        const sig = res.tiles.join("|");
+        if (seen.has(sig)) return;
+        seen.add(sig);
+        questions.push(mapApiWaitQuestion(res, multi));
+    });
+    if (questions.length < count) {
+        const local = buildWaitQuestionsLocal(count - questions.length, multi);
+        questions.push(...local);
+    }
+    return questions;
+}
+
+function mapApiWaitQuestion(res, multi) {
+    const waitName = res.wait_type || "complex";
+    if (multi) {
+        return {
+            hand: res.tiles,
+            waits: res.waits,
+            waitName,
+            waitKey: res.wait_key,
+            tileChoices: shuffle([...res.waits].concat(randomTiles(6 - res.waits.length, res.waits)))
+        };
+    }
+    return {
+        hand: res.tiles,
+        waits: res.waits,
+        waitName,
+        choices: shuffleNames(WAIT_TYPE_NAMES, res.wait_key, 3),
+        answer: waitName,
+        explain: {
+            es: `Espera ${waitName}: completas con ${res.waits.join(", ")}.`,
+            en: `It's a ${waitName} wait: you complete with ${res.waits.join(", ")}.`,
+            pt: `Espera ${waitName}: você completa com ${res.waits.join(", ")}.`
+        }
+    };
+}
+
+function buildWaitQuestionsLocal(count, multi) {
     const questions = [];
     const seen = new Set();
     let guard = 0;
@@ -880,10 +932,10 @@ document.addEventListener("DOMContentLoaded", () => {
         modules.furiten.questions = buildFuritenQuestions();
     }
     if (state.page === "esperaTipo") {
-        modules.esperaTipo.questions = buildWaitQuestions(8, false);
+        modules.esperaTipo.questions = buildWaitQuestionsLocal(8, false);
     }
     if (state.page === "esperaFichas") {
-        modules.esperaFichas.questions = buildWaitQuestions(8, true);
+        modules.esperaFichas.questions = buildWaitQuestionsLocal(8, true);
     }
     if (state.page === "tileName") {
         modules.tileName.questions = buildTileNameQuestions(10);
@@ -920,7 +972,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     applyLanguage();
     render();
+    if (window.RinconAPI) {
+        window.RinconAPI.check().then((online) => {
+            if (!online) return;
+            const multi = esPage("esperaFichas");
+            const name = esPage("esperaTipo") ? "esperaTipo" : esPage("esperaFichas") ? "esperaFichas" : null;
+            if (name) setWaitQuestions(name, 8, multi);
+        }).catch(() => {});
+    }
 });
+
+function esPage(name) {
+    return state.page === name;
+}
+
+async function setWaitQuestions(moduleName, count, multi) {
+    buildWaitQuestions(count, multi).then((questions) => {
+        modules[moduleName].questions = questions;
+        state.round = 0;
+        state.score = 0;
+        render();
+    });
+}
 
 function renderTileModes() {
     els.tileModes.replaceChildren(...TILE_NAME_MODES.map((mode) => {
