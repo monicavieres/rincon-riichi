@@ -457,16 +457,34 @@
 /*: The furiten table grows as plays are added, so let the whole screen scroll
    instead of clipping rows that would otherwise overlap the question card. */
 [data-module-page="furiten"] .module-card-screen {
-    grid-template-rows: auto auto auto auto auto;
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
     min-height: 0;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
     align-content: start;
+    row-gap: clamp(0.45rem, 0.9vh, 0.7rem);
+    overflow: visible;
 }
 
 [data-module-page="furiten"] .furiten-table {
     min-height: 0;
     flex: 0 0 auto;
+}
+
+/*: The furiten view builds a tall table; let the whole page scroll instead of
+   clipping rows that would otherwise overlap the question card. */
+[data-module-page="furiten"] .module-shell {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+[data-module-page="furiten"] .module-body {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .module-topline,
