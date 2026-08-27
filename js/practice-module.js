@@ -1410,91 +1410,66 @@ function renderFuriten(question) {
     if (els.furitenTable) {
         els.furitenTable.replaceChildren(buildFuritenTable(question));
     }
-    const container = els.furitenTable ? els.furitenTable.parentElement : null;
-    if (container) {
-        const old = container.querySelector(".furiten-calls-wrap");
-        if (old) old.remove();
-        const calls = renderFuritenCalls(question);
-        if (calls) {
-            const wrap = document.createElement("div");
-            wrap.className = "furiten-calls-wrap";
-            wrap.append(calls);
-            els.furitenTable.insertAdjacentElement("afterend", wrap);
-        }
-    }
 }
 
-//: Render the exposed melds (pon/chi/kan) the subject made, with caller + source.
-function renderFuritenCalls(question) {
-    if (!question.calls || !question.calls.length) return null;
-    const wrap = document.createElement("div");
-    wrap.className = "furiten-calls";
-    const label = document.createElement("span");
-    label.className = "furiten-calls-label";
-    label.textContent = "Llamadas";
-    wrap.append(label);
-    question.calls.forEach((call) => {
-        const chip = document.createElement("span");
-        chip.className = `furiten-call furiten-call-${String(call.type || "").toLowerCase()}${call.closed ? " is-closed" : ""}`;
-        const kind = document.createElement("span");
-        kind.className = "furiten-call-kind";
-        kind.textContent = call.by === question.seatWind
-            ? (call.closed ? `${call.type} cerrado` : call.type)
-            : call.type;
-        chip.append(kind);
-        const callTiles = document.createElement("span");
-        callTiles.className = "furiten-call-tiles";
-        callTiles.append(...call.tiles.map((t) => {
-            const img = tableTile(t);
-            return img;
-        }));
-        chip.append(callTiles);
-        const meta = document.createElement("span");
-        meta.className = "furiten-call-meta";
-        meta.textContent = call.from ? `de ${call.from}` : "";
-        chip.append(meta);
-        wrap.append(chip);
-    });
-    return wrap;
-}
-
+//: Build a one-row-per-player table. Each row shows the player's discards and,
+//: if that player made a call, the exposed meld is rendered inline in the row.
 function buildFuritenTable(question) {
     const table = document.createElement("div");
     table.className = "furiten-table";
 
-    const center = document.createElement("div");
-    center.className = "furiten-center";
-    const windLabel = document.createElement("div");
-    windLabel.className = "furiten-windlabel";
-    windLabel.textContent = `E ${question.roundWind || "East"}`;
-    const seat = document.createElement("div");
-    seat.className = "furiten-seatlabel";
-    seat.textContent = question.seatWind;
-    center.append(windLabel, seat);
-    table.append(center);
+    const header = document.createElement("div");
+    header.className = "furiten-table-header";
+    header.textContent = `E ${question.roundWind || "East"}`;
+    table.append(header);
 
-    const positions = { North: "north", East: "east", South: "south", West: "west" };
-    ["North", "East", "South", "West"].forEach((wind) => {
-        const zone = document.createElement("div");
-        zone.className = `furiten-zone furiten-${positions[wind]}${wind === question.seatWind ? " is-you" : ""}`;
-        zone.dataset.wind = wind;
+    const callsByWind = {};
+    (question.calls || []).forEach((call) => {
+        (callsByWind[call.by] = callsByWind[call.by] || []).push(call);
+    });
+
+    ["East", "South", "West", "North"].forEach((wind) => {
+        const row = document.createElement("div");
+        row.className = `furiten-row-player${wind === question.seatWind ? " is-you" : ""}`;
+        row.dataset.wind = wind;
+
         const label = document.createElement("span");
         label.className = "furiten-label";
         label.textContent = wind === question.seatWind ? `${wind} · Tú` : wind;
-        zone.append(label);
-        const rowsWrap = document.createElement("div");
-        rowsWrap.className = "furiten-rows";
-        chunk(question.discards[wind], 6).forEach((row) => {
-            const rowEl = document.createElement("div");
-            rowEl.className = "furiten-row";
-            rowEl.append(...row.map(tableTile));
-            rowsWrap.append(rowEl);
-        });
-        zone.append(rowsWrap);
-        table.append(zone);
+        row.append(label);
+
+        const discards = document.createElement("span");
+        discards.className = "furiten-discards";
+        discards.append(...(question.discards[wind] || []).map(tableTile));
+        row.append(discards);
+
+        (callsByWind[wind] || []).forEach((call) => row.append(furitenCallChip(call, question.seatWind)));
+
+        table.append(row);
     });
 
     return table;
+}
+
+//: Render one exposed meld chip (pon/chi/kan) with caller + source + closed flag.
+function furitenCallChip(call, seatWind) {
+    const chip = document.createElement("span");
+    chip.className = `furiten-call furiten-call-${String(call.type || "").toLowerCase()}${call.closed ? " is-closed" : ""}`;
+    const kind = document.createElement("span");
+    kind.className = "furiten-call-kind";
+    kind.textContent = call.by === seatWind
+        ? (call.closed ? `${call.type} cerrado` : call.type)
+        : call.type;
+    chip.append(kind);
+    const callTiles = document.createElement("span");
+    callTiles.className = "furiten-call-tiles";
+    callTiles.append(...call.tiles.map(tableTile));
+    chip.append(callTiles);
+    const meta = document.createElement("span");
+    meta.className = "furiten-call-meta";
+    meta.textContent = call.from ? `de ${call.from}` : "";
+    chip.append(meta);
+    return chip;
 }
 
 function tableTile(tileId) {

@@ -1131,13 +1131,10 @@
 }
 
 .furiten-table {
-    position: relative;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr);
-    grid-template-rows: repeat(3, minmax(0, 1fr));
-    gap: clamp(0.4rem, 0.8vw, 0.7rem);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.4rem, 0.8vw, 0.6rem);
     width: min(100%, 860px);
-    height: 100%;
     margin: 0 auto;
     padding: clamp(0.5rem, 1.1vw, 0.9rem);
     border: 0.18rem solid var(--sticker-border);
@@ -1146,117 +1143,60 @@
     box-shadow: 0 0.45rem 0 var(--shadow);
 }
 
-.furiten-center {
-    grid-column: 2;
-    grid-row: 2;
-    justify-self: center;
-    align-self: center;
-    display: grid;
-    place-items: center;
-    gap: 0.15rem;
-    width: clamp(2.6rem, 4.4vw, 3.4rem);
-    height: clamp(2.6rem, 4.4vw, 3.4rem);
-    border-radius: 50%;
+.furiten-table-header {
     color: var(--pink-dark);
-    background: rgba(255, 93, 158, 0.14);
-    border: 0.14rem solid rgba(217, 54, 120, 0.5);
+    font-size: clamp(0.78rem, 1.1vw, 0.92rem);
     font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-align: center;
 }
 
-.furiten-windlabel {
-    font-size: clamp(0.8rem, 1.25vw, 1rem);
-    line-height: 1;
-}
-
-.furiten-seatlabel {
-    font-size: clamp(0.6rem, 0.95vw, 0.8rem);
-    opacity: 0.7;
-}
-
-.furiten-zone {
+/*: One row per player: label + discards (+ any call the player made). */
+.furiten-row-player {
     display: flex;
-    flex-direction: column;
-    gap: 0.28rem;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.6rem;
     min-width: 0;
-    min-height: 0;
-    max-height: 12rem;
-    padding: 0.4rem 0.5rem;
+    padding: 0.42rem 0.55rem;
     border: 0.14rem solid rgba(201, 168, 192, 0.22);
-    border-radius: 0.75rem;
-    background: rgba(26, 15, 22, 0.18);
-    overflow: auto;
+    border-radius: 0.8rem;
+    background: rgba(26, 15, 22, 0.16);
 }
 
-.furiten-zone.is-you {
+.furiten-row-player.is-you {
     border-color: var(--pink-dark);
     background: rgba(255, 93, 158, 0.12);
     box-shadow: 0 0 0 0.1rem rgba(255, 93, 158, 0.18);
 }
 
-.furiten-north { grid-column: 2; grid-row: 1; }
-.furiten-south { grid-column: 2; grid-row: 3; }
-.furiten-west { grid-column: 1; grid-row: 2; }
-.furiten-east { grid-column: 3; grid-row: 2; }
-
 .furiten-label {
+    flex: 0 0 auto;
     color: var(--muted);
-    font-size: 0.66rem;
+    font-size: 0.7rem;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     white-space: nowrap;
 }
 
-.furiten-zone.is-you .furiten-label {
+.furiten-row-player.is-you .furiten-label {
     color: var(--pink-dark);
 }
 
-.furiten-rows {
-    display: flex;
-    flex-direction: column;
-    gap: 0.16rem;
-    min-width: 0;
-}
-
-.furiten-row {
+.furiten-discards {
     display: flex;
     flex-wrap: wrap;
     gap: 0.14rem;
+    flex: 1 1 auto;
     min-width: 0;
 }
 
-.furiten-row img {
+.furiten-discards img {
     width: clamp(1.05rem, 1.55vw, 1.5rem);
     height: auto;
     filter: drop-shadow(0 0.14rem 0 rgba(77, 45, 88, 0.15));
-}
-
-.furiten-calls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-    align-items: center;
-    justify-content: flex-start;
-    min-width: 0;
-    max-width: min(100%, 860px);
-    margin: 0.4rem auto 0;
-    padding: 0.4rem 0.5rem;
-    border-radius: 0.7rem;
-    background: rgba(8, 4, 10, 0.06);
-}
-
-.furiten-calls-wrap {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-.furiten-calls-label {
-    color: var(--muted);
-    font-size: 0.66rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
 }
 
 .furiten-call {
