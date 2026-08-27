@@ -1345,7 +1345,7 @@ function render() {
     const question = module.questions[state.round];
     state.selected = null;
     state.answered = false;
-    els.feedback.hidden = true;
+    resetFeedback();
     if (els.tileExplainModal) els.tileExplainModal.hidden = true;
     els.submitButton.hidden = false;
     els.nextButton.hidden = true;
@@ -1902,6 +1902,15 @@ function ensureFeedbackCoach() {
     img.alt = "Monique coach";
     els.feedback.prepend(img);
     els.feedback.dataset.coachInjected = "true";
+}
+
+//: Clear the feedback area (coach + reveal blocks) so the next question shows a
+//: clean panel instead of stacking the previous question's results.
+function resetFeedback() {
+    if (!els.feedback) return;
+    els.feedback.hidden = true;
+    els.feedback.replaceChildren();
+    delete els.feedback.dataset.coachInjected;
 }
 
 /* ===== Scoring / value-table pool (valores) ===== */
