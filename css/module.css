@@ -449,15 +449,16 @@
 }
 
 /*: The furiten view builds a tall table; let the whole page scroll instead of
-   clipping rows that would otherwise overlap the question card. */
+   clipping rows or the submit button. We force every level to grow with its
+   content so the document is the single scroller (no nested fixed heights). */
 [data-module-page="furiten"] .module-card-screen {
     display: flex;
     flex-direction: column;
-    flex: 1 0 auto;
+    flex: 0 0 auto;
     min-height: 0;
     align-content: start;
     row-gap: clamp(0.45rem, 0.9vh, 0.7rem);
-    overflow: visible;
+    overflow: visible !important;
 }
 
 [data-module-page="furiten"] .furiten-table {
@@ -466,16 +467,16 @@
 }
 
 [data-module-page="furiten"] .module-shell {
-    height: auto;
+    height: auto !important;
     min-height: 100vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow: visible !important;
 }
 
 [data-module-page="furiten"] .module-body {
-    height: auto;
+    height: auto !important;
     min-height: 100vh;
-    overflow-y: auto;
+    overflow-y: auto !important;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
 }
 
