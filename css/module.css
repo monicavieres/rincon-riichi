@@ -461,7 +461,7 @@
     overflow: visible !important;
 }
 
-[data-module-page="furiten"] .furiten-table {
+[data-module-page="furiten"] .furiten-compass {
     min-height: 0;
     flex: 0 0 auto;
 }
@@ -1158,80 +1158,139 @@
     filter: drop-shadow(0 0.28rem 0 rgba(0, 0, 0, 0.4)) drop-shadow(0 0.55rem 0.65rem rgba(0, 0, 0, 0.35));
 }
 
-.furiten-table {
+/*: Furiten compass layout — seat discards fan around the wind indicator. */
+.furiten-compass {
+    position: relative;
+    width: min(100%, 560px);
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    padding: clamp(0.4rem, 1vw, 0.8rem);
+}
+
+[data-module-page="furiten"] .furiten-compass {
+    flex: 0 0 auto;
+    min-height: 0;
+}
+
+.furiten-compass-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 42%;
+    height: 42%;
+    z-index: 1;
+}
+
+.furiten-compass-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0.4rem 0.6rem rgba(0, 0, 0, 0.25));
+}
+
+.furiten-round-chip {
+    position: absolute;
+    bottom: 6%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.12rem 0.5rem;
+    border-radius: 999px;
+    color: #fff;
+    background: rgba(20, 14, 28, 0.72);
+    font-size: clamp(0.6rem, 0.9vw, 0.76rem);
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    z-index: 2;
+}
+
+/*: Seat zones (label + discards + calls) placed around the centre, matching
+   the wind indicator orientation: East bottom, South right, West top, North left. */
+.furiten-seat {
+    position: absolute;
     display: flex;
     flex-direction: column;
-    gap: clamp(0.4rem, 0.8vw, 0.6rem);
-    width: min(100%, 860px);
-    margin: 0 auto;
-    padding: clamp(0.5rem, 1.1vw, 0.9rem);
-    border: 0.18rem solid var(--sticker-border);
-    border-radius: 1.25rem;
-    background: var(--card-bg);
-    box-shadow: 0 0.45rem 0 var(--shadow);
-}
-
-.furiten-table-header {
-    color: var(--pink-dark);
-    font-size: clamp(0.78rem, 1.1vw, 0.92rem);
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    text-align: center;
-}
-
-/*: One row per player: label + discards (+ any call the player made). */
-.furiten-row-player {
-    display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: 0.4rem 0.6rem;
+    gap: 0.22rem;
     min-width: 0;
-    padding: 0.42rem 0.55rem;
-    border: 0.14rem solid rgba(201, 168, 192, 0.22);
+    max-width: 56%;
+    padding: 0.32rem 0.5rem;
+    border: 0.13rem solid rgba(201, 168, 192, 0.22);
     border-radius: 0.8rem;
     background: rgba(26, 15, 22, 0.16);
+    z-index: 2;
 }
 
-.furiten-row-player.is-you {
+.furiten-seat.is-you {
     border-color: var(--pink-dark);
-    background: rgba(255, 93, 158, 0.12);
-    box-shadow: 0 0 0 0.1rem rgba(255, 93, 158, 0.18);
+    background: rgba(255, 93, 158, 0.14);
+    box-shadow: 0 0 0 0.1rem rgba(255, 93, 158, 0.2);
 }
 
-.furiten-label {
-    flex: 0 0 auto;
+.furiten-seat-label {
     color: var(--muted);
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     white-space: nowrap;
 }
 
-.furiten-row-player.is-you .furiten-label {
+.furiten-seat.is-you .furiten-seat-label {
     color: var(--pink-dark);
 }
 
-.furiten-discards {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.14rem;
-    flex: 1 1 auto;
-    min-width: 0;
+.furiten-seat-east {
+    bottom: 3%;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
-.furiten-discards img {
-    width: clamp(1.05rem, 1.55vw, 1.5rem);
+.furiten-seat-south {
+    right: 4%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.furiten-seat-west {
+    top: 3%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.furiten-seat-north {
+    left: 4%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.furiten-seat-discards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.12rem;
+}
+
+.furiten-seat-discards img {
+    width: clamp(1rem, 1.5vw, 1.45rem);
     height: auto;
     filter: drop-shadow(0 0.14rem 0 rgba(77, 45, 88, 0.15));
+}
+
+.furiten-seat-calls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.3rem;
+    margin-top: 0.1rem;
 }
 
 .furiten-call {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.2rem 0.45rem;
+    padding: 0.18rem 0.42rem;
     border: 0.13rem solid rgba(201, 168, 192, 0.3);
     border-radius: 0.55rem;
     background: rgba(8, 4, 10, 0.13);
@@ -1243,7 +1302,7 @@
 }
 
 .furiten-call-kind {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 900;
     color: var(--ink);
     text-transform: uppercase;
@@ -1256,12 +1315,12 @@
 }
 
 .furiten-call-tiles img {
-    width: clamp(0.75rem, 1.15vw, 1.1rem);
+    width: clamp(0.72rem, 1.1vw, 1.05rem);
     height: auto;
 }
 
 .furiten-call-meta {
-    font-size: 0.66rem;
+    font-size: 0.64rem;
     color: var(--muted);
     font-weight: 700;
 }

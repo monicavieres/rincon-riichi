@@ -1412,40 +1412,59 @@ function renderFuriten(question) {
     }
 }
 
-//: Build a one-row-per-player table. Each row shows the player's discards and,
-//: if that player made a call, the exposed meld is rendered inline in the row.
+//: Compass/table layout around the wind indicator. Each seat's discards fan out
+//: from the center matching the physical orientation (East bottom, South right,
+//: West top, North left) and each player's open calls sit beside their tiles.
 function buildFuritenTable(question) {
     const table = document.createElement("div");
-    table.className = "furiten-table";
+    table.className = "furiten-compass";
 
-    const header = document.createElement("div");
-    header.className = "furiten-table-header";
-    header.textContent = `E ${question.roundWind || "East"}`;
-    table.append(header);
+    // Wind indicator compass in the centre.
+    const compass = document.createElement("div");
+    compass.className = "furiten-compass-center";
+    const compassImg = document.createElement("img");
+    compassImg.className = "furiten-compass-img";
+    compassImg.src = "../assets/wind-indicator-rincon.svg";
+    compassImg.alt = "Indicador de vientos";
+    const badge = document.createElement("div");
+    badge.className = "furiten-round-chip";
+    badge.textContent = `E ${question.roundWind || "East"}`;
+    compass.append(compassImg, badge);
+    table.append(compass);
 
     const callsByWind = {};
     (question.calls || []).forEach((call) => {
         (callsByWind[call.by] = callsByWind[call.by] || []).push(call);
     });
 
-    ["East", "South", "West", "North"].forEach((wind) => {
-        const row = document.createElement("div");
-        row.className = `furiten-row-player${wind === question.seatWind ? " is-you" : ""}`;
-        row.dataset.wind = wind;
+    // Seat placement around the compass (matches the wind-indicator orientation).
+    const seats = [
+        { wind: "West", position: "west" },
+        { wind: "South", position: "south" },
+        { wind: "East", position: "east" },
+        { wind: "North", position: "north" }
+    ];
+    seats.forEach(({ wind, position }) => {
+        const zone = document.createElement("div");
+        zone.className = `furiten-seat furiten-seat-${position}${wind === question.seatWind ? " is-you" : ""}`;
+        zone.dataset.wind = wind;
 
         const label = document.createElement("span");
-        label.className = "furiten-label";
+        label.className = "furiten-seat-label";
         label.textContent = wind === question.seatWind ? `${wind} · Tú` : wind;
-        row.append(label);
+        zone.append(label);
 
         const discards = document.createElement("span");
-        discards.className = "furiten-discards";
+        discards.className = "furiten-seat-discards";
         discards.append(...(question.discards[wind] || []).map(tableTile));
-        row.append(discards);
+        zone.append(discards);
 
-        (callsByWind[wind] || []).forEach((call) => row.append(furitenCallChip(call, question.seatWind)));
+        const calls = document.createElement("span");
+        calls.className = "furiten-seat-calls";
+        (callsByWind[wind] || []).forEach((call) => calls.append(furitenCallChip(call, question.seatWind)));
+        if (calls.childNodes.length) zone.append(calls);
 
-        table.append(row);
+        table.append(zone);
     });
 
     return table;
