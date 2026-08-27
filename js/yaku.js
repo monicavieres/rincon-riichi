@@ -347,6 +347,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     applyLanguage();
     showStartView();
+
+    // Pull a large pool of varied hands from the API (fall back to the bundled
+    // templates). The API version returns the same id/context shape, so the rest
+    // of this module works unchanged.
+    if (window.RinconAPI) {
+        window.RinconAPI.check().then((online) => {
+            if (!online) return;
+            window.RinconAPI.practice("yaku", 6).then((payload) => {
+                const fromApi = (payload && payload.questions) || [];
+                // Merge API hands with a few bundled ones to guarantee a full set.
+                const merged = [
+                    ...fromApi.map(apiToTemplate),
+                    ...templates.slice(0, 6)
+                ];
+                if (merged.length) {
+                    templates.splice(0, templates.length, ...merged);
+                    if (state.started) renderQuestion();
+                }
+            }).catch(() => {});
+        }).catch(() => {});
+    }
 });
 
 function showStartView() {
@@ -415,9 +436,23 @@ function contextChip(label, value) {
 }
 
 function renderHand(question) {
-    const nodes = question.tiles.map(tileImage);
+    const tiles = question.tiles || question.hand || [];
+    const nodes = tiles.map(tileImage);
     (question.context?.calls || []).forEach((call) => nodes.push(meldGroup(call)));
+    if (question.winningTile) nodes.push(winningTileNode(question.winningTile, question.context?.win));
     return nodes;
+}
+
+function winningTileNode(tileId, winType) {
+    const wrapper = document.createElement("span");
+    wrapper.className = `winning-tile win-${String(winType || "").toLowerCase()}`;
+    const img = tileImage(tileId);
+    wrapper.append(img);
+    const badge = document.createElement("span");
+    badge.className = "winning-tile-label";
+    badge.textContent = winType || "";
+    wrapper.append(badge);
+    return wrapper;
 }
 
 function meldGroup(call) {
@@ -430,10 +465,9 @@ function meldGroup(call) {
 
 function renderAnswers(current) {
     const correctIds = getCorrectIds(current);
-    const choices = shuffle([
-        ...correctIds,
-        ...shuffle(templates.map((item) => item.id).filter((id) => !correctIds.includes(id))).slice(0, 5 - correctIds.length)
-    ]);
+    const pool = ["yakuhai", "tanyao", "toitoi", "chiitoitsu", "honitsu", "chinitsu", "iipeikou", "sanshoku", "chanta", "honroutou"];
+    const distract = shuffle(pool.filter((id) => !correctIds.includes(id))).slice(0, Math.max(1, 5 - correctIds.length));
+    const choices = shuffle([...correctIds, ...distract]);
 
     els.answerGrid.replaceChildren(...choices.map((id) => {
         const button = document.createElement("button");
@@ -553,6 +587,31 @@ function tileImage(tileId) {
 
 function getCorrectIds(question) {
     return question.correct || [question.id];
+}
+
+//: Convert an API yaku question into the internal template shape.
+function apiToTemplate(q) {
+    const correctIds = q.correct && q.correct.length ? q.correct.slice() : [q.id];
+    const labelById = {
+        yakuhai: "yakuhai", tanyao: "tanyao", chiitoitsu: "chiitoitsu",
+        toitoi: "toitoi", honroutou: "honroutou", honitsu: "honitsu",
+        chinitsu: "chinitsu", iipeikou: "iipeikou",
+        sanshoku: "sanshoku"
+    };
+    const norm = correctIds.map((id) => labelById[id] || id);
+    const explain = q.explain || {};
+    return {
+        id: norm[0],
+        correct: norm,
+        tiles: q.hand || q.tiles,
+        context: (q.context && { ...q.context }) || undefined,
+        winningTile: q.winning_tile,
+        explain: {
+            es: explain.es || "Esta mano cumple un yaku.",
+            en: explain.en || "This hand satisfies a yaku.",
+            pt: explain.pt || "Esta mão cumpre um yaku."
+        }
+    };
 }
 
 function tilePath(tileId) {

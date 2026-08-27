@@ -6,7 +6,7 @@
     <title>Cuenta el Puntaje</title>
     <link rel="icon" type="image/svg+xml" href="../assets/logo-rincon-riichi.svg">
     <link rel="stylesheet" href="../css/styles.css?v=meld-rotate-1">
-    <link rel="stylesheet" href="../css/module.css?v=coach-topic-2">
+    <link rel="stylesheet" href="../css/module.css?v=m-furiten-1">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="module-body" data-module-page="calc">
@@ -18,7 +18,32 @@
             <span class="topbar-title">Cuenta el Puntaje</span>
             <div class="topbar-controls" id="topbar-controls"><a class="pill blue" href="../index.html#practicar" data-i18n="back">← Back</a><label class="language-picker"><span data-i18n="language">Language</span><select id="languageSelect"><option value="es">ES</option><option value="en">EN</option><option value="pt">PT</option></select></label><div class="theme-radio" role="radiogroup" aria-label="Tema" title="Tema"><label class="theme-option"><input type="radio" name="theme" value="light" aria-label="Tema claro"><span class="theme-option-pill" aria-hidden="true">☀️</span></label><label class="theme-option"><input type="radio" name="theme" value="dark" aria-label="Tema oscuro"><span class="theme-option-pill" aria-hidden="true">🌙</span></label></div></div>
         </nav>
-        <section class="module-card-screen sticker-panel">
+                <section class="tile-start sticker-panel" id="startView" hidden>
+            <div class="tile-start-inner">
+                <div class="tile-coach">
+                    <div class="speech-bubble" id="startCoach">Mira la mano, responde y revisa tu puntaje al final.</div>
+                    <img class="mini-chibi sticker-img" id="startChibi" src="../assets/chibi-score.png" alt="Monique coach">
+                </div>
+                <p class="eyebrow">Practice</p>
+                <h1 id="startTitle">Módulo</h1>
+                <p class="subtitle" id="startSubtitle">Subtitle</p>
+                <div class="tile-start-chips" aria-hidden="true"><span id="chipOne">10 rounds</span><span id="chipTwo">Instant feedback</span><span id="chipThree">Score at the end</span></div>
+                <button class="big-button green start-button" id="startButton">Start</button>
+            </div>
+        </section>
+        <section class="results-card sticker-panel" id="resultsCard" hidden>
+            <div class="results-head">
+                <p class="eyebrow">Session complete</p>
+                <h2>Resultado final</h2>
+                <p class="results-score">Puntaje <strong id="resultsScore">0 / 0</strong></p>
+            </div>
+            <div class="results-body" id="resultsBody"></div>
+            <div class="results-actions">
+                <button class="big-button green" id="replayButton">Jugar otra vez</button>
+                <button class="big-button pink" id="backButton">Cambiar de modo</button>
+            </div>
+        </section>
+<section class="module-card-screen sticker-panel" id="quizCard" hidden>
             <div class="module-topline"><span class="status ready" id="roundLabel">1 / 3</span><span class="module-pill" id="scoreLabel">Score: 0</span></div>
             <div class="module-hand-card"><p class="eyebrow" data-i18n="handLabel">Example hand</p><div class="round-context" id="roundContext"></div><div class="module-hand" id="hand"></div></div>
             <div class="module-question-card"><p class="eyebrow" data-i18n="eyebrow">Practice</p><h1 id="questionTitle"></h1><p id="questionHelp"></p><div class="choice-grid" id="choices"></div></div>
@@ -26,7 +51,8 @@
             <div class="module-actions"><button class="big-button green" id="submitButton" data-i18n="submit">Submit</button><button class="big-button green" id="nextButton" data-i18n="next" hidden>Next</button><button class="big-button pink" id="restartButton" data-i18n="restart" hidden>Again</button></div>
         </section>
     </main>
-    <script src="../js/practice-module.js?v=meld-rotate-1"></script>
+    <script src="../js/api.js?v=api-client-2"></script>
+    <script src="../js/practice-module.js?v=practice-unified-1"></script>
     <script src="../js/menu.js?v=theme-radio-1"></script>
 </body>
 </html>

@@ -884,7 +884,38 @@ const state = {
     selected: null,
     answered: false,
     results: [],
-    tileMode: "all"
+    tileMode: "all",
+    started: false
+};
+
+//: Which API drill key each page loads, plus its question count.
+const PAGE_DRILL = {
+    waits: { drill: "waits", count: 10 },
+    esperaTipo: { drill: "esperaTipo", count: 10 },
+    esperaFichas: { drill: "esperaFichas", count: 10 },
+    han: { drill: "han", count: 10 },
+    calc: { drill: "calc", count: 10 },
+    fu: { drill: "fu", count: 10 },
+    valores: { drill: "valores", count: 10 },
+    chinitsu: { drill: "chinitsu", count: 10 },
+    yaku: { drill: "yaku", count: 10 },
+    furiten: { drill: "furiten", count: 10 },
+    tileName: { drill: "tileName", count: 10 }
+};
+
+//: Landing (start) copy per module, in the three languages.
+const START_COPY = {
+    waits: { title: { es: "Encuentra la Espera", en: "Find the Wait", pt: "Encontre a Espera" }, subtitle: { es: "Mira la mano diez veces y elige cada vez la ficha que la completa.", en: "Look at the hand ten times and pick the tile that completes it each time.", pt: "Olhe a mão dez vezes e escolha a peça que a completa de cada vez." } },
+    esperaTipo: { title: { es: "¿Qué espera es?", en: "Which Wait Is It?", pt: "Qual Espera É?" }, subtitle: { es: "Mira la mano tenpai y elige el nombre de la espera.", en: "Look at the tenpai hand and choose the name of the wait.", pt: "Veja a mão em tenpai e escolha o nome da espera." } },
+    esperaFichas: { title: { es: "¿Qué fichas esperas?", en: "Which Tiles Do You Wait On?", pt: "Quais Peças Você Espera?" }, subtitle: { es: "Selecciona todas las fichas que completan tu mano.", en: "Select all the tiles that complete your hand.", pt: "Selecione todas as peças que completam sua mão." } },
+    han: { title: { es: "Cuenta los Han", en: "Count Han", pt: "Conte os Han" }, subtitle: { es: "Identifica los yaku y cuenta el total de han de la mano ganadora.", en: "Identify the yaku and count the total han of the winning hand.", pt: "Identifique os yaku e conte o total de han da mão vencedora." } },
+    calc: { title: { es: "Cuenta el Puntaje", en: "Count Points", pt: "Conte a Pontuação" }, subtitle: { es: "Con la información de han y fu, elige los puntos que paga la mano.", en: "Using the han and fu info, choose the points the hand pays.", pt: "Com a informação de han e fu, escolha os pontos que a mão paga." } },
+    fu: { title: { es: "Cuenta los Fu", en: "Count Fu", pt: "Conte os Fu" }, subtitle: { es: "Elige el total de fu correcto para la situación simplificada.", en: "Choose the correct fu total for the simplified situation.", pt: "Escolha o total correto de fu para a situação simplificada." } },
+    valores: { title: { es: "Tabla de Valores", en: "Value Table", pt: "Tabela de Valores" }, subtitle: { es: "Dados han + fu + dealer/no-dealer, elige los puntos correctos según ganes por Ron o Tsumo.", en: "Given han + fu + dealer/non-dealer, pick the correct points for Ron or Tsumo.", pt: "Dados han + fu + dealer/não-dealer, escolha os pontos corretos por Ron ou Tsumo." } },
+    chinitsu: { title: { es: "¿Chinitsu?", en: "Is It Chinitsu?", pt: "É Chinitsu?" }, subtitle: { es: "Toda la mano es de un solo palo. Selecciona todas las fichas que la completan.", en: "The whole hand is one suit. Select all the tiles that complete it.", pt: "Toda a mão é de um só naipe. Selecione as peças que a completam." } },
+    yaku: { title: { es: "Identifica el Yaku", en: "Identify the Yaku", pt: "Identifique o Yaku" }, subtitle: { es: "Diez manos rápidas. Selecciona los yaku que reconoces y recibe feedback al instante.", en: "Ten quick hands. Select the yaku you recognize and get instant feedback.", pt: "Dez mãos rápidas. Selecione os yaku que reconhece e receba feedback imediato." } },
+    furiten: { title: { es: "¿Estoy en Furiten?", en: "Am I in Furiten?", pt: "Estou em Furiten?" }, subtitle: { es: "Tu mano está en tenpai. Mira los descartes de los cuatro jugadores: ¿la ficha que necesitas está en TUS descartes?", en: "Your hand is tenpai. Check the four players' discards: is the tile you need in YOUR discards?", pt: "Sua mão está em tenpai. Veja os descartes dos quatro jogadores: a peça que precisa está nos SEUS descartes?" } },
+    tileName: { title: { es: "¿Qué ficha es?", en: "Which Tile Is It?", pt: "Que peça é?" }, subtitle: { es: "Mira la ficha y elige su nombre. Aka significa cinco rojo.", en: "Look at the tile and choose its name. Aka means red five.", pt: "Veja a peça e escolha seu nome. Aka significa cinco vermelho." } }
 };
 
 const els = {};
@@ -905,6 +936,9 @@ document.addEventListener("DOMContentLoaded", () => {
     Object.assign(els, {
         langSelect: document.querySelector("#languageSelect"),
         startView: document.querySelector("#startView"),
+        startButton: document.querySelector("#startButton"),
+        startTitle: document.querySelector("#startTitle"),
+        startSubtitle: document.querySelector("#startSubtitle"),
         quizCard: document.querySelector("#quizCard"),
         tileModes: document.querySelector("#tileModes"),
         languageSelect: document.querySelector("#languageSelect"),
@@ -922,30 +956,18 @@ document.addEventListener("DOMContentLoaded", () => {
         nextButton: document.querySelector("#nextButton"),
         restartButton: document.querySelector("#restartButton"),
         furitenTable: document.querySelector("#furitenTable"),
+        resultsCard: document.querySelector("#resultsCard"),
+        resultsBody: document.querySelector("#resultsBody"),
+        resultsScore: document.querySelector("#resultsScore"),
         tileExplainModal: document.querySelector("#tileExplainModal"),
         tileExplainTile: document.querySelector("#tileExplainTile"),
         tileExplainTitle: document.querySelector("#tileExplainTitle"),
         tileExplainText: document.querySelector("#tileExplainText")
     });
 
-    if (state.page === "furiten") {
-        modules.furiten.questions = buildFuritenQuestions();
-    }
-    if (state.page === "esperaTipo") {
-        modules.esperaTipo.questions = buildWaitQuestionsLocal(8, false);
-    }
-    if (state.page === "esperaFichas") {
-        modules.esperaFichas.questions = buildWaitQuestionsLocal(8, true);
-    }
-    if (state.page === "tileName") {
-        modules.tileName.questions = buildTileNameQuestions(10);
-    }
-    if (state.page === "chinitsu") {
-        modules.chinitsu.questions = buildChinitsuQuestions(10);
-    }
-    if (state.page === "valores") {
-        modules.valores.questions = pickValoresRound(10);
-    }
+    // Seed a local question set so the module is instantly playable even if the
+    // API is unreachable; it is refreshed from the API once reachable.
+    seedLocalQuestions();
 
     els.languageSelect.value = state.language;
     els.languageSelect.addEventListener("change", (event) => {
@@ -953,12 +975,19 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem(languageStorageKey, state.language);
         applyLanguage();
         if (state.page === "tileName") applyLanguage();
-        render();
+        if (state.started) render();
     });
     els.submitButton.addEventListener("click", submit);
     els.nextButton.addEventListener("click", next);
     els.restartButton.addEventListener("click", restart);
     document.addEventListener("keydown", handleKeyboard);
+
+    const startButton = els.startButton;
+    if (startButton) startButton.addEventListener("click", startGame);
+    const replayButton = document.querySelector("#replayButton");
+    if (replayButton) replayButton.addEventListener("click", restart);
+    const backButton = document.querySelector("#backButton");
+    if (backButton) backButton.addEventListener("click", showLanding);
 
     if (state.page === "tileName" && els.tileModes) {
         renderTileModes();
@@ -971,19 +1000,283 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     applyLanguage();
-    render();
+    if (hasStartView()) {
+        showLanding();
+    } else {
+        startGame();
+    }
+    // Refresh questions from the API when it is reachable.
     if (window.RinconAPI) {
         window.RinconAPI.check().then((online) => {
             if (!online) return;
-            const multi = esPage("esperaFichas");
-            const name = esPage("esperaTipo") ? "esperaTipo" : esPage("esperaFichas") ? "esperaFichas" : null;
-            if (name) setWaitQuestions(name, 8, multi);
+            window.RinconAPI.practice(PAGE_DRILL[state.page].drill, PAGE_DRILL[state.page].count)
+                .then((payload) => {
+                    const questions = (payload && payload.questions) || [];
+                    if (!questions.length) return;
+                    modules[state.page].questions = mapApiQuestions(state.page, questions);
+                    if (state.started) {
+                        state.round = 0;
+                        state.score = 0;
+                        state.results = [];
+                        render();
+                    }
+                }).catch(() => {});
         }).catch(() => {});
     }
 });
 
+function hasStartView() {
+    // tileName keeps its own mode-picker landing (no single Start button).
+    if (state.page === "tileName") return Boolean(els.startView && els.tileModes);
+    return Boolean(els.startView && els.startButton);
+}
+
+function showLanding() {
+    if (!hasStartView()) return;
+    state.started = false;
+    els.startView.hidden = false;
+    if (els.quizCard) els.quizCard.hidden = true;
+    if (els.resultsCard) els.resultsCard.hidden = true;
+    if (state.page === "tileName") {
+        if (els.tileModes) renderTileModes();
+        return;
+    }
+    if (els.startTitle) els.startTitle.textContent = localized(START_COPY[state.page].title);
+    if (els.startSubtitle) els.startSubtitle.textContent = localized(START_COPY[state.page].subtitle);
+    const chibi = getFeedbackCoach();
+    const coachImg = document.querySelector("#startChibi");
+    if (coachImg) coachImg.src = chibi;
+}
+
+function startGame() {
+    state.started = true;
+    state.round = 0;
+    state.score = 0;
+    state.results = [];
+    if (els.startView) els.startView.hidden = true;
+    if (els.resultsCard) els.resultsCard.hidden = true;
+    if (els.quizCard) els.quizCard.hidden = false;
+    render();
+    if (els.quizCard && els.quizCard.scrollIntoView) els.quizCard.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function seedLocalQuestions() {
+    switch (state.page) {
+        case "furiten": modules.furiten.questions = buildFuritenQuestions(); break;
+        case "esperaTipo": modules.esperaTipo.questions = buildWaitQuestionsLocal(10, false); break;
+        case "esperaFichas": modules.esperaFichas.questions = buildWaitQuestionsLocal(10, true); break;
+        case "waits": modules.waits.questions = buildWaitTileQuestionsLocal(10); break;
+        case "tileName": modules.tileName.questions = buildTileNameQuestions(10); break;
+        case "chinitsu": modules.chinitsu.questions = buildChinitsuQuestions(10); break;
+        case "valores": modules.valores.questions = pickValoresRound(10); break;
+        case "han": modules.han.questions = buildLocalScoreDrill("han"); break;
+        case "calc": modules.calc.questions = buildLocalScoreDrill("calc"); break;
+        case "fu": modules.fu.questions = buildLocalScoreDrill("fu"); break;
+        default: break;
+    }
+}
+
 function esPage(name) {
     return state.page === name;
+}
+
+//: Turn a batch of API questions into the internal question shapes each page
+//: expects. The API returns a superset of fields; we map by module.
+function mapApiQuestions(page, questions) {
+    switch (page) {
+        case "esperaTipo":
+            return questions.map(apiWaitQuestion);
+        case "esperaFichas":
+            return questions.map(apiWaitQuestion);
+        case "waits":
+            return questions.map(apiWaitQuestion);
+        case "chinitsu":
+            return questions.map((q) => ({
+                hand: q.hand,
+                waits: q.waits,
+                tileChoices: q.tile_choices,
+                explain: q.explain
+            }));
+        case "furiten":
+            return questions.map(apiFuritenQuestion);
+        case "yaku":
+            return questions.map(apiYakuQuestion);
+        case "tileName":
+            return questions.map(apiTileNameQuestion);
+        default:
+            return questions.map(apiScoreQuestion);
+    }
+}
+
+//: Normalise the shared fields the scoring modules (han/calc/fu/valores) use.
+function apiScoreQuestion(q) {
+    const out = { ...q };
+    if (q.winning_tile != null) out.winningTile = q.winning_tile;
+    delete out.winning_tile;
+    return out;
+}
+
+function apiWaitQuestion(q) {
+    const isTile = Boolean(q.choices);
+    if (isTile) {
+        return {
+            hand: q.hand,
+            waits: q.waits,
+            waitName: q.wait_name,
+            waitKey: q.wait_key,
+            choices: q.choices,
+            answer: q.answer,
+            explain: q.explain
+        };
+    }
+    const hasTileChoices = Boolean(q.tile_choices);
+    if (hasTileChoices) {
+        return {
+            hand: q.hand,
+            waits: q.waits,
+            waitName: q.wait_name,
+            waitKey: q.wait_key,
+            tileChoices: q.tile_choices,
+            explain: q.explain
+        };
+    }
+    return {
+        hand: q.hand,
+        waits: q.waits,
+        waitName: q.wait_name,
+        waitKey: q.wait_key,
+        choices: q.choices,
+        answer: q.answer,
+        explain: q.explain
+    };
+}
+
+function apiFuritenQuestion(q) {
+    return {
+        hand: q.hand,
+        waits: q.waits,
+        waitName: q.wait_type,
+        mainSeat: q.main_seat,
+        roundWind: q.round_wind,
+        seatWind: q.main_seat,
+        discards: q.discards,
+        calls: q.calls || [],
+        furiten: q.furiten,
+        choices: ["Furiten", "No furiten"],
+        answer: q.furiten ? "Furiten" : "No furiten",
+        explain: {
+            es: q.furiten
+                ? `Estás en furiten: la ficha que necesitas (${q.waits.join(", ")}) está en TUS descartes.`
+                : `No estás en furiten: la ficha que necesitas (${q.waits.join(", ")}) NO está en tus descartes.`,
+            en: q.furiten
+                ? `You are in furiten: the tile you need (${q.waits.join(", ")}) is in YOUR discards.`
+                : `You are not in furiten: the tile you need (${q.waits.join(", ")}) is NOT in your discards.`,
+            pt: q.furiten
+                ? `Você está em furiten: a peça que precisa (${q.waits.join(", ")}) está nos SEUS descartes.`
+                : `Você não está em furiten: a peça que precisa (${q.waits.join(", ")}) NÃO está nos seus descartes.`
+        }
+    };
+}
+
+function apiYakuQuestion(q) {
+    const correct = q.correct || [];
+    const labelMap = {
+        yakuhai: "Yakuhai", tanyao: "Tanyao", chiitoitsu: "Chiitoitsu",
+        toitoi: "Toitoi", honroutou: "Honroutou", honitsu: "Honitsu",
+        chinitsu: "Chinitsu", iipeikou: "Iipeikou", sanshoku: "Sanshoku Doujun", ittsu: "Ittsu"
+    };
+    return {
+        hand: q.hand,
+        winningTile: q.winning_tile,
+        context: q.context,
+        correct: correct.map((id) => labelMap[id] || id),
+        labelChoices: q.label_choices,
+        yakuCorrect: correct.map((id) => labelMap[id] || id),
+        explain: q.explain
+    };
+}
+
+function apiTileNameQuestion(q) {
+    return {
+        hand: q.hand,
+        tileId: q.tile_id,
+        choices: q.choices,
+        answer: q.answer,
+        explain: q.explain
+    };
+}
+
+//: Local single-choice wait drill (fallback when the API is down).
+function buildWaitTileQuestionsLocal(count) {
+    const questions = [];
+    const seen = new Set();
+    let guard = 0;
+    while (questions.length < count && guard < 500) {
+        guard++;
+        const q = buildWaitQuestion();
+        if (!q) continue;
+        const key = q.hand.join("|");
+        if (seen.has(key)) continue;
+        seen.add(key);
+        const answer = q.waits[0];
+        const distract = randomTiles(5, q.waits);
+        questions.push({
+            hand: q.hand,
+            waits: q.waits,
+            waitName: q.waitName,
+            waitKey: q.waitKey,
+            choices: shuffle([answer, ...distract]),
+            answer,
+            explain: {
+                es: `Espera ${q.waitName}: completas con ${q.waits.join(", ")}.`,
+                en: `It's a ${q.waitName} wait: you complete with ${q.waits.join(", ")}.`,
+                pt: `Espera ${q.waitName}: você completa com ${q.waits.join(", ")}.`
+            }
+        });
+    }
+    return questions;
+}
+
+//: Local fallback drills for the scoring modules. These reuse the value pool to
+//: produce plausible (han/fu/calc) questions without a full local engine.
+function buildLocalScoreDrill(type, count = 10) {
+    const pool = buildValoresPool();
+    const picked = shuffle(pool).slice(0, count);
+    return picked.map((q) => {
+        if (type === "han") {
+            return {
+                hand: [],
+                context: q.context,
+                winningTile: null,
+                choices: shuffle(["1", "2", "3", "4", "5"]),
+                answer: String(Math.min(5, q.context.han)),
+                explain: q.explain
+            };
+        }
+        if (type === "fu") {
+            const fu = Math.max(20, Math.round(q.context.fu / 10) * 10);
+            const fuChoices = ["20 fu", "25 fu", "30 fu", "40 fu", "50 fu", "60 fu", "70 fu"];
+            const answer = `${fu} fu`;
+            const pool = fuChoices.filter((c) => c !== answer);
+            const distract = shuffle(pool).slice(0, 3);
+            return {
+                hand: [],
+                context: q.context,
+                winningTile: null,
+                choices: [answer, ...distract],
+                answer,
+                explain: q.explain
+            };
+        }
+        return {
+            hand: [],
+            context: q.context,
+            winningTile: null,
+            choices: q.choices,
+            answer: q.answer,
+            explain: q.explain
+        };
+    });
 }
 
 async function setWaitQuestions(moduleName, count, multi) {
@@ -1064,19 +1357,52 @@ function render() {
     if (state.page === "furiten") {
         renderFuriten(question);
     } else {
-        if (state.page !== "esperaTipo" && state.page !== "esperaFichas" && state.page !== "tileName" && state.page !== "chinitsu") {
+        if (state.page !== "esperaTipo" && state.page !== "esperaFichas" && state.page !== "waits" && state.page !== "tileName" && state.page !== "chinitsu") {
             renderContext(question.context);
         } else if ((state.page === "tileName" || state.page === "chinitsu") && els.roundContext) {
             els.roundContext.replaceChildren();
         }
-        els.hand.replaceChildren(...renderHand(question));
+        if (question.winningTile) {
+            els.hand.replaceChildren(...renderHand(question));
+        } else {
+            els.hand.replaceChildren(...question.hand.map(tileImage));
+        }
     }
-    if (module.multi) {
+    if (module.multi || state.page === "yaku") {
         state.selected = [];
-        els.choices.replaceChildren(...question.tileChoices.map(choiceButton));
+        els.choices.replaceChildren(...renderChoiceButtons(question));
     } else {
         els.choices.replaceChildren(...localized(question.choices).map(choiceButton));
     }
+}
+
+//: Build the answer buttons for multi-select drills (tiles) and the yaku drill
+//: (label names). Yaku buttons stay text-based; tile drills use tile images.
+function renderChoiceButtons(question) {
+    const multi = modules[state.page].multi;
+    const keys = multi ? question.tileChoices : question.labelChoices;
+    return keys.map((choice) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        const isTile = multi || /^[0-9][mpsz]$/.test(choice);
+        button.className = `answer-button${isTile ? " choice-tile" : ""}`;
+        button.dataset.choice = choice;
+        if (isTile) button.append(tileImage(choice));
+        else button.textContent = choice;
+        button.addEventListener("click", () => {
+            if (state.answered) return;
+            const selected = state.selected;
+            const idx = selected.indexOf(choice);
+            if (idx >= 0) {
+                selected.splice(idx, 1);
+                button.classList.remove("is-selected");
+            } else {
+                selected.push(choice);
+                button.classList.add("is-selected");
+            }
+        });
+        return button;
+    });
 }
 
 function renderFuriten(question) {
@@ -1084,6 +1410,52 @@ function renderFuriten(question) {
     if (els.furitenTable) {
         els.furitenTable.replaceChildren(buildFuritenTable(question));
     }
+    const container = els.furitenTable ? els.furitenTable.parentElement : null;
+    if (container) {
+        const old = container.querySelector(".furiten-calls-wrap");
+        if (old) old.remove();
+        const calls = renderFuritenCalls(question);
+        if (calls) {
+            const wrap = document.createElement("div");
+            wrap.className = "furiten-calls-wrap";
+            wrap.append(calls);
+            els.furitenTable.insertAdjacentElement("afterend", wrap);
+        }
+    }
+}
+
+//: Render the exposed melds (pon/chi/kan) the subject made, with caller + source.
+function renderFuritenCalls(question) {
+    if (!question.calls || !question.calls.length) return null;
+    const wrap = document.createElement("div");
+    wrap.className = "furiten-calls";
+    const label = document.createElement("span");
+    label.className = "furiten-calls-label";
+    label.textContent = "Llamadas";
+    wrap.append(label);
+    question.calls.forEach((call) => {
+        const chip = document.createElement("span");
+        chip.className = `furiten-call furiten-call-${String(call.type || "").toLowerCase()}${call.closed ? " is-closed" : ""}`;
+        const kind = document.createElement("span");
+        kind.className = "furiten-call-kind";
+        kind.textContent = call.by === question.seatWind
+            ? (call.closed ? `${call.type} cerrado` : call.type)
+            : call.type;
+        chip.append(kind);
+        const callTiles = document.createElement("span");
+        callTiles.className = "furiten-call-tiles";
+        callTiles.append(...call.tiles.map((t) => {
+            const img = tableTile(t);
+            return img;
+        }));
+        chip.append(callTiles);
+        const meta = document.createElement("span");
+        meta.className = "furiten-call-meta";
+        meta.textContent = call.from ? `de ${call.from}` : "";
+        chip.append(meta);
+        wrap.append(chip);
+    });
+    return wrap;
 }
 
 function buildFuritenTable(question) {
@@ -1269,9 +1641,10 @@ function localized(value) {
 function submit() {
     const module = modules[state.page];
     const question = module.questions[state.round];
-    const multi = module.multi;
+    const multi = module.multi || state.page === "yaku";
     const allowEmpty = state.page === "chinitsu";
-    if (!state.selected || (multi && !state.selected.length && !allowEmpty)) {
+    const hasSelection = multi ? (state.selected && state.selected.length > 0) : Boolean(state.selected);
+    if (!hasSelection && !allowEmpty) {
         els.feedback.hidden = false;
         ensureFeedbackCoach();
         els.feedbackTitle.textContent = `! ${t("choose")}`;
@@ -1280,33 +1653,36 @@ function submit() {
     }
 
     state.answered = true;
-    const expected = localized(question.answer);
-    const correct = multi
-        ? sameSet(state.selected || [], question.waits)
-        : state.selected === expected;
+
+    // Determine correctness + expected answers for this module type.
+    let correct;
+    let correctAnswer;
+    if (state.page === "yaku") {
+        const missed = question.yakuCorrect.filter((id) => !state.selected.includes(id));
+        const extra = state.selected.filter((id) => !question.yakuCorrect.includes(id));
+        correct = missed.length === 0 && extra.length === 0;
+        correctAnswer = question.yakuCorrect;
+    } else if (multi) {
+        correct = sameSet(state.selected || [], question.waits);
+        correctAnswer = question.waits;
+    } else {
+        const expected = localized(question.answer);
+        correct = state.selected === expected;
+        correctAnswer = expected;
+    }
     if (correct) state.score += 1;
 
-    if (state.page === "tileName") {
-        state.results.push({
-            tile: question.hand[0],
-            correct,
-            userAnswer: state.selected,
-            correctAnswer: expected
-        });
-    }
-
-    [...els.choices.children].forEach((button) => {
-        button.disabled = true;
-        if (multi) {
-            if (question.waits.includes(button.dataset.choice)) button.classList.add("is-correct");
-            else if (state.selected.includes(button.dataset.choice)) button.classList.add("is-wrong");
-        } else {
-            if (button.dataset.choice === expected) button.classList.add("is-correct");
-            if (!correct && button.dataset.choice === state.selected) button.classList.add("is-wrong");
-        }
+    state.results.push({
+        tile: (question.hand && question.hand[0]) || (question.tileId) || "1p",
+        type: state.page,
+        correct,
+        userAnswer: state.selected,
+        correctAnswer
     });
 
+    booleanizeChoices(question, correct, correctAnswer, multi);
     els.scoreLabel.textContent = `${t("score")}: ${state.score}`;
+
     if (state.page === "tileName" && els.tileExplainModal) {
         showTileExplainModal(question, correct);
     } else {
@@ -1317,14 +1693,25 @@ function submit() {
         revealWait(question);
     }
     els.submitButton.hidden = true;
-    if (state.round === module.questions.length - 1 && state.page === "tileName") {
-        els.restartButton.hidden = true;
+    if (state.round === module.questions.length - 1) {
         els.nextButton.hidden = false;
-    } else if (state.round === module.questions.length - 1) {
-        els.restartButton.hidden = false;
     } else {
         els.nextButton.hidden = false;
     }
+}
+
+//: Colour the answer buttons after a submission.
+function booleanizeChoices(question, correct, correctAnswer, multi) {
+    const correctSet = Array.isArray(correctAnswer) ? new Set(correctAnswer) : new Set([correctAnswer]);
+    [...els.choices.children].forEach((button) => {
+        button.disabled = true;
+        const value = button.dataset.choice;
+        if (correctSet.has(value)) {
+            button.classList.add("is-correct");
+        } else if (state.selected && (multi ? state.selected.includes(value) : value === state.selected)) {
+            button.classList.add("is-wrong");
+        }
+    });
 }
 
 function showTileExplainModal(question, correct) {
@@ -1367,29 +1754,26 @@ function revealWait(question) {
 
 function next() {
     state.round += 1;
-    if (state.page === "tileName" && state.round >= modules[state.page].questions.length) {
+    const total = modules[state.page].questions.length;
+    if (state.round >= total) {
         showResults();
         return;
-    }
-    if (state.page === "valores" && state.round >= modules.valores.questions.length) {
-        state.round = 0;
-        state.score = 0;
-        modules.valores.questions = pickValoresRound(10);
     }
     render();
 }
 
 function showResults() {
+    state.started = false;
     els.quizCard.hidden = true;
     if (els.startView) els.startView.hidden = true;
-    const resultsCard = document.querySelector("#resultsCard");
-    if (resultsCard) resultsCard.hidden = false;
+    if (els.resultsCard) els.resultsCard.hidden = false;
     renderResultsSummary();
+    if (els.resultsCard && els.resultsCard.scrollIntoView) els.resultsCard.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function renderResultsSummary() {
-    const body = document.querySelector("#resultsBody");
-    const scoreEl = document.querySelector("#resultsScore");
+    const body = els.resultsBody;
+    const scoreEl = els.resultsScore;
     const score = `${state.score} / ${state.results.length}`;
     if (scoreEl) scoreEl.textContent = score;
     if (body) {
@@ -1401,17 +1785,24 @@ function renderResultsSummary() {
             mark.textContent = entry.correct ? "✓" : "✕";
             const tile = document.createElement("span");
             tile.className = "results-tile";
-            tile.append(tileImage(entry.tile));
+            if (entry.tile && looksLikeTile(entry.tile)) tile.append(tileImage(entry.tile));
+            else tile.textContent = formatResultText(entry);
             const correct = document.createElement("span");
             correct.className = "results-correct";
-            correct.textContent = entry.correctAnswer;
+            correct.textContent = Array.isArray(entry.correctAnswer) ? entry.correctAnswer.join(", ") : entry.correctAnswer;
             const user = document.createElement("span");
             user.className = "results-user";
-            user.textContent = entry.correct ? entry.userAnswer : entry.userAnswer;
+            user.textContent = Array.isArray(entry.userAnswer) ? entry.userAnswer.join(", ") : entry.userAnswer;
             row.append(mark, tile, correct, user);
             return row;
         }));
     }
+}
+
+//: Render a readable label in the results tile slot when the entry is not a tile.
+function formatResultText(entry) {
+    if (entry.type === "furiten") return entry.correct ? "No furiten" : "Furiten";
+    return entry.correctAnswer == null ? "" : String(entry.correctAnswer);
 }
 
 function startTileQuiz(modeId) {
@@ -1423,9 +1814,9 @@ function startTileQuiz(modeId) {
     state.round = 0;
     state.score = 0;
     state.results = [];
+    state.started = true;
     if (els.startView) els.startView.hidden = true;
-    const resultsCard = document.querySelector("#resultsCard");
-    if (resultsCard) resultsCard.hidden = true;
+    if (els.resultsCard) els.resultsCard.hidden = true;
     els.quizCard.hidden = false;
     render();
 }
@@ -1433,13 +1824,12 @@ function startTileQuiz(modeId) {
 function restart() {
     state.round = 0;
     state.score = 0;
+    state.results = [];
     if (state.page === "tileName") {
-        state.results = [];
         const mode = TILE_NAME_MODES.find((m) => m.id === state.tileMode) || TILE_NAME_MODES[0];
         const pool = mode.tiles();
         modules.tileName.questions = buildTileNameQuestions(Math.min(10, pool.length), pool);
-        const resultsCard = document.querySelector("#resultsCard");
-        if (resultsCard) resultsCard.hidden = true;
+        if (els.resultsCard) els.resultsCard.hidden = true;
         els.quizCard.hidden = false;
         if (els.startView) els.startView.hidden = true;
     }
@@ -1449,6 +1839,7 @@ function restart() {
     if (state.page === "valores") {
         modules.valores.questions = pickValoresRound(10);
     }
+    state.started = true;
     render();
 }
 

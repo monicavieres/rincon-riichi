@@ -1230,3 +1230,70 @@
     height: auto;
     filter: drop-shadow(0 0.14rem 0 rgba(77, 45, 88, 0.15));
 }
+
+.furiten-calls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 0;
+    max-width: min(100%, 860px);
+    margin: 0.4rem auto 0;
+    padding: 0.4rem 0.5rem;
+    border-radius: 0.7rem;
+    background: rgba(8, 4, 10, 0.06);
+}
+
+.furiten-calls-wrap {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.furiten-calls-label {
+    color: var(--muted);
+    font-size: 0.66rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.furiten-call {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.45rem;
+    border: 0.13rem solid rgba(201, 168, 192, 0.3);
+    border-radius: 0.55rem;
+    background: rgba(8, 4, 10, 0.13);
+}
+
+.furiten-call.is-closed {
+    border-style: dashed;
+    border-color: var(--purple-dark, rgba(91, 81, 107, 0.4));
+}
+
+.furiten-call-kind {
+    font-size: 0.72rem;
+    font-weight: 900;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.furiten-call-tiles {
+    display: inline-flex;
+    gap: 0.12rem;
+}
+
+.furiten-call-tiles img {
+    width: clamp(0.75rem, 1.15vw, 1.1rem);
+    height: auto;
+}
+
+.furiten-call-meta {
+    font-size: 0.66rem;
+    color: var(--muted);
+    font-weight: 700;
+}

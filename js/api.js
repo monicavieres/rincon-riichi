@@ -54,6 +54,8 @@
     detectYaku,
     dealTable,
     discards,
+    practice,
+    furiten,
   };
 
   async function check() {
@@ -127,6 +129,23 @@
     if (opts.withHonors != null) qs.set("with_honors", String(opts.withHonors));
     if (opts.turns != null) qs.set("turns", String(opts.turns));
     return request(`/table/discards?${qs.toString()}`);
+  }
+
+  // Practice drills. `drill` is one of: waits, esperaTipo, esperaFichas, han,
+  // calc, fu, valores, chinitsu, yaku, furiten, tileName.
+  function practice(drill, count = 10) {
+    const qs = new URLSearchParams({ drill, count: String(count) });
+    return request(`/practice?${qs.toString()}`, { timeoutMs: 12000 });
+  }
+
+  // Single four-player furiten snapshot.
+  function furiten(opts = {}) {
+    const qs = new URLSearchParams();
+    if (opts.waitType) qs.set("wait_type", opts.waitType);
+    if (opts.subjectSeat) qs.set("subject_seat", opts.subjectSeat);
+    if (opts.furiten != null) qs.set("furiten", String(opts.furiten));
+    if (opts.withCalls != null) qs.set("with_calls", String(opts.withCalls));
+    return request(`/furiten/generate?${qs.toString()}`, { timeoutMs: 12000 });
   }
 
   window.RinconAPI = api;
