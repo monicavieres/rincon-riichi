@@ -1412,9 +1412,10 @@ function renderFuriten(question) {
     }
 }
 
-//: Compass/table layout around the wind indicator. Each seat's discards fan out
-//: from the center matching the physical orientation (East bottom, South right,
-//: West top, North left) and each player's open calls sit beside their tiles.
+//: Compass layout around the wind indicator. Each seat's discards are packed
+//: as big tiles hugging the compass on their side (East bottom, South right,
+//: West top, North left); the current seat is tagged "Tú" and its open calls
+//: sit beside its tiles.
 function buildFuritenTable(question) {
     const table = document.createElement("div");
     table.className = "furiten-compass";
@@ -1426,10 +1427,7 @@ function buildFuritenTable(question) {
     compassImg.className = "furiten-compass-img";
     compassImg.src = "../assets/wind-indicator-rincon.svg";
     compassImg.alt = "Indicador de vientos";
-    const badge = document.createElement("div");
-    badge.className = "furiten-round-chip";
-    badge.textContent = `E ${question.roundWind || "East"}`;
-    compass.append(compassImg, badge);
+    compass.append(compassImg);
     table.append(compass);
 
     const callsByWind = {};
@@ -1437,7 +1435,6 @@ function buildFuritenTable(question) {
         (callsByWind[call.by] = callsByWind[call.by] || []).push(call);
     });
 
-    // Seat placement around the compass (matches the wind-indicator orientation).
     const seats = [
         { wind: "West", position: "west" },
         { wind: "South", position: "south" },
@@ -1449,17 +1446,19 @@ function buildFuritenTable(question) {
         zone.className = `furiten-seat furiten-seat-${position}${wind === question.seatWind ? " is-you" : ""}`;
         zone.dataset.wind = wind;
 
-        const label = document.createElement("span");
-        label.className = "furiten-seat-label";
-        label.textContent = wind === question.seatWind ? `${wind} · Tú` : wind;
-        zone.append(label);
-
-        const discards = document.createElement("span");
+        const discards = document.createElement("div");
         discards.className = "furiten-seat-discards";
-        discards.append(...(question.discards[wind] || []).map(tableTile));
+        discards.append(...(question.discards[wind] || []).map(compassTile));
         zone.append(discards);
 
-        const calls = document.createElement("span");
+        if (wind === question.seatWind) {
+            const tag = document.createElement("span");
+            tag.className = "furiten-seat-tag";
+            tag.textContent = "Tú";
+            zone.append(tag);
+        }
+
+        const calls = document.createElement("div");
         calls.className = "furiten-seat-calls";
         (callsByWind[wind] || []).forEach((call) => calls.append(furitenCallChip(call, question.seatWind)));
         if (calls.childNodes.length) zone.append(calls);
@@ -1468,6 +1467,13 @@ function buildFuritenTable(question) {
     });
 
     return table;
+}
+
+//: A big discard tile sized to hug the compass (real tile proportions).
+function compassTile(tileId) {
+    const img = tileImage(tileId);
+    img.classList.add("furiten-discard");
+    return img;
 }
 
 //: Render one exposed meld chip (pon/chi/kan) with caller + source + closed flag.
@@ -1482,13 +1488,20 @@ function furitenCallChip(call, seatWind) {
     chip.append(kind);
     const callTiles = document.createElement("span");
     callTiles.className = "furiten-call-tiles";
-    callTiles.append(...call.tiles.map(tableTile));
+    callTiles.append(...call.tiles.map(compassTileMini));
     chip.append(callTiles);
     const meta = document.createElement("span");
     meta.className = "furiten-call-meta";
     meta.textContent = call.from ? `de ${call.from}` : "";
     chip.append(meta);
     return chip;
+}
+
+//: Small tiles for the meld chips (kept readable without dominating).
+function compassTileMini(tileId) {
+    const img = tileImage(tileId);
+    img.classList.add("furiten-call-tile");
+    return img;
 }
 
 function tableTile(tileId) {

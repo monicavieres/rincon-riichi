@@ -1158,13 +1158,16 @@
     filter: drop-shadow(0 0.28rem 0 rgba(0, 0, 0, 0.4)) drop-shadow(0 0.55rem 0.65rem rgba(0, 0, 0, 0.35));
 }
 
-/*: Furiten compass layout — seat discards fan around the wind indicator. */
+/*: Furiten compass layout — big tiles are packed around the wind indicator.
+   The compass sits at the centre; each seat's discards hug their side
+   (East bottom, South right, West top, North left), with the current seat
+   tagged "Tú" and its calls beside the tiles. */
 .furiten-compass {
     position: relative;
-    width: min(100%, 560px);
+    width: min(100%, 640px);
     aspect-ratio: 1 / 1;
     margin: 0 auto;
-    padding: clamp(0.4rem, 1vw, 0.8rem);
+    padding: clamp(0.3rem, 0.8vw, 0.6rem);
 }
 
 [data-module-page="furiten"] .furiten-compass {
@@ -1186,104 +1189,97 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
-    filter: drop-shadow(0 0.4rem 0.6rem rgba(0, 0, 0, 0.25));
+    filter: drop-shadow(0 0.4rem 0.6rem rgba(0, 0, 0, 0.28));
 }
 
-.furiten-round-chip {
-    position: absolute;
-    bottom: 6%;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 0.12rem 0.5rem;
-    border-radius: 999px;
-    color: #fff;
-    background: rgba(20, 14, 28, 0.72);
-    font-size: clamp(0.6rem, 0.9vw, 0.76rem);
-    font-weight: 900;
-    letter-spacing: 0.04em;
-    white-space: nowrap;
-    z-index: 2;
-}
-
-/*: Seat zones (label + discards + calls) placed around the centre, matching
-   the wind indicator orientation: East bottom, South right, West top, North left. */
+/*: Seat zones hug the compass edge. Each holds a packed tile grid + optional
+   calls + a "Tú" tag for the current seat. */
 .furiten-seat {
     position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.22rem;
-    min-width: 0;
-    max-width: 56%;
-    padding: 0.32rem 0.5rem;
-    border: 0.13rem solid rgba(201, 168, 192, 0.22);
-    border-radius: 0.8rem;
-    background: rgba(26, 15, 22, 0.16);
     z-index: 2;
+    max-width: 30%;
+    max-height: 62%;
 }
 
-.furiten-seat.is-you {
-    border-color: var(--pink-dark);
-    background: rgba(255, 93, 158, 0.14);
-    box-shadow: 0 0 0 0.1rem rgba(255, 93, 158, 0.2);
+/*: Packed discard tiles (square, real-table feel hugging the compass). */
+.furiten-seat-discards {
+    display: grid;
+    grid-auto-flow: dense;
+    gap: 0.14rem;
+    align-content: center;
+    justify-content: center;
+    width: max-content;
+    max-width: 100%;
 }
 
-.furiten-seat-label {
-    color: var(--muted);
-    font-size: 0.68rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    white-space: nowrap;
+.furiten-discard {
+    width: clamp(2rem, 2.9vw, 2.7rem);
+    height: auto;
+    box-shadow: 0 0.18rem 0.3rem rgba(0, 0, 0, 0.28);
+    border-radius: 0.18rem;
 }
 
-.furiten-seat.is-you .furiten-seat-label {
-    color: var(--pink-dark);
-}
-
+/*: Side layout — each side packs tiles into a tight 2/3-row mini-grid. */
 .furiten-seat-east {
-    bottom: 3%;
+    bottom: 0;
     left: 50%;
     transform: translateX(-50%);
+}
+.furiten-seat-east .furiten-seat-discards {
+    grid-template-columns: repeat(3, clamp(2rem, 2.9vw, 2.7rem));
 }
 
 .furiten-seat-south {
-    right: 4%;
+    right: 3%;
     top: 50%;
     transform: translateY(-50%);
+}
+.furiten-seat-south .furiten-seat-discards {
+    grid-template-columns: repeat(3, clamp(2rem, 2.9vw, 2.7rem));
 }
 
 .furiten-seat-west {
-    top: 3%;
+    top: 0;
     left: 50%;
     transform: translateX(-50%);
 }
+.furiten-seat-west .furiten-seat-discards {
+    grid-template-columns: repeat(3, clamp(2rem, 2.9vw, 2.7rem));
+}
 
 .furiten-seat-north {
-    left: 4%;
+    left: 3%;
     top: 50%;
     transform: translateY(-50%);
 }
-
-.furiten-seat-discards {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.12rem;
+.furiten-seat-north .furiten-seat-discards {
+    grid-template-columns: repeat(3, clamp(2rem, 2.9vw, 2.7rem));
 }
 
-.furiten-seat-discards img {
-    width: clamp(1rem, 1.5vw, 1.45rem);
-    height: auto;
-    filter: drop-shadow(0 0.14rem 0 rgba(77, 45, 88, 0.15));
+/*: Current-seat marker. */
+.furiten-seat-tag {
+    align-self: center;
+    padding: 0.14rem 0.55rem;
+    border-radius: 999px;
+    color: #fff;
+    background: linear-gradient(180deg, var(--pink), var(--pink-dark));
+    font-size: clamp(0.62rem, 0.9vw, 0.74rem);
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    box-shadow: 0 0.16rem 0 rgba(77, 45, 88, 0.2);
 }
 
+/*: Calls chip block beside a seat's tiles. */
 .furiten-seat-calls {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.3rem;
-    margin-top: 0.1rem;
 }
 
 .furiten-call {
@@ -1314,9 +1310,11 @@
     gap: 0.12rem;
 }
 
-.furiten-call-tiles img {
-    width: clamp(0.72rem, 1.1vw, 1.05rem);
+.furiten-call-tile {
+    width: clamp(1.4rem, 2.1vw, 1.9rem);
     height: auto;
+    box-shadow: 0 0.14rem 0.24rem rgba(0, 0, 0, 0.28);
+    border-radius: 0.14rem;
 }
 
 .furiten-call-meta {
