@@ -454,6 +454,14 @@
     overflow: hidden;
 }
 
+/*: Let the furiten hand-card grow and scroll so all four player rows and the
+   calls are reachable without clipping. */
+[data-module-page="furiten"] .module-hand-card {
+    overflow-y: auto;
+    max-height: min(58vh, 560px);
+    -webkit-overflow-scrolling: touch;
+}
+
 .module-topline,
 .module-actions {
     display: flex;
