@@ -448,14 +448,8 @@
     overflow: hidden;
 }
 
-[data-module-page="furiten"] .module-card-screen {
-    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
-    min-height: 0;
-    overflow: hidden;
-}
-
-/*: The furiten table grows as plays are added, so let the whole screen scroll
-   instead of clipping rows that would otherwise overlap the question card. */
+/*: The furiten view builds a tall table; let the whole page scroll instead of
+   clipping rows that would otherwise overlap the question card. */
 [data-module-page="furiten"] .module-card-screen {
     display: flex;
     flex-direction: column;
@@ -471,8 +465,6 @@
     flex: 0 0 auto;
 }
 
-/*: The furiten view builds a tall table; let the whole page scroll instead of
-   clipping rows that would otherwise overlap the question card. */
 [data-module-page="furiten"] .module-shell {
     height: auto;
     min-height: 100vh;
@@ -906,11 +898,10 @@
         border-radius: 1.1rem;
     }
 
-    /*: On small screens let the furiten screen scroll so nothing overlaps. */
+    /*: On small screens let the furiten content flow so nothing overlaps. */
     [data-module-page="furiten"] .module-card-screen {
         justify-content: flex-start;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
+        overflow: visible;
         min-height: 0;
     }
 
@@ -1075,11 +1066,6 @@
 
     .tile-name-choices .answer-button {
         font-size: 0.96rem;
-    }
-
-    [data-module-page="furiten"] .module-card-screen {
-        min-height: 0;
-        overflow-y: auto;
     }
 }
 
