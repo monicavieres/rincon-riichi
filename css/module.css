@@ -454,12 +454,19 @@
     overflow: hidden;
 }
 
-/*: Let the furiten hand-card grow and scroll so all four player rows and the
-   calls are reachable without clipping. */
-[data-module-page="furiten"] .module-hand-card {
+/*: The furiten table grows as plays are added, so let the whole screen scroll
+   instead of clipping rows that would otherwise overlap the question card. */
+[data-module-page="furiten"] .module-card-screen {
+    grid-template-rows: auto auto auto auto auto;
+    min-height: 0;
     overflow-y: auto;
-    max-height: min(58vh, 560px);
     -webkit-overflow-scrolling: touch;
+    align-content: start;
+}
+
+[data-module-page="furiten"] .furiten-table {
+    min-height: 0;
+    flex: 0 0 auto;
 }
 
 .module-topline,
@@ -879,6 +886,14 @@
         margin-top: 0.7rem;
         padding: 0.75rem 0.72rem 0.9rem;
         border-radius: 1.1rem;
+    }
+
+    /*: On small screens let the furiten screen scroll so nothing overlaps. */
+    [data-module-page="furiten"] .module-card-screen {
+        justify-content: flex-start;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        min-height: 0;
     }
 
     .module-topline,
