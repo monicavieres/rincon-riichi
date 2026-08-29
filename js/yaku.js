@@ -650,7 +650,7 @@ function setCoach(mode, text) {
         : mode === "think" ? "chibi-thinking"
         : "chibi-incorrect";
     els.coachSpeech.textContent = text;
-    const src = `../assets/${image}.svg?v=2`;
+    const src = `../assets/${image}.png`;
     els.coachImage.src = src;
     if (els.feedbackCoach) {
         els.feedbackCoach.src = src;

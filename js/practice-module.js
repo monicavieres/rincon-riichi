@@ -1916,7 +1916,7 @@ const FEEDBACK_COACH = {
 
 function getFeedbackCoach() {
     const file = FEEDBACK_COACH[state.page];
-    return `../assets/${file || "chibi-thinking"}.svg?v=2`;
+    return `../assets/${file || "chibi-thinking"}.png`;
 }
 
 function ensureFeedbackCoach() {
