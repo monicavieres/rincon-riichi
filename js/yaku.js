@@ -615,7 +615,7 @@ function apiToTemplate(q) {
 }
 
 function tilePath(tileId) {
-    return `${tileBasePath}${tileId}.svg`;
+    return `${tileBasePath}${tileId}.svg?v=2`;
 }
 
 function getInitialLanguage() {
@@ -650,7 +650,7 @@ function setCoach(mode, text) {
         : mode === "think" ? "chibi-thinking"
         : "chibi-incorrect";
     els.coachSpeech.textContent = text;
-    const src = `../assets/${image}.svg`;
+    const src = `../assets/${image}.svg?v=2`;
     els.coachImage.src = src;
     if (els.feedbackCoach) {
         els.feedbackCoach.src = src;

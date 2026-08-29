@@ -461,7 +461,7 @@
     overflow: visible !important;
 }
 
-[data-module-page="furiten"] .furiten-compass {
+[data-module-page="furiten"] .furiten-board {
     min-height: 0;
     flex: 0 0 auto;
 }
@@ -1158,31 +1158,38 @@
     filter: drop-shadow(0 0.28rem 0 rgba(0, 0, 0, 0.4)) drop-shadow(0 0.55rem 0.65rem rgba(0, 0, 0, 0.35));
 }
 
-/*: Furiten compass layout — big tiles are packed around the wind indicator.
-   The compass sits at the centre; each seat's discards hug their side
-   (East bottom, South right, West top, North left), with the current seat
-   tagged "Tú" and its calls beside the tiles. */
-.furiten-compass {
-    position: relative;
-    width: min(100%, 640px);
+/*: Riichi-table board: 3x3 grid. The centre cell holds the wind indicator and
+   the four middle-edge cells hold each seat's discards, rotated to face that
+   seat (West top 180°, South right -90°, East bottom 0°, North left 90°),
+   wrapping in rows of six like a real pond. Corners are empty mat. */
+.furiten-board {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    gap: clamp(0.18rem, 0.45vw, 0.36rem);
+    width: min(100%, 720px);
     aspect-ratio: 1 / 1;
     margin: 0 auto;
-    padding: clamp(0.3rem, 0.8vw, 0.6rem);
 }
 
-[data-module-page="furiten"] .furiten-compass {
+[data-module-page="furiten"] .furiten-board {
     flex: 0 0 auto;
     min-height: 0;
 }
 
-.furiten-compass-center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 42%;
-    height: 42%;
-    z-index: 1;
+.furiten-cell {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/*: Center cell: the wind indicator fills the middle. */
+.furiten-cell-5 {
+    border-radius: 1rem;
+    background: radial-gradient(circle at 50% 50%, rgba(38, 178, 178, 0.35), rgba(20, 120, 120, 0.15) 70%);
 }
 
 .furiten-compass-img {
@@ -1192,78 +1199,41 @@
     filter: drop-shadow(0 0.4rem 0.6rem rgba(0, 0, 0, 0.28));
 }
 
-/*: Seat zones hug the compass edge. Each holds a packed tile grid + optional
-   calls + a "Tú" tag for the current seat. */
+/*: A seat group: label + discards pile + optional calls. Rotated as a whole. */
 .furiten-seat {
-    position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.22rem;
-    z-index: 2;
-    max-width: 30%;
-    max-height: 62%;
+    gap: 0.18rem;
+    transform: rotate(var(--seat-rotate, 0deg));
+    max-width: 94%;
+    max-height: 94%;
 }
 
-/*: Packed discard tiles (square, real-table feel hugging the compass). */
-.furiten-seat-discards {
+/*: Pile of discards wrapping into rows of six (like a real pond). */
+.furiten-pile {
     display: grid;
-    grid-auto-flow: dense;
-    gap: 0.14rem;
-    align-content: center;
+    grid-template-columns: repeat(auto-fit, clamp(1.8rem, 2.8vw, 2.6rem));
+    gap: 0.1rem;
+    justify-items: center;
+    align-items: center;
+    width: 100%;
     justify-content: center;
-    width: max-content;
-    max-width: 100%;
 }
 
 .furiten-discard {
-    width: clamp(2rem, 2.9vw, 2.7rem);
+    width: clamp(1.8rem, 2.8vw, 2.6rem);
+    aspect-ratio: 3 / 4;
     height: auto;
-    box-shadow: 0 0.18rem 0.3rem rgba(0, 0, 0, 0.28);
-    border-radius: 0.18rem;
+    object-fit: cover;
+    box-shadow: 0 0.16rem 0.28rem rgba(0, 0, 0, 0.28);
+    border-radius: 0.16rem;
 }
 
-/*: Side layout — each side packs tiles into a tight 2/3-row mini-grid. */
-.furiten-seat-east {
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-}
-.furiten-seat-east .furiten-seat-discards {
-    grid-template-columns: repeat(3, clamp(2rem, 2.9vw, 2.7rem));
-}
-
-.furiten-seat-south {
-    right: 3%;
-    top: 50%;
-    transform: translateY(-50%);
-}
-.furiten-seat-south .furiten-seat-discards {
-    grid-template-columns: repeat(3, clamp(2rem, 2.9vw, 2.7rem));
-}
-
-.furiten-seat-west {
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-}
-.furiten-seat-west .furiten-seat-discards {
-    grid-template-columns: repeat(3, clamp(2rem, 2.9vw, 2.7rem));
-}
-
-.furiten-seat-north {
-    left: 3%;
-    top: 50%;
-    transform: translateY(-50%);
-}
-.furiten-seat-north .furiten-seat-discards {
-    grid-template-columns: repeat(3, clamp(2rem, 2.9vw, 2.7rem));
-}
-
-/*: Current-seat marker. */
+/*: Current-seat marker (kept upright regardless of rotation). */
 .furiten-seat-tag {
-    align-self: center;
-    padding: 0.14rem 0.55rem;
+    transform: rotate(calc(-1 * var(--seat-rotate, 0deg)));
+    padding: 0.12rem 0.5rem;
     border-radius: 999px;
     color: #fff;
     background: linear-gradient(180deg, var(--pink), var(--pink-dark));
@@ -1274,12 +1244,14 @@
     box-shadow: 0 0.16rem 0 rgba(77, 45, 88, 0.2);
 }
 
-/*: Calls chip block beside a seat's tiles. */
+/*: Calls block (kept upright so the chip text stays readable). */
 .furiten-seat-calls {
+    transform: rotate(calc(-1 * var(--seat-rotate, 0deg)));
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.3rem;
+    max-width: 100%;
 }
 
 .furiten-call {

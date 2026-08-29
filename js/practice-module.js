@@ -1412,65 +1412,83 @@ function renderFuriten(question) {
     }
 }
 
-//: Compass layout around the wind indicator. Each seat's discards are packed
-//: as big tiles hugging the compass on their side (East bottom, South right,
-//: West top, North left); the current seat is tagged "Tú" and its open calls
-//: sit beside its tiles.
+//: Riichi-table board (3x3 grid). The centre cell holds the wind indicator;
+//: the four middle-edge cells hold each seat's discards as packed tiles rotated
+//: to face that seat. Orientations follow the compass: West top, South right,
+//: East bottom, North left. Tiles wrap into rows of six like a real pond.
 function buildFuritenTable(question) {
-    const table = document.createElement("div");
-    table.className = "furiten-compass";
-
-    // Wind indicator compass in the centre.
-    const compass = document.createElement("div");
-    compass.className = "furiten-compass-center";
-    const compassImg = document.createElement("img");
-    compassImg.className = "furiten-compass-img";
-    compassImg.src = "../assets/wind-indicator-rincon.svg";
-    compassImg.alt = "Indicador de vientos";
-    compass.append(compassImg);
-    table.append(compass);
+    const board = document.createElement("div");
+    board.className = "furiten-board";
 
     const callsByWind = {};
     (question.calls || []).forEach((call) => {
         (callsByWind[call.by] = callsByWind[call.by] || []).push(call);
     });
 
-    const seats = [
-        { wind: "West", position: "west" },
-        { wind: "South", position: "south" },
-        { wind: "East", position: "east" },
-        { wind: "North", position: "north" }
-    ];
-    seats.forEach(({ wind, position }) => {
-        const zone = document.createElement("div");
-        zone.className = `furiten-seat furiten-seat-${position}${wind === question.seatWind ? " is-you" : ""}`;
-        zone.dataset.wind = wind;
+    // seat -> grid cell (2,4,5,6,8) matching the compass orientation.
+    const cells = {
+        west: { wind: "West", cell: 2, rotate: 180 },
+        north: { wind: "North", cell: 4, rotate: 90 },
+        center: { cell: 5 },
+        south: { wind: "South", cell: 6, rotate: -90 },
+        east: { wind: "East", cell: 8, rotate: 0 }
+    };
 
-        const discards = document.createElement("div");
-        discards.className = "furiten-seat-discards";
-        discards.append(...(question.discards[wind] || []).map(compassTile));
-        zone.append(discards);
+    const seatForCell = (num) => Object.values(cells).find((c) => c.cell === num && c.wind);
+
+    for (let num = 1; num <= 9; num++) {
+        const cell = document.createElement("div");
+        cell.className = `furiten-cell furiten-cell-${num}`;
+
+        if (num === 5) {
+            const compass = document.createElement("img");
+            compass.className = "furiten-compass-img";
+            compass.src = "../assets/wind-indicator-rincon.svg";
+            compass.alt = "Indicador de vientos";
+            cell.append(compass);
+            board.append(cell);
+            continue;
+        }
+
+        const seat = seatForCell(num);
+        if (!seat) {
+            board.append(cell);
+            continue;
+        }
+
+        const wind = seat.wind;
+        const discards = question.discards[wind] || [];
+        const seatEl = document.createElement("div");
+        seatEl.className = `furiten-seat furiten-seat-${seat.cell}${wind === question.seatWind ? " is-you" : ""}`;
+        seatEl.dataset.wind = wind;
+        seatEl.style.setProperty("--seat-rotate", `${seat.rotate}deg`);
+
+        const pile = document.createElement("div");
+        pile.className = "furiten-pile";
+        pile.append(...discards.map(pileTile));
+        seatEl.append(pile);
 
         if (wind === question.seatWind) {
             const tag = document.createElement("span");
             tag.className = "furiten-seat-tag";
             tag.textContent = "Tú";
-            zone.append(tag);
+            seatEl.append(tag);
         }
 
         const calls = document.createElement("div");
         calls.className = "furiten-seat-calls";
         (callsByWind[wind] || []).forEach((call) => calls.append(furitenCallChip(call, question.seatWind)));
-        if (calls.childNodes.length) zone.append(calls);
+        if (calls.childNodes.length) seatEl.append(calls);
 
-        table.append(zone);
-    });
+        cell.append(seatEl);
+        board.append(cell);
+    }
 
-    return table;
+    return board;
 }
 
-//: A big discard tile sized to hug the compass (real tile proportions).
-function compassTile(tileId) {
+//: A discard tile; rotated to face its seat via the parent's --seat-rotate.
+function pileTile(tileId) {
     const img = tileImage(tileId);
     img.classList.add("furiten-discard");
     return img;
@@ -1852,7 +1870,7 @@ function restart() {
 
 function tileImage(tileId) {
     const img = document.createElement("img");
-    img.src = `${tileBasePath}${tileId}.svg`;
+    img.src = `${tileBasePath}${tileId}.svg?v=2`;
     img.alt = tileId;
     return img;
 }
@@ -1898,7 +1916,7 @@ const FEEDBACK_COACH = {
 
 function getFeedbackCoach() {
     const file = FEEDBACK_COACH[state.page];
-    return `../assets/${file || "chibi-thinking"}.svg`;
+    return `../assets/${file || "chibi-thinking"}.svg?v=2`;
 }
 
 function ensureFeedbackCoach() {
