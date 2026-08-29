@@ -1,0 +1,26 @@
+<svg width="420" height="420" viewBox="0 0 420 420" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Monique tile naming</title>
+  <desc id="desc">Transparent SVG chibi mascot presenting a blank label card for tile names.</desc>
+  <defs>
+    <filter id="shadow" x="18" y="16" width="384" height="390"><feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#2F2035" flood-opacity=".18"/></filter>
+    <linearGradient id="hair" x1="90" y1="78" x2="315" y2="275"><stop stop-color="#93502E"/><stop offset=".55" stop-color="#5B2D22"/><stop offset="1" stop-color="#321713"/></linearGradient>
+  </defs>
+  <g filter="url(#shadow)">
+    <path d="M93 231c-33-79 8-163 104-177 104-15 170 70 132 178 35 25 28 84-25 96-19 45-137 58-194 10-54-6-70-77-17-107Z" fill="white" stroke="white" stroke-width="20" stroke-linejoin="round"/>
+    <path d="M84 229c-31-80 14-158 108-172 100-15 163 68 125 173 37 18 29 81-23 91-24 55-145 54-186 10-57-5-77-79-24-102Z" fill="url(#hair)"/>
+    <path d="M109 229c16-22 24-70 28-94 53-55 138-48 168 31 7 18 12 43 8 67-12 78-56 103-102 103-47 0-89-28-102-107Z" fill="#FFD2B8"/>
+    <path d="M145 141c31-46 112-54 153 13-51-14-102-12-161 14 0-10 3-19 8-27Z" fill="#3B1B14"/>
+    <circle cx="169" cy="211" r="31" fill="white" stroke="#251722" stroke-width="7"/>
+    <circle cx="252" cy="211" r="31" fill="white" stroke="#251722" stroke-width="7"/>
+    <path d="M200 210h22" stroke="#251722" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="176" cy="215" r="13" fill="#4A2B1F"/>
+    <circle cx="258" cy="215" r="13" fill="#4A2B1F"/>
+    <circle cx="181" cy="209" r="4" fill="white"/>
+    <circle cx="263" cy="209" r="4" fill="white"/>
+    <path d="M197 253c12 10 30 10 43 0" stroke="#A84A4A" stroke-width="7" stroke-linecap="round"/>
+    <path d="M127 314c13-53 42-75 86-75 46 0 78 24 91 75 8 31-13 59-46 66-32 7-83 7-116-1-31-8-23-36-15-65Z" fill="#17171B"/>
+    <rect x="237" y="254" width="102" height="60" rx="14" fill="#F8FFF9" stroke="#33D978" stroke-width="6" transform="rotate(5 237 254)"/>
+    <path d="M258 280h59M258 298h43" stroke="#6B35D8" stroke-width="7" stroke-linecap="round"/>
+    <path d="M121 276c-16 12-27 31-31 54M310 283c12 14 19 31 20 50" stroke="#FFD2B8" stroke-width="18" stroke-linecap="round"/>
+  </g>
+</svg>

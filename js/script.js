@@ -38,7 +38,7 @@ const translations = {
         coach: {
             label: "Asistente chibi",
             speech: "¿Dudas? Te muestro el paso a paso y celebramos cada avance.",
-            alt: "Chibi guía de mahjong sosteniendo una ficha y un libro"
+            alt: "Monique, guía chibi de mahjong con un libro"
         },
         feedback: {
             correct: "✓ Correcto",
@@ -96,7 +96,7 @@ const translations = {
         },
         practice: {
             label: "Práctica destacada",
-            chibiAlt: "Chibi pensando con fichas de mahjong",
+            chibiAlt: "Monique pensando una respuesta",
             eyebrow: "Mini práctica",
             title: "¿Qué yaku ves?",
             handLabel: "Mano de ejemplo con yakuhai de dragón verde"
@@ -353,7 +353,7 @@ const translations = {
         coach: {
             label: "Chibi assistant",
             speech: "Questions? I can show each step and celebrate every bit of progress.",
-            alt: "Mahjong chibi guide holding a tile and a book"
+            alt: "Monique, a chibi mahjong guide with a book"
         },
         feedback: {
             correct: "✓ Correct",
@@ -411,7 +411,7 @@ const translations = {
         },
         practice: {
             label: "Featured practice",
-            chibiAlt: "Chibi thinking with mahjong tiles",
+            chibiAlt: "Monique thinking through an answer",
             eyebrow: "Mini practice",
             title: "Which yaku do you see?",
             handLabel: "Example hand with green dragon yakuhai"
@@ -668,7 +668,7 @@ const translations = {
         coach: {
             label: "Assistente chibi",
             speech: "Dúvidas? Eu mostro o passo a passo e celebramos cada avanço.",
-            alt: "Guia chibi de mahjong segurando uma peça e um livro"
+            alt: "Monique, guia chibi de mahjong com um livro"
         },
         feedback: {
             correct: "✓ Correto",
@@ -726,7 +726,7 @@ const translations = {
         },
         practice: {
             label: "Prática em destaque",
-            chibiAlt: "Chibi pensando com peças de mahjong",
+            chibiAlt: "Monique pensando em uma resposta",
             eyebrow: "Mini prática",
             title: "Que yaku você vê?",
             handLabel: "Mão de exemplo com yakuhai de dragão verde"
