@@ -952,7 +952,7 @@ const translations = {
 
 let currentLanguage = getInitialLanguage();
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("rincon:mounted", () => {
     const languageSelect = document.querySelector("#languageSelect");
     const moduleCards = document.querySelectorAll("[data-module]");
     const themeToggle = document.querySelector("#themeToggle");

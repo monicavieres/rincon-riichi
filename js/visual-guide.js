@@ -203,7 +203,7 @@
     let index = 0;
     let els = {};
 
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("rincon:mounted", () => {
         els = {
             lang: document.querySelector("#languageSelect"),
             card: document.querySelector("#guideCard"),

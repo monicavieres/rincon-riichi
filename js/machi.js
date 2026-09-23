@@ -12,7 +12,7 @@ const ui = {
 let currentLanguage = getInitialLanguage();
 const waits = window.machiWaits || [];
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("rincon:mounted", () => {
     const languageSelect = document.querySelector("#languageSelect");
     const themeToggle = document.querySelector("#themeToggle");
 

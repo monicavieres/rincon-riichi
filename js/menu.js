@@ -1,5 +1,5 @@
 (function () {
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("rincon:mounted", () => {
     const toggle = document.querySelector("#menuToggle");
     const topbar = document.querySelector("#topbar");
 

@@ -1,91 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#fdf9f7" />
     <title>Learn the Tiles</title>
-    <link rel="icon" type="image/svg+xml" href="../assets/logo-rincon-riichi.svg">
-    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
-    <link rel="icon" type="image/png" sizes="64x64" href="../assets/favicon-64.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
-    <link rel="stylesheet" href="../css/styles.css?v=meld-rotate-1">
-    <link rel="stylesheet" href="../css/tiles.css?v=tile-modal-1">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
-</head>
-<body class="tiles-body">
-    <div class="soft-bg" aria-hidden="true">
-        <span class="bubble bubble-green"></span>
-        <span class="bubble bubble-pink"></span>
-        <span class="bubble bubble-blue"></span>
-        <span class="sparkle s1">✦</span>
-        <span class="sparkle s2">♡</span>
-    </div>
-
-    <main class="app-shell tiles-shell">
-        <nav class="topbar" id="topbar">
-            <a class="brand" href="../index.html#practicar">
-                <img class="brand-logo" src="../assets/logo-rincon-riichi.svg" alt="Rincón Riichi"><img class="brand-mark" src="../assets/favicon-64.png" alt="Rincón Riichi">
-            </a>
-            <button class="menu-toggle" id="menuToggle" aria-label="Menú" aria-expanded="false" aria-controls="topbar-controls"><span class="menu-bars" aria-hidden="true"></span></button>
-            <span class="topbar-title">Fichas</span>
-            <div class="topbar-controls" id="topbar-controls">
-                <a class="pill blue" href="../index.html#practicar" data-i18n="back">← Back</a>
-                <label class="language-picker">
-                    <span data-i18n="language">Language</span>
-                    <select id="languageSelect" aria-label="Select language">
-                        <option value="es">ES</option>
-                        <option value="en">EN</option>
-                        <option value="pt">PT</option>
-                    </select>
-                </label>
-                <div class="theme-radio" role="radiogroup" aria-label="Tema" title="Tema"><label class="theme-option"><input type="radio" name="theme" value="light" aria-label="Tema claro"><span class="theme-option-pill" aria-hidden="true">☀️</span></label><label class="theme-option"><input type="radio" name="theme" value="dark" aria-label="Tema oscuro"><span class="theme-option-pill" aria-hidden="true">🌙</span></label></div>
-            </div>
-        </nav>
-
-        <section class="tiles-card sticker-panel" aria-live="polite">
-            <div class="tiles-header">
-                <p class="subtitle" data-i18n="subtitle">Mahjong uses three numbered suits and a small group of honor tiles. Learn the families first; patterns become much easier to see.</p>
-            </div>
-
-            <div class="family-tabs" id="familyTabs" aria-label="Tile families"></div>
-
-            <div class="tiles-stage">
-                <div class="tile-strip" id="tileStrip"></div>
-            </div>
-
-            <div class="slide-text">
-                <span class="status ready" id="slideCount">1 / 5</span>
-                <h2 id="familyTitle"></h2>
-                <p id="familyDescription"></p>
-            </div>
-
-            <div class="carousel-actions">
-                <button class="big-button blue" id="prevButton" data-i18n="prev">Previous</button>
-                <button class="big-button green" id="nextButton" data-i18n="next">Next</button>
-            </div>
-        </section>
-
-        <div class="tile-modal" id="tileModal" role="dialog" aria-modal="true" aria-labelledby="tileModalTitle" hidden>
-            <div class="tile-modal-backdrop" id="tileModalBackdrop"></div>
-            <div class="tile-modal-card sticker-panel">
-                <button class="tile-modal-close" id="tileModalClose" aria-label="Cerrar">✕</button>
-                <div class="tile-modal-tile">
-                    <img id="tileModalImage" src="" alt="">
-                </div>
-                <div class="tile-modal-copy">
-                    <p class="eyebrow" data-i18n="tileModal.label">Ficha</p>
-                    <h3 id="tileModalTitle"></h3>
-                    <p class="tile-modal-fact" id="tileModalFact"></p>
-                    <div class="tile-modal-tip" id="tileModalTip">
-                        <span class="tile-modal-tip-label" data-i18n="tileModal.tipLabel">Para memorizarla</span>
-                        <p id="tileModalMnemonic"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <script src="../js/tiles.js?v=tile-modal-2"></script>
-    <script src="../js/menu.js?v=theme-radio-1"></script>
-</body>
+    <link rel="icon" type="image/svg+xml" href="../assets/logo-rincon-riichi.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="../src/main.tsx"></script>
+    <script src="../js/tiles.js"></script>
+    <script src="../js/menu.js"></script>
+  </body>
 </html>

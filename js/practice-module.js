@@ -876,9 +876,26 @@ function shuffle(array) {
     return shuffled(array);
 }
 
+function getPageFromPath() {
+    const file = window.location.pathname.split("/").pop();
+    const pages = {
+        "waits.html": "waits",
+        "espera-tipo.html": "esperaTipo",
+        "espera-fichas.html": "esperaFichas",
+        "han.html": "han",
+        "calc.html": "calc",
+        "fu.html": "fu",
+        "valores.html": "valores",
+        "chinitsu.html": "chinitsu",
+        "furiten.html": "furiten",
+        "que-ficha-es.html": "tileName"
+    };
+    return document.body.dataset.modulePage || pages[file] || "waits";
+}
+
 const state = {
     language: getInitialLanguage(),
-    page: document.body.dataset.modulePage,
+    page: getPageFromPath(),
     round: 0,
     score: 0,
     selected: null,
@@ -920,7 +937,7 @@ const START_COPY = {
 
 const els = {};
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("rincon:mounted", () => {
     const themeToggle = document.querySelector("#themeToggle");
     const savedTheme = localStorage.getItem("theme") || "light";
     document.documentElement.setAttribute("data-theme", savedTheme);

@@ -285,7 +285,7 @@ const state = {
 
 const els = {};
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("rincon:mounted", () => {
     const themeToggle = document.querySelector("#themeToggle");
     const savedTheme = localStorage.getItem("theme") || "light";
     document.documentElement.setAttribute("data-theme", savedTheme);

@@ -1,0 +1,21 @@
+@import '../../../css/styles.css';
+@import '../../../css/module.css';
+@import '../../../css/ref.css';
+@import '../../../css/tutorial.css';
+@import '../../../css/visual-guide.css';
+@import '../../../css/machi.css';
+@import '../../../css/tiles.css';
+@import '../../../css/score.css';
+@import '../../../css/yaku-reference.css';
+@import '../../../css/yaku.css';
+@import '../../../css/links.css';
+
+#root { min-height: 100vh; }
+
+.route-status {
+  display: grid;
+  min-height: 50vh;
+  place-items: center;
+  padding: 2rem;
+  text-align: center;
+}

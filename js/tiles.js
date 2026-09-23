@@ -324,7 +324,7 @@ const state = {
 
 const els = {};
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("rincon:mounted", () => {
     Object.assign(els, {
         languageSelect: document.querySelector("#languageSelect"),
         familyTabs: document.querySelector("#familyTabs"),

@@ -21,7 +21,7 @@ function initReference(dataPath) {
         try { return eval(key) || {}; } catch (e) { return {}; }
     })();
 
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("rincon:mounted", () => {
         const languageSelect = document.querySelector("#languageSelect");
         const themeToggle = document.querySelector("#themeToggle");
         const savedTheme = localStorage.getItem("theme") || "light";
