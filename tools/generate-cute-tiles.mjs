@@ -16,11 +16,10 @@ const mappings = [
 ];
 
 const cat = `
-    <g fill="#f06ca4" opacity=".72">
-      <path d="M48 12c-2.6 0-4.8 1.6-5.8 3.9L38 12l1.6 7.2C36.9 21.2 35 24.7 35 28.5c0 2.4.9 4.6 2.4 6.3L36 44h24l-1.4-9.2c1.5-1.7 2.4-3.9 2.4-6.3 0-3.8-1.9-7.3-4.6-9.3L58 12l-4.2 3.9C52.8 13.6 50.6 12 48 12z"/>
-      <path d="M37 44c-4 2-6 5-6 9v5h34v-5c0-4-2-7-6-9z"/>
-    </g>
-    <path d="M65 53c5 0 8-3 8-8" fill="none" stroke="#f06ca4" stroke-opacity=".72" stroke-width="4" stroke-linecap="round"/>`;
+    <g transform="translate(39 10) scale(0.75)">
+      <path d="M12 3c-1.4 0-2.6.8-3.2 2L6 3l.8 4.2A6.5 6.5 0 0 0 5.5 11c0 1.5.5 2.9 1.4 4L6 20h12l-1-5c.9-1.1 1.4-2.5 1.4-4a6.5 6.5 0 0 0-1.3-3.8L18 3l-2.8 2C14.6 3.8 13.4 3 12 3Z" fill="#d94f86"/>
+      <path d="M18 20c2.5 0 4-1.6 4-4" fill="none" stroke="#d94f86" stroke-width="2.4" stroke-linecap="round"/>
+    </g>`;
 
 function composite(tileId) {
     const tilePng = readFileSync(join(sourceDir, `${tileId}.png`)).toString("base64");
@@ -38,8 +37,9 @@ function composite(tileId) {
   <rect x="10" y="7" width="76" height="113" rx="7" fill="#f3bfd6"/>
   <rect x="10" y="7" width="76" height="105" rx="7" fill="url(#face)" stroke="#8f3d68" stroke-width="3.4" filter="url(#shadow)"/>
   <path d="M17 112h62l-6 8H23z" fill="#d88fb0" opacity=".55"/>
+  <rect x="13" y="9" width="70" height="24" rx="9" fill="#ffc7de"/>
   ${cat}
-  <image href="data:image/png;base64,${tilePng}" x="15" y="29" width="66" height="73" preserveAspectRatio="xMidYMid meet"/>
+  <image href="data:image/png;base64,${tilePng}" x="15" y="34" width="66" height="68" preserveAspectRatio="xMidYMid meet"/>
 </svg>
 `;
 }
