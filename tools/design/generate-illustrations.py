@@ -1,7 +1,7 @@
 """Isometric illustration generator for Rincón Riichi.
 Draws flat-shaded, outlined boxes (table, walls, console, dice, point sticks)
 and writes each scene in a light and a dark variant."""
-import base64, math, os, subprocess, sys, tempfile
+import base64, math, os, re, subprocess, sys, tempfile
 
 OUT = sys.argv[1]
 GLYPHS = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'assets', 'tiles-fluffystuff-png')
@@ -25,14 +25,14 @@ THEMES = {
         'rail': '#7b4fe0', 'felt': '#22a08b', 'console': '#2e2a48',
         'cream': '#fbf2df', 'back': '#e0457f', 'gold': '#f2b42c', 'pin': '#2f7fd6',
         'sou': '#22a565', 'tsumo': '#f07a3a', 'man': '#e0457f', 'white': '#fffdf6',
-        'wood': '#e9a25a', 'screen': '#9ff0d8', 'plate': '#8fd0ea',
+        'wood': '#e9a25a', 'screen': '#9ff0d8', 'cplate': '#55bdeb', 'cpurple': '#4d3eb8', 'cwell': '#0a0a0b', 'cinset': '#3b3020', 'cnum': '#fff6dc', 'cnumline': '#2f2984',
     },
     'dark': {
         'ink': '#0c0a14', 'shadow': 'rgba(0,0,0,0.45)', 'rim': '#4a4466', 'cast': 'rgba(0,0,0,0.38)',
         'rail': '#8a62f0', 'felt': '#2bb39c', 'console': '#3a3558',
         'cream': '#f6ead3', 'back': '#f06d9e', 'gold': '#f5c451', 'pin': '#5aa2ee',
         'sou': '#3fc283', 'tsumo': '#f59560', 'man': '#f06d9e', 'white': '#fffaf0',
-        'wood': '#eeac68', 'screen': '#b6f7e4', 'plate': '#6fbfe0',
+        'wood': '#eeac68', 'screen': '#b6f7e4', 'cplate': '#46a6d6', 'cpurple': '#6454d0', 'cwell': '#050506', 'cinset': '#33291a', 'cnum': '#fff6dc', 'cnumline': '#2f2984',
     },
 }
 
@@ -322,65 +322,138 @@ def stick(s, x, y, z, kind, length=96, key=None):
           deco=[stick_marks(kind)], sw=1.2, key=key)
 
 
-def console(s, x, y, z, a=120, riichi=('S',)):
-    """The compass, modelled on table-top compasses like the AMOS Compass: a light-blue plate, a dark four-armed
-    star with the seat winds and a compass rose, and one riichi-stick slot per side laid out as a pinwheel.
-    Seats: South at +y (the viewer's seat), West at +x, North at -y, East at -x (turn order runs counter-clockwise)."""
+def parse_path(d, steps=10):
+    """Flatten an absolute SVG path (M L H V C Z) into points; used to port the site's wind-indicator artwork."""
+    toks = re.findall(r'[MCVHLZ]|-?\d+\.?\d*', d)
+    pts, i, cmd, cur = [], 0, None, (0.0, 0.0)
+    while i < len(toks):
+        if toks[i] in ('M', 'C', 'V', 'H', 'L', 'Z'):
+            cmd = toks[i]
+            i += 1
+            if cmd == 'Z':
+                continue
+        if cmd in ('M', 'L'):
+            cur = (float(toks[i]), float(toks[i + 1]))
+            i += 2
+            pts.append(cur)
+            cmd = 'L'
+        elif cmd == 'H':
+            cur = (float(toks[i]), cur[1])
+            i += 1
+            pts.append(cur)
+        elif cmd == 'V':
+            cur = (cur[0], float(toks[i]))
+            i += 1
+            pts.append(cur)
+        elif cmd == 'C':
+            x1, y1, x2, y2, x3, y3 = (float(v) for v in toks[i:i + 6])
+            i += 6
+            x0, y0 = cur
+            for n in range(1, steps + 1):
+                t_ = n / steps
+                m = 1 - t_
+                pts.append((m ** 3 * x0 + 3 * m * m * t_ * x1 + 3 * m * t_ * t_ * x2 + t_ ** 3 * x3,
+                            m ** 3 * y0 + 3 * m * m * t_ * y1 + 3 * m * t_ * t_ * y2 + t_ ** 3 * y3))
+            cur = (x3, y3)
+    return pts
+
+
+def rrect(x, y, w, h, r, n=5):
+    pts = []
+    for ccx, ccy, a0 in ((x + w - r, y + r, -90), (x + w - r, y + h - r, 0), (x + r, y + h - r, 90), (x + r, y + r, 180)):
+        for k_ in range(n + 1):
+            ang = math.radians(a0 + 90 * k_ / n)
+            pts.append((ccx + r * math.cos(ang), ccy + r * math.sin(ang)))
+    return pts
+
+
+def rotate_pts(pts, cx, cy, deg):
+    c, s_ = math.cos(math.radians(deg)), math.sin(math.radians(deg))
+    return [(cx + (px - cx) * c - (py - cy) * s_, cy + (px - cx) * s_ + (py - cy) * c) for px, py in pts]
+
+
+KANJI_FONT = "'Noto Serif JP','Hiragino Mincho ProN','Yu Mincho',serif"
+NUM_FONT = "'Barlow Semi Condensed','Barlow',system-ui,sans-serif"
+
+# Orientation of a seat's text as (right, down) vectors, so every label faces the player who sits there.
+SEAT_TEXT = {'E': ((1, 0), (0, 1)), 'W': ((-1, 0), (0, -1)), 'N': ((0, 1), (-1, 0)), 'S': ((0, -1), (1, 0))}
+
+
+def console(s, x, y, z, a=120, riichi=('E',)):
+    """The compass: the site's wind-indicator plate (assets/wind-indicator-rincon.svg) laid on the table, without its
+    round-wind screen. Same orientation as the original: East at the bottom (the viewer's seat, the dealer),
+    South right, West top, North left. Each side has a riichi slot with its dice numbers; the centre is a rose."""
     t = s.t
-    s.box(x, y, z, a, a, 6, t['plate'], key=(x + y + a, z))
+    sc = a / 604.0
+    cx, cy = x + a / 2, y + a / 2
     top = z + 6.3
     k = (x + y + a + 1, z + 9)
-    cx, cy = x + a / 2, y + a / 2
+    X = lambda u: cx + (u - 350) * sc
+    Y = lambda v: cy + (v - 350) * sc
 
-    def flat(pts, fill, sw=1.0, key=k):
-        s.raw(key, s.poly([(px, py, top) for px, py in pts], fill, sw=sw))
+    def flat(uv, fill, sw=1.0, stroke=True, extra='', n=0):
+        s.raw((k[0] + n, k[1]), s.poly([(X(u), Y(v), top) for u, v in uv], fill, stroke=stroke, sw=sw, extra=extra))
 
-    # four-armed star: one rounded arm per seat, then the hub
-    arm, reach = 10, 15
-    for ux, uy in ((0, -1), (1, 0), (0, 1), (-1, 0)):
-        px, py = -uy, ux
-        cap = [(cx + ux * reach + (px * math.cos(math.pi * n / 8) + ux * math.sin(math.pi * n / 8)) * arm,
-                cy + uy * reach + (py * math.cos(math.pi * n / 8) + uy * math.sin(math.pi * n / 8)) * arm) for n in range(9)]
-        flat([(cx - px * arm, cy - py * arm)] + cap[::-1] + [(cx + px * arm, cy + py * arm)], t['console'], sw=1.1)
-    s.raw(k, s.circle((cx, cy, top), (1, 0, 0), (0, 1, 0), 15, t["console"], sw=1.1))
-    rose = []
-    for n in range(16):
-        ang = math.pi * n / 8
-        r = 12 if n % 4 == 0 else (7 if n % 2 == 0 else 3.5)
-        rose.append((cx + r * math.sin(ang), cy - r * math.cos(ang), top + 0.1))
-    s.raw((k[0] + 1, k[1]), s.poly(rose, shade(t['plate'], 0.85), sw=0.6))
-    for (ux, uy), ch in (((0, -1), '北'), ((1, 0), '西'), ((0, 1), '南'), ((-1, 0), '東')):
-        s.raw((k[0] + 2, k[1]), text_top(ch, t['man'] if ch == '東' else t['cream'], 12)(s, cx + ux * 19, cy + uy * 19, z - 1.7, 0, 0, 8))
-    # one riichi-stick slot centred on each side, with a half disc showing that seat's dice numbers
-    # (counted counter-clockwise from the dealer: East 5·9, South 2·6·10, West 3·7·11, North 4·8·12)
-    length, depth, inset, r = 56, 9, 6, 16
-    slots = {
-        'N': ((cx - length / 2, y + inset, length, depth), (cx, y + inset + depth), (0, 1), '4 · 8 · 12'),
-        'S': ((cx - length / 2, y + a - inset - depth, length, depth), (cx, y + a - inset - depth), (0, -1), '2 · 6 · 10'),
-        'E': ((x + inset, cy - length / 2, depth, length), (x + inset + depth, cy), (1, 0), '5 · 9'),
-        'W': ((x + a - inset - depth, cy - length / 2, depth, length), (x + a - inset - depth, cy), (-1, 0), '3 · 7 · 11'),
-    }
-    for seat, ((gx, gy, gw, gd), (qx, qy), (ux, uy), dice) in slots.items():
-        base = math.atan2(uy, ux)
-        disc = [(qx + r * math.cos(base - math.pi / 2 + n * math.pi / 12), qy + r * math.sin(base - math.pi / 2 + n * math.pi / 12)) for n in range(13)]
-        flat(disc, t['cream'], sw=0.8)
-        nx, ny = qx + ux * 8, qy + uy * 8
-        e, f_ = P(nx, ny, top + 0.1)
-        s.raw((k[0] + 1, k[1]), f'<text transform="matrix({C30:.4f} {S30} {-C30:.4f} {S30} {e:.1f} {f_:.1f})" font-family="\'Barlow Semi Condensed\',\'Barlow\',sans-serif" font-weight="700" font-size="6" fill="{t["console"]}" text-anchor="middle" dominant-baseline="central">{dice}</text>')
-        flat([(gx, gy), (gx + gw, gy), (gx + gw, gy + gd), (gx, gy + gd)], shade(t['console'], 0.6), sw=1)
-        if seat in riichi:
-            body, ink = STICK_COLOURS[1000]
-            dot = lambda s_, bx, by, bz, bw, bd, bh: s_.circle((bx + bw / 2, by + bd / 2, bz + bh), (1, 0, 0), (0, 1, 0), 1.6, ink, stroke=False)
-            s.box(gx + 1.5, gy + 1.5, z + 4, gw - 3, gd - 3, 4, body, left=shade(body, 0.86), right=shade(body, 0.74),
-                  deco=[dot], sw=0.9, key=(k[0] + 4, k[1]))
+    def label(txt, u, v, size, fill, seat, font, line=None, line_w=0, n=3):
+        (rx, ry), (dx, dy) = SEAT_TEXT[seat]
+        p = lambda ax, ay: ((ax - ay) * C30, (ax + ay) * 0.5)
+        a_, b_ = p(rx, ry)
+        c_, d_ = p(dx, dy)
+        e, f_ = P(X(u), Y(v), top + 0.1)
+        stroke = f' stroke="{line}" stroke-width="{line_w:.2f}" paint-order="stroke" stroke-linejoin="round"' if line else ''
+        s.raw((k[0] + n, k[1]), f'<text transform="matrix({a_:.4f} {b_:.4f} {c_:.4f} {d_:.4f} {e:.2f} {f_:.2f})" '
+                                f'font-family="{font}" font-weight="800" font-size="{size * sc:.2f}" fill="{fill}"{stroke} '
+                                f'text-anchor="middle" dominant-baseline="central">{txt}</text>')
+
+    s.box(x, y, z, a, a, 6, t['cplate'], key=(x + y + a, z))
+    # slot housings open to the plate edge, then the slot inserts
+    for d in ('M205 48H495V106C495 124.2 480.2 139 462 139H238C219.8 139 205 124.2 205 106V48Z',
+              'M205 652H495V594C495 575.8 480.2 561 462 561H238C219.8 561 205 575.8 205 594V652Z',
+              'M48 205H106C124.2 205 139 219.8 139 238V462C139 480.2 124.2 495 106 495H48V205Z',
+              'M652 205H594C575.8 205 561 219.8 561 238V462C561 480.2 575.8 495 594 495H652V205Z'):
+        flat(parse_path(d), t['cwell'], sw=0.5)
+    for rx_, ry_, rw, rh in ((236, 70, 228, 40), (236, 590, 228, 40), (70, 236, 40, 228), (590, 236, 40, 228)):
+        flat(rrect(rx_, ry_, rw, rh, 10), t['cinset'], sw=0.7)
+    # dice rests at two corners
+    for px_, py_ in ((160, 92), (482, 476)):
+        flat(rotate_pts(rrect(px_, py_, 58, 132, 13), px_ + 29, py_ + 66, -45), t['cwell'], sw=0.5)
+    # purple cross with a tab beside each slot
+    cross = ('M350 153C404 153 428 195 428 243V273H458C506 273 542 298 542 350C542 402 506 427 458 427H428V457'
+             'C428 505 404 547 350 547C296 547 272 505 272 457V427H242C194 427 158 402 158 350C158 298 194 273 242 273'
+             'H272V243C272 195 296 153 350 153Z')
+    flat(parse_path(cross), t['cpurple'], sw=1.0, n=1)
+    for rx_, ry_, rw, rh in ((235, 116, 230, 48), (235, 536, 230, 48), (116, 235, 48, 230), (536, 235, 48, 230)):
+        flat(rrect(rx_, ry_, rw, rh, 10), t['cpurple'], sw=0.9, n=1)
+    # the riichi stick lies in its seat's slot (only East's, the viewer's, is filled)
+    slot = {'E': (236, 590, 228, 40), 'S': (590, 236, 40, 228), 'W': (236, 70, 228, 40), 'N': (70, 236, 40, 228)}
+    for seat in riichi:
+        sx, sy, sw_, sh = slot[seat]
+        body, ink = STICK_COLOURS[1000]
+        x0, x1, y0, y1 = X(sx), X(sx + sw_), Y(sy), Y(sy + sh)
+        dot = lambda s_, bx, by, bz, bw, bd, bh: s_.circle((bx + bw / 2, by + bd / 2, bz + bh), (1, 0, 0), (0, 1, 0), 1.5, ink, stroke=False)
+        s.box(x0 + 1.5, y0 + 1.5, z + 4, (x1 - x0) - 3, (y1 - y0) - 3, 4, body, left=shade(body, 0.86), right=shade(body, 0.74),
+              deco=[dot], sw=0.9, key=(k[0] + 2, k[1]))
+    # compass rose in the middle (the original's screen is left out on purpose)
+    ring = lambda r: [(350 + r * math.cos(math.pi * n / 12), 350 + r * math.sin(math.pi * n / 12)) for n in range(24)]
+    for r_, w_ in ((82, 1.0), (62, 0.7)):
+        flat(ring(r_), 'none', stroke=False, extra=f' stroke="#eee9ff" stroke-width="{w_}"', n=2)
+    rose = 'M350 263L368 330L437 312L387 360L437 408L368 390L350 457L332 390L263 408L313 360L263 312L332 330L350 263Z'
+    flat(parse_path(rose), '#f7f2ff', sw=0.6, n=2)
+    # seat labels, each upright for the player in that seat
+    labels = (('E', 350, 565, '5 · 9', 31, 350, 492, '東'), ('W', 350, 140, '3 · 7 · 11', 31, 350, 225, '西'),
+              ('N', 140, 350, '4 · 8 · 12', 29, 230, 350, '北'), ('S', 560, 350, '2 · 6 · 10', 29, 470, 350, '南'))
+    for seat, nu, nv, nums, nsize, ku, kv, ch in labels:
+        label(nums, nu, nv, nsize, t['cnum'], seat, NUM_FONT, line=t['cnumline'], line_w=6 * sc)
+        label(ch, ku, kv, 56 if seat == 'E' else 50, t['man'] if seat == 'E' else '#111111', seat, KANJI_FONT,
+              line='#fff8ed', line_w=7 * sc)
 
 
 def round_marker(s, x, y, z, wind='東'):
-    """The round-wind marker: an orange plaque laid flush against the table edge on the starting dealer's side."""
+    """The round-wind marker: an orange plaque laid flush against the table edge, to the dealer's right."""
     t = s.t
-    s.cast(x, y, 18, 34, z, 6)
-    s.box(x, y, z, 18, 34, 6, t['tsumo'], left=shade(t['tsumo'], 0.86), right=shade(t['tsumo'], 0.72),
-          deco=[text_top(wind, t['console'], 15)], sw=1.2)
+    s.cast(x, y, 34, 18, z, 6)
+    s.box(x, y, z, 34, 18, 6, t['tsumo'], left=shade(t['tsumo'], 0.86), right=shade(t['tsumo'], 0.72),
+          deco=[text_top(wind, t['console'], 14)], sw=1.2)
 
 
 def face_glyph(s, code, origin, u, v):
@@ -480,9 +553,9 @@ def scene_table(t):
     s.cast(240, 240, 120, 120, z, 6)
     console(s, 240, 240, z)
     open_drawer(s)
-    die(s, 334, 338, z + 6, a=10, faces=(6, 2, 3))
-    die(s, 346, 326, z + 6, a=10, faces=(1, 4, 2))
-    round_marker(s, 31, 494, z)  # East started as dealer: flush against East's edge, at East's right
+    die(s, 327, 330, z + 6, a=9, faces=(6, 2, 3))
+    die(s, 334, 338, z + 6, a=9, faces=(1, 4, 2))
+    round_marker(s, 534, 551, z)  # East (the viewer) is the first dealer: marker flush on the front edge, to East's right
     hand(s, 'N', ['1m'] * 13, z)
     hand(s, 'W', ['1m'] * 13, z)
     hand(s, 'E', ['1m', '1m', '5m', '6m', '7m', '2p', '2p', '9p', '3s', '4s', '5s', '6z', '6z'], z)

@@ -209,10 +209,10 @@ export const tableExplorerStops: TableExplorerStop[] = [
     actionLabel: 'Aprender defensa',
     route: 'aprender/defensa.html',
     hotspot: [253, 410, 136],
-    focus: { boxes: [{ x: 240, y: 400, z: FELT, w: 27, d: 20, h: 15 }, { x: 272, y: 345, z: FELT, w: 56, d: 9, h: 10 }], zoom: 2.8 },
+    focus: { boxes: [{ x: 240, y: 400, z: FELT, w: 27, d: 20, h: 15 }, { x: 277, y: 347.5, z: FELT, w: 46, d: 8, h: 10 }], zoom: 2.8 },
     callouts: [
       { label: 'Ficha girada', at: [238, 410, FELT + 6], dx: -60, dy: 40 },
-      { label: 'Palito de 1000 en tu ranura del compass', at: [328, 354, FELT + 7], dx: -20, dy: 74 },
+      { label: 'Palito de 1000 en tu ranura del compass', at: [323, 352, FELT + 7], dx: -20, dy: 74 },
     ],
   },
   {
@@ -244,7 +244,7 @@ export const tableExplorerStops: TableExplorerStop[] = [
     eyebrow: 'Orientación y ronda',
     title: 'El compass te dice quién es quién',
     shortTitle: 'Compass',
-    description: 'El compass marca el viento de cada asiento. Este es el dealer y cambia durante la partida; el viento de ronda lo indica la placa naranja junto al borde.',
+    description: 'El compass marca el viento de cada asiento: Este abajo (tú, el dealer), Sur a la derecha, Oeste arriba y Norte a la izquierda. Cada lado tiene su ranura para el palito de riichi. El viento de ronda lo indica la placa naranja junto al borde.',
     observe: [
       'Este es el dealer: juega y descarta primero.',
       'El turno avanza en sentido antihorario: Este, Sur, Oeste, Norte.',
@@ -256,9 +256,9 @@ export const tableExplorerStops: TableExplorerStop[] = [
     hotspot: [300, 300, FELT + 8],
     focus: { boxes: [{ x: 240, y: 240, z: FELT, w: 120, d: 120, h: 6 }], zoom: 3 },
     callouts: [
-      { label: 'Este: el dealer', at: [272, 300, FELT + 6], dx: -60, dy: -90 },
-      { label: 'Tu asiento: Sur', at: [300, 328, FELT + 6], dx: -120, dy: 40 },
-      { label: 'Ranura para el palito de riichi', at: [331, 250, FELT + 6], dx: 40, dy: -80 },
+      { label: 'Este: tú, el dealer', at: [300, 339, FELT + 6], dx: -100, dy: 30 },
+      { label: 'Sur, a tu derecha', at: [339, 300, FELT + 6], dx: 60, dy: 50 },
+      { label: 'Ranura vacía para el palito de riichi', at: [352, 277, FELT + 6], dx: 30, dy: -70 },
     ],
   },
   {
@@ -275,11 +275,11 @@ export const tableExplorerStops: TableExplorerStop[] = [
     practicePrompt: 'Mira la placa: 東. Un trío de Este te da yaku por viento de ronda y, si tu asiento es Este, también por asiento.',
     actionLabel: 'Ver yaku de vientos',
     route: 'aprender/yaku-reference.html',
-    hotspot: [40, 511, FELT + 6],
-    focus: { boxes: [{ x: 31, y: 494, z: FELT, w: 18, d: 34, h: 6 }], zoom: 3 },
+    hotspot: [551, 560, FELT + 6],
+    focus: { boxes: [{ x: 534, y: 551, z: FELT, w: 34, d: 18, h: 6 }], zoom: 3 },
     callouts: [
-      { label: 'Viento de ronda: Este', at: [49, 500, FELT + 3], dx: 60, dy: -60 },
-      { label: 'Pegada al borde del dealer inicial', at: [31, 528, FELT + 3], dx: 70, dy: 46 },
+      { label: 'Viento de ronda: Este', at: [534, 560, FELT + 3], dx: -90, dy: -50 },
+      { label: 'Pegada al borde, a la derecha del dealer', at: [568, 568, FELT + 3], dx: -60, dy: 56 },
     ],
   },
 ];
