@@ -1,16 +1,17 @@
 (function () {
-  const CUTE_TILE = /assets\/tiles-cute\/([^/?#]+\.svg)/;
+  const THEMED_TILE = /assets\/(?:tiles-cute|tiles-samurai)\/([^/?#]+\.svg)/;
   const NORMAL_TILE = /assets\/(?:tiles-fluffystuff-composite|tiles)\/([^/?#]+\.svg)/;
-  const isTileSrc = (src) => NORMAL_TILE.test(src) || CUTE_TILE.test(src);
+  const isTileSrc = (src) => NORMAL_TILE.test(src) || THEMED_TILE.test(src);
 
   const syncTile = (img) => {
     const src = img.getAttribute("src") || "";
     if (!isTileSrc(src)) return;
 
-    if (!CUTE_TILE.test(src)) img.dataset.rinconTileSrc = src;
+    if (!THEMED_TILE.test(src)) img.dataset.rinconTileSrc = src;
     const original = img.dataset.rinconTileSrc || src;
-    const cute = document.documentElement.getAttribute("data-theme") === "cute";
-    const next = cute ? original.replace(NORMAL_TILE, "assets/tiles-cute/$1") : original;
+    const theme = document.documentElement.getAttribute("data-theme");
+    const folder = theme === "cute" ? "tiles-cute" : theme === "samurai" ? "tiles-samurai" : null;
+    const next = folder ? original.replace(NORMAL_TILE, `assets/${folder}/$1`) : original;
     if (next !== src) img.setAttribute("src", next);
   };
 
@@ -74,7 +75,8 @@
         document.documentElement.setAttribute("data-theme", theme);
         const themeColor = document.querySelector('meta[name="theme-color"]');
         if (themeColor) {
-          themeColor.setAttribute("content", theme === "cute" ? "#fff1f7" : theme === "dark" ? "#1a1826" : "#f7eedf");
+          const colors = { light: "#f7eedf", dark: "#1a1826", cute: "#fff1f7", samurai: "#ece4d2" };
+          themeColor.setAttribute("content", colors[theme] || colors.light);
         }
         try {
           localStorage.setItem("theme", theme);
@@ -90,7 +92,7 @@
         document.documentElement.getAttribute("data-theme") ||
         (typeof localStorage !== "undefined" && localStorage.getItem("theme")) ||
         "light";
-      const initial = ["light", "dark", "cute"].includes(stored) ? stored : "light";
+      const initial = ["light", "dark", "cute", "samurai"].includes(stored) ? stored : "light";
 
       radios.forEach((radio) => {
         radio.addEventListener("change", () => {

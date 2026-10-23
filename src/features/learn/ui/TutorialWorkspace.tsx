@@ -128,7 +128,7 @@ export function TutorialWorkspace() {
   useEffect(() => {
     const radios = Array.from(document.querySelectorAll<HTMLInputElement>('input[name="theme"]'));
     const stored = localStorage.getItem('theme');
-    const initial = stored === 'dark' || stored === 'cute' ? stored : 'light';
+    const initial = stored === 'dark' || stored === 'cute' || stored === 'samurai' ? stored : 'light';
     const apply = (theme: string) => {
       document.documentElement.setAttribute('data-theme', theme);
       localStorage.setItem('theme', theme);

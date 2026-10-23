@@ -157,11 +157,56 @@
     --shadow-tile: 0 3px 0 #f3bfd6;
 }
 
+:root[data-theme="samurai"] {
+    color-scheme: light;
+
+    --paper: #ece4d2;
+    --paper-deep: #e0d5bd;
+    --card: #f6f0e2;
+    --card-sunk: #eae1ce;
+    --line: #c9b892;
+    --line-soft: #ded1b5;
+    --ink: #1d2635;
+    --text: #3d4654;
+    --muted: #6b7280;
+    --faint: #a79a80;
+    --felt: #33566b;
+    --felt-strong: #244355;
+    --felt-soft: #dbe6ec;
+    --man: #9e2b2b;
+    --man-strong: #7a1f1f;
+    --man-soft: #f0dada;
+    --pin: #2f5d7c;
+    --pin-strong: #1f4058;
+    --pin-soft: #d7e4ed;
+    --sou: #4f6b4a;
+    --sou-strong: #365033;
+    --sou-soft: #dfe8da;
+    --gold: #c9a227;
+    --gold-strong: #8a6d12;
+    --gold-soft: #f4e9c5;
+    --riichi: #6b4c7a;
+    --riichi-strong: #4f3560;
+    --riichi-soft: #e7dcec;
+    --tsumo: #b5651d;
+    --tsumo-strong: #8a4a12;
+    --tsumo-soft: #f1dfcf;
+    --on-accent: #fffaf0;
+    --tile-face: #fbf7ec;
+    --tile-edge: #b08a3e;
+    --focus: var(--gold-strong);
+
+    --shadow-float: 0 6px 16px -12px rgba(45, 35, 15, 0.45);
+    --shadow-gloss: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    --shadow-tile: 0 3px 0 #b08a3e;
+}
+
 /* ── 2 · Legacy aliases: older pages keep working on the new palette ── */
 :root,
 :root[data-theme="dark"],
 :root[data-theme="light"],
-:root[data-theme="cute"] {
+:root[data-theme="cute"],
+:root[data-theme="samurai"] {
     --green: var(--sou);
     --green-dark: var(--sou-strong);
     --pink: var(--man);
@@ -208,6 +253,10 @@
     --shadow: rgba(160, 60, 110, 0.12);
 }
 
+:root[data-theme="samurai"] {
+    --shadow: rgba(70, 55, 20, 0.12);
+}
+
 /* ── 3 · Global surfaces ────────────────────────────────────── */
 body {
     color: var(--text);
@@ -234,13 +283,17 @@ h4 {
 }
 
 .rr-only-dark,
-.rr-only-cute {
+.rr-only-cute,
+.rr-only-samurai {
     display: none !important;
 }
 
 :root[data-theme="dark"] .rr-only-light,
 :root[data-theme="cute"] .rr-only-light,
-:root[data-theme="cute"] .rr-only-dark {
+:root[data-theme="cute"] .rr-only-dark,
+:root[data-theme="samurai"] .rr-only-light,
+:root[data-theme="samurai"] .rr-only-dark,
+:root[data-theme="samurai"] .rr-only-cute {
     display: none !important;
 }
 
@@ -249,6 +302,10 @@ h4 {
 }
 
 :root[data-theme="cute"] .rr-only-cute {
+    display: block !important;
+}
+
+:root[data-theme="samurai"] .rr-only-samurai {
     display: block !important;
 }
 
@@ -417,7 +474,7 @@ body:has(.side-rail) {
 }
 
 .side-rail.menu-open .side-rail-theme {
-    grid-template-columns: repeat(3, 40px);
+    grid-template-columns: repeat(4, 40px);
     justify-content: start;
 }
 
@@ -1645,3 +1702,58 @@ body:has(.side-rail) {
 :root[data-theme="cute"] .orange-card { --module-accent: var(--tsumo); --module-tint: rgba(255, 159, 122, 0.12); }
 :root[data-theme="cute"] .purple-card { --module-accent: var(--riichi); --module-tint: rgba(180, 107, 214, 0.12); }
 :root[data-theme="cute"] .red-card { --module-accent: var(--man); --module-tint: rgba(232, 79, 143, 0.12); }
+
+/* ── Samurai theme refinements ──────────────────────────────── */
+:root[data-theme="samurai"] body {
+    background:
+        radial-gradient(circle at 8% 6%, rgba(158, 43, 43, 0.10) 0, transparent 26rem),
+        radial-gradient(circle at 92% 12%, rgba(47, 93, 124, 0.12) 0, transparent 28rem),
+        radial-gradient(circle at 50% 96%, rgba(201, 162, 39, 0.12) 0, transparent 30rem),
+        var(--paper);
+}
+
+:root[data-theme="samurai"] .feedback.good,
+:root[data-theme="samurai"] .status.ready,
+:root[data-theme="samurai"] .family-tab.is-active,
+:root[data-theme="samurai"] .score-tab.is-active,
+:root[data-theme="samurai"] .answer-button.is-correct,
+:root[data-theme="samurai"] .results-row.is-correct .results-mark,
+:root[data-theme="samurai"] .ref-value,
+:root[data-theme="samurai"] .guide-step,
+:root[data-theme="samurai"] .yakuref-value,
+:root[data-theme="samurai"] .torpedo-han,
+:root[data-theme="samurai"] .fu-base h3,
+:root[data-theme="samurai"] .tile-set-picker select,
+:root[data-theme="samurai"] .switch-control input:checked + .switch-track {
+    background: linear-gradient(180deg, #d9b64a, var(--green));
+}
+
+:root[data-theme="samurai"] .module-card .status.ready {
+    border-color: color-mix(in srgb, var(--gold) 42%, transparent);
+    color: var(--ink);
+    background: color-mix(in srgb, var(--gold) 14%, var(--card-bg));
+}
+
+:root[data-theme="samurai"] .tiles-card {
+    background:
+        radial-gradient(circle at 20% 24%, rgba(47, 93, 124, 0.14), transparent 30%),
+        radial-gradient(circle at 80% 78%, rgba(158, 43, 43, 0.10), transparent 34%),
+        color-mix(in srgb, var(--card) 84%, transparent);
+}
+
+:root[data-theme="samurai"] .tiles-stage {
+    border-color: rgba(176, 138, 62, 0.30);
+    background:
+        radial-gradient(circle at 18% 22%, rgba(47, 93, 124, 0.16), transparent 28%),
+        radial-gradient(circle at 82% 74%, rgba(201, 162, 39, 0.14), transparent 32%),
+        linear-gradient(135deg, rgba(248, 243, 232, 0.82), rgba(234, 225, 206, 0.86));
+    box-shadow: inset 0 0 0 0.08rem rgba(255, 250, 240, 0.8);
+}
+
+:root[data-theme="samurai"] .green-card { --module-accent: var(--sou); --module-tint: rgba(79, 107, 74, 0.12); }
+:root[data-theme="samurai"] .blue-card { --module-accent: var(--pin); --module-tint: rgba(47, 93, 124, 0.12); }
+:root[data-theme="samurai"] .pink-card { --module-accent: var(--man); --module-tint: rgba(158, 43, 43, 0.10); }
+:root[data-theme="samurai"] .yellow-card { --module-accent: var(--gold); --module-tint: rgba(201, 162, 39, 0.14); }
+:root[data-theme="samurai"] .orange-card { --module-accent: var(--tsumo); --module-tint: rgba(181, 101, 29, 0.12); }
+:root[data-theme="samurai"] .purple-card { --module-accent: var(--riichi); --module-tint: rgba(107, 76, 122, 0.12); }
+:root[data-theme="samurai"] .red-card { --module-accent: var(--man); --module-tint: rgba(158, 43, 43, 0.12); }
