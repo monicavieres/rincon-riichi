@@ -13,7 +13,7 @@ def glyph_data(code):
     if code not in _glyph_cache:
         with tempfile.TemporaryDirectory() as tmp:
             out = os.path.join(tmp, f'{code}.png')
-            subprocess.run(['sips', '-Z', '72', os.path.join(GLYPHS, f'{code}.png'), '--out', out], check=True, capture_output=True)
+            subprocess.run(['sips', '-Z', '128', os.path.join(GLYPHS, f'{code}.png'), '--out', out], check=True, capture_output=True)
             _glyph_cache[code] = 'data:image/png;base64,' + base64.b64encode(open(out, 'rb').read()).decode()
     return _glyph_cache[code]
 os.makedirs(OUT, exist_ok=True)
@@ -21,14 +21,14 @@ C30, S30 = math.cos(math.radians(30)), 0.5
 
 THEMES = {
     'light': {
-        'ink': '#23203f', 'shadow': 'rgba(60,45,20,0.16)', 'rim': None,
+        'ink': '#23203f', 'shadow': 'rgba(60,45,20,0.16)', 'rim': None, 'cast': 'rgba(10,40,40,0.22)',
         'rail': '#7b4fe0', 'felt': '#22a08b', 'console': '#2e2a48',
         'cream': '#fbf2df', 'back': '#e0457f', 'gold': '#f2b42c', 'pin': '#2f7fd6',
         'sou': '#22a565', 'tsumo': '#f07a3a', 'man': '#e0457f', 'white': '#fffdf6',
         'wood': '#e9a25a', 'screen': '#9ff0d8',
     },
     'dark': {
-        'ink': '#0c0a14', 'shadow': 'rgba(0,0,0,0.45)', 'rim': '#4a4466',
+        'ink': '#0c0a14', 'shadow': 'rgba(0,0,0,0.45)', 'rim': '#4a4466', 'cast': 'rgba(0,0,0,0.38)',
         'rail': '#8a62f0', 'felt': '#2bb39c', 'console': '#3a3558',
         'cream': '#f6ead3', 'back': '#f06d9e', 'gold': '#f5c451', 'pin': '#5aa2ee',
         'sou': '#3fc283', 'tsumo': '#f59560', 'man': '#f06d9e', 'white': '#fffaf0',
@@ -85,6 +85,24 @@ class Scene:
         pts = [P(x - pad, y + pad, 0), P(x + w - pad, y + pad, 0), P(x + w + pad * 1.2, y + d + pad * 1.6, 0), P(x + pad, y + d + pad * 1.6, 0)]
         d_ = ' '.join('%.1f,%.1f' % p for p in pts)
         self.items.append(((-1e9, 0), f'<polygon points="{d_}" fill="{self.t["shadow"]}"/>'))
+
+    def cast(self, x, y, w, d, z, h):
+        """Contact shadow on the surface at height z: light comes from the top-left, so it falls toward +x+y."""
+        k = h * 0.55
+        pts = [P(px + ox, py + oy, z) for px, py in ((x, y), (x + w, y), (x + w, y + d), (x, y + d)) for ox, oy in ((0, 0), (k, k))]
+        pts = sorted(set(pts))
+        def cross(o, a, b):
+            return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+        hull = []
+        for seq in (pts, pts[::-1]):
+            part = []
+            for q in seq:
+                while len(part) >= 2 and cross(part[-2], part[-1], q) <= 0:
+                    part.pop()
+                part.append(q)
+            hull += part[:-1]
+        d_ = ' '.join('%.1f,%.1f' % q for q in hull)
+        self.items.append(((-1.55e8, 0), f'<polygon points="{d_}" fill="{self.t["cast"]}"/>'))
 
     def raw(self, key, s):
         self.items.append((key, s))
@@ -219,6 +237,11 @@ def console(s, x, y, z, a=90):
     for (dx, dy) in ((a / 2 - 13, 16), (a / 2 - 13, a - 26)):
         s.raw((x + y + a + 1, z + 9), s.poly([(x + dx, y + dy, z + 8.5), (x + dx + 26, y + dy, z + 8.5), (x + dx + 26, y + dy + 10, z + 8.5), (x + dx, y + dy + 10, z + 8.5)], t['screen'], sw=1))
     s.raw((x + y + a + 2, z + 9), s.circle((x + a / 2, y + a / 2, z + 8.5), (1, 0, 0), (0, 1, 0), 11, shade(t['console'], 0.7), sw=1.2))
+    s.raw((x + y + a + 3, z + 9), text_top('東', t['gold'], 13)(s, x, y, z + 0.5, a, a, 8))
+    for (dx, dy) in ((a / 2 - 13, 16), (a / 2 - 13, a - 26)):
+        cx, cy = x + dx + 13, y + dy + 5
+        e, f_ = P(cx, cy, z + 8.6)
+        s.raw((x + y + a + 3, z + 9), f'<text transform="matrix({C30:.4f} {S30} {-C30:.4f} {S30} {e:.1f} {f_:.1f})" font-family="\'JetBrains Mono\',ui-monospace,monospace" font-weight="700" font-size="6.5" fill="{t["console"]}" text-anchor="middle" dominant-baseline="central">25000</text>')
 
 
 def face_glyph(s, code, origin, u, v):
@@ -310,6 +333,13 @@ def scene_table(t):
     wall(s, 103, 130, 17, False, z)
     wall(s, 470, 130, 17, False, z, gaps=(12, 13))
     wall(s, 130, 470, 17, True, z)
+    for wx, wy, ww, wd in ((130, 103, 340, 27), (103, 130, 27, 340), (470, 130, 27, 340), (130, 470, 340, 27)):
+        s.cast(wx, wy, ww, wd, z, 30)
+    for hx, hy, hw, hd in ((170, 534, 260, 15), (170, 51, 260, 15), (534, 170, 15, 260), (51, 170, 15, 260)):
+        s.cast(hx, hy, hw, hd, z, 27)
+    for px, py, pw, pd in ((240, 366, 120, 54), (240, 180, 120, 54), (366, 240, 54, 120), (180, 240, 54, 120)):
+        s.cast(px, py, pw, pd, z, 15)
+    s.cast(260, 260, 80, 80, z, 8)
     console(s, 260, 260, z, a=80)
     die(s, 270, 272, z + 8, a=11, faces=(5, 2, 3))
     die(s, 318, 314, z + 8, a=11, faces=(1, 4, 2))

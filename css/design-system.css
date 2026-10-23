@@ -585,11 +585,28 @@ h4 {
     overflow: hidden;
 }
 
-.table-explorer-visual {
+.table-explorer-tilt {
     position: relative;
     align-self: center;
-    width: min(100%, 680px);
+    width: min(100%, 720px);
     margin: 0 auto;
+    transform: perspective(1600px) rotateX(0deg);
+    transform-origin: 50% 60%;
+    transition: transform 0.9s cubic-bezier(0.65, 0, 0.25, 1);
+}
+
+/* A slight camera dip while zoomed sells the depth of the isometric table. */
+.table-explorer-tilt.is-zoomed {
+    transform: perspective(1600px) rotateX(10deg);
+}
+
+.table-explorer-visual {
+    --inv-zoom: 1;
+    position: relative;
+    width: 100%;
+    transform-origin: 0 0;
+    transition: transform 0.9s cubic-bezier(0.65, 0, 0.25, 1);
+    will-change: transform;
 }
 
 .table-explorer-visual > img {
@@ -598,16 +615,60 @@ h4 {
     height: auto;
 }
 
+.table-spotlight {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.table-spotlight-dim {
+    fill: var(--card-sunk);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+.table-spotlight-dim.is-on {
+    opacity: 0.66;
+}
+
+.table-spotlight-edge {
+    fill: color-mix(in oklab, var(--gold) 16%, transparent);
+    stroke: var(--gold);
+    /* user units of the 0–100 overlay; vector-effect is unreliable under the 3D tilt */
+    stroke-width: calc(0.7px * var(--inv-zoom));
+    stroke-linejoin: round;
+    animation: rr-zone-in 0.5s ease 0.35s both;
+}
+
+@keyframes rr-zone-in {
+    from { opacity: 0; }
+}
+
 .table-hotspot {
     position: absolute;
+    z-index: 2;
     display: inline-flex;
     align-items: center;
     gap: 6px;
     padding: 0;
     border: 0;
     background: none;
-    transform: translate(-14px, -50%);
+    transform: translate(-14px, -50%) scale(var(--inv-zoom));
+    transform-origin: 14px 50%;
+    transition: transform 0.9s cubic-bezier(0.65, 0, 0.25, 1), opacity 0.4s ease;
     cursor: pointer;
+}
+
+.is-zoomed .table-hotspot:not(.is-active) {
+    opacity: 0.5;
+}
+
+/* Zoomed in, the callouts do the talking: hotspot names would only collide with them. */
+.is-zoomed .table-hotspot > b {
+    display: none;
 }
 
 .table-hotspot > span {
@@ -635,21 +696,10 @@ h4 {
     letter-spacing: 0.05em;
     text-transform: uppercase;
     white-space: nowrap;
-    opacity: 0;
-    transform: translateX(-4px);
-    transition: opacity 0.15s ease, transform 0.15s ease;
-    pointer-events: none;
 }
 
 .table-hotspot:hover > span {
     transform: scale(1.08);
-}
-
-.table-hotspot:hover > b,
-.table-hotspot:focus-visible > b,
-.table-hotspot.is-active > b {
-    opacity: 1;
-    transform: none;
 }
 
 .table-hotspot.is-active > span {
@@ -657,7 +707,57 @@ h4 {
     box-shadow: 0 0 0 1.5px var(--felt-strong), 0 0 0 6px color-mix(in oklab, var(--felt) 25%, transparent);
 }
 
+.table-hotspot.is-active > b {
+    border-color: var(--felt);
+    color: var(--felt-strong);
+}
+
+/* Detail labels that appear once the camera has arrived. */
+.table-callout {
+    position: absolute;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 8px 3px 5px;
+    border: var(--border-hair) solid var(--line);
+    border-radius: var(--radius-sm);
+    color: var(--ink);
+    background: var(--card);
+    box-shadow: var(--shadow-float);
+    font: 600 12px/16px var(--font-sans);
+    white-space: nowrap;
+    pointer-events: none;
+    transform: translate(-6px, -50%) scale(var(--inv-zoom));
+    transform-origin: 6px 50%;
+    animation: rr-callout-in 0.35s ease var(--delay, 0.45s) both;
+}
+
+.table-callout.is-left {
+    flex-direction: row-reverse;
+    padding: 3px 5px 3px 8px;
+    transform: translate(calc(-100% + 6px), -50%) scale(var(--inv-zoom));
+    transform-origin: calc(100% - 6px) 50%;
+}
+
+.table-callout > i {
+    width: 9px;
+    height: 9px;
+    border-radius: var(--radius-pill);
+    background: var(--gold);
+    box-shadow: 0 0 0 2px var(--card), 0 0 0 3.5px var(--gold-strong);
+}
+
+@keyframes rr-callout-in {
+    from {
+        opacity: 0;
+        translate: 0 6px;
+    }
+}
+
 .explorer-stage-controls {
+    position: relative;
+    z-index: 3;
     display: flex;
     align-items: center;
     justify-self: center;
@@ -682,9 +782,21 @@ h4 {
     cursor: pointer;
 }
 
-.explorer-stage-controls button:hover {
+.explorer-stage-controls button:hover:not(:disabled),
+.explorer-stage-controls button.is-on {
     color: var(--felt-strong);
     background: var(--felt-soft);
+}
+
+.explorer-stage-controls button:disabled {
+    color: var(--faint);
+    cursor: default;
+}
+
+.explorer-stage-controls > i {
+    width: 1.5px;
+    height: 20px;
+    background: var(--line-soft);
 }
 
 .explorer-stage-controls span {
@@ -964,8 +1076,15 @@ h4 {
     .big-button,
     .module-card,
     .resource-card,
-    .table-hotspot > b,
-    .explorer-progress i {
+    .explorer-progress i,
+    .table-explorer-tilt,
+    .table-explorer-visual,
+    .table-hotspot {
         transition: none;
+    }
+
+    .table-spotlight-edge,
+    .table-callout {
+        animation: none;
     }
 }

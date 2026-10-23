@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { tableArtPath, tableExplorerStops, type ExplorerTab, type TableArt } from '../domain/tableExplorer';
+import { boxOutline, projectToPercent, tableArtPath, tableExplorerStops, type ExplorerTab, type TableArt } from '../domain/tableExplorer';
 
 const tabs: Array<{ id: ExplorerTab; label: string }> = [
   { id: 'summary', label: 'Resumen' },
@@ -24,6 +24,7 @@ export function RiichiTableExplorer() {
   const explorerRef = useRef<HTMLElement>(null);
   const [activeId, setActiveId] = useState(tableExplorerStops[0].id);
   const [activeTab, setActiveTab] = useState<ExplorerTab>('summary');
+  const [overview, setOverview] = useState(false);
   const activeIndex = tableExplorerStops.findIndex((stop) => stop.id === activeId);
   const active = useMemo(
     () => tableExplorerStops[Math.max(activeIndex, 0)],
@@ -33,7 +34,22 @@ export function RiichiTableExplorer() {
   const selectStop = (id: string) => {
     setActiveId(id);
     setActiveTab('summary');
+    setOverview(false);
   };
+
+  // Camera: zoom into the active stop's zone, centred on its outline and kept inside the picture.
+  const camera = useMemo(() => {
+    const outlines = active.focus.boxes.map(boxOutline);
+    const pts = outlines.flat();
+    const zoom = overview ? 1 : active.focus.zoom;
+    const xs = pts.map((p) => p[0]);
+    const ys = pts.map((p) => p[1]);
+    const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
+    const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+    const clamp = (v: number) => Math.min(0, Math.max(100 - 100 * zoom, v));
+    return { outlines, zoom, tx: clamp(50 - cx * zoom), ty: clamp(50 - cy * zoom) };
+  }, [active, overview]);
+  const zoomed = camera.zoom > 1;
 
   const move = (direction: number) => {
     const next = (activeIndex + direction + tableExplorerStops.length) % tableExplorerStops.length;
@@ -75,27 +91,75 @@ export function RiichiTableExplorer() {
 
       <div className="table-explorer-workspace">
         <div className="table-explorer-stage" aria-label="Mesa de riichi interactiva">
-          <div className="table-explorer-visual">
-            <ThemedArt art="mesa" alt="Mesa de riichi en perspectiva, con los cuatro muros, las manos de cada jugador, los descartes en filas de seis y la consola de vientos" />
-            {tableExplorerStops.map((stop, index) => (
-              <button
-                className={`table-hotspot${active.id === stop.id ? ' is-active' : ''}`}
-                key={stop.id}
-                type="button"
-                style={{ left: `${stop.hotspot.x}%`, top: `${stop.hotspot.y}%` }}
-                aria-label={`Explorar: ${stop.shortTitle}`}
-                aria-pressed={active.id === stop.id}
-                onClick={() => selectStop(stop.id)}
-              >
-                <span>{index + 1}</span>
-                <b>{stop.shortTitle}</b>
-              </button>
-            ))}
+          <div className={`table-explorer-tilt${zoomed ? ' is-zoomed' : ''}`}>
+            <div
+              className="table-explorer-visual"
+              style={{
+                transform: `translate(${camera.tx}%, ${camera.ty}%) scale(${camera.zoom})`,
+                ['--inv-zoom' as string]: 1 / camera.zoom,
+              }}
+            >
+              <ThemedArt art="mesa" alt="Mesa de riichi en perspectiva, con los cuatro muros, las manos de cada jugador, los descartes en filas de seis y la consola de vientos" />
+              <svg className="table-spotlight" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <defs>
+                  <mask id="table-spotlight-mask">
+                    <rect x="0" y="0" width="100" height="100" fill="white" />
+                    {camera.outlines.map((outline, i) => <polygon key={i} points={outline.map((p) => p.join(',')).join(' ')} fill="black" />)}
+                  </mask>
+                </defs>
+                <rect className={`table-spotlight-dim${zoomed ? ' is-on' : ''}`} x="0" y="0" width="100" height="100" mask="url(#table-spotlight-mask)" />
+                {camera.outlines.map((outline, i) => (
+                  <polygon key={`${active.id}-${i}`} className="table-spotlight-edge" points={outline.map((p) => p.join(',')).join(' ')} />
+                ))}
+              </svg>
+              {tableExplorerStops.map((stop, index) => {
+                const [x, y] = projectToPercent(stop.hotspot);
+                return (
+                  <button
+                    className={`table-hotspot${active.id === stop.id ? ' is-active' : ''}`}
+                    key={stop.id}
+                    type="button"
+                    style={{ left: `${x}%`, top: `${y}%` }}
+                    aria-label={`Explorar: ${stop.shortTitle}`}
+                    aria-pressed={active.id === stop.id}
+                    onClick={() => selectStop(stop.id)}
+                  >
+                    <span>{index + 1}</span>
+                    <b>{stop.shortTitle}</b>
+                  </button>
+                );
+              })}
+              {active.callouts.map((callout, index) => {
+                const [x, y] = projectToPercent(callout.at);
+                return (
+                  <span
+                    className={`table-callout${callout.side === 'left' ? ' is-left' : ''}`}
+                    key={`${active.id}-${callout.label}`}
+                    style={{ left: `${x}%`, top: `${y}%`, ['--delay' as string]: `${0.45 + index * 0.08}s` }}
+                  >
+                    <i aria-hidden="true" />
+                    {callout.label}
+                  </span>
+                );
+              })}
+            </div>
           </div>
           <div className="explorer-stage-controls" aria-label="Navegación de la mesa">
             <button type="button" onClick={() => move(-1)} aria-label="Concepto anterior">←</button>
-            <span>También puedes usar las flechas del teclado</span>
+            <span>Paso {activeIndex + 1} de {tableExplorerStops.length} · usa las flechas</span>
             <button type="button" onClick={() => move(1)} aria-label="Concepto siguiente">→</button>
+            <i aria-hidden="true" />
+            <button
+              type="button"
+              className={overview ? 'is-on' : ''}
+              onClick={() => setOverview((value) => !value)}
+              aria-pressed={overview}
+              aria-label={overview ? 'Acercar a la zona' : 'Ver la mesa completa'}
+              title={overview ? 'Acercar a la zona' : 'Ver la mesa completa'}
+              disabled={active.focus.zoom === 1}
+            >
+              {overview ? '+' : '⤢'}
+            </button>
           </div>
         </div>
 
