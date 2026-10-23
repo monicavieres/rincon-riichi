@@ -97,7 +97,7 @@
 .tile-start h1 {
     margin: 0.2rem 0 0;
     color: var(--green-dark);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(2.4rem, 5.5vw, 4.6rem);
     line-height: 0.9;
 }
@@ -294,7 +294,7 @@
 .results-head h2 {
     margin: 0.2rem 0 0;
     color: var(--green-dark);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(2rem, 5vw, 3.6rem);
     line-height: 0.95;
 }
@@ -311,7 +311,7 @@
 
 .results-score strong {
     color: var(--green-dark);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(1.6rem, 3vw, 2.4rem);
 }
 
@@ -610,7 +610,7 @@
 .module-question-card h1 {
     margin: 0.05rem 0 0.25rem;
     color: var(--purple-dark);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(1.6rem, 2.9vw, 2.6rem);
     line-height: 1;
 }
@@ -747,7 +747,7 @@
 .tile-explain-copy strong {
     display: block;
     color: var(--green-dark);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(1.05rem, 1.5vw, 1.3rem);
     line-height: 1.05;
 }
@@ -812,7 +812,7 @@
 
 .feedback-reveal-name {
     color: var(--green-dark);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-weight: 700;
     font-size: 1.1rem;
 }
@@ -850,7 +850,7 @@
 .feedback-panel strong {
     display: block;
     color: var(--green-dark);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: 1.08rem;
 }
 

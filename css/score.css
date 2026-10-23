@@ -26,7 +26,7 @@
 .panel-heading h2 {
     margin: 0.1rem 0 0;
     color: var(--green-dark);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-weight: 700;
     line-height: 0.95;
 }
@@ -64,7 +64,7 @@
     display: block;
     margin-top: 0.25rem;
     color: var(--ink);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: 0.98rem;
     line-height: 1.12;
 }
@@ -144,7 +144,7 @@
 
 .fu-base-note strong {
     color: var(--green-dark);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: 0.95rem;
     line-height: 1;
 }
@@ -210,7 +210,7 @@
 }
 
 .torpedo-side span {
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(1rem, 1.35vw, 1.35rem);
     font-weight: 800;
     line-height: 0.96;
@@ -271,7 +271,7 @@
 }
 
 .torpedo-han strong {
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: 1.25rem;
 }
 
@@ -300,7 +300,7 @@
 
 .pay-ron {
     color: var(--ink);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(0.92rem, 1.1vw, 1.12rem);
     font-weight: 800;
     line-height: 1;
@@ -330,7 +330,7 @@
     border-radius: 0.75rem;
     color: var(--orange-dark);
     background: linear-gradient(90deg, rgba(255, 184, 92, 0.16), rgba(255, 255, 255, 0.45));
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: 0.95rem;
 }
 
@@ -382,14 +382,14 @@
 
 .limit-payments strong {
     color: var(--ink);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: 1rem;
     line-height: 1;
 }
 
 .limit-payments small {
     color: var(--purple-dark);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: 0.76rem;
     font-weight: 900;
     line-height: 1;
@@ -409,7 +409,7 @@
 
 .torpedo-note strong {
     color: var(--orange-dark);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: 1.05rem;
 }
 
@@ -457,7 +457,7 @@
     margin: 0;
     padding: 0.45rem 0.65rem;
     color: #ffffff;
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(0.98rem, 1.25vw, 1.2rem);
     font-weight: 800;
     line-height: 1;
@@ -576,7 +576,7 @@
 .fu-copy strong {
     display: block;
     color: var(--ink);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: 0.9rem;
     line-height: 1.05;
 }
@@ -601,7 +601,7 @@
     color: #ffffff;
     background: linear-gradient(180deg, #ff706b, #ef3f3a);
     box-shadow: 0 0.22rem 0 rgba(77, 45, 88, 0.12);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: 0.94rem;
     font-weight: 800;
     text-align: center;
@@ -645,7 +645,7 @@
     padding: 0.45rem 0.65rem;
     border-left: 0;
     color: var(--ink);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: 0.92rem;
     line-height: 1;
 }

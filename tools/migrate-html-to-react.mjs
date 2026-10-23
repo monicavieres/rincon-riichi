@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const pages = [
   'index.html',
-  'aprender/tutorial.html', 'aprender/visual-guide.html', 'aprender/tiles.html', 'aprender/machi.html',
+  'aprender/tutorial.html', 'aprender/tiles.html', 'aprender/machi.html',
   'aprender/yaku-reference.html', 'aprender/score.html', 'aprender/dora.html', 'aprender/eficiencia.html',
   'aprender/defensa.html', 'aprender/reglas.html',
   'practicar/yaku.html', 'practicar/waits.html', 'practicar/han.html', 'practicar/calc.html',
@@ -17,7 +17,6 @@ const pages = [
 const scripts = {
   'index.html': ['js/script.js', 'js/menu.js'],
   'aprender/tutorial.html': ['../js/tutorial.js', '../js/menu.js'],
-  'aprender/visual-guide.html': ['../js/visual-guide.js', '../js/menu.js'],
   'aprender/tiles.html': ['../js/tiles.js', '../js/menu.js'],
   'aprender/machi.html': ['../data/machi-data.js', '../js/machi.js', '../js/menu.js'],
   'aprender/yaku-reference.html': ['../data/yaku-data.js', '../js/yaku-reference.js', '../js/menu.js'],
@@ -58,7 +57,7 @@ for (const page of pages) {
     <link rel="icon" type="image/svg+xml" href="${prefix}assets/logo-rincon-riichi.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@500;600&family=Fredoka:wght@600&display=swap" rel="stylesheet" />
   </head>
   <body>
     <div id="root"></div>

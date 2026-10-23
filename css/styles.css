@@ -105,7 +105,7 @@ body {
     margin: 0;
     min-height: 100vh;
     color: var(--ink);
-    font-family: "Nunito", system-ui, sans-serif;
+    font-family: var(--font-sans);
     background:
         radial-gradient(circle at 8% 10%, var(--bg-gradient-1), transparent 20rem),
         radial-gradient(circle at 88% 18%, var(--bg-gradient-2), transparent 24rem),
@@ -234,7 +234,7 @@ a {
     flex: 0 0 auto;
     gap: 0.55rem;
     margin-right: auto;
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: 1.35rem;
     font-weight: 700;
 }
@@ -638,7 +638,7 @@ a {
 .practice-strip h2,
 .coach-banner h2 {
     margin: 0;
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-weight: 700;
     line-height: 0.95;
     letter-spacing: 0;
@@ -898,7 +898,7 @@ a {
 .quick-panel strong {
     display: block;
     margin-top: 0.35rem;
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: 1.35rem;
 }
 
@@ -991,7 +991,7 @@ a {
     color: var(--green-dark);
     background: linear-gradient(180deg, #fffdfa, #eefcf4);
     box-shadow: 0 0.5rem 0 rgba(77, 45, 88, 0.14), 0 0.9rem 1.3rem rgba(77, 45, 88, 0.1);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(2rem, 4vw, 3.2rem);
     font-weight: 900;
 }
@@ -1064,7 +1064,7 @@ a {
 .tile-catalog h3,
 .tile-family h4 {
     margin: 0;
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     line-height: 1.05;
 }
 
@@ -1210,7 +1210,7 @@ a {
 .tile-page-header h2 {
     margin: 0.2rem 0 0;
     color: var(--green-dark);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(2.1rem, 5vw, 4rem);
     line-height: 0.95;
 }
@@ -1592,7 +1592,7 @@ a {
     background: none;
     border: 0;
     box-shadow: none;
-    font-family: "Fredoka", "Nunito", system-ui, sans-serif;
+    font-family: var(--font-display);
     font-size: 1.33rem;
     font-weight: 900;
     line-height: 1;
@@ -1601,7 +1601,6 @@ a {
 
 .icon-tiles::after { content: "中"; }
 .icon-tutorial::after { content: "初"; }
-.icon-visual-guide::after { content: "図"; }
 .icon-tile-name::after { content: "名"; }
 .icon-concepts::after { content: "学"; }
 .icon-yaku::after { content: "役"; }
@@ -1642,7 +1641,7 @@ a {
 
 .module-card h3 {
     margin: 1.02rem 0 0.42rem 0.08rem;
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: 1.28rem;
     line-height: 1.05;
 }
@@ -1707,7 +1706,7 @@ a {
 
 .resource-card h3 {
     margin: 1.02rem 0 0.42rem 0.08rem;
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: 1.28rem;
     line-height: 1.05;
 }
@@ -1834,7 +1833,7 @@ a {
     transform: translateX(-50%);
     cursor: default;
     color: var(--pink-dark);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(1.4rem, 3vw, 1.9rem);
     font-weight: 700;
     letter-spacing: 0.02em;
@@ -2463,7 +2462,7 @@ a {
 /* title: cleaner, less display-heavy */
 [data-theme="light"] .module-card h3,
 [data-theme="dark"] .module-card h3 {
-    font-family: "Nunito", "Fredoka", sans-serif;
+    font-family: var(--font-display);
     font-weight: 800;
     font-size: 1.2rem;
     letter-spacing: 0.01em;

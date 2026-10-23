@@ -17,7 +17,7 @@
 .machi-hero h1 {
     margin: 0.2rem 0 0.4rem;
     color: var(--purple-dark);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(2.4rem, 5vw, 4.2rem);
     line-height: 0.95;
 }
@@ -25,6 +25,91 @@
 .machi-hero .subtitle {
     margin: 0 auto;
     max-width: 720px;
+}
+
+.machi-filters {
+    margin-top: 0.85rem;
+    padding: clamp(0.9rem, 1.8vw, 1.25rem);
+}
+
+.machi-filter-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.machi-filter-heading .eyebrow {
+    margin: 0 0 0.1rem;
+}
+
+.machi-filter-heading h2 {
+    margin: 0;
+    color: var(--purple-dark);
+    font-family: var(--font-display);
+    font-size: clamp(1.35rem, 2.5vw, 2rem);
+}
+
+.machi-result-count {
+    flex: 0 0 auto;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    color: var(--green-dark);
+    background: rgba(47, 207, 119, 0.14);
+    font-size: 0.82rem;
+    font-weight: 900;
+}
+
+.machi-filter-controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(12rem, 1fr)) auto;
+    align-items: end;
+    gap: 0.75rem;
+    margin-top: 0.8rem;
+}
+
+.machi-filter-field {
+    display: grid;
+    gap: 0.3rem;
+    color: var(--ink);
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
+.machi-filter-field select {
+    min-height: 2.75rem;
+    padding: 0.55rem 2.3rem 0.55rem 0.75rem;
+    border: 0.14rem solid var(--sticker-border);
+    border-radius: 0.8rem;
+    color: var(--ink);
+    background: var(--card-bg);
+    font: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.machi-filter-field select:focus-visible,
+.machi-filter-reset:focus-visible {
+    outline: 0.2rem solid rgba(143, 88, 255, 0.35);
+    outline-offset: 0.12rem;
+}
+
+.machi-filter-reset {
+    min-height: 2.75rem;
+    padding: 0.55rem 0.9rem;
+    border: 0.14rem solid var(--purple);
+    border-radius: 0.8rem;
+    color: var(--purple-dark);
+    background: rgba(143, 88, 255, 0.1);
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.machi-filter-hint {
+    margin: 0.65rem 0 0;
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-weight: 700;
 }
 
 .machi-grid {
@@ -59,7 +144,7 @@
 .machi-card-head h2 {
     margin: 0;
     color: var(--green-dark);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: 1.6rem;
     line-height: 1;
 }
@@ -141,7 +226,27 @@
     font-weight: 900;
 }
 
+.machi-empty {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 2rem;
+    border: 0.15rem dashed var(--sticker-border);
+    border-radius: 1rem;
+    color: var(--muted);
+    background: var(--card-bg);
+    text-align: center;
+    font-weight: 900;
+}
+
 @media (max-width: 760px) {
+    .machi-filter-heading {
+        align-items: start;
+    }
+
+    .machi-filter-controls {
+        grid-template-columns: 1fr;
+    }
+
     .machi-grid {
         grid-template-columns: 1fr;
     }
@@ -153,4 +258,8 @@
 
 [data-theme="dark"] .machi-desc {
     color: var(--ink);
+}
+
+[data-theme="dark"] .machi-filter-heading h2 {
+    color: var(--purple-light);
 }

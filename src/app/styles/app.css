@@ -2,13 +2,13 @@
 @import '../../../css/module.css';
 @import '../../../css/ref.css';
 @import '../../../css/tutorial.css';
-@import '../../../css/visual-guide.css';
 @import '../../../css/machi.css';
 @import '../../../css/tiles.css';
 @import '../../../css/score.css';
 @import '../../../css/yaku-reference.css';
 @import '../../../css/yaku.css';
 @import '../../../css/links.css';
+@import '../../../css/design-system.css';
 
 #root { min-height: 100vh; }
 

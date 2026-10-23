@@ -1,0 +1,303 @@
+"""Isometric illustration generator for Rincón Riichi.
+Draws flat-shaded, outlined boxes (table, walls, console, dice, point sticks)
+and writes each scene in a light and a dark variant."""
+import math, os, sys
+
+OUT = sys.argv[1]
+os.makedirs(OUT, exist_ok=True)
+C30, S30 = math.cos(math.radians(30)), 0.5
+
+THEMES = {
+    'light': {
+        'ink': '#23203f', 'shadow': 'rgba(60,45,20,0.16)', 'rim': None,
+        'rail': '#7b4fe0', 'felt': '#22a08b', 'console': '#2e2a48',
+        'cream': '#fbf2df', 'back': '#e0457f', 'gold': '#f2b42c', 'pin': '#2f7fd6',
+        'sou': '#22a565', 'tsumo': '#f07a3a', 'man': '#e0457f', 'white': '#fffdf6',
+        'wood': '#e9a25a', 'screen': '#9ff0d8',
+    },
+    'dark': {
+        'ink': '#0c0a14', 'shadow': 'rgba(0,0,0,0.45)', 'rim': '#4a4466',
+        'rail': '#8a62f0', 'felt': '#2bb39c', 'console': '#3a3558',
+        'cream': '#f6ead3', 'back': '#f06d9e', 'gold': '#f5c451', 'pin': '#5aa2ee',
+        'sou': '#3fc283', 'tsumo': '#f59560', 'man': '#f06d9e', 'white': '#fffaf0',
+        'wood': '#eeac68', 'screen': '#b6f7e4',
+    },
+}
+
+
+def shade(hex_, k):
+    h = hex_.lstrip('#')
+    r, g, b = (int(h[i:i + 2], 16) for i in (0, 2, 4))
+    return '#%02x%02x%02x' % tuple(max(0, min(255, round(v * k))) for v in (r, g, b))
+
+
+def P(x, y, z):
+    return ((x - y) * C30, (x + y) * S30 - z)
+
+
+class Scene:
+    def __init__(self, t):
+        self.t, self.items, self.pts = t, [], []
+
+    def poly(self, pts3, fill, stroke=True, sw=1.6, extra=''):
+        pts = [P(*p) for p in pts3]
+        self.pts += pts
+        d = ' '.join('%.1f,%.1f' % p for p in pts)
+        st = f' stroke="{self.t["ink"]}" stroke-width="{sw}" stroke-linejoin="round"' if stroke else ''
+        return f'<polygon points="{d}" fill="{fill}"{st}{extra}/>'
+
+    def circle(self, c, a1, a2, r, fill, stroke=True, sw=1.2, n=20):
+        pts = [tuple(c[i] + r * (math.cos(2 * math.pi * k / n) * a1[i] + math.sin(2 * math.pi * k / n) * a2[i]) for i in range(3)) for k in range(n)]
+        return self.poly(pts, fill, stroke, sw)
+
+    def box(self, x, y, z, w, d, h, top, left=None, right=None, bands=None, deco=(), key=None, sw=1.6):
+        """bands: list of (fraction_from_bottom, colour) splitting the side faces."""
+        left = left or shade(top, 0.86)
+        right = right or shade(top, 0.72)
+        out = []
+        sides = bands or [(1.0, None)]
+        z0 = z
+        for frac, col in sides:
+            z1 = z + h * frac
+            lc = shade(col, 0.9) if col else left
+            rc = shade(col, 0.76) if col else right
+            out.append(self.poly([(x, y + d, z0), (x + w, y + d, z0), (x + w, y + d, z1), (x, y + d, z1)], lc, sw=sw))
+            out.append(self.poly([(x + w, y, z0), (x + w, y + d, z0), (x + w, y + d, z1), (x + w, y, z1)], rc, sw=sw))
+            z0 = z1
+        out.append(self.poly([(x, y, z + h), (x + w, y, z + h), (x + w, y + d, z + h), (x, y + d, z + h)], top, sw=sw))
+        for f in deco:
+            out.append(f(self, x, y, z, w, d, h))
+        self.items.append(((key if key is not None else (x + y + w / 2 + d / 2, z)), ''.join(out)))
+
+    def ground(self, x, y, w, d, pad=10):
+        pts = [P(x - pad, y + pad, 0), P(x + w - pad, y + pad, 0), P(x + w + pad * 1.2, y + d + pad * 1.6, 0), P(x + pad, y + d + pad * 1.6, 0)]
+        d_ = ' '.join('%.1f,%.1f' % p for p in pts)
+        self.items.append(((-1e9, 0), f'<polygon points="{d_}" fill="{self.t["shadow"]}"/>'))
+
+    def raw(self, key, s):
+        self.items.append((key, s))
+
+    def svg(self, label, pad=8, size=None):
+        xs = [p[0] for p in self.pts]; ys = [p[1] for p in self.pts]
+        x0, y0 = min(xs) - pad, min(ys) - pad
+        w, h = max(xs) - min(xs) + 2 * pad, max(ys) - min(ys) + 2 * pad
+        body = ''.join(s for _, s in sorted(self.items, key=lambda i: i[0]))
+        rim = ''
+        g_open = '<g>'
+        if self.t['rim']:
+            rim = (f'<defs><filter id="rim" x="-10%" y="-10%" width="120%" height="120%">'
+                   f'<feMorphology in="SourceAlpha" operator="dilate" radius="2.2" result="d"/>'
+                   f'<feFlood flood-color="{self.t["rim"]}"/><feComposite in2="d" operator="in" result="r"/>'
+                   f'<feMerge><feMergeNode in="r"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>')
+            g_open = '<g filter="url(#rim)">'
+        dims = f' width="{size[0]}" height="{size[1]}"' if size else ''
+        return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x0:.1f} {y0:.1f} {w:.1f} {h:.1f}"{dims} role="img" aria-label="{label}">'
+                f'{rim}{g_open}{body}</g></svg>\n')
+
+
+# ── decorations ──────────────────────────────────────────────
+def top_dot(colour, r=2.2):
+    def f(s, x, y, z, w, d, h):
+        return s.circle((x + w / 2, y + d / 2, z + h), (1, 0, 0), (0, 1, 0), r, colour, sw=0.9)
+    return f
+
+
+def tile_back_top(s, x, y, z, w, d, h):
+    t = s.t
+    # tiny compass diamond + gold corner hints on the back of a lying tile
+    cx, cy, zz = x + w / 2, y + d / 2, z + h
+    k = min(w, d) * 0.22
+    star = s.poly([(cx, cy - k, zz), (cx + k, cy, zz), (cx, cy + k, zz), (cx - k, cy, zz)], t['cream'], sw=0.9)
+    return star
+
+
+def pips(face, n):
+    layouts = {1: [(0, 0)], 2: [(-1, -1), (1, 1)], 3: [(-1, -1), (0, 0), (1, 1)],
+               4: [(-1, -1), (1, -1), (-1, 1), (1, 1)], 5: [(-1, -1), (1, -1), (0, 0), (-1, 1), (1, 1)],
+               6: [(-1, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (1, 1)]}
+
+    def f(s, x, y, z, w, d, h):
+        out = []
+        for u, v in layouts[n]:
+            col = s.t['man'] if n == 1 else s.t['ink']
+            r = w * (0.14 if n == 1 else 0.09)
+            q = w * 0.26
+            if face == 'top':
+                out.append(s.circle((x + w / 2 + u * q, y + d / 2 + v * q, z + h), (1, 0, 0), (0, 1, 0), r, col, stroke=False))
+            elif face == 'left':
+                out.append(s.circle((x + w / 2 + u * q, y + d, z + h / 2 - v * q), (1, 0, 0), (0, 0, 1), r, col, stroke=False))
+            else:
+                out.append(s.circle((x + w, y + d / 2 + u * q, z + h / 2 - v * q), (0, 1, 0), (0, 0, 1), r, col, stroke=False))
+        return ''.join(out)
+    return f
+
+
+def stick_marks(kind):
+    """Point-stick markings on the top face, along x."""
+    def f(s, x, y, z, w, d, h):
+        t = s.t; cy, zz = y + d / 2, z + h
+        out = []
+        def dot(px, r, col):
+            out.append(s.circle((px, cy, zz), (1, 0, 0), (0, 1, 0), r, col, stroke=False))
+        mid = x + w / 2
+        if kind == 1000:
+            dot(mid, 3.2, t['man'])
+        elif kind == 10000:
+            dot(mid, 3.2, t['man'])
+            for o in (-18, -11, 11, 18):
+                dot(mid + o, 1.9, t['ink'])
+        elif kind == 5000:
+            for o in (-16, -9, 9, 16):
+                dot(mid + o, 1.9, t['ink'])
+            dot(mid, 2.8, t['gold'])
+        elif kind == 100:
+            for side in (x + 10, x + w - 18):
+                for i in range(4):
+                    out.append(s.circle((side + (i % 2) * 6, cy + (-2 if i < 2 else 2), zz), (1, 0, 0), (0, 1, 0), 1.2, t['ink'], stroke=False))
+        return ''.join(out)
+    return f
+
+
+def text_top(char, colour, size):
+    def f(s, x, y, z, w, d, h):
+        cx, cy, zz = x + w / 2, y + d / 2, z + h
+        e, f_ = P(cx, cy, zz)
+        return (f'<text transform="matrix({C30:.4f} {S30} {-C30:.4f} {S30} {e:.1f} {f_:.1f})" '
+                f'font-family="\'Noto Serif JP\',\'Hiragino Mincho ProN\',\'Yu Mincho\',serif" font-weight="700" '
+                f'font-size="{size}" fill="{colour}" text-anchor="middle" dominant-baseline="central">{char}</text>')
+    return f
+
+
+# ── builders ─────────────────────────────────────────────────
+def tile_lying(s, x, y, z, along_x=True):
+    w, d = (20, 27) if along_x else (27, 20)
+    t = s.t
+    s.box(x, y, z, w, d, 15, t['back'], bands=[(0.5, t['cream']), (1.0, t['back'])], deco=[tile_back_top], sw=1.2)
+
+
+def wall(s, x, y, n, along_x, z, gaps=()):
+    for i in range(n):
+        if i in gaps:
+            continue
+        xx, yy = (x + i * 20, y) if along_x else (x, y + i * 20)
+        tile_lying(s, xx, yy, z, along_x)
+        tile_lying(s, xx, yy, z + 15, along_x)
+
+
+def die(s, x, y, z, a=14, faces=(1, 3, 5)):
+    s.box(x, y, z, a, a, a, s.t['white'], left=shade(s.t['white'], 0.9), right=shade(s.t['white'], 0.8),
+          deco=[pips('top', faces[0]), pips('left', faces[1]), pips('right', faces[2])], sw=1.4)
+
+
+def stick(s, x, y, z, kind, length=96, key=None):
+    t = s.t
+    s.box(x, y, z, length, 9, 5, t['white'], left=shade(t['white'], 0.88), right=shade(t['white'], 0.78),
+          deco=[stick_marks(kind)], sw=1.2, key=key)
+
+
+def console(s, x, y, z, a=90):
+    t = s.t
+    s.box(x, y, z, a, a, 8, t['console'], key=(x + y + a, z))
+    lights = [((x + a / 2 - 9, y + 4), (18, 6), t['man']), ((x + a - 10, y + a / 2 - 9), (6, 18), t['pin']),
+              ((x + a / 2 - 9, y + a - 10), (18, 6), t['sou']), ((x + 4, y + a / 2 - 9), (6, 18), t['gold'])]
+    for (lx, ly), (lw, ld), col in lights:
+        s.raw((x + y + a + 1, z + 9), s.poly([(lx, ly, z + 8.5), (lx + lw, ly, z + 8.5), (lx + lw, ly + ld, z + 8.5), (lx, ly + ld, z + 8.5)], col, sw=1))
+    for (dx, dy) in ((a / 2 - 13, 16), (a / 2 - 13, a - 26)):
+        s.raw((x + y + a + 1, z + 9), s.poly([(x + dx, y + dy, z + 8.5), (x + dx + 26, y + dy, z + 8.5), (x + dx + 26, y + dy + 10, z + 8.5), (x + dx, y + dy + 10, z + 8.5)], t['screen'], sw=1))
+    s.raw((x + y + a + 2, z + 9), s.circle((x + a / 2, y + a / 2, z + 8.5), (1, 0, 0), (0, 1, 0), 11, shade(t['console'], 0.7), sw=1.2))
+
+
+# ── scenes ───────────────────────────────────────────────────
+def scene_table(t):
+    s = Scene(t)
+    s.ground(0, 0, 600, 600, pad=24)
+    # legs, then a darker skirt, then the rail top
+    for lx, ly in ((40, 40), (520, 40), (40, 520), (520, 520)):
+        s.box(lx, ly, 0, 40, 40, 70, shade(t['rail'], 0.6), key=(-2e8 + lx + ly, 0), sw=2)
+    s.box(20, 20, 70, 560, 560, 22, shade(t['rail'], 0.75), key=(-1.9e8, 0), sw=2)
+    s.box(0, 0, 92, 600, 600, 26, t['rail'], key=(-1.8e8, 0), sw=2)
+    s.box(30, 30, 118, 540, 540, 3, t['felt'], key=(-1.7e8, 0), sw=1.6)
+    s.raw((-1.6e8, 0), s.poly([(48, 48, 121.3), (552, 48, 121.3), (552, 552, 121.3), (48, 552, 121.3)], 'none', sw=1.2, extra=f' stroke-opacity=".35" stroke-dasharray="6 6"'))
+    # corner plates with the four winds
+    for (px, py), col, ch in (((4, 4), t['man'], '東'), ((570, 4), t['pin'], '南'), ((570, 570), t['sou'], '西'), ((4, 570), t['gold'], '北')):
+        s.box(px, py, 118, 26, 26, 4, col, key=(-1.5e8, 0), sw=1.2, deco=[text_top(ch, t['white'], 17)])
+    z = 121
+    wall(s, 130, 103, 17, True, z)
+    wall(s, 103, 130, 17, False, z)
+    wall(s, 470, 130, 17, False, z, gaps=(12, 13))
+    wall(s, 130, 470, 17, True, z)
+    console(s, 255, 255, z)
+    die(s, 372, 212, z, faces=(5, 2, 3))
+    die(s, 352, 232, z, faces=(1, 4, 2))
+    stick(s, 252, 412, z, 1000)
+    for i, k in enumerate((10000, 5000, 1000, 100)):
+        stick(s, 200 + i * 6, 512 + i * 12, z, k, length=110)
+    return s.svg('Mesa de mahjong riichi con muros, consola y dados')
+
+
+def scene_dice(t):
+    s = Scene(t)
+    s.ground(0, 0, 60, 40, pad=4)
+    die(s, 0, 0, 0, a=28, faces=(1, 3, 5))
+    die(s, 32, 10, 0, a=28, faces=(6, 2, 4))
+    return s.svg('Dos dados')
+
+
+def scene_sticks(t):
+    s = Scene(t)
+    s.ground(0, 0, 110, 50, pad=3)
+    for i, k in enumerate((10000, 5000, 1000, 100)):
+        stick(s, i * 4, i * 12, 0, k, length=110)
+    return s.svg('Palitos de puntos: 10000, 5000, 1000 y 100')
+
+
+def scene_wall(t):
+    s = Scene(t)
+    s.ground(0, 0, 100, 27, pad=4)
+    wall(s, 0, 0, 5, True, 0)
+    tile_lying(s, 18, 40, 0)
+    return s.svg('Segmento de muro de fichas')
+
+
+def scene_dealer(t):
+    s = Scene(t)
+    s.ground(0, 0, 70, 40, pad=4)
+    s.box(0, 0, 0, 70, 40, 18, t['wood'], deco=[text_top('東', t['man'], 26)])
+    s.box(14, 8, 18, 42, 24, 3, t['cream'], key=(1e5, 1), deco=[text_top('東', t['man'], 20)])
+    return s.svg('Marcador de dealer, viento Este')
+
+
+def scene_console(t):
+    s = Scene(t)
+    s.ground(0, 0, 90, 90, pad=6)
+    s.box(-6, -6, -6, 102, 102, 6, t['felt'], key=(-1e5, 0))
+    console(s, 0, 0, 0)
+    die(s, 100, 10, -6, a=16, faces=(3, 6, 1))
+    return s.svg('Consola central con luces de los cuatro vientos')
+
+
+def scene_riichi(t):
+    s = Scene(t)
+    s.ground(-8, -10, 130, 52, pad=4)
+    s.box(-8, -10, 0, 130, 52, 5, t['felt'], key=(-1e5, 0))
+    tile_lying(s, 6, 4, 5)
+    tile_lying(s, 26, 4, 5)
+    tile_lying(s, 46, 4, 5)
+    stick(s, 0, 20, 26, 1000, length=110, key=(1e5, 0))
+    for (cx, cy, cz), col, r in (((-4, 10, 58), t['gold'], 11), ((128, 40, 30), t['man'], 9), ((70, -6, 60), t['pin'], 6)):
+        pts = []
+        for k in range(8):
+            rr = r if k % 2 == 0 else r * 0.36
+            ang = math.pi / 4 * k
+            pts.append((cx + rr * math.cos(ang) * 0.9, cy - rr * math.cos(ang) * 0.9, cz + rr * math.sin(ang) * 1.6))
+        s.raw((1e6, 0), s.poly(pts, col, sw=1.2))
+    return s.svg('Declaración de riichi: palito de 1000 sobre el muro')
+
+
+SCENES = {'mesa': scene_table, 'dados': scene_dice, 'palitos': scene_sticks, 'muro': scene_wall,
+          'dealer': scene_dealer, 'consola': scene_console, 'riichi': scene_riichi}
+
+for name, fn in SCENES.items():
+    for th, pal in THEMES.items():
+        open(os.path.join(OUT, f'{name}-{th}.svg'), 'w').write(fn(pal))
+print(sorted(os.listdir(OUT)))

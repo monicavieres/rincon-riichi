@@ -17,7 +17,7 @@
 .links-hero h1 {
     margin: 0.2rem 0 0.4rem;
     color: var(--purple-dark);
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: clamp(2.2rem, 4.6vw, 3.8rem);
     line-height: 0.95;
 }
@@ -65,7 +65,7 @@
 
 .link-card h3 {
     margin: 0;
-    font-family: "Fredoka", "Nunito", sans-serif;
+    font-family: var(--font-display);
     font-size: 1.15rem;
     line-height: 1.05;
 }
