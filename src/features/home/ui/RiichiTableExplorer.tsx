@@ -1,52 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { boxOutline, projectToPercent, tableArtPath, tableExplorerStops, type ExplorerTab, type TableArt, type TableExplorerStop } from '../domain/tableExplorer';
+import { TableStage, ZoneThumb } from '../../../shared/ui/TableStage';
+import { tableExplorerStops, type ExplorerTab } from '../domain/tableExplorer';
 
 const tabs: Array<{ id: ExplorerTab; label: string }> = [
   { id: 'summary', label: 'Resumen' },
   { id: 'observe', label: 'Qué mirar' },
   { id: 'practice', label: 'Pruébalo' },
 ];
-
-function ThemedArt({ art, className, alt = '' }: { art: TableArt; className?: string; alt?: string }) {
-  return (
-    <>
-      <img className={`rr-only-light${className ? ` ${className}` : ''}`} src={tableArtPath(art, 'light')} alt={alt} />
-      <img className={`rr-only-dark${className ? ` ${className}` : ''}`} src={tableArtPath(art, 'dark')} alt="" aria-hidden="true" />
-    </>
-  );
-}
-
-/** Bounding box (in % of the illustration) of a stop's zone. */
-function zoneBounds(stop: TableExplorerStop) {
-  const outlines = stop.focus.boxes.map(boxOutline);
-  const pts = outlines.flat();
-  const xs = pts.map((p) => p[0]);
-  const ys = pts.map((p) => p[1]);
-  const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
-  return { outlines, x0, x1, y0, y1, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
-}
-
-// Thumbnail = the table itself, framed on the stop's zone, so each card shows exactly what the step is about.
-const THUMB = { w: 72, h: 56 };
-const TABLE_RATIO = 1055.2 / 694;
-
-function ZoneThumb({ stop }: { stop: TableExplorerStop }) {
-  const b = zoneBounds(stop);
-  const scale = Math.min((0.86 * 100) / (b.x1 - b.x0), (0.86 * 100 * THUMB.h * TABLE_RATIO) / ((b.y1 - b.y0) * THUMB.w));
-  const width = THUMB.w * scale;
-  const height = width / TABLE_RATIO;
-  const style = {
-    width: `${width}px`,
-    left: `${THUMB.w / 2 - (b.cx / 100) * width}px`,
-    top: `${THUMB.h / 2 - (b.cy / 100) * height}px`,
-  };
-  return (
-    <span className="lesson-thumb" aria-hidden="true">
-      <img className="rr-only-light" src={tableArtPath('mesa', 'light')} alt="" style={style} />
-      <img className="rr-only-dark" src={tableArtPath('mesa', 'dark')} alt="" style={style} />
-    </span>
-  );
-}
 
 const chevron = (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg>
@@ -68,15 +28,6 @@ export function RiichiTableExplorer() {
     setActiveTab('summary');
     setOverview(false);
   };
-
-  // Camera: zoom into the active stop's zone, centred on it and kept inside the picture.
-  const camera = useMemo(() => {
-    const { outlines, cx, cy } = zoneBounds(active);
-    const zoom = overview ? 1 : active.focus.zoom;
-    const clamp = (v: number) => Math.min(0, Math.max(100 - 100 * zoom, v));
-    return { outlines, zoom, tx: clamp(50 - cx * zoom), ty: clamp(50 - cy * zoom) };
-  }, [active, overview]);
-  const zoomed = camera.zoom > 1;
 
   const move = (direction: number) => {
     const next = (activeIndex + direction + tableExplorerStops.length) % tableExplorerStops.length;
@@ -111,68 +62,17 @@ export function RiichiTableExplorer() {
             <strong>{activeIndex + 1}/{tableExplorerStops.length}</strong>
             <div aria-hidden="true"><i style={{ width: `${((activeIndex + 1) / tableExplorerStops.length) * 100}%` }} /></div>
           </div>
-          <div className={`table-explorer-tilt${zoomed ? ' is-zoomed' : ''}`}>
-            <div
-              className="table-explorer-visual"
-              style={{
-                transform: `translate(${camera.tx}%, ${camera.ty}%) scale(${camera.zoom})`,
-                ['--inv-zoom' as string]: 1 / camera.zoom,
-              }}
-            >
-              <ThemedArt art="mesa" alt="Mesa de riichi en perspectiva, con los cuatro muros, las manos de cada jugador, los descartes en filas de seis y la consola de vientos" />
-              <svg className="table-spotlight" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-                <defs>
-                  <mask id="table-spotlight-mask">
-                    <rect x="0" y="0" width="100" height="100" fill="white" />
-                    {camera.outlines.map((outline, i) => <polygon key={i} points={outline.map((p) => p.join(',')).join(' ')} fill="black" />)}
-                  </mask>
-                </defs>
-                <rect className={`table-spotlight-dim${zoomed ? ' is-on' : ''}`} x="0" y="0" width="100" height="100" mask="url(#table-spotlight-mask)" />
-                {camera.outlines.map((outline, i) => (
-                  <polygon key={`${active.id}-${i}`} className="table-spotlight-edge" points={outline.map((p) => p.join(',')).join(' ')} />
-                ))}
-              </svg>
-              {tableExplorerStops.map((stop, index) => {
-                const [x, y] = projectToPercent(stop.hotspot);
-                return (
-                  <button
-                    className={`table-hotspot${active.id === stop.id ? ' is-active' : ''}`}
-                    key={stop.id}
-                    type="button"
-                    style={{ left: `${x}%`, top: `${y}%` }}
-                    aria-label={`Explorar: ${stop.shortTitle}`}
-                    aria-pressed={active.id === stop.id}
-                    onClick={() => selectStop(stop.id)}
-                  >
-                    <span>{index + 1}</span>
-                    <b>{stop.shortTitle}</b>
-                  </button>
-                );
-              })}
-              {active.callouts.map((callout, index) => {
-                const [x, y] = projectToPercent(callout.at);
-                const length = Math.hypot(callout.dx, callout.dy);
-                const angle = (Math.atan2(callout.dy, callout.dx) * 180) / Math.PI;
-                return (
-                  <span
-                    className={`table-callout${callout.dx < 0 ? ' is-left' : ''}`}
-                    key={`${active.id}-${callout.label}`}
-                    style={{
-                      left: `${x}%`,
-                      top: `${y}%`,
-                      ['--delay' as string]: `${0.5 + index * 0.1}s`,
-                      ['--dx' as string]: `${callout.dx}px`,
-                      ['--dy' as string]: `${callout.dy}px`,
-                    }}
-                  >
-                    <i className="table-callout-dot" />
-                    <i className="table-callout-line" style={{ width: `calc(${length}px * var(--leader, 1))`, transform: `rotate(${angle}deg)` }} />
-                    <b className="table-callout-label">{callout.label}</b>
-                  </span>
-                );
-              })}
-            </div>
-          </div>
+          <TableStage
+            focus={active.focus}
+            callouts={active.callouts}
+            stepKey={active.id}
+            overview={overview}
+            hotspots={tableExplorerStops.map((stop) => ({ id: stop.id, label: stop.shortTitle, at: stop.hotspot }))}
+            activeHotspot={active.id}
+            onHotspot={selectStop}
+            hotspotAria={(label) => `Explorar: ${label}`}
+            alt="Mesa de riichi en perspectiva, con los cuatro muros, las manos de cada jugador, los descartes en filas de seis y el compass de vientos"
+          />
           <div className="explorer-stage-controls" aria-label="Navegación de la mesa">
             <button type="button" onClick={() => move(-1)} aria-label="Concepto anterior">←</button>
             <span>Paso {activeIndex + 1} de {tableExplorerStops.length} · usa las flechas</span>
@@ -239,7 +139,7 @@ export function RiichiTableExplorer() {
             className={active.id === stop.id ? 'is-active' : ''}
             onClick={() => selectStop(stop.id)}
           >
-            <ZoneThumb stop={stop} />
+            <ZoneThumb focus={stop.focus} />
             <span className="lesson-title">
               <strong>{index + 1}. {stop.shortTitle}</strong>
               <small>{stop.eyebrow}</small>

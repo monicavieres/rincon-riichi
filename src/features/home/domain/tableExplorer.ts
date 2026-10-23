@@ -1,56 +1,8 @@
+import { FELT, type TableCallout, type TableFocus, type TablePoint } from '../../../shared/table/geometry';
+
+export * from '../../../shared/table/geometry';
+
 export type ExplorerTab = 'summary' | 'observe' | 'practice';
-
-export type TableArt = 'mesa' | 'muro' | 'riichi' | 'dealer' | 'dados' | 'palitos' | 'consola';
-
-
-export const tableArtPath = (art: TableArt, theme: 'light' | 'dark') => `assets/illustrations/${art}-${theme}.svg`;
-
-/** A point on the table illustration, in the generator's table units (x, y on the felt, z up). */
-export type TablePoint = [number, number, number];
-
-/** An axis-aligned block on the table: a wall, a pond, a hand, the console. */
-export type TableBox = { x: number; y: number; z: number; w: number; d: number; h: number };
-
-export type TableFocus = {
-  boxes: TableBox[];
-  zoom: number;
-};
-
-/** A label tied to a point by a leader line; dx/dy is where the label sits, in screen px from the point. */
-export type TableCallout = {
-  label: string;
-  at: TablePoint;
-  dx: number;
-  dy: number;
-};
-
-// Must match the viewBox that tools/design/generate-illustrations.py writes for mesa-*.svg.
-const TABLE_VIEWBOX = { x: -527.6, y: -126, w: 1055.2, h: 694 };
-const COS30 = Math.cos(Math.PI / 6);
-
-/** Isometric projection of a table point into % of the illustration. */
-export function projectToPercent([x, y, z]: TablePoint): [number, number] {
-  const sx = (x - y) * COS30;
-  const sy = (x + y) / 2 - z;
-  return [((sx - TABLE_VIEWBOX.x) / TABLE_VIEWBOX.w) * 100, ((sy - TABLE_VIEWBOX.y) / TABLE_VIEWBOX.h) * 100];
-}
-
-/** Outline of a box as seen on screen: the convex hull of its eight projected corners. */
-export function boxOutline({ x, y, z, w, d, h }: TableBox): Array<[number, number]> {
-  const corners: Array<[number, number]> = [];
-  for (const cx of [x, x + w]) for (const cy of [y, y + d]) for (const cz of [z, z + h]) corners.push(projectToPercent([cx, cy, cz]));
-  const pts = corners.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-  const cross = (o: [number, number], a: [number, number], b: [number, number]) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
-  const half = (seq: Array<[number, number]>) => {
-    const out: Array<[number, number]> = [];
-    for (const p of seq) {
-      while (out.length >= 2 && cross(out[out.length - 2], out[out.length - 1], p) <= 0) out.pop();
-      out.push(p);
-    }
-    return out.slice(0, -1);
-  };
-  return [...half(pts), ...half([...pts].reverse())];
-}
 
 export type TableExplorerStop = {
   id: string;
@@ -67,7 +19,6 @@ export type TableExplorerStop = {
   callouts: TableCallout[];
 };
 
-const FELT = 121;
 
 export const tableExplorerStops: TableExplorerStop[] = [
   {
