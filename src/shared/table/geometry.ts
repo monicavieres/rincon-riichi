@@ -5,7 +5,7 @@ export type TableTheme = 'light' | 'dark' | 'cute' | 'samurai' | 'cyberpunk' | '
 const assetBase = () => (typeof window !== 'undefined' && /\/(aprender|practicar|recursos)\//.test(window.location.pathname) ? '../' : '');
 
 /** Bump when the illustrations are regenerated: they keep their file names, and browsers cache SVGs hard. */
-export const ILLUSTRATION_VERSION = '6';
+export const ILLUSTRATION_VERSION = '7';
 
 export const tableArtPath = (art: TableArt, theme: TableTheme) => `${assetBase()}assets/illustrations/${art}-${theme}.svg?v=${ILLUSTRATION_VERSION}`;
 

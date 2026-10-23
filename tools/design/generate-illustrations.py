@@ -26,6 +26,7 @@ THEMES = {
         'cream': '#fbf2df', 'back': '#f3c63d', 'gold': '#f2b42c', 'pin': '#2f7fd6',
         'sou': '#22a565', 'tsumo': '#f07a3a', 'man': '#e0457f', 'white': '#fffdf6',
         'wood': '#e9a25a', 'screen': '#9ff0d8', 'cplate': '#55bdeb', 'cpurple': '#4d3eb8', 'cwell': '#0a0a0b', 'cinset': '#3b3020', 'cnum': '#fff6dc', 'cnumline': '#2f2984',
+        'emblem': 'rose',
     },
     'dark': {
         'ink': '#2a1038', 'shadow': 'rgba(0,0,0,0.55)', 'rim': '#ff2d95', 'cast': 'rgba(0,0,0,0.50)',
@@ -33,6 +34,7 @@ THEMES = {
         'cream': '#fff4fb', 'back': '#00e5ff', 'gold': '#00e5ff', 'pin': '#00e5ff',
         'sou': '#b6ff00', 'tsumo': '#ff7a18', 'man': '#ff2d95', 'white': '#fff4fb',
         'wood': '#3d1f4f', 'screen': '#00e5ff', 'cplate': '#ff2d95', 'cpurple': '#9d4edd', 'cwell': '#050208', 'cinset': '#2a1538', 'cnum': '#00e5ff', 'cnumline': '#ff2d95',
+        'emblem': 'rose',
     },
     'cute': {
         'ink': '#6b3a5a', 'shadow': 'rgba(170,80,130,0.18)', 'rim': '#ffd1e6', 'cast': 'rgba(140,50,100,0.20)',
@@ -40,6 +42,7 @@ THEMES = {
         'cream': '#fff5fa', 'back': '#ffd1e6', 'gold': '#ffb3d1', 'pin': '#b18cff',
         'sou': '#ff7fae', 'tsumo': '#ff9f7a', 'man': '#e84f8f', 'white': '#fffafd',
         'wood': '#ffc2d9', 'screen': '#ffd9ea', 'cplate': '#ff9ec7', 'cpurple': '#b46bd6', 'cwell': '#6b3a5a', 'cinset': '#8f5b77', 'cnum': '#fff5fa', 'cnumline': '#b46bd6',
+        'emblem': 'cat',
     },
     'samurai': {
         'ink': '#1d2635', 'shadow': 'rgba(60,45,20,0.18)', 'rim': '#c9a227', 'cast': 'rgba(20,30,40,0.24)',
@@ -47,6 +50,7 @@ THEMES = {
         'cream': '#f7f0df', 'back': '#d9c38a', 'gold': '#c9a227', 'pin': '#2f5d7c',
         'sou': '#4f6b4a', 'tsumo': '#b5651d', 'man': '#9e2b2b', 'white': '#fbf7ec',
         'wood': '#9a6a42', 'screen': '#cfe0e8', 'cplate': '#33566b', 'cpurple': '#6b4c7a', 'cwell': '#14171c', 'cinset': '#3a2a1d', 'cnum': '#f7e9c8', 'cnumline': '#6b4c7a',
+        'emblem': 'kabuto',
     },
     'cyberpunk': {
         'ink': '#050a10', 'shadow': 'rgba(0,0,0,0.60)', 'rim': '#00f0ff', 'cast': 'rgba(0,0,0,0.52)',
@@ -54,6 +58,7 @@ THEMES = {
         'cream': '#f7ffff', 'back': '#fcee0a', 'gold': '#fcee0a', 'pin': '#00f0ff',
         'sou': '#a8ff60', 'tsumo': '#ff9f1c', 'man': '#ff2a6d', 'white': '#f7ffff',
         'wood': '#26384a', 'screen': '#00f0ff', 'cplate': '#ff2a6d', 'cpurple': '#b967ff', 'cwell': '#02050a', 'cinset': '#1b2430', 'cnum': '#fcee0a', 'cnumline': '#ff2a6d',
+        'emblem': 'eye',
     },
     'vaquero': {
         'ink': '#3b2a1a', 'shadow': 'rgba(80,50,20,0.20)', 'rim': None, 'cast': 'rgba(60,40,20,0.25)',
@@ -61,6 +66,7 @@ THEMES = {
         'cream': '#fff6e5', 'back': '#e9c46a', 'gold': '#e9c46a', 'pin': '#3b5b7a',
         'sou': '#6a994e', 'tsumo': '#e76f51', 'man': '#bc4749', 'white': '#fffaf0',
         'wood': '#c98a4b', 'screen': '#a8dadc', 'cplate': '#2a9d8f', 'cpurple': '#7b5e7b', 'cwell': '#2b1d12', 'cinset': '#5c3a1b', 'cnum': '#fff6e5', 'cnumline': '#3b5b7a',
+        'emblem': 'star',
     },
     'frutiger': {
         'ink': '#0b4f6c', 'shadow': 'rgba(20,80,120,0.18)', 'rim': '#ffffff', 'cast': 'rgba(20,100,140,0.18)',
@@ -68,6 +74,7 @@ THEMES = {
         'cream': '#ffffff', 'back': '#b7e4f9', 'gold': '#ffd93d', 'pin': '#5aa9ff',
         'sou': '#7ed957', 'tsumo': '#ff9f43', 'man': '#ff6fa5', 'white': '#ffffff',
         'wood': '#a8e6ff', 'screen': '#d8f6ff', 'cplate': '#5aa9ff', 'cpurple': '#b388ff', 'cwell': '#0b4f6c', 'cinset': '#6fbcd8', 'cnum': '#ffffff', 'cnumline': '#5aa9ff',
+        'emblem': 'drop',
     },
 }
 
@@ -407,11 +414,109 @@ def rotate_pts(pts, cx, cy, deg):
     return [(cx + (px - cx) * c - (py - cy) * s_, cy + (px - cx) * s_ + (py - cy) * c) for px, py in pts]
 
 
+def ellipse_pts(cx, cy, rx, ry, n=32):
+    return [(cx + rx * math.cos(2 * math.pi * k / n), cy + ry * math.sin(2 * math.pi * k / n)) for k in range(n)]
+
+
 KANJI_FONT = "'Noto Serif JP','Hiragino Mincho ProN','Yu Mincho',serif"
 NUM_FONT = "'Barlow Semi Condensed','Barlow',system-ui,sans-serif"
 
 # Orientation of a seat's text as (right, down) vectors, so every label faces the player who sits there.
 SEAT_TEXT = {'E': ((1, 0), (0, 1)), 'W': ((-1, 0), (0, -1)), 'N': ((0, 1), (-1, 0)), 'S': ((0, -1), (1, 0))}
+
+
+def draw_emblem(flat, t, kind):
+    """Theme artwork in the middle of the wind plate, in plate coordinates (centre 350, 350)."""
+    ink = t['ink']
+
+    def poly(pts, fill, layer=2, stroke=True, sw=1.6, extra=''):
+        flat(pts, fill, sw=sw, stroke=stroke, extra=extra, n=layer)
+
+    def circ(cx, cy, r, fill, layer=2, stroke=True, sw=1.2, extra=''):
+        poly(ellipse_pts(cx, cy, r, r), fill, layer=layer, stroke=stroke, sw=sw, extra=extra)
+
+    def bar(x1, y1, x2, y2, width=2.4, fill=None, layer=3, extra=''):
+        dx, dy = x2 - x1, y2 - y1
+        length = math.hypot(dx, dy) or 1.0
+        nx, ny = -dy / length * width / 2, dx / length * width / 2
+        poly([(x1 + nx, y1 + ny), (x2 + nx, y2 + ny), (x2 - nx, y2 - ny), (x1 - nx, y1 - ny)],
+             fill or ink, layer=layer, stroke=False, extra=extra)
+
+    if kind == 'cat':
+        poly([(300, 326), (291, 266), (340, 304)], t['cream'], layer=2, sw=2.2)
+        poly([(400, 326), (409, 266), (360, 304)], t['cream'], layer=2, sw=2.2)
+        poly([(307, 318), (301, 281), (331, 307)], t['man'], layer=3, stroke=False)
+        poly([(393, 318), (399, 281), (369, 307)], t['man'], layer=3, stroke=False)
+        circ(350, 362, 61, t['cream'], layer=2, sw=2.2)
+        for side in (-1, 1):
+            for x1, y1, x2, y2 in ((310, 368, 272, 360), (310, 380, 268, 380), (310, 392, 274, 400)):
+                bar(350 + side * (x1 - 350), y1, 350 + side * (x2 - 350), y2, width=2.2, fill=ink, layer=3)
+        circ(327, 355, 7.2, ink, layer=4, stroke=False)
+        circ(373, 355, 7.2, ink, layer=4, stroke=False)
+        circ(329.5, 352, 2.6, t['white'], layer=5, stroke=False)
+        circ(375.5, 352, 2.6, t['white'], layer=5, stroke=False)
+        poly([(342, 372), (358, 372), (350, 381)], t['man'], layer=4, stroke=False)
+        bar(350, 382, 337, 390, width=2.4, fill=ink, layer=4)
+        bar(350, 382, 363, 390, width=2.4, fill=ink, layer=4)
+    elif kind == 'kabuto':
+        poly([(288, 362), (412, 362), (424, 382), (276, 382)], shade(t['gold'], 0.72), layer=2, sw=2)
+        poly([(280, 382), (420, 382), (432, 401), (268, 401)], shade(t['gold'], 0.62), layer=2, sw=2)
+        poly([(296, 362), (305, 326), (322, 303), (344, 292), (356, 292), (378, 303), (395, 326), (404, 362)],
+             t['gold'], layer=3, sw=2.2)
+        poly([(322, 326), (282, 268), (296, 258), (336, 314)], t['gold'], layer=3, sw=2)
+        poly([(378, 326), (418, 268), (404, 258), (364, 314)], t['gold'], layer=3, sw=2)
+        poly([(319, 318), (292, 274), (300, 268), (330, 310)], shade(t['gold'], 1.15), layer=4, stroke=False)
+        poly([(381, 318), (408, 274), (400, 268), (370, 310)], shade(t['gold'], 1.15), layer=4, stroke=False)
+        poly([(308, 346), (392, 346), (392, 365), (308, 365)], ink, layer=4, stroke=False)
+        poly([(308, 346), (392, 346), (392, 351), (308, 351)], t['cream'], layer=5, stroke=False)
+        circ(350, 319, 13, t['man'], layer=5, sw=1.8)
+        circ(350, 319, 6, t['gold'], layer=6, stroke=False)
+        for x in (300, 350, 400):
+            circ(x, 389, 3.2, t['gold'], layer=5, stroke=False)
+    elif kind == 'eye':
+        def almond(scale=1.0):
+            pts = [(278, 350), (292, 331), (313, 317), (336, 309), (350, 307), (364, 309),
+                   (387, 317), (408, 331), (422, 350), (408, 369), (387, 383), (364, 391),
+                   (350, 393), (336, 391), (313, 383), (292, 369)]
+            return [(350 + (x - 350) * scale, 350 + (y - 350) * scale) for x, y in pts]
+        poly(almond(1.3), t['pin'], layer=2, stroke=False)
+        poly(almond(1.18), t['cwell'], layer=3, stroke=False)
+        bar(256, 350, 230, 350, width=3, fill=t['pin'], layer=3)
+        bar(444, 350, 470, 350, width=3, fill=t['pin'], layer=3)
+        bar(230, 350, 220, 338, width=2.2, fill=t['pin'], layer=3)
+        bar(470, 350, 480, 362, width=2.2, fill=t['pin'], layer=3)
+        circ(220, 338, 4, t['pin'], layer=4, stroke=False)
+        circ(480, 362, 4, t['pin'], layer=4, stroke=False)
+        circ(350, 350, 38, t['pin'], layer=4, stroke=False)
+        circ(350, 350, 33, t['man'], layer=5, stroke=False)
+        circ(350, 350, 15, t['cwell'], layer=6, stroke=False)
+        circ(341, 341, 5.5, t['white'], layer=7, stroke=False)
+        bar(320, 350, 380, 350, width=2, fill=t['gold'], layer=7, extra=' opacity="0.7"')
+    elif kind == 'star':
+        def star(r_out, r_in, layer, fill, sw):
+            pts = []
+            for i in range(10):
+                r = r_out if i % 2 == 0 else r_in
+                ang = -math.pi / 2 + i * math.pi / 5
+                pts.append((350 + r * math.cos(ang), 350 + r * math.sin(ang)))
+            poly(pts, fill, layer=layer, sw=sw)
+        star(84, 35, 2, t['gold'], 2.4)
+        star(52, 22, 3, shade(t['gold'], 0.84), 1.6)
+        circ(350, 350, 15, t['man'], layer=4, sw=1.8)
+        circ(350, 350, 7, t['gold'], layer=5, stroke=False)
+        for i in range(5):
+            ang = -math.pi / 2 + i * 2 * math.pi / 5
+            circ(350 + 70 * math.cos(ang), 350 + 70 * math.sin(ang), 3.2, t['cream'], layer=4, stroke=False)
+    elif kind == 'drop':
+        drop = parse_path('M350 276 C378 316 410 346 410 374 C410 406 383 430 350 430 '
+                          'C317 430 290 406 290 374 C290 346 322 316 350 276 Z', steps=12)
+        poly([(350 + (x - 350) * 1.05, 350 + (y - 350) * 1.05) for x, y in drop], t['white'], layer=2, stroke=False)
+        poly(drop, t['pin'], layer=3, stroke=False)
+        poly(rotate_pts(ellipse_pts(326, 340, 12, 19), 326, 340, -24), t['white'], layer=4, stroke=False,
+             extra=' opacity="0.85"')
+        circ(370, 398, 7, t['white'], layer=4, stroke=False, extra=' opacity="0.65"')
+        circ(302, 386, 4, t['white'], layer=4, stroke=False, extra=' opacity="0.55"')
+        circ(388, 326, 3, t['white'], layer=4, stroke=False, extra=' opacity="0.55"')
 
 
 def console(s, x, y, z, a=120, riichi=('E',)):
@@ -468,12 +573,16 @@ def console(s, x, y, z, a=120, riichi=('E',)):
         dot = lambda s_, bx, by, bz, bw, bd, bh: s_.circle((bx + bw / 2, by + bd / 2, bz + bh), (1, 0, 0), (0, 1, 0), 1.5, ink, stroke=False)
         s.box(x0 + 1.5, y0 + 1.5, z + 4, (x1 - x0) - 3, (y1 - y0) - 3, 4, body, left=shade(body, 0.86), right=shade(body, 0.74),
               deco=[dot], sw=0.9, key=(k[0] + 2, k[1]))
-    # compass rose in the middle (the original's screen is left out on purpose)
-    ring = lambda r: [(350 + r * math.cos(math.pi * n / 12), 350 + r * math.sin(math.pi * n / 12)) for n in range(24)]
-    for r_, w_ in ((82, 1.0), (62, 0.7)):
-        flat(ring(r_), 'none', stroke=False, extra=f' stroke="#eee9ff" stroke-width="{w_}"', n=2)
-    rose = 'M350 263L368 330L437 312L387 360L437 408L368 390L350 457L332 390L263 408L313 360L263 312L332 330L350 263Z'
-    flat(parse_path(rose), '#f7f2ff', sw=0.6, n=2)
+    # compass rose in the middle (light/dark) or the theme's emblem
+    emblem = t.get('emblem', 'rose')
+    if emblem == 'rose':
+        ring = lambda r: [(350 + r * math.cos(math.pi * n / 12), 350 + r * math.sin(math.pi * n / 12)) for n in range(24)]
+        for r_, w_ in ((82, 1.0), (62, 0.7)):
+            flat(ring(r_), 'none', stroke=False, extra=f' stroke="#eee9ff" stroke-width="{w_}"', n=2)
+        rose = 'M350 263L368 330L437 312L387 360L437 408L368 390L350 457L332 390L263 408L313 360L263 312L332 330L350 263Z'
+        flat(parse_path(rose), '#f7f2ff', sw=0.6, n=2)
+    else:
+        draw_emblem(flat, t, emblem)
     # seat labels, each upright for the player in that seat
     labels = (('E', 350, 565, '5 · 9', 31, 350, 492, '東'), ('W', 350, 140, '3 · 7 · 11', 31, 350, 225, '西'),
               ('N', 140, 350, '4 · 8 · 12', 29, 230, 350, '北'), ('S', 560, 350, '2 · 6 · 10', 29, 470, 350, '南'))
