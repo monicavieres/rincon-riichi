@@ -22,15 +22,15 @@ C30, S30 = math.cos(math.radians(30)), 0.5
 THEMES = {
     'light': {
         'ink': '#23203f', 'shadow': 'rgba(60,45,20,0.16)', 'rim': None, 'cast': 'rgba(10,40,40,0.22)',
-        'rail': '#7b4fe0', 'felt': '#22a08b', 'console': '#2e2a48',
-        'cream': '#fbf2df', 'back': '#e0457f', 'gold': '#f2b42c', 'pin': '#2f7fd6',
+        'rail': '#b2713c', 'felt': '#22a08b', 'console': '#2e2a48',
+        'cream': '#fbf2df', 'back': '#f3c63d', 'gold': '#f2b42c', 'pin': '#2f7fd6',
         'sou': '#22a565', 'tsumo': '#f07a3a', 'man': '#e0457f', 'white': '#fffdf6',
         'wood': '#e9a25a', 'screen': '#9ff0d8', 'cplate': '#55bdeb', 'cpurple': '#4d3eb8', 'cwell': '#0a0a0b', 'cinset': '#3b3020', 'cnum': '#fff6dc', 'cnumline': '#2f2984',
     },
     'dark': {
         'ink': '#0c0a14', 'shadow': 'rgba(0,0,0,0.45)', 'rim': '#4a4466', 'cast': 'rgba(0,0,0,0.38)',
-        'rail': '#8a62f0', 'felt': '#2bb39c', 'console': '#3a3558',
-        'cream': '#f6ead3', 'back': '#f06d9e', 'gold': '#f5c451', 'pin': '#5aa2ee',
+        'rail': '#a8693a', 'felt': '#2bb39c', 'console': '#3a3558',
+        'cream': '#f6ead3', 'back': '#f5cd55', 'gold': '#f5c451', 'pin': '#5aa2ee',
         'sou': '#3fc283', 'tsumo': '#f59560', 'man': '#f06d9e', 'white': '#fffaf0',
         'wood': '#eeac68', 'screen': '#b6f7e4', 'cplate': '#46a6d6', 'cpurple': '#6454d0', 'cwell': '#050506', 'cinset': '#33291a', 'cnum': '#fff6dc', 'cnumline': '#2f2984',
     },
@@ -292,7 +292,7 @@ def text_top(char, colour, size):
 def tile_lying(s, x, y, z, along_x=True):
     w, d = (20, 27) if along_x else (27, 20)
     t = s.t
-    s.box(x, y, z, w, d, 15, t['back'], bands=[(0.5, t['cream']), (1.0, t['back'])], deco=[tile_back_top], sw=1.2)
+    s.box(x, y, z, w, d, 15, t['back'], bands=[(0.5, t['cream']), (1.0, t['back'])], sw=1.2)
 
 
 def wall(s, x, y, n, along_x, z, gaps=(), face_up=None, split=()):
@@ -526,6 +526,28 @@ def pond(s, seat, codes, z):
             tile_face_up(s, 207 - row * 27, 240 + col * 20, z, c, 'W')
 
 
+def wood_grain(s):
+    """Thin darker strokes along the table's rail and skirt, so the brown reads as planks."""
+    t = s.t
+    col = shade(t['rail'], 0.72)
+
+    def path(pts, w=1.2, o=0.55):
+        d = ' '.join(('M' if i == 0 else 'L') + '%.1f,%.1f' % P(*p) for i, p in enumerate(pts))
+        s.pts += [P(*p) for p in pts]
+        return f'<path d="{d}" fill="none" stroke="{col}" stroke-width="{w}" stroke-linecap="round" opacity="{o}"/>'
+
+    out = []
+    z = 118.2
+    for inset, w in ((6, 1.3), (14, 1.0), (22, 1.2)):
+        a, b = inset, 600 - inset
+        out.append(path([(a, a, z), (b, a, z), (b, b, z), (a, b, z), (a, a, z)], w))
+    # grain on the two visible side faces of the rail and the skirt
+    for zz in (101, 108):
+        out.append(path([(0, 600, zz), (600, 600, zz), (600, 0, zz)], 1.0, 0.45))
+    out.append(path([(20, 580, 81), (580, 580, 81), (580, 20, 81)], 1.0, 0.45))
+    s.raw((-1.795e8, 0), ''.join(out))
+
+
 # ── scenes ───────────────────────────────────────────────────
 def scene_table(t):
     s = Scene(t)
@@ -535,6 +557,7 @@ def scene_table(t):
         s.box(lx, ly, 0, 40, 40, 70, shade(t['rail'], 0.6), key=(-2e8 + lx + ly, 0), sw=2)
     s.box(20, 20, 70, 560, 560, 22, shade(t['rail'], 0.75), key=(-1.9e8, 0), sw=2)
     s.box(0, 0, 92, 600, 600, 26, t['rail'], key=(-1.8e8, 0), sw=2)
+    wood_grain(s)
     # one drawer per seat in the skirt; only South's (yours) is open
     drawer_front(s, 'W', 200, 400, 73, 89, (-1.79e8, 0))
     s.box(30, 30, 118, 540, 540, 3, t['felt'], key=(-1.7e8, 0), sw=1.6)
