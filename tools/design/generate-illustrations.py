@@ -34,6 +34,13 @@ THEMES = {
         'sou': '#3fc283', 'tsumo': '#f59560', 'man': '#f06d9e', 'white': '#fffaf0',
         'wood': '#eeac68', 'screen': '#b6f7e4', 'cplate': '#46a6d6', 'cpurple': '#6454d0', 'cwell': '#050506', 'cinset': '#33291a', 'cnum': '#fff6dc', 'cnumline': '#2f2984',
     },
+    'cute': {
+        'ink': '#6b3a5a', 'shadow': 'rgba(170,80,130,0.18)', 'rim': '#ffd1e6', 'cast': 'rgba(140,50,100,0.20)',
+        'rail': '#f2a7c3', 'felt': '#ff9ec7', 'console': '#e58bb5',
+        'cream': '#fff5fa', 'back': '#ffd1e6', 'gold': '#ffb3d1', 'pin': '#b18cff',
+        'sou': '#ff7fae', 'tsumo': '#ff9f7a', 'man': '#e84f8f', 'white': '#fffafd',
+        'wood': '#ffc2d9', 'screen': '#ffd9ea', 'cplate': '#ff9ec7', 'cpurple': '#b46bd6', 'cwell': '#6b3a5a', 'cinset': '#8f5b77', 'cnum': '#fff5fa', 'cnumline': '#b46bd6',
+    },
 }
 
 

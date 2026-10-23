@@ -114,10 +114,54 @@
     --shadow-tile: 0 3px 0 #b07a42;
 }
 
+:root[data-theme="cute"] {
+    color-scheme: light;
+
+    --paper: #fff1f7;
+    --paper-deep: #ffe4ef;
+    --card: #fff8fb;
+    --card-sunk: #ffe9f2;
+    --line: #f3bfd4;
+    --line-soft: #f9d9e6;
+    --ink: #5c2f4a;
+    --text: #74425f;
+    --muted: #9a6a83;
+    --faint: #c79bb0;
+    --felt: #ef6aa3;
+    --felt-strong: #c93d7b;
+    --felt-soft: #ffe0ec;
+    --man: #e84f8f;
+    --man-strong: #b82f68;
+    --man-soft: #ffd6e7;
+    --pin: #b18cff;
+    --pin-strong: #7c53d6;
+    --pin-soft: #ece2ff;
+    --sou: #ff7fae;
+    --sou-strong: #d94f86;
+    --sou-soft: #ffe1ec;
+    --gold: #ffb3d1;
+    --gold-strong: #b85b84;
+    --gold-soft: #ffe7f1;
+    --riichi: #b46bd6;
+    --riichi-strong: #8a3fae;
+    --riichi-soft: #f3e3fb;
+    --tsumo: #ff9f7a;
+    --tsumo-strong: #c95f38;
+    --tsumo-soft: #ffe5d8;
+    --on-accent: #ffffff;
+    --tile-face: #fff8fc;
+    --tile-edge: #f3bfd6;
+
+    --shadow-float: 0 6px 16px -12px rgba(160, 60, 110, 0.35);
+    --shadow-gloss: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    --shadow-tile: 0 3px 0 #f3bfd6;
+}
+
 /* ── 2 · Legacy aliases: older pages keep working on the new palette ── */
 :root,
 :root[data-theme="dark"],
-:root[data-theme="light"] {
+:root[data-theme="light"],
+:root[data-theme="cute"] {
     --green: var(--sou);
     --green-dark: var(--sou-strong);
     --pink: var(--man);
@@ -160,6 +204,10 @@
     --shadow: rgba(0, 0, 0, 0.35);
 }
 
+:root[data-theme="cute"] {
+    --shadow: rgba(160, 60, 110, 0.12);
+}
+
 /* ── 3 · Global surfaces ────────────────────────────────────── */
 body {
     color: var(--text);
@@ -185,15 +233,22 @@ h4 {
     display: none;
 }
 
-.rr-only-dark {
+.rr-only-dark,
+.rr-only-cute {
     display: none !important;
 }
 
-:root[data-theme="dark"] .rr-only-light {
+:root[data-theme="dark"] .rr-only-light,
+:root[data-theme="cute"] .rr-only-light,
+:root[data-theme="cute"] .rr-only-dark {
     display: none !important;
 }
 
 :root[data-theme="dark"] .rr-only-dark {
+    display: block !important;
+}
+
+:root[data-theme="cute"] .rr-only-cute {
     display: block !important;
 }
 
@@ -362,7 +417,7 @@ body:has(.side-rail) {
 }
 
 .side-rail.menu-open .side-rail-theme {
-    grid-template-columns: 40px 40px;
+    grid-template-columns: repeat(3, 40px);
     justify-content: start;
 }
 
@@ -1535,3 +1590,58 @@ body:has(.side-rail) {
         animation: none;
     }
 }
+
+/* ── Cute theme refinements ─────────────────────────────────── */
+:root[data-theme="cute"] body {
+    background:
+        radial-gradient(circle at 8% 6%, #ffe1ee 0, transparent 26rem),
+        radial-gradient(circle at 92% 12%, #efe3ff 0, transparent 28rem),
+        radial-gradient(circle at 50% 96%, #ffe8f2 0, transparent 30rem),
+        var(--paper);
+}
+
+:root[data-theme="cute"] .feedback.good,
+:root[data-theme="cute"] .status.ready,
+:root[data-theme="cute"] .family-tab.is-active,
+:root[data-theme="cute"] .score-tab.is-active,
+:root[data-theme="cute"] .answer-button.is-correct,
+:root[data-theme="cute"] .results-row.is-correct .results-mark,
+:root[data-theme="cute"] .ref-value,
+:root[data-theme="cute"] .guide-step,
+:root[data-theme="cute"] .yakuref-value,
+:root[data-theme="cute"] .torpedo-han,
+:root[data-theme="cute"] .fu-base h3,
+:root[data-theme="cute"] .tile-set-picker select,
+:root[data-theme="cute"] .switch-control input:checked + .switch-track {
+    background: linear-gradient(180deg, #ff9ec7, var(--green));
+}
+
+:root[data-theme="cute"] .module-card .status.ready {
+    border-color: color-mix(in srgb, var(--green) 38%, transparent);
+    color: var(--man-strong);
+    background: color-mix(in srgb, var(--green) 12%, var(--card-bg));
+}
+
+:root[data-theme="cute"] .tiles-card {
+    background:
+        radial-gradient(circle at 20% 24%, rgba(255, 158, 199, 0.14), transparent 30%),
+        radial-gradient(circle at 80% 78%, rgba(177, 140, 255, 0.12), transparent 34%),
+        color-mix(in srgb, var(--card) 82%, transparent);
+}
+
+:root[data-theme="cute"] .tiles-stage {
+    border-color: rgba(255, 158, 199, 0.22);
+    background:
+        radial-gradient(circle at 18% 22%, rgba(255, 158, 199, 0.18), transparent 28%),
+        radial-gradient(circle at 82% 74%, rgba(177, 140, 255, 0.12), transparent 32%),
+        linear-gradient(135deg, rgba(255, 246, 251, 0.72), rgba(255, 236, 246, 0.82));
+    box-shadow: inset 0 0 0 0.08rem rgba(255, 255, 255, 0.8);
+}
+
+:root[data-theme="cute"] .green-card { --module-accent: var(--sou); --module-tint: rgba(255, 127, 174, 0.12); }
+:root[data-theme="cute"] .blue-card { --module-accent: var(--pin); --module-tint: rgba(177, 140, 255, 0.12); }
+:root[data-theme="cute"] .pink-card { --module-accent: var(--man); --module-tint: rgba(232, 79, 143, 0.12); }
+:root[data-theme="cute"] .yellow-card { --module-accent: var(--gold); --module-tint: rgba(255, 179, 209, 0.16); }
+:root[data-theme="cute"] .orange-card { --module-accent: var(--tsumo); --module-tint: rgba(255, 159, 122, 0.12); }
+:root[data-theme="cute"] .purple-card { --module-accent: var(--riichi); --module-tint: rgba(180, 107, 214, 0.12); }
+:root[data-theme="cute"] .red-card { --module-accent: var(--man); --module-tint: rgba(232, 79, 143, 0.12); }

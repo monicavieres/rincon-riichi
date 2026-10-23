@@ -9,12 +9,13 @@ import {
   type TablePoint,
 } from '../table/geometry';
 
-/** The table illustration in both themes; CSS shows the one matching the current theme. */
+/** The table illustration in every theme; CSS shows the one matching the current theme. */
 export function ThemedArt({ art, className, alt = '' }: { art: TableArt; className?: string; alt?: string }) {
   return (
     <>
       <img className={`rr-only-light${className ? ` ${className}` : ''}`} src={tableArtPath(art, 'light')} alt={alt} />
       <img className={`rr-only-dark${className ? ` ${className}` : ''}`} src={tableArtPath(art, 'dark')} alt="" aria-hidden="true" />
+      <img className={`rr-only-cute${className ? ` ${className}` : ''}`} src={tableArtPath(art, 'cute')} alt="" aria-hidden="true" />
     </>
   );
 }
@@ -37,6 +38,7 @@ export function ZoneThumb({ focus }: { focus: TableFocus }) {
     <span className="lesson-thumb" aria-hidden="true">
       <img className="rr-only-light" src={tableArtPath('mesa', 'light')} alt="" style={style} />
       <img className="rr-only-dark" src={tableArtPath('mesa', 'dark')} alt="" style={style} />
+      <img className="rr-only-cute" src={tableArtPath('mesa', 'cute')} alt="" style={style} />
     </span>
   );
 }

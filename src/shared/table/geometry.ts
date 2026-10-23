@@ -1,4 +1,5 @@
 export type TableArt = 'mesa' | 'muro' | 'riichi' | 'dealer' | 'dados' | 'palitos' | 'consola';
+export type TableTheme = 'light' | 'dark' | 'cute';
 
 /** Pages under /aprender, /practicar and /recursos sit one folder deeper than the home page. */
 const assetBase = () => (typeof window !== 'undefined' && /\/(aprender|practicar|recursos)\//.test(window.location.pathname) ? '../' : '');
@@ -6,7 +7,7 @@ const assetBase = () => (typeof window !== 'undefined' && /\/(aprender|practicar
 /** Bump when the illustrations are regenerated: they keep their file names, and browsers cache SVGs hard. */
 export const ILLUSTRATION_VERSION = '4';
 
-export const tableArtPath = (art: TableArt, theme: 'light' | 'dark') => `${assetBase()}assets/illustrations/${art}-${theme}.svg?v=${ILLUSTRATION_VERSION}`;
+export const tableArtPath = (art: TableArt, theme: TableTheme) => `${assetBase()}assets/illustrations/${art}-${theme}.svg?v=${ILLUSTRATION_VERSION}`;
 
 /** A point on the table illustration, in the generator's table units (x, y on the felt, z up). */
 export type TablePoint = [number, number, number];

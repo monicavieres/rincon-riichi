@@ -106,6 +106,10 @@ export function AppHeader({ title, headline, backTo = 'aprender', home = false }
               <input type="radio" name="theme" value="dark" aria-label="Tema oscuro" />
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.6A8 8 0 0 1 9.4 4.5a8 8 0 1 0 10.1 10.1z" /></svg>
             </label>
+            <label title="Tema cute">
+              <input type="radio" name="theme" value="cute" aria-label="Tema cute" />
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9.5 6.6 3l4.1 3.2a8.4 8.4 0 0 1 2.6 0L17.4 3 19 9.5a8.5 8.5 0 1 1-14 0Z" /><path d="M9.3 13h.01M14.7 13h.01" /></svg>
+            </label>
           </div>
           <label className="side-rail-lang" title="Idioma">
             <span className="sr-only" data-i18n={home ? 'language.short' : 'language'}>Idioma</span>
