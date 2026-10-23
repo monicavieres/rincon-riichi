@@ -56,7 +56,7 @@
     position: absolute;
     top: 3.5%;
     right: 3%;
-    z-index: 30;
+    z-index: 60;
     display: flex;
     align-items: center;
     gap: var(--space-2);
@@ -97,6 +97,49 @@
 .sort-button:active {
     transform: translateY(1px);
     box-shadow: none;
+}
+
+.sort-button:disabled {
+    opacity: 0.55;
+    cursor: default;
+}
+
+/* Full-deck shuffle: all 136 tiles face down, briefly mixing on the felt. */
+.sort-board.is-shuffling .sort-tile {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sort-shuffle {
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    pointer-events: none;
+    animation: sort-shuffle-fade 1.15s ease both;
+}
+
+.sort-shuffle-tile {
+    position: absolute;
+    width: 3.6%;
+    animation: sort-shuffle-jiggle 0.34s ease-in-out infinite alternate;
+}
+
+.sort-shuffle-tile img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 2px 1px rgba(10, 30, 28, 0.28));
+}
+
+@keyframes sort-shuffle-fade {
+    0% { opacity: 0; }
+    10%, 84% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@keyframes sort-shuffle-jiggle {
+    from { transform: translate(0, 0) rotate(-2deg); }
+    to { transform: translate(0.4%, -0.4%) rotate(2deg); }
 }
 
 .sort-rack {
@@ -422,7 +465,9 @@
 @media (prefers-reduced-motion: reduce) {
     .sort-tile,
     .rack-group,
-    .sort-win {
+    .sort-win,
+    .sort-shuffle,
+    .sort-shuffle-tile {
         transition: none;
         animation: none;
     }

@@ -150,9 +150,9 @@ export const tutorialStops: TutorialStop[] = [
     eyebrow: L('Empieza aquí', 'Start here', 'Comece aqui'),
     title: L('Revuelve las fichas y ordénalas', 'Shuffle the tiles and sort them', 'Embaralhe as peças e ordene-as'),
     body: L(
-      'El mahjong se juega con fichas. Aquí tienes trece sueltas sobre el paño: muévelas con el dedo o el mouse, llévalas a tu mano y ordénalas. Con buen orden, los grupos se ven de un vistazo.',
-      'Mahjong is played with tiles. Here are thirteen loose ones on the felt: move them with your finger or mouse, bring them to your hand and sort them. With a good order, the sets show at a glance.',
-      'O mahjong se joga com peças. Aqui estão treze soltas sobre o pano: mova-as com o dedo ou o mouse, leve-as à sua mão e ordene-as. Com boa ordem, os grupos aparecem num relance.',
+      'El mahjong se juega con 136 fichas. Pulsa «Revolver» para mezclarlas todas boca abajo; después trabaja con tus trece: muévelas con el dedo o el mouse, llévalas a tu mano y ordénalas. Con buen orden, los grupos se ven de un vistazo.',
+      'Mahjong is played with 136 tiles. Press “Shuffle” to mix them all face down; then work with your thirteen: move them with your finger or mouse, bring them to your hand and sort them. With a good order, the sets show at a glance.',
+      'O mahjong é jogado com 136 peças. Pressione «Embaralhar» para misturar todas viradas para baixo; depois trabalhe com as suas treze: mova-as com o dedo ou o mouse, leve-as à sua mão e ordene-as. Com boa ordem, os grupos aparecem num relance.',
     ),
     bullets: [
       L('Hay tres palos numerados del 1 al 9: manzu (caracteres), pinzu (círculos) y souzu (bambúes).', 'There are three suits numbered 1 to 9: manzu (characters), pinzu (circles) and souzu (bamboo).', 'Há três naipes numerados de 1 a 9: manzu (caracteres), pinzu (círculos) e souzu (bambus).'),

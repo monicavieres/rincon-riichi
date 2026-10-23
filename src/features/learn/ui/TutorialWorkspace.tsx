@@ -17,9 +17,9 @@ const TABS: Array<{ id: Tab; label: LocalizedText }> = [
 
 const PRACTICE_COPY = {
   sort: L(
-    '1. Pulsa «Revolver» para mezclar. 2. Arrastra las fichas a tu mano. 3. Ordénalas: manzu, pinzu, souzu y honores. ¿Te atoras? «Ordenar» lo hace por ti.',
-    '1. Press “Shuffle” to mix them. 2. Drag the tiles into your hand. 3. Sort them: manzu, pinzu, souzu, then honors. Stuck? “Sort” does it for you.',
-    '1. Toque em «Embaralhar» para misturar. 2. Arraste as peças para a sua mão. 3. Ordene: manzu, pinzu, souzu e honras. Travou? «Ordenar» faz por você.',
+    '1. Pulsa «Revolver» para mezclar las 136 fichas boca abajo. 2. Arrastra tus trece fichas a la mano. 3. Ordénalas: manzu, pinzu, souzu y honores. ¿Te atoras? «Ordenar» lo hace por ti.',
+    '1. Press “Shuffle” to mix all 136 tiles face down. 2. Drag your thirteen tiles into your hand. 3. Sort them: manzu, pinzu, souzu, then honors. Stuck? “Sort” does it for you.',
+    '1. Toque em «Embaralhar» para misturar as 136 peças viradas para baixo. 2. Arraste as suas treze peças para a mão. 3. Ordene: manzu, pinzu, souzu e honras. Travou? «Ordenar» faz por você.',
   ),
   table: L(
     'Mira la zona resaltada y lee cada etiqueta. Usa ⤢ para ver la mesa completa y volver a ubicarte.',
