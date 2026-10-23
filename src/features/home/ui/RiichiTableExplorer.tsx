@@ -14,6 +14,7 @@ const chevron = (
 
 export function RiichiTableExplorer() {
   const explorerRef = useRef<HTMLElement>(null);
+  const railRef = useRef<HTMLElement>(null);
   const [activeId, setActiveId] = useState(tableExplorerStops[0].id);
   const [activeTab, setActiveTab] = useState<ExplorerTab>('summary');
   const [overview, setOverview] = useState(false);
@@ -50,6 +51,18 @@ export function RiichiTableExplorer() {
 
     window.addEventListener('keydown', onKeyDown, true);
     return () => window.removeEventListener('keydown', onKeyDown, true);
+  }, [activeIndex]);
+
+  useEffect(() => {
+    const rail = railRef.current;
+    const activeItem = rail?.children[activeIndex] as HTMLElement | undefined;
+    if (!rail || !activeItem) return;
+    const railBox = rail.getBoundingClientRect();
+    const activeBox = activeItem.getBoundingClientRect();
+    const padding = 12;
+    if (activeBox.left >= railBox.left + padding && activeBox.right <= railBox.right - padding) return;
+    const target = rail.scrollLeft + (activeBox.left - railBox.left) - (rail.clientWidth - activeBox.width) / 2;
+    rail.scrollTo({ left: Math.max(0, target), behavior: 'auto' });
   }, [activeIndex]);
 
   return (
@@ -131,7 +144,7 @@ export function RiichiTableExplorer() {
       </div>
 
       <h2 className="explorer-lesson-heading">Lecciones de la mesa</h2>
-      <nav className="explorer-lesson-rail" aria-label="Conceptos de la mesa">
+      <nav className="explorer-lesson-rail" ref={railRef} aria-label="Conceptos de la mesa">
         {tableExplorerStops.map((stop, index) => (
           <button
             type="button"
