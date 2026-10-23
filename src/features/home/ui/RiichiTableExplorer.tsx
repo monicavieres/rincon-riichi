@@ -103,21 +103,14 @@ export function RiichiTableExplorer() {
 
   return (
     <section className="table-explorer" aria-labelledby="table-explorer-title" ref={explorerRef}>
-      <header className="table-explorer-header">
-        <div>
-          <p className="eyebrow">Mahjong riichi, explicado sobre la mesa</p>
-          <h1 id="table-explorer-title">Explora una partida <em>antes de memorizar reglas</em></h1>
-          <p>Selecciona un punto. La mesa te mostrará qué es, para qué sirve y dónde puedes practicarlo.</p>
-        </div>
-        <div className="explorer-progress" aria-label={`Paso ${activeIndex + 1} de ${tableExplorerStops.length}`}>
-          <span>Ruta inicial</span>
-          <strong>{activeIndex + 1}/{tableExplorerStops.length}</strong>
-          <div aria-hidden="true"><i style={{ width: `${((activeIndex + 1) / tableExplorerStops.length) * 100}%` }} /></div>
-        </div>
-      </header>
 
       <div className="table-explorer-workspace">
         <div className="table-explorer-stage" aria-label="Mesa de riichi interactiva">
+          <div className="explorer-progress" aria-label={`Paso ${activeIndex + 1} de ${tableExplorerStops.length}`}>
+            <span>Ruta inicial</span>
+            <strong>{activeIndex + 1}/{tableExplorerStops.length}</strong>
+            <div aria-hidden="true"><i style={{ width: `${((activeIndex + 1) / tableExplorerStops.length) * 100}%` }} /></div>
+          </div>
           <div className={`table-explorer-tilt${zoomed ? ' is-zoomed' : ''}`}>
             <div
               className="table-explorer-visual"

@@ -9,7 +9,10 @@ export function HomePage() {
     <>
       <SoftBackground />
       <main className="app-shell">
-        <AppHeader home />
+        <AppHeader
+          home
+          headline={<><h1 id="table-explorer-title">Explora la mesa</h1><p>Toca un punto o usa las flechas.</p></>}
+        />
         <div id="inicio" data-home-section><RiichiTableExplorer /></div>
         <section className="section-heading" id="aprender" data-home-section><h2 data-i18n="modules.title">Aprender</h2><p data-i18n="modules.subtitle">Conceptos, reglas y referencias para entender Riichi.</p></section>
         <ModuleGrid modules={learnModules} className="section-grid" />

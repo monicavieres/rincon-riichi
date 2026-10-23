@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 
 type AppHeaderProps = {
   title?: string;
+  /** Page heading shown beside the logo (the home page uses it instead of a hero block). */
+  headline?: ReactNode;
   backTo?: 'aprender' | 'practicar';
   home?: boolean;
 };
@@ -69,7 +71,7 @@ export function BrandMark({ className }: { className?: string }) {
 
 const chevronRight = <path d="M9 5.5 15.5 12 9 18.5" />;
 
-export function AppHeader({ title, backTo = 'aprender', home = false }: AppHeaderProps) {
+export function AppHeader({ title, headline, backTo = 'aprender', home = false }: AppHeaderProps) {
   const prefix = home ? '' : '../index.html';
   const activeId: RailLink['id'] = home ? 'inicio' : backTo;
 
@@ -124,6 +126,7 @@ export function AppHeader({ title, backTo = 'aprender', home = false }: AppHeade
             <small>Mira <i>·</i> Entiende <i>·</i> Juega</small>
           </span>
         </a>
+        {headline && <div className="brand-headline">{headline}</div>}
         {title && <span className="topbar-title">{title}</span>}
         {!home && <a className="brand-back" href={`../index.html#${backTo}`} data-i18n="back">← Volver</a>}
       </header>

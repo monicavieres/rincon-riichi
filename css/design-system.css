@@ -515,6 +515,26 @@ body:has(.side-rail) {
     font-style: normal;
 }
 
+.brand-headline {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+    padding-left: var(--space-6);
+    border-left: var(--border-hair) dashed var(--line);
+}
+
+.brand-headline h1 {
+    margin: 0;
+    color: var(--ink);
+    font: 700 clamp(22px, 2.2vw, 28px)/1.05 var(--font-display);
+}
+
+.brand-headline p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
 .brand-bar .topbar-title {
     position: static;
     order: 2;
@@ -553,6 +573,21 @@ body:has(.side-rail) {
 
 /* Phones: the rail becomes a bottom bar, as on the reference */
 @media (max-width: 760px) {
+    .brand-bar {
+        flex-wrap: wrap;
+    }
+
+    .brand-headline {
+        flex-basis: 100%;
+        padding: var(--space-2) 0 0;
+        border-left: 0;
+        border-top: var(--border-hair) dashed var(--line);
+    }
+
+    .table-explorer-stage .explorer-progress {
+        min-width: 150px;
+    }
+
     body:has(.side-rail) {
         padding-left: 0;
         padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
@@ -881,7 +916,7 @@ body:has(.side-rail) {
 
 /* ── Table explorer (home) ──────────────────────────────────── */
 .table-explorer {
-    margin-top: var(--space-6);
+    margin-top: var(--space-2);
 }
 
 .table-explorer-header {
@@ -915,6 +950,11 @@ body:has(.side-rail) {
 }
 
 .explorer-progress {
+    position: absolute;
+    top: var(--space-3);
+    left: var(--space-3);
+    z-index: 3;
+    box-shadow: var(--shadow-float);
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;
@@ -1454,9 +1494,6 @@ body:has(.side-rail) {
         grid-template-columns: 1fr;
     }
 
-    .explorer-progress {
-        justify-self: start;
-    }
 }
 
 @media (max-width: 640px) {
