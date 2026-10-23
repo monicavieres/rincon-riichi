@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TableStage, ZoneThumb } from '../../../shared/ui/TableStage';
 import { localize, type LocalizedText, type TutorialLanguage } from '../domain/tutorialContent';
 import { tutorialParts, tutorialStops, type TutorialStop } from '../domain/tutorialStage';
@@ -93,6 +93,7 @@ export function TutorialWorkspace() {
   const [tab, setTab] = useState<Tab>('summary');
   const [overview, setOverview] = useState(false);
   const [sort, setSort] = useState<SortStatus>({ inRack: 0, total: 13, sorted: false });
+  const railRef = useRef<HTMLElement>(null);
   const t = (value: LocalizedText) => localize(value, language);
 
   const stop = tutorialStops[index];
@@ -153,6 +154,18 @@ export function TutorialWorkspace() {
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [index, open]);
+
+  useEffect(() => {
+    const rail = railRef.current;
+    const active = rail?.children[index] as HTMLElement | undefined;
+    if (!rail || !active) return;
+    const railBox = rail.getBoundingClientRect();
+    const activeBox = active.getBoundingClientRect();
+    const padding = 12;
+    if (activeBox.left >= railBox.left + padding && activeBox.right <= railBox.right - padding) return;
+    const target = rail.scrollLeft + (activeBox.left - railBox.left) - (rail.clientWidth - activeBox.width) / 2;
+    rail.scrollTo({ left: Math.max(0, target), behavior: 'auto' });
+  }, [index]);
 
   const callouts = useMemo(
     () => (spec.kind === 'table' ? spec.callouts.map((callout) => ({ ...callout, label: localize(callout.label, language) })) : []),
@@ -231,7 +244,7 @@ export function TutorialWorkspace() {
         </aside>
       </div>
 
-      <nav className="explorer-lesson-rail tutorial-rail" aria-label={t(UI.rail)}>
+      <nav className="explorer-lesson-rail tutorial-rail" ref={railRef} aria-label={t(UI.rail)}>
         {tutorialStops.map((item, itemIndex) => (
           <button type="button" key={item.id} className={`${itemIndex === index ? 'is-active ' : ''}is-part-${item.part}`} onClick={() => open(itemIndex)}>
             {thumbFor(item)}
