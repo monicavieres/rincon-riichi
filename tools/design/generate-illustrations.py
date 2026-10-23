@@ -190,32 +190,48 @@ def stick_marks(kind):
     return f
 
 
+# Coloured stick set, as on real automatic tables: body colour and dot colour per value.
+STICK_COLOURS = {10000: ('#d83a3a', '#ffffff'), 5000: ('#f2c23a', '#d22f2f'), 1000: ('#2f6fd0', '#ffffff'),
+                 500: ('#1f9e7a', '#ffffff'), 100: ('#fbf8f0', '#23203f')}
+
+
 def stick_marks_y(kind):
-    """Point-stick markings for a stick lying along y (inside a drawer)."""
+    """Dot pattern for a stick lying along y (drawer or slot): matches the coloured set's markings."""
     def f(s, x, y, z, w, d, h):
-        t = s.t; cx, zz, mid = x + w / 2, z + h, y + d / 2
+        cx, zz, mid = x + w / 2, z + h, y + d / 2
+        ink = STICK_COLOURS[kind][1]
         out = []
-        def dot(py, r, col):
-            out.append(s.circle((cx, py, zz), (1, 0, 0), (0, 1, 0), r, col, stroke=False))
+        def dot(px, py, r):
+            out.append(s.circle((px, py, zz), (1, 0, 0), (0, 1, 0), r, ink, stroke=False, n=10))
         if kind == 10000:
-            dot(mid, 2.4, t['man'])
-            for o in (-16, -10, 10, 16):
-                dot(mid + o, 1.4, t['ink'])
+            for o in (-9, -4.5, 4.5, 9):
+                dot(cx, mid + o, 0.9)
+            for o in (-1.8, 1.8):
+                dot(cx + o, mid, 0.9)
+            dot(cx, mid, 1.1)
+            dot(cx, y + 7, 1.1)
+            dot(cx, y + d - 7, 1.1)
         elif kind == 5000:
-            for o in (-14, -8, 8, 14):
-                dot(mid + o, 1.4, t['ink'])
-            dot(mid, 2.1, t['gold'])
+            dot(cx, mid, 1.1)
+            for ox, oy in ((-1.8, -2.6), (1.8, -2.6), (-1.8, 2.6), (1.8, 2.6)):
+                dot(cx + ox, mid + oy, 0.9)
         elif kind == 1000:
-            dot(mid, 2.4, t['man'])
+            dot(cx, mid, 1.4)
         elif kind == 500:
-            dot(mid - 6, 1.6, t['gold'])
-            dot(mid + 6, 1.6, t['gold'])
+            for oy in (-3, 0, 3):
+                for ox in (-1.6, 1.6):
+                    dot(cx + ox, mid + oy, 0.75)
         elif kind == 100:
-            for end in (y + 9, y + d - 13):
-                for i in range(4):
-                    dot(end + (i // 2) * 4, 0.9, t['ink'])
+            for oy in (-4.5, -1.5, 1.5, 4.5):
+                for ox in (-1.6, 1.6):
+                    dot(cx + ox, mid + oy, 0.7)
         return ''.join(out)
     return f
+
+
+def stick_y(s, x, y, z, kind, length, key):
+    body = STICK_COLOURS[kind][0]
+    s.box(x, y, z, 7, length, 4, body, left=shade(body, 0.86), right=shade(body, 0.74), deco=[stick_marks_y(kind)], sw=0.8, key=key)
 
 
 def drawer_front(s, face, a, b, z0, z1, key):
@@ -239,27 +255,27 @@ def drawer_front(s, face, a, b, z0, z1, key):
 DRAWER_STICKS = ((10000, 1), (5000, 2), (1000, 9), (500, 1), (100, 4))
 
 
-def open_drawer(s, x0=200, y0=598, width=200, depth=104):
-    """South's drawer pulled out of the skirt: five compartments with the player's point sticks."""
+def open_drawer(s, x0=190, y0=598, width=220, depth=104):
+    """South's drawer pulled out of the skirt: one compartment per value, each wide enough to show every stick."""
     t = s.t
     wood, inner = shade(t['rail'], 0.75), shade(t['wood'], 0.95)
     k = 1e6
     s.box(x0, y0, 71, width, depth, 6, inner, key=(k, 0))
     s.box(x0, y0, 71, 4, depth, 19, wood, key=(k + 1, 0))
-    comp = width / len(DRAWER_STICKS)
-    for c, (kind, count) in enumerate(DRAWER_STICKS):
-        cx0 = x0 + c * comp
+    raw = [count * 8.5 + 9 for _, count in DRAWER_STICKS]
+    widths = [w * (width - 8) / sum(raw) for w in raw]
+    cx0 = x0 + 4
+    for c, ((kind, count), cw) in enumerate(zip(DRAWER_STICKS, widths)):
         if c:
-            s.box(cx0 - 1.5, y0, 77, 3, depth - 6, 9, shade(t['wood'], 0.8), key=(k + 2 + c * 10, 0), sw=0.9)
+            s.box(cx0 - 1.5, y0, 77, 3, depth - 6, 9, shade(t['wood'], 0.8), key=(k + 2 + c * 20, 0), sw=0.9)
+        start = cx0 + (cw - (count * 8.5 - 1.5)) / 2
         for n in range(count):
-            layer, slot = divmod(n, 4)
-            sx = cx0 + 5 + slot * 8.5
-            s.box(sx, y0 + 8, 77 + layer * 4, 7, depth - 22, 4, t['white'], left=shade(t['white'], 0.88), right=shade(t['white'], 0.78),
-                  deco=[stick_marks_y(kind)], sw=0.8, key=(k + 3 + c * 10 + layer, slot))
-    s.box(x0 + width - 4, y0, 71, 4, depth, 19, wood, key=(k + 60, 0))
-    s.box(x0, y0 + depth - 6, 69, width, 6, 23, t['rail'], key=(k + 70, 0))
+            stick_y(s, start + n * 8.5, y0 + 9, 77, kind, depth - 24, (k + 3 + c * 20, n))
+        cx0 += cw
+    s.box(x0 + width - 4, y0, 71, 4, depth, 19, wood, key=(k + 120, 0))
+    s.box(x0, y0 + depth - 6, 69, width, 6, 23, t['rail'], key=(k + 130, 0))
     hx = x0 + width / 2
-    s.raw((k + 71, 0), s.poly([(hx - 16, y0 + depth + 0.5, 78), (hx + 16, y0 + depth + 0.5, 78), (hx + 16, y0 + depth + 0.5, 83), (hx - 16, y0 + depth + 0.5, 83)], t['gold'], sw=0.9))
+    s.raw((k + 131, 0), s.poly([(hx - 16, y0 + depth + 0.5, 78), (hx + 16, y0 + depth + 0.5, 78), (hx + 16, y0 + depth + 0.5, 83), (hx - 16, y0 + depth + 0.5, 83)], t['gold'], sw=0.9))
 
 
 def text_top(char, colour, size):
@@ -306,27 +322,36 @@ def stick(s, x, y, z, kind, length=96, key=None):
           deco=[stick_marks(kind)], sw=1.2, key=key)
 
 
-def console(s, x, y, z, a=96, dealer='E'):
-    """Automatic-table console: each side shows that seat's wind (lit for the dealer), the dial shows the round wind.
+def console(s, x, y, z, a=108, dealer='E', riichi=('S',)):
+    """The compass (automatic-table console). Each side shows that seat's wind (lit for the dealer) and has a slot
+    where a player who declares riichi leaves a 1000-point stick; the dial shows the round wind.
     Seats: South at +y (the viewer's seat), West at +x, North at -y, East at -x (turn order runs counter-clockwise)."""
     t = s.t
     s.box(x, y, z, a, a, 8, t['console'], key=(x + y + a, z))
     top, k = z + 8.5, (x + y + a + 1, z + 9)
-    mid = a / 2
+    mid, half = a / 2, 30
+    groove = shade(t['console'], 0.55)
     sides = {
-        'N': ((x + mid - 10, y + 4, 20, 5), (x + mid, y + 18), '北'),
-        'S': ((x + mid - 10, y + a - 9, 20, 5), (x + mid, y + a - 18), '南'),
-        'E': ((x + 4, y + mid - 10, 5, 20), (x + 18, y + mid), '東'),
-        'W': ((x + a - 9, y + mid - 10, 5, 20), (x + a - 18, y + mid), '西'),
+        'N': ((x + mid - 10, y + 4, 20, 5), (x + mid, y + 17), (x + mid - half, y + 27, 2 * half, 7), '北'),
+        'S': ((x + mid - 10, y + a - 9, 20, 5), (x + mid, y + a - 17), (x + mid - half, y + a - 34, 2 * half, 7), '南'),
+        'E': ((x + 4, y + mid - 10, 5, 20), (x + 17, y + mid), (x + 27, y + mid - half, 7, 2 * half), '東'),
+        'W': ((x + a - 9, y + mid - 10, 5, 20), (x + a - 17, y + mid), (x + a - 34, y + mid - half, 7, 2 * half), '西'),
     }
-    for seat, ((lx, ly, lw, ld), (cx, cy), ch) in sides.items():
+    for seat, ((lx, ly, lw, ld), (cx, cy), (gx, gy, gw, gd), ch) in sides.items():
         lit = seat == dealer
         light = t['man'] if lit else shade(t['console'], 1.7)
         s.raw(k, s.poly([(lx, ly, top), (lx + lw, ly, top), (lx + lw, ly + ld, top), (lx, ly + ld, top)], light, sw=1))
         s.raw(k, text_top(ch, t['man'] if lit else t['cream'], 14)(s, cx, cy, z + 0.5, 0, 0, 8))
-    s.raw((k[0] + 1, k[1]), s.circle((x + mid, y + mid, top), (1, 0, 0), (0, 1, 0), 13, shade(t['console'], 0.7), sw=1.2))
-    s.raw((k[0] + 2, k[1]), s.circle((x + mid, y + mid, top + 0.1), (1, 0, 0), (0, 1, 0), 10.5, 'none', sw=0.8))
-    s.raw((k[0] + 3, k[1]), text_top('東', t['gold'], 15)(s, x + mid, y + mid, z + 0.5, 0, 0, 8))
+        # riichi slot: a dark groove cut into the top
+        s.raw(k, s.poly([(gx, gy, top), (gx + gw, gy, top), (gx + gw, gy + gd, top), (gx, gy + gd, top)], groove, sw=1))
+        if seat in riichi:
+            body, ink = STICK_COLOURS[1000]
+            dot = lambda s_, bx, by, bz, bw, bd, bh: s_.circle((bx + bw / 2, by + bd / 2, bz + bh), (1, 0, 0), (0, 1, 0), 1.6, ink, stroke=False)
+            s.box(gx + 1, gy + 1, z + 6, gw - 2, gd - 2, 4, body, left=shade(body, 0.86), right=shade(body, 0.74),
+                  deco=[dot], sw=0.9, key=(k[0] + 4, k[1]))
+    s.raw((k[0] + 1, k[1]), s.circle((x + mid, y + mid, top), (1, 0, 0), (0, 1, 0), 12, shade(t['console'], 0.7), sw=1.2))
+    s.raw((k[0] + 2, k[1]), s.circle((x + mid, y + mid, top + 0.1), (1, 0, 0), (0, 1, 0), 9.5, 'none', sw=0.8))
+    s.raw((k[0] + 3, k[1]), text_top('東', t['gold'], 14)(s, x + mid, y + mid, z + 0.5, 0, 0, 8))
 
 
 def face_glyph(s, code, origin, u, v):
@@ -423,12 +448,11 @@ def scene_table(t):
         s.cast(hx, hy, hw, hd, z, 27)
     for px, py, pw, pd in ((240, 366, 120, 54), (240, 180, 120, 54), (366, 240, 54, 120), (180, 240, 54, 120)):
         s.cast(px, py, pw, pd, z, 15)
-    s.cast(252, 252, 96, 96, z, 8)
-    console(s, 252, 252, z, a=96)
+    s.cast(246, 246, 108, 108, z, 8)
+    console(s, 246, 246, z)
     open_drawer(s)
-    die(s, 256, 256, z + 8, a=10, faces=(5, 2, 3))
-    die(s, 334, 334, z + 8, a=10, faces=(1, 4, 2))
-    stick(s, 254, 354, z, 1000, length=92)
+    die(s, 250, 250, z + 8, a=10, faces=(5, 2, 3))
+    die(s, 340, 340, z + 8, a=10, faces=(1, 4, 2))
     hand(s, 'N', ['1m'] * 13, z)
     hand(s, 'W', ['1m'] * 13, z)
     hand(s, 'E', ['1m', '1m', '5m', '6m', '7m', '2p', '2p', '9p', '3s', '4s', '5s', '6z', '6z'], z)
