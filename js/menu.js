@@ -6,6 +6,7 @@
     cyberpunk: "tiles-cyberpunk",
     vaquero: "tiles-vaquero",
     frutiger: "tiles-frutiger",
+    shinto: "tiles-shinto",
   };
   const THEMED_FOLDERS = Object.values(THEME_TILES).join("|");
   const THEMED_TILE = new RegExp(`assets/(?:${THEMED_FOLDERS})/([^/?#]+\\.svg)`);
@@ -92,6 +93,7 @@
             cyberpunk: "#070b12",
             vaquero: "#f4e3c1",
             frutiger: "#e8f7ff",
+            shinto: "#f6efe2",
           };
           themeColor.setAttribute("content", colors[theme] || colors.light);
         }
@@ -109,7 +111,7 @@
         document.documentElement.getAttribute("data-theme") ||
         (typeof localStorage !== "undefined" && localStorage.getItem("theme")) ||
         "light";
-      const initial = ["light", "dark", "cute", "samurai", "cyberpunk", "vaquero", "frutiger"].includes(stored) ? stored : "light";
+      const initial = ["light", "dark", "cute", "samurai", "cyberpunk", "vaquero", "frutiger", "shinto"].includes(stored) ? stored : "light";
 
       radios.forEach((radio) => {
         radio.addEventListener("change", () => {

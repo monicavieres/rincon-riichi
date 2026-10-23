@@ -76,6 +76,14 @@ THEMES = {
         'wood': '#a8e6ff', 'screen': '#d8f6ff', 'cplate': '#5aa9ff', 'cpurple': '#b388ff', 'cwell': '#0b4f6c', 'cinset': '#6fbcd8', 'cnum': '#ffffff', 'cnumline': '#5aa9ff',
         'emblem': 'drop',
     },
+    'shinto': {
+        'ink': '#2b1a18', 'shadow': 'rgba(80,30,15,0.20)', 'rim': '#e0b34a', 'cast': 'rgba(60,30,15,0.24)',
+        'rail': '#c73e1d', 'felt': '#2f6b4f', 'console': '#3a211b',
+        'cream': '#fff8ea', 'back': '#e9c46a', 'gold': '#c9a227', 'pin': '#3b6b8f',
+        'sou': '#6a8f3f', 'tsumo': '#d9772b', 'man': '#c73e1d', 'white': '#fffaf0',
+        'wood': '#a86b43', 'screen': '#d8f0e2', 'cplate': '#c73e1d', 'cpurple': '#3a211b', 'cwell': '#1a0f0c', 'cinset': '#6e2316', 'cnum': '#fff6e5', 'cnumline': '#8a2a16',
+        'emblem': 'fox', 'rail_top': '#c73e1d', 'rail_skirt': '#4a241a', 'rail_leg': '#2b1a18',
+    },
 }
 
 
@@ -458,6 +466,31 @@ def draw_emblem(flat, t, kind):
         poly([(342, 372), (358, 372), (350, 381)], t['man'], layer=4, stroke=False)
         bar(350, 382, 337, 390, width=2.4, fill=ink, layer=4)
         bar(350, 382, 363, 390, width=2.4, fill=ink, layer=4)
+    elif kind == 'fox':
+        poly([(312, 322), (288, 250), (344, 298)], t['cream'], layer=2, sw=2.2)
+        poly([(388, 322), (412, 250), (356, 298)], t['cream'], layer=2, sw=2.2)
+        poly([(315, 314), (301, 266), (335, 301)], t['man'], layer=3, stroke=False)
+        poly([(385, 314), (399, 266), (365, 301)], t['man'], layer=3, stroke=False)
+        poly([(350, 290), (382, 302), (410, 338), (404, 380), (378, 404), (350, 420),
+              (322, 404), (296, 380), (290, 338), (318, 302)], t['cream'], layer=2, sw=2.2)
+        poly([(290, 350), (268, 360), (292, 372)], t['cream'], layer=2, sw=1.6)
+        poly([(410, 350), (432, 360), (408, 372)], t['cream'], layer=2, sw=1.6)
+        poly(ellipse_pts(350, 376, 36, 22), t['white'], layer=3, stroke=False)
+        poly([(320, 414), (380, 414), (394, 440), (306, 440)], t['man'], layer=3, sw=2)
+        circ(350, 431, 7, t['gold'], layer=4, sw=1.4)
+        poly([(316, 348), (330, 342), (334, 352), (320, 357)], t['ink'], layer=4, stroke=False)
+        poly([(384, 348), (370, 342), (366, 352), (380, 357)], t['ink'], layer=4, stroke=False)
+        circ(324, 349, 1.8, t['white'], layer=5, stroke=False)
+        circ(376, 349, 1.8, t['white'], layer=5, stroke=False)
+        poly([(303, 338), (313, 335), (310, 347)], t['man'], layer=4, stroke=False)
+        poly([(397, 338), (387, 335), (390, 347)], t['man'], layer=4, stroke=False)
+        poly([(342, 312), (358, 312), (350, 326)], t['man'], layer=4, stroke=False)
+        poly([(344, 371), (356, 371), (350, 380)], t['ink'], layer=4, stroke=False)
+        bar(350, 380, 340, 388, width=2.2, fill=ink, layer=4)
+        bar(350, 380, 360, 388, width=2.2, fill=ink, layer=4)
+        for side in (-1, 1):
+            for x1, y1, x2, y2 in ((316, 372, 278, 364), (316, 382, 274, 382), (316, 392, 280, 400)):
+                bar(350 + side * (x1 - 350), y1, 350 + side * (x2 - 350), y2, width=2, fill=ink, layer=3)
     elif kind == 'kabuto':
         poly([(288, 362), (412, 362), (424, 382), (276, 382)], shade(t['gold'], 0.72), layer=2, sw=2)
         poly([(280, 382), (420, 382), (432, 401), (268, 401)], shade(t['gold'], 0.62), layer=2, sw=2)
@@ -696,11 +729,14 @@ def wood_grain(s):
 def scene_table(t):
     s = Scene(t)
     s.ground(0, 0, 600, 600, pad=24)
-    # legs, then a darker skirt, then the rail top
+    # legs, then a darker skirt, then the rail top (themes may override the lacquer colours)
+    leg = t.get('rail_leg', shade(t['rail'], 0.6))
+    skirt = t.get('rail_skirt', shade(t['rail'], 0.75))
+    rail = t.get('rail_top', t['rail'])
     for lx, ly in ((40, 40), (520, 40), (40, 520), (520, 520)):
-        s.box(lx, ly, 0, 40, 40, 70, shade(t['rail'], 0.6), key=(-2e8 + lx + ly, 0), sw=2)
-    s.box(20, 20, 70, 560, 560, 22, shade(t['rail'], 0.75), key=(-1.9e8, 0), sw=2)
-    s.box(0, 0, 92, 600, 600, 26, t['rail'], key=(-1.8e8, 0), sw=2)
+        s.box(lx, ly, 0, 40, 40, 70, leg, key=(-2e8 + lx + ly, 0), sw=2)
+    s.box(20, 20, 70, 560, 560, 22, skirt, key=(-1.9e8, 0), sw=2)
+    s.box(0, 0, 92, 600, 600, 26, rail, key=(-1.8e8, 0), sw=2)
     wood_grain(s)
     # one drawer per seat in the skirt; only South's (yours) is open
     drawer_front(s, 'W', 200, 400, 73, 89, (-1.79e8, 0))

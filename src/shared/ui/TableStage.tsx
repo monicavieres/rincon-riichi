@@ -20,6 +20,7 @@ export function ThemedArt({ art, className, alt = '' }: { art: TableArt; classNa
       <img className={`rr-only-cyberpunk${className ? ` ${className}` : ''}`} src={tableArtPath(art, 'cyberpunk')} alt="" aria-hidden="true" />
       <img className={`rr-only-vaquero${className ? ` ${className}` : ''}`} src={tableArtPath(art, 'vaquero')} alt="" aria-hidden="true" />
       <img className={`rr-only-frutiger${className ? ` ${className}` : ''}`} src={tableArtPath(art, 'frutiger')} alt="" aria-hidden="true" />
+      <img className={`rr-only-shinto${className ? ` ${className}` : ''}`} src={tableArtPath(art, 'shinto')} alt="" aria-hidden="true" />
     </>
   );
 }
@@ -47,6 +48,7 @@ export function ZoneThumb({ focus }: { focus: TableFocus }) {
       <img className="rr-only-cyberpunk" src={tableArtPath('mesa', 'cyberpunk')} alt="" style={style} />
       <img className="rr-only-vaquero" src={tableArtPath('mesa', 'vaquero')} alt="" style={style} />
       <img className="rr-only-frutiger" src={tableArtPath('mesa', 'frutiger')} alt="" style={style} />
+      <img className="rr-only-shinto" src={tableArtPath('mesa', 'shinto')} alt="" style={style} />
     </span>
   );
 }

@@ -247,6 +247,50 @@
     --shadow-tile: 0 3px 0 #9ad9f0;
 }
 
+:root[data-theme="shinto"] {
+    color-scheme: light;
+
+    --paper: #f6efe2;
+    --paper-deep: #ebdfc9;
+    --card: #fffaf0;
+    --card-sunk: #f0e4cf;
+    --line: #d8b28a;
+    --line-soft: #ecd9bd;
+    --ink: #2b1a18;
+    --text: #4a2f28;
+    --muted: #8a6a5a;
+    --faint: #b89a86;
+    --felt: #2f6b4f;
+    --felt-strong: #24543d;
+    --felt-soft: #dcebe2;
+    --man: #c73e1d;
+    --man-strong: #9e2f14;
+    --man-soft: #f7d9cf;
+    --pin: #3b6b8f;
+    --pin-strong: #2a506d;
+    --pin-soft: #dbe8f0;
+    --sou: #6a8f3f;
+    --sou-strong: #4e6f2c;
+    --sou-soft: #e5efd8;
+    --gold: #c9a227;
+    --gold-strong: #8a6d12;
+    --gold-soft: #f4e9c5;
+    --riichi: #8a5a8f;
+    --riichi-strong: #6a3f70;
+    --riichi-soft: #efe2f1;
+    --tsumo: #d9772b;
+    --tsumo-strong: #a8571a;
+    --tsumo-soft: #f7e1d0;
+    --on-accent: #fffaf0;
+    --tile-face: #fffaf0;
+    --tile-edge: #c73e1d;
+    --focus: var(--man);
+
+    --shadow-float: 0 6px 16px -12px rgba(120, 40, 20, 0.32);
+    --shadow-gloss: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    --shadow-tile: 0 3px 0 #c73e1d;
+}
+
 :root[data-theme="cute"] {
     color-scheme: light;
 
@@ -342,7 +386,8 @@
 :root[data-theme="samurai"],
 :root[data-theme="cyberpunk"],
 :root[data-theme="vaquero"],
-:root[data-theme="frutiger"] {
+:root[data-theme="frutiger"],
+:root[data-theme="shinto"] {
     --green: var(--sou);
     --green-dark: var(--sou-strong);
     --pink: var(--man);
@@ -405,6 +450,10 @@
     --shadow: rgba(30, 120, 160, 0.12);
 }
 
+:root[data-theme="shinto"] {
+    --shadow: rgba(100, 50, 25, 0.12);
+}
+
 /* ── 3 · Global surfaces ────────────────────────────────────── */
 body {
     color: var(--text);
@@ -435,7 +484,8 @@ h4 {
 .rr-only-samurai,
 .rr-only-cyberpunk,
 .rr-only-vaquero,
-.rr-only-frutiger {
+.rr-only-frutiger,
+.rr-only-shinto {
     display: none !important;
 }
 
@@ -444,7 +494,8 @@ h4 {
 :root[data-theme="samurai"] .rr-only-light,
 :root[data-theme="cyberpunk"] .rr-only-light,
 :root[data-theme="vaquero"] .rr-only-light,
-:root[data-theme="frutiger"] .rr-only-light {
+:root[data-theme="frutiger"] .rr-only-light,
+:root[data-theme="shinto"] .rr-only-light {
     display: none !important;
 }
 
@@ -453,7 +504,8 @@ h4 {
 :root[data-theme="samurai"] .rr-only-samurai,
 :root[data-theme="cyberpunk"] .rr-only-cyberpunk,
 :root[data-theme="vaquero"] .rr-only-vaquero,
-:root[data-theme="frutiger"] .rr-only-frutiger {
+:root[data-theme="frutiger"] .rr-only-frutiger,
+:root[data-theme="shinto"] .rr-only-shinto {
     display: block !important;
 }
 
@@ -2149,3 +2201,67 @@ body:has(.side-rail) {
 :root[data-theme="frutiger"] .orange-card { --module-accent: var(--tsumo); --module-tint: rgba(255, 159, 67, 0.12); }
 :root[data-theme="frutiger"] .purple-card { --module-accent: var(--riichi); --module-tint: rgba(179, 136, 255, 0.14); }
 :root[data-theme="frutiger"] .red-card { --module-accent: var(--man); --module-tint: rgba(255, 111, 165, 0.12); }
+
+/* ── Shinto shrine theme refinements ────────────────────────── */
+:root[data-theme="shinto"] body {
+    background:
+        radial-gradient(circle at 8% 6%, rgba(199, 62, 29, 0.10) 0, transparent 26rem),
+        radial-gradient(circle at 92% 12%, rgba(47, 107, 79, 0.12) 0, transparent 28rem),
+        radial-gradient(circle at 50% 96%, rgba(201, 162, 39, 0.14) 0, transparent 30rem),
+        var(--paper);
+}
+
+:root[data-theme="shinto"] .feedback.good,
+:root[data-theme="shinto"] .status.ready,
+:root[data-theme="shinto"] .family-tab.is-active,
+:root[data-theme="shinto"] .score-tab.is-active,
+:root[data-theme="shinto"] .answer-button.is-correct,
+:root[data-theme="shinto"] .results-row.is-correct .results-mark,
+:root[data-theme="shinto"] .ref-value,
+:root[data-theme="shinto"] .guide-step,
+:root[data-theme="shinto"] .yakuref-value,
+:root[data-theme="shinto"] .torpedo-han,
+:root[data-theme="shinto"] .fu-base h3,
+:root[data-theme="shinto"] .tile-set-picker select,
+:root[data-theme="shinto"] .switch-control input:checked + .switch-track {
+    background: linear-gradient(180deg, #9fc47a, #2f6b4f);
+}
+
+:root[data-theme="shinto"] .module-card .status.ready {
+    border-color: color-mix(in srgb, var(--gold) 42%, transparent);
+    color: var(--ink);
+    background: color-mix(in srgb, var(--gold) 14%, var(--card-bg));
+}
+
+:root[data-theme="shinto"] .tiles-card {
+    background:
+        radial-gradient(circle at 20% 24%, rgba(47, 107, 79, 0.12), transparent 30%),
+        radial-gradient(circle at 80% 78%, rgba(199, 62, 29, 0.10), transparent 34%),
+        color-mix(in srgb, var(--card) 86%, transparent);
+}
+
+:root[data-theme="shinto"] .tiles-stage {
+    border-color: rgba(201, 162, 39, 0.32);
+    background:
+        radial-gradient(circle at 18% 22%, rgba(47, 107, 79, 0.16), transparent 28%),
+        radial-gradient(circle at 82% 74%, rgba(199, 62, 29, 0.12), transparent 32%),
+        linear-gradient(135deg, rgba(255, 250, 240, 0.88), rgba(240, 228, 207, 0.92));
+    box-shadow: inset 0 0 0 0.08rem rgba(255, 255, 255, 0.8);
+}
+
+:root[data-theme="shinto"] .green-card { --module-accent: var(--sou); --module-tint: rgba(106, 143, 63, 0.12); }
+:root[data-theme="shinto"] .blue-card { --module-accent: var(--pin); --module-tint: rgba(59, 107, 143, 0.12); }
+:root[data-theme="shinto"] .pink-card { --module-accent: var(--man); --module-tint: rgba(199, 62, 29, 0.10); }
+:root[data-theme="shinto"] .yellow-card { --module-accent: var(--gold); --module-tint: rgba(201, 162, 39, 0.16); }
+:root[data-theme="shinto"] .orange-card { --module-accent: var(--tsumo); --module-tint: rgba(217, 119, 43, 0.12); }
+:root[data-theme="shinto"] .purple-card { --module-accent: var(--riichi); --module-tint: rgba(138, 90, 143, 0.12); }
+:root[data-theme="shinto"] .red-card { --module-accent: var(--man); --module-tint: rgba(199, 62, 29, 0.12); }
+
+/* Warm lacquered surfaces for the hand rack and the tile family titles. */
+:root[data-theme="shinto"] .sort-rack {
+    background: color-mix(in oklab, var(--man) 24%, var(--paper-deep));
+}
+
+:root[data-theme="shinto"] .slide-text h2 {
+    color: var(--man-strong);
+}

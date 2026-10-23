@@ -34,6 +34,15 @@ const droplet = (accent) => `
       <path d="M9 14.5a3 3 0 0 0 3 3" fill="none" stroke="#5aa9ff" stroke-width="1.4" stroke-linecap="round"/>
     </g>`;
 
+const torii = (accent) => `
+    <g fill="${accent}" stroke="#7a2414" stroke-width="0.7">
+      <path d="M2 4.2c3.6-1.2 16.4-1.2 20 0l-1.4 2.6c-5.2-1-12-1-17.2 0L2 4.2Z"/>
+      <path d="M4.5 8.4h15l-.7 2.2H5.2L4.5 8.4Z"/>
+      <rect x="6.3" y="10.6" width="2.3" height="10.8" rx=".4"/>
+      <rect x="15.4" y="10.6" width="2.3" height="10.8" rx=".4"/>
+      <rect x="4" y="9" width="16" height="1.4" rx=".7"/>
+    </g>`;
+
 const themes = {
     neon: {
         dir: "../assets/tiles-neon/",
@@ -86,6 +95,19 @@ const themes = {
         bevel: "#7ed0f0",
         glow: null,
         icon: droplet("#ffffff"),
+    },
+    shinto: {
+        dir: "../assets/tiles-shinto/",
+        label: "shinto",
+        face: ["#fffaf0", "#f3e3c6"],
+        edge: "#c73e1d",
+        stroke: "#2b1a18",
+        band: ["#d6452b", "#7a2414"],
+        accent: "#f0c75e",
+        stripe: "#c9a227",
+        bevel: "#c73e1d",
+        glow: null,
+        icon: torii("#f0c75e"),
     },
 };
 
