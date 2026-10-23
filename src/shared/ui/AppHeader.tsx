@@ -1,40 +1,132 @@
+import type { ReactNode } from 'react';
+
 type AppHeaderProps = {
   title?: string;
   backTo?: 'aprender' | 'practicar';
   home?: boolean;
 };
 
-export function AppHeader({ title, backTo = 'aprender', home = false }: AppHeaderProps) {
+type RailLink = {
+  id: 'inicio' | 'aprender' | 'practicar' | 'recursos';
+  label: string;
+  i18n?: string;
+  icon: ReactNode;
+};
+
+const railLinks: RailLink[] = [
+  {
+    id: 'inicio',
+    label: 'Inicio',
+    icon: <path d="M16 4.5 4 15h3.2v12h6.6v-7.5h4.4V27h6.6V15H28z" />,
+  },
+  {
+    id: 'aprender',
+    label: 'Aprender',
+    i18n: 'nav.learn',
+    icon: (
+      <>
+        <path d="M16 9C13.2 7 9.4 6.4 5 6.6v17.6c4.4-.2 8.2.4 11 2.4 2.8-2 6.6-2.6 11-2.4V6.6C22.6 6.4 18.8 7 16 9z" />
+        <path d="M16 9v17.6" />
+      </>
+    ),
+  },
+  {
+    id: 'practicar',
+    label: 'Practicar',
+    i18n: 'nav.practice',
+    icon: (
+      <>
+        <rect x="6" y="5" width="13" height="18" rx="2.5" />
+        <rect x="13" y="9" width="13" height="18" rx="2.5" className="rail-fill-card" />
+        <circle cx="19.5" cy="18" r="3" className="rail-fill-accent" />
+      </>
+    ),
+  },
+  {
+    id: 'recursos',
+    label: 'Recursos',
+    icon: (
+      <>
+        <circle cx="16" cy="16" r="11" />
+        <path d="M5 16h22M16 5c3 3 4.5 6.7 4.5 11S19 24 16 27c-3-3-4.5-6.7-4.5-11S13 8 16 5z" />
+      </>
+    ),
+  },
+];
+
+/** The Rincón Riichi mark: a standing tile showing one pin, with a second tile behind it. Ink follows currentColor. */
+export function BrandMark({ className }: { className?: string }) {
   return (
-    <nav className="topbar" id="topbar" aria-label="Navegación principal">
-      <a className="brand" href={home ? '#inicio' : `../index.html#${backTo}`}>
-        <img className="brand-logo" src={home ? 'assets/logo-rincon-riichi.svg' : '../assets/logo-rincon-riichi.svg'} alt="Rincón Riichi" />
-        <img className="brand-mark" src={home ? 'assets/favicon-64.png' : '../assets/favicon-64.png'} alt="" />
-      </a>
-      <button className="menu-toggle" id="menuToggle" aria-label="Menú" aria-expanded="false" aria-controls="topbar-controls">
-        <span className="menu-bars" aria-hidden="true" />
-      </button>
-      {title && <span className="topbar-title">{title}</span>}
-      <div className="topbar-controls" id="topbar-controls">
-        {home ? (
-          <div className="nav-actions">
-            <a className="pill pink" href="#aprender"><span data-i18n="nav.learn">Aprender</span></a>
-            <a className="pill green" href="#practicar"><span data-i18n="nav.practice">Practicar</span></a>
+    <svg className={className} viewBox="0 0 64 52" aria-hidden="true">
+      <rect x="27" y="4" width="25" height="35" rx="5" transform="rotate(9 39.5 21.5)" className="mark-back" />
+      <rect x="10" y="9" width="25" height="35" rx="5" className="mark-front" />
+      <path d="M10.8 38.5h23.4" className="mark-layer" />
+      <circle cx="22.5" cy="24" r="7" className="mark-pin" />
+      <circle cx="22.5" cy="24" r="2.6" className="mark-pin-eye" />
+    </svg>
+  );
+}
+
+const chevronRight = <path d="M9 5.5 15.5 12 9 18.5" />;
+
+export function AppHeader({ title, backTo = 'aprender', home = false }: AppHeaderProps) {
+  const prefix = home ? '' : '../index.html';
+  const activeId: RailLink['id'] = home ? 'inicio' : backTo;
+
+  return (
+    <>
+      {/* id="topbar" + #menuToggle keep js/menu.js working: it toggles .menu-open to expand the rail. */}
+      <aside className="side-rail" id="topbar" aria-label="Navegación principal">
+        <button className="side-rail-toggle" id="menuToggle" type="button" aria-label="Ampliar la barra lateral" aria-expanded="false" aria-controls="side-rail-nav">
+          <svg viewBox="0 0 24 24" aria-hidden="true">{chevronRight}</svg>
+        </button>
+        <nav className="side-rail-nav" id="side-rail-nav">
+          {railLinks.map((link) => (
+            <a
+              key={link.id}
+              className={link.id === activeId ? 'is-active' : ''}
+              href={`${prefix}#${link.id}`}
+              aria-current={link.id === activeId ? 'page' : undefined}
+              title={link.label}
+            >
+              <svg viewBox="0 0 32 32" aria-hidden="true">{link.icon}</svg>
+              <span className="side-rail-label" data-i18n={link.i18n}>{link.label}</span>
+            </a>
+          ))}
+        </nav>
+        <div className="side-rail-bottom" id="topbar-controls">
+          <div className="side-rail-theme" role="radiogroup" aria-label="Tema">
+            <label title="Tema claro">
+              <input type="radio" name="theme" value="light" aria-label="Tema claro" />
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2" /><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" /></svg>
+            </label>
+            <label title="Tema oscuro">
+              <input type="radio" name="theme" value="dark" aria-label="Tema oscuro" />
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.6A8 8 0 0 1 9.4 4.5a8 8 0 1 0 10.1 10.1z" /></svg>
+            </label>
           </div>
-        ) : (
-          <a className="pill blue" href={`../index.html#${backTo}`} data-i18n="back">← Back</a>
-        )}
-        <label className="language-picker">
-          <span data-i18n={home ? 'language.short' : 'language'}>Idioma</span>
-          <select id="languageSelect" aria-label="Seleccionar idioma">
-            <option value="es">ES</option><option value="en">EN</option><option value="pt">PT</option>
-          </select>
-        </label>
-        <div className="theme-radio" role="radiogroup" aria-label="Tema" title="Tema">
-          <label className="theme-option"><input type="radio" name="theme" value="light" aria-label="Tema claro" /><span className="theme-option-pill" aria-hidden="true">☀️</span></label>
-          <label className="theme-option"><input type="radio" name="theme" value="dark" aria-label="Tema oscuro" /><span className="theme-option-pill" aria-hidden="true">🌙</span></label>
+          <label className="side-rail-lang" title="Idioma">
+            <span className="sr-only" data-i18n={home ? 'language.short' : 'language'}>Idioma</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" /><path d="M3.5 12h17M12 3.5c2.4 2.3 3.5 5.2 3.5 8.5s-1.1 6.2-3.5 8.5c-2.4-2.3-3.5-5.2-3.5-8.5s1.1-6.2 3.5-8.5z" /></svg>
+            <select id="languageSelect" aria-label="Seleccionar idioma">
+              <option value="es">ES</option><option value="en">EN</option><option value="pt">PT</option>
+            </select>
+          </label>
         </div>
-      </div>
-    </nav>
+      </aside>
+
+      <header className="brand-bar">
+        <a className="brand" href={home ? '#inicio' : `../index.html#${backTo}`} aria-label="Rincón Riichi, inicio">
+          <BrandMark className="brand-mark-svg" />
+          <span className="brand-rule" aria-hidden="true" />
+          <span className="brand-text">
+            <strong>Rincón Riichi</strong>
+            <small>Mira <i>·</i> Entiende <i>·</i> Juega</small>
+          </span>
+        </a>
+        {title && <span className="topbar-title">{title}</span>}
+        {!home && <a className="brand-back" href={`../index.html#${backTo}`} data-i18n="back">← Volver</a>}
+      </header>
+    </>
   );
 }

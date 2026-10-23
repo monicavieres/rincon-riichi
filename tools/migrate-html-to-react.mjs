@@ -54,7 +54,7 @@ for (const page of pages) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#fdf9f7" />
     <title>${title}</title>
-    <link rel="icon" type="image/svg+xml" href="${prefix}assets/logo-rincon-riichi.svg" />
+    <link rel="icon" type="image/svg+xml" href="${prefix}assets/rincon-mark.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@500;600&family=Fredoka:wght@600&display=swap" rel="stylesheet" />

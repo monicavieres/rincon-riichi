@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 52" role="img" aria-label="Rincón Riichi">
+  <rect x="27" y="4" width="25" height="35" rx="5" transform="rotate(9 39.5 21.5)" fill="#efe3d1" stroke="#23203f" stroke-width="3"/>
+  <rect x="10" y="9" width="25" height="35" rx="5" fill="#fbf5ea" stroke="#23203f" stroke-width="3.4"/>
+  <path d="M10.8 38.5h23.4" stroke="#23203f" stroke-width="2" fill="none"/>
+  <circle cx="22.5" cy="24" r="7" fill="#e0457f" stroke="#23203f" stroke-width="2.4"/>
+  <circle cx="22.5" cy="24" r="2.6" fill="#fbf5ea"/>
+</svg>

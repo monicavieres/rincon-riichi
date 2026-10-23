@@ -190,6 +190,78 @@ def stick_marks(kind):
     return f
 
 
+def stick_marks_y(kind):
+    """Point-stick markings for a stick lying along y (inside a drawer)."""
+    def f(s, x, y, z, w, d, h):
+        t = s.t; cx, zz, mid = x + w / 2, z + h, y + d / 2
+        out = []
+        def dot(py, r, col):
+            out.append(s.circle((cx, py, zz), (1, 0, 0), (0, 1, 0), r, col, stroke=False))
+        if kind == 10000:
+            dot(mid, 2.4, t['man'])
+            for o in (-16, -10, 10, 16):
+                dot(mid + o, 1.4, t['ink'])
+        elif kind == 5000:
+            for o in (-14, -8, 8, 14):
+                dot(mid + o, 1.4, t['ink'])
+            dot(mid, 2.1, t['gold'])
+        elif kind == 1000:
+            dot(mid, 2.4, t['man'])
+        elif kind == 500:
+            dot(mid - 6, 1.6, t['gold'])
+            dot(mid + 6, 1.6, t['gold'])
+        elif kind == 100:
+            for end in (y + 9, y + d - 13):
+                for i in range(4):
+                    dot(end + (i // 2) * 4, 0.9, t['ink'])
+        return ''.join(out)
+    return f
+
+
+def drawer_front(s, face, a, b, z0, z1, key):
+    """A closed drawer front drawn on the table skirt: face 'S' (+y side) spans x a..b, face 'W' (+x side) spans y a..b."""
+    t = s.t
+    col = shade(t['rail'], 0.9)
+    if face == 'S':
+        y = 580.5
+        pts = [(a, y, z0), (b, y, z0), (b, y, z1), (a, y, z1)]
+        handle = [((a + b) / 2 - 12, y + 0.5, (z0 + z1) / 2 - 1.5), ((a + b) / 2 + 12, y + 0.5, (z0 + z1) / 2 - 1.5),
+                  ((a + b) / 2 + 12, y + 0.5, (z0 + z1) / 2 + 1.5), ((a + b) / 2 - 12, y + 0.5, (z0 + z1) / 2 + 1.5)]
+    else:
+        x = 580.5
+        pts = [(x, a, z0), (x, b, z0), (x, b, z1), (x, a, z1)]
+        handle = [(x + 0.5, (a + b) / 2 - 12, (z0 + z1) / 2 - 1.5), (x + 0.5, (a + b) / 2 + 12, (z0 + z1) / 2 - 1.5),
+                  (x + 0.5, (a + b) / 2 + 12, (z0 + z1) / 2 + 1.5), (x + 0.5, (a + b) / 2 - 12, (z0 + z1) / 2 + 1.5)]
+    s.raw(key, s.poly(pts, col, sw=1.2) + s.poly(handle, t['gold'], sw=0.9))
+
+
+# Starting points in the player's drawer, one compartment per stick value.
+DRAWER_STICKS = ((10000, 1), (5000, 2), (1000, 9), (500, 1), (100, 4))
+
+
+def open_drawer(s, x0=200, y0=598, width=200, depth=104):
+    """South's drawer pulled out of the skirt: five compartments with the player's point sticks."""
+    t = s.t
+    wood, inner = shade(t['rail'], 0.75), shade(t['wood'], 0.95)
+    k = 1e6
+    s.box(x0, y0, 71, width, depth, 6, inner, key=(k, 0))
+    s.box(x0, y0, 71, 4, depth, 19, wood, key=(k + 1, 0))
+    comp = width / len(DRAWER_STICKS)
+    for c, (kind, count) in enumerate(DRAWER_STICKS):
+        cx0 = x0 + c * comp
+        if c:
+            s.box(cx0 - 1.5, y0, 77, 3, depth - 6, 9, shade(t['wood'], 0.8), key=(k + 2 + c * 10, 0), sw=0.9)
+        for n in range(count):
+            layer, slot = divmod(n, 4)
+            sx = cx0 + 5 + slot * 8.5
+            s.box(sx, y0 + 8, 77 + layer * 4, 7, depth - 22, 4, t['white'], left=shade(t['white'], 0.88), right=shade(t['white'], 0.78),
+                  deco=[stick_marks_y(kind)], sw=0.8, key=(k + 3 + c * 10 + layer, slot))
+    s.box(x0 + width - 4, y0, 71, 4, depth, 19, wood, key=(k + 60, 0))
+    s.box(x0, y0 + depth - 6, 69, width, 6, 23, t['rail'], key=(k + 70, 0))
+    hx = x0 + width / 2
+    s.raw((k + 71, 0), s.poly([(hx - 16, y0 + depth + 0.5, 78), (hx + 16, y0 + depth + 0.5, 78), (hx + 16, y0 + depth + 0.5, 83), (hx - 16, y0 + depth + 0.5, 83)], t['gold'], sw=0.9))
+
+
 def text_top(char, colour, size):
     def f(s, x, y, z, w, d, h):
         cx, cy, zz = x + w / 2, y + d / 2, z + h
@@ -336,6 +408,8 @@ def scene_table(t):
         s.box(lx, ly, 0, 40, 40, 70, shade(t['rail'], 0.6), key=(-2e8 + lx + ly, 0), sw=2)
     s.box(20, 20, 70, 560, 560, 22, shade(t['rail'], 0.75), key=(-1.9e8, 0), sw=2)
     s.box(0, 0, 92, 600, 600, 26, t['rail'], key=(-1.8e8, 0), sw=2)
+    # one drawer per seat in the skirt; only South's (yours) is open
+    drawer_front(s, 'W', 200, 400, 73, 89, (-1.79e8, 0))
     s.box(30, 30, 118, 540, 540, 3, t['felt'], key=(-1.7e8, 0), sw=1.6)
     s.raw((-1.6e8, 0), s.poly([(48, 48, 121.3), (552, 48, 121.3), (552, 552, 121.3), (48, 552, 121.3)], 'none', sw=1.2, extra=f' stroke-opacity=".35" stroke-dasharray="6 6"'))
     z = 121
@@ -351,6 +425,7 @@ def scene_table(t):
         s.cast(px, py, pw, pd, z, 15)
     s.cast(252, 252, 96, 96, z, 8)
     console(s, 252, 252, z, a=96)
+    open_drawer(s)
     die(s, 256, 256, z + 8, a=10, faces=(5, 2, 3))
     die(s, 334, 334, z + 8, a=10, faces=(1, 4, 2))
     stick(s, 254, 354, z, 1000, length=92)
