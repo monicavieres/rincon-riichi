@@ -25,14 +25,14 @@ THEMES = {
         'rail': '#7b4fe0', 'felt': '#22a08b', 'console': '#2e2a48',
         'cream': '#fbf2df', 'back': '#e0457f', 'gold': '#f2b42c', 'pin': '#2f7fd6',
         'sou': '#22a565', 'tsumo': '#f07a3a', 'man': '#e0457f', 'white': '#fffdf6',
-        'wood': '#e9a25a', 'screen': '#9ff0d8',
+        'wood': '#e9a25a', 'screen': '#9ff0d8', 'plate': '#8fd0ea',
     },
     'dark': {
         'ink': '#0c0a14', 'shadow': 'rgba(0,0,0,0.45)', 'rim': '#4a4466', 'cast': 'rgba(0,0,0,0.38)',
         'rail': '#8a62f0', 'felt': '#2bb39c', 'console': '#3a3558',
         'cream': '#f6ead3', 'back': '#f06d9e', 'gold': '#f5c451', 'pin': '#5aa2ee',
         'sou': '#3fc283', 'tsumo': '#f59560', 'man': '#f06d9e', 'white': '#fffaf0',
-        'wood': '#eeac68', 'screen': '#b6f7e4',
+        'wood': '#eeac68', 'screen': '#b6f7e4', 'plate': '#6fbfe0',
     },
 }
 
@@ -322,36 +322,59 @@ def stick(s, x, y, z, kind, length=96, key=None):
           deco=[stick_marks(kind)], sw=1.2, key=key)
 
 
-def console(s, x, y, z, a=108, dealer='E', riichi=('S',)):
-    """The compass (automatic-table console). Each side shows that seat's wind (lit for the dealer) and has a slot
-    where a player who declares riichi leaves a 1000-point stick; the dial shows the round wind.
+def console(s, x, y, z, a=120, riichi=('S',)):
+    """The compass, modelled on table-top compasses like the AMOS Compass: a light-blue plate, a dark four-armed
+    star with the seat winds and a compass rose, and one riichi-stick slot per side laid out as a pinwheel.
     Seats: South at +y (the viewer's seat), West at +x, North at -y, East at -x (turn order runs counter-clockwise)."""
     t = s.t
-    s.box(x, y, z, a, a, 8, t['console'], key=(x + y + a, z))
-    top, k = z + 8.5, (x + y + a + 1, z + 9)
-    mid, half = a / 2, 30
-    groove = shade(t['console'], 0.55)
-    sides = {
-        'N': ((x + mid - 10, y + 4, 20, 5), (x + mid, y + 17), (x + mid - half, y + 27, 2 * half, 7), '北'),
-        'S': ((x + mid - 10, y + a - 9, 20, 5), (x + mid, y + a - 17), (x + mid - half, y + a - 34, 2 * half, 7), '南'),
-        'E': ((x + 4, y + mid - 10, 5, 20), (x + 17, y + mid), (x + 27, y + mid - half, 7, 2 * half), '東'),
-        'W': ((x + a - 9, y + mid - 10, 5, 20), (x + a - 17, y + mid), (x + a - 34, y + mid - half, 7, 2 * half), '西'),
+    s.box(x, y, z, a, a, 6, t['plate'], key=(x + y + a, z))
+    top = z + 6.3
+    k = (x + y + a + 1, z + 9)
+    cx, cy = x + a / 2, y + a / 2
+
+    def flat(pts, fill, sw=1.0, key=k):
+        s.raw(key, s.poly([(px, py, top) for px, py in pts], fill, sw=sw))
+
+    # four-armed star: one rounded arm per seat, then the hub
+    arm, reach = 12, 26
+    for ux, uy in ((0, -1), (1, 0), (0, 1), (-1, 0)):
+        px, py = -uy, ux
+        cap = [(cx + ux * reach + (px * math.cos(math.pi * n / 8) + ux * math.sin(math.pi * n / 8)) * arm,
+                cy + uy * reach + (py * math.cos(math.pi * n / 8) + uy * math.sin(math.pi * n / 8)) * arm) for n in range(9)]
+        flat([(cx - px * arm, cy - py * arm)] + cap[::-1] + [(cx + px * arm, cy + py * arm)], t['console'], sw=1.1)
+    s.raw(k, s.circle((cx, cy, top), (1, 0, 0), (0, 1, 0), 19, t["console"], sw=1.1))
+    rose = []
+    for n in range(16):
+        ang = math.pi * n / 8
+        r = 16 if n % 4 == 0 else (9 if n % 2 == 0 else 4.5)
+        rose.append((cx + r * math.sin(ang), cy - r * math.cos(ang), top + 0.1))
+    s.raw((k[0] + 1, k[1]), s.poly(rose, shade(t['plate'], 0.85), sw=0.6))
+    for (ux, uy), ch in (((0, -1), '北'), ((1, 0), '西'), ((0, 1), '南'), ((-1, 0), '東')):
+        s.raw((k[0] + 2, k[1]), text_top(ch, t['man'] if ch == '東' else t['cream'], 15)(s, cx + ux * 30, cy + uy * 30, z - 1.7, 0, 0, 8))
+    # pinwheel riichi slots, each with its dice-number quarter disc
+    slots = {
+        'N': ((x + 10, y + 8, 52, 9), (x + 62, y + 8), 0),
+        'W': ((x + a - 17, y + 10, 9, 52), (x + a - 8, y + 62), 1),
+        'S': ((x + a - 62, y + a - 17, 52, 9), (x + a - 62, y + a - 8), 2),
+        'E': ((x + 8, y + a - 62, 9, 52), (x + 8, y + a - 62), 3),
     }
-    for seat, ((lx, ly, lw, ld), (cx, cy), (gx, gy, gw, gd), ch) in sides.items():
-        lit = seat == dealer
-        light = t['man'] if lit else shade(t['console'], 1.7)
-        s.raw(k, s.poly([(lx, ly, top), (lx + lw, ly, top), (lx + lw, ly + ld, top), (lx, ly + ld, top)], light, sw=1))
-        s.raw(k, text_top(ch, t['man'] if lit else t['cream'], 14)(s, cx, cy, z + 0.5, 0, 0, 8))
-        # riichi slot: a dark groove cut into the top
-        s.raw(k, s.poly([(gx, gy, top), (gx + gw, gy, top), (gx + gw, gy + gd, top), (gx, gy + gd, top)], groove, sw=1))
+    for seat, ((gx, gy, gw, gd), (qx, qy), q) in slots.items():
+        disc = [(qx, qy)] + [(qx + 14 * math.cos(math.pi / 2 * q + n * math.pi / 16), qy + 14 * math.sin(math.pi / 2 * q + n * math.pi / 16)) for n in range(9)]
+        flat(disc, t['cream'], sw=0.8)
+        flat([(gx, gy), (gx + gw, gy), (gx + gw, gy + gd), (gx, gy + gd)], shade(t['console'], 0.6), sw=1)
         if seat in riichi:
             body, ink = STICK_COLOURS[1000]
             dot = lambda s_, bx, by, bz, bw, bd, bh: s_.circle((bx + bw / 2, by + bd / 2, bz + bh), (1, 0, 0), (0, 1, 0), 1.6, ink, stroke=False)
-            s.box(gx + 1, gy + 1, z + 6, gw - 2, gd - 2, 4, body, left=shade(body, 0.86), right=shade(body, 0.74),
+            s.box(gx + 1.5, gy + 1.5, z + 4, gw - 3, gd - 3, 4, body, left=shade(body, 0.86), right=shade(body, 0.74),
                   deco=[dot], sw=0.9, key=(k[0] + 4, k[1]))
-    s.raw((k[0] + 1, k[1]), s.circle((x + mid, y + mid, top), (1, 0, 0), (0, 1, 0), 12, shade(t['console'], 0.7), sw=1.2))
-    s.raw((k[0] + 2, k[1]), s.circle((x + mid, y + mid, top + 0.1), (1, 0, 0), (0, 1, 0), 9.5, 'none', sw=0.8))
-    s.raw((k[0] + 3, k[1]), text_top('東', t['gold'], 14)(s, x + mid, y + mid, z + 0.5, 0, 0, 8))
+
+
+def round_marker(s, x, y, z, wind='東'):
+    """The round-wind marker (chiicha): a small plaque left in the corner by the starting dealer."""
+    t = s.t
+    s.cast(x, y, 26, 20, z, 9)
+    s.box(x, y, z, 26, 20, 9, t['cream'], left=shade(t['cream'], 0.9), right=shade(t['cream'], 0.78),
+          bands=[(0.45, t['man']), (1.0, t['cream'])], deco=[text_top(wind, t['man'], 14)], sw=1.2)
 
 
 def face_glyph(s, code, origin, u, v):
@@ -448,11 +471,12 @@ def scene_table(t):
         s.cast(hx, hy, hw, hd, z, 27)
     for px, py, pw, pd in ((240, 366, 120, 54), (240, 180, 120, 54), (366, 240, 54, 120), (180, 240, 54, 120)):
         s.cast(px, py, pw, pd, z, 15)
-    s.cast(246, 246, 108, 108, z, 8)
-    console(s, 246, 246, z)
+    s.cast(240, 240, 120, 120, z, 6)
+    console(s, 240, 240, z)
     open_drawer(s)
-    die(s, 250, 250, z + 8, a=10, faces=(5, 2, 3))
-    die(s, 340, 340, z + 8, a=10, faces=(1, 4, 2))
+    die(s, 318, 308, z + 6, a=10, faces=(6, 2, 3))
+    die(s, 306, 322, z + 6, a=10, faces=(1, 4, 2))
+    round_marker(s, 36, 500, z)  # East started as dealer: the marker sits in that corner
     hand(s, 'N', ['1m'] * 13, z)
     hand(s, 'W', ['1m'] * 13, z)
     hand(s, 'E', ['1m', '1m', '5m', '6m', '7m', '2p', '2p', '9p', '3s', '4s', '5s', '6z', '6z'], z)
