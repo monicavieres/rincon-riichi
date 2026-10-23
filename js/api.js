@@ -6,10 +6,10 @@
      1. window.RINCON_API_URL (set in the page <head> config)
      2. a <meta name="rincon-api-url"> tag
      3. a localStorage 'rincon-api-url' key (dev override)
-     4. default https://rincon-riichi-api.onrender.com
+     4. same-origin /api proxy (Vite locally, Vercel in production)
 */
 (function () {
-  const DEFAULT_API_URL = "https://rincon-riichi-api.onrender.com";
+  const DEFAULT_API_URL = "/api";
 
   function resolveApiUrl() {
     if (window.RINCON_API_URL) return window.RINCON_API_URL;
@@ -26,9 +26,11 @@
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), options.timeoutMs || 2500);
     try {
-      const response = await fetch(`${API_URL}${path}`, {
+      const requestPath = path === "/" && API_URL.startsWith("/") ? "" : path;
+      const response = await fetch(`${API_URL}${requestPath}`, {
         method: options.method || "GET",
         headers: { "Content-Type": "application/json" },
+        body: options.body,
         signal: controller.signal,
         ...options.fetchOptions,
       });

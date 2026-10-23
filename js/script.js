@@ -992,7 +992,6 @@ document.addEventListener("rincon:mounted", () => {
 
             const moduleRoutes = {
                 tutorial: "aprender/tutorial.html",
-                "visual-guide": "aprender/visual-guide.html",
                 machi: "aprender/machi.html",
                 "yaku-ref": "aprender/yaku-reference.html",
                 dora: "aprender/dora.html",

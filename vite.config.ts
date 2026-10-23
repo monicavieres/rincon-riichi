@@ -7,7 +7,7 @@ const projectRoot = import.meta.dirname;
 
 const pages = [
   'index.html',
-  'aprender/tutorial.html', 'aprender/visual-guide.html', 'aprender/tiles.html', 'aprender/machi.html',
+  'aprender/tutorial.html', 'aprender/tiles.html', 'aprender/machi.html',
   'aprender/yaku-reference.html', 'aprender/score.html', 'aprender/dora.html', 'aprender/eficiencia.html',
   'aprender/defensa.html', 'aprender/reglas.html',
   'practicar/yaku.html', 'practicar/waits.html', 'practicar/han.html', 'practicar/calc.html',
@@ -28,7 +28,17 @@ export default defineConfig({
       },
     },
   ],
-  server: { host: '127.0.0.1', port: 8765 },
+  server: {
+    host: '127.0.0.1',
+    port: 8765,
+    proxy: {
+      '/api': {
+        target: 'https://rincon-riichi-api.onrender.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
+  },
   preview: { host: '127.0.0.1', port: 8765 },
   build: {
     rollupOptions: {

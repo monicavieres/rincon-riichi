@@ -1,9 +1,8 @@
-export type LearnKind = 'tutorial' | 'visualGuide' | 'tiles' | 'machi' | 'yakuReference' | 'score' | 'reference';
+export type LearnKind = 'tutorial' | 'tiles' | 'machi' | 'yakuReference' | 'score' | 'reference';
 export type LearnDefinition = { kind: LearnKind; title: string; bodyClass: string; shellClass: string };
 
 const byFile: Record<string, LearnDefinition> = {
   'tutorial.html': { kind: 'tutorial', title: 'Tutorial', bodyClass: 'ref-body', shellClass: 'ref-shell' },
-  'visual-guide.html': { kind: 'visualGuide', title: 'Guía visual', bodyClass: 'visual-guide-body', shellClass: 'visual-guide-shell' },
   'tiles.html': { kind: 'tiles', title: 'Fichas', bodyClass: 'tiles-body', shellClass: 'tiles-shell' },
   'machi.html': { kind: 'machi', title: 'Tipos de Espera', bodyClass: 'machi-body', shellClass: 'machi-shell' },
   'yaku-reference.html': { kind: 'yakuReference', title: 'Guía de Yakus', bodyClass: 'yakuref-body', shellClass: 'yakuref-shell' },

@@ -10,6 +10,37 @@ import {
 
 const tilePath = (code: string) => `../assets/tiles-fluffystuff-composite/${code}.svg`;
 
+const WELCOME_GAME_STATE = {
+  players: 4,
+  concealedTilesPerPlayer: 13,
+  discardsPerPlayer: 5,
+  deadWallStacks: 7,
+  liveWallStacks: 25,
+} as const;
+
+const WELCOME_GAME_TOTAL =
+  WELCOME_GAME_STATE.players * WELCOME_GAME_STATE.concealedTilesPerPlayer
+  + WELCOME_GAME_STATE.players * WELCOME_GAME_STATE.discardsPerPlayer
+  + (WELCOME_GAME_STATE.deadWallStacks + WELCOME_GAME_STATE.liveWallStacks) * 2;
+
+const tutorialActs = [
+  {
+    id: 'discover', number: '01', stepIds: ['what-is-mahjong', 'what-happens', 'learning-map', 'objective', 'tiles', 'table', 'deal', 'dead-wall'] as string[],
+    title: { es: 'Descubre la mesa', en: 'Discover the table', pt: 'Descubra a mesa' },
+    description: { es: 'Qué es una partida, qué buscas y con qué fichas juegas.', en: 'What a game is, what you are building and which tiles you use.', pt: 'O que é uma partida, o que você busca e com quais peças joga.' },
+  },
+  {
+    id: 'play', number: '02', stepIds: ['turn', 'structure', 'calls', 'open-closed', 'tenpai', 'riichi'] as string[],
+    title: { es: 'Juega una mano', en: 'Play a hand', pt: 'Jogue uma mão' },
+    description: { es: 'Roba, decide, descarta y aprende cuándo conviene abrir.', en: 'Draw, decide, discard and learn when to open your hand.', pt: 'Compre, decida, descarte e aprenda quando abrir a mão.' },
+  },
+  {
+    id: 'win', number: '03', stepIds: ['ron-tsumo', 'furiten', 'dora', 'kan', 'points', 'finish'] as string[],
+    title: { es: 'Gana y puntúa', en: 'Win and score', pt: 'Vença e pontue' },
+    description: { es: 'Espera, riichi, furiten, dora y valor de la victoria.', en: 'Waits, riichi, furiten, dora and the value of a win.', pt: 'Espera, riichi, furiten, dora e o valor da vitória.' },
+  },
+] as const;
+
 function Tile({ code, sideways = false }: { code: string; sideways?: boolean }) {
   return <img className={`tutorial-tile${sideways ? ' is-sideways' : ''}`} src={tilePath(code)} alt={code} />;
 }
@@ -20,6 +51,17 @@ function TileGroup({ tiles, label, term, called = false }: { tiles: string[]; la
 
 function WallStack({ className = '', faceUp }: { className?: string; faceUp?: string }) {
   return <span className={`tutorial-wall-stack ${className}`}>{faceUp && <Tile code={faceUp} />}</span>;
+}
+
+function MiniDiscards({ className, tiles }: { className: string; tiles: string[] }) {
+  return <div className={`tutorial-game-discards ${className}`}>{tiles.map((tile, index) => <Tile key={`${className}-${tile}-${index}`} code={tile} />)}</div>;
+}
+
+function HiddenHand({ className, label }: { className: string; label: string }) {
+  return <div className={`tutorial-hidden-hand ${className}`}>
+    {Array.from({ length: WELCOME_GAME_STATE.concealedTilesPerPlayer }, (_, index) => <span key={index} />)}
+    <small>{label}</small>
+  </div>;
 }
 
 function DeadWallDiagram({ language, kan = false }: { language: TutorialLanguage; kan?: boolean }) {
@@ -43,19 +85,38 @@ function Scene({ scene, language }: { scene: TutorialScene; language: TutorialLa
   const t = (es: string, en: string, pt: string) => ({ es, en, pt }[language]);
 
   if (scene === 'welcome') return <div className="tutorial-welcome">
-    <div className="tutorial-mini-table" aria-label={t('Cuatro jugadores alrededor de la mesa','Four players around the table','Quatro jogadores ao redor da mesa')}>
-      <span className="seat seat-north">北<small>{t('Jugador 3','Player 3','Jogador 3')}</small></span>
-      <span className="seat seat-west">西<small>{t('Jugador 4','Player 4','Jogador 4')}</small></span>
-      <div><Tile code="1m" /><Tile code="5p" /><Tile code="9s" /><Tile code="1z" /></div>
-      <span className="seat seat-south">南<small>{t('Jugador 2','Player 2','Jogador 2')}</small></span>
-      <span className="seat seat-east">東<small>{t('Tú','You','Você')}</small></span>
+    <div className="tutorial-game-table" aria-label={t('Una partida de Mahjong Riichi en curso vista desde arriba','A Riichi Mahjong game in progress, viewed from above','Uma partida de Mahjong Riichi em andamento vista de cima')}>
+      <span className="tutorial-player-label is-south">東 · {t('Tú','You','Você')}</span>
+      <HiddenHand className="is-north" label={`西 · ${t('Rival','Opponent','Rival')}`} />
+      <HiddenHand className="is-west" label={`北 · ${t('Rival','Opponent','Rival')}`} />
+      <HiddenHand className="is-east" label={`南 · ${t('Rival','Opponent','Rival')}`} />
+      <div className="tutorial-game-wall is-north is-dead">{Array.from({ length: WELCOME_GAME_STATE.deadWallStacks }, (_, index) => <WallStack key={index} />)}<small>{t('Muro muerto · 14','Dead wall · 14','Muro morto · 14')}</small></div>
+      <div className="tutorial-game-wall is-east">{Array.from({ length: 17 }, (_, index) => <WallStack key={index} />)}</div>
+      <div className="tutorial-game-wall is-south">{Array.from({ length: WELCOME_GAME_STATE.liveWallStacks - 17 }, (_, index) => <WallStack key={index} />)}</div>
+      <MiniDiscards className="is-north" tiles={['9m','2p','7s','4z','1m']} />
+      <MiniDiscards className="is-west" tiles={['1p','6m','3z','8s','2m']} />
+      <MiniDiscards className="is-east" tiles={['4s','9p','2z','7m','3p']} />
+      <MiniDiscards className="is-south" tiles={['8m','1s','6p','4m','7z']} />
+      <img className="tutorial-game-compass" src="../assets/wind-indicator-rincon.svg" alt={t('Indicador de vientos: Este 1','Wind indicator: East 1','Indicador de ventos: Leste 1')} />
+      <div className="tutorial-player-hand" aria-label={t('Tu mano de trece fichas','Your thirteen-tile hand','Sua mão de treze peças')}>
+        {['1m','2m','3m','4p','5p','6p','3s','4s','5s','1z','1z','6z','6z'].map((code, index) => <Tile key={`${code}-${index}`} code={code} />)}
+      </div>
     </div>
-    <div className="tutorial-not-solitaire"><span>4</span><strong>{t('jugadores','players','jogadores')}</strong><b>·</b><span>136</span><strong>{t('fichas','tiles','peças')}</strong><b>·</b><span>1</span><strong>{t('mesa compartida','shared table','mesa compartilhada')}</strong></div>
+    <div className="tutorial-not-solitaire"><span>{WELCOME_GAME_TOTAL}</span><strong>{t('fichas en total','tiles in total','peças no total')}</strong><b>·</b><span>{WELCOME_GAME_STATE.concealedTilesPerPlayer}</span><strong>{t('por mano','per hand','por mão')}</strong><b>·</b><span>{WELCOME_GAME_STATE.deadWallStacks * 2}</span><strong>{t('en el muro muerto','in the dead wall','no muro morto')}</strong></div>
   </div>;
 
   if (scene === 'match') return <div className="tutorial-match">
-    <div className="tutorial-scoreboard"><span>東 <b>25.000</b></span><span>南 <b>25.000</b></span><span>西 <b>25.000</b></span><span>北 <b>25.000</b></span></div>
-    <div className="tutorial-match-flow"><article><small>{t('Mano 1','Hand 1','Mão 1')}</small><strong>{t('Robar y descartar','Draw and discard','Comprar e descartar')}</strong></article><b>→</b><article><small>{t('Final','End','Final')}</small><strong>Ron · Tsumo · {t('Empate','Draw','Empate')}</strong></article><b>→</b><article><small>{t('Siguiente','Next','Próxima')}</small><strong>{t('Cambian puntos y dealer','Points and dealer update','Pontos e dealer mudam')}</strong></article></div>
+    <div className="tutorial-match-map">
+      <header><strong>{t('Una partida','One game','Uma partida')}</strong><small>{t('los puntos continúan entre manos','points carry across hands','os pontos continuam entre mãos')}</small></header>
+      <section><h3>{t('Ronda Este','East round','Rodada Leste')}</h3><div>{[1,2,3,4].map((value) => <span key={`east-${value}`}>東 {value}</span>)}</div></section>
+      <b>→</b>
+      <section><h3>{t('Ronda Sur','South round','Rodada Sul')}</h3><div>{[1,2,3,4].map((value) => <span key={`south-${value}`}>南 {value}</span>)}</div></section>
+      <footer><span>↻</span>{t('Si el dealer continúa, una mano puede repetirse','If the dealer continues, a hand may repeat','Se o dealer continuar, uma mão pode se repetir')}</footer>
+    </div>
+    <div className="tutorial-one-hand">
+      <strong>{t('Cada casilla de arriba es una mano corta','Each box above is one short hand','Cada quadro acima é uma mão curta')}</strong>
+      <div><span>{t('Repartir','Deal','Distribuir')}<small>13</small></span><b>→</b><span>{t('Turnos','Turns','Turnos')}<small>{t('robar y descartar','draw and discard','comprar e descartar')}</small></span><b>→</b><span>{t('Final','End','Final')}<small>ron · tsumo · {t('sin fichas','no tiles','sem peças')}</small></span><b>→</b><span>{t('Pagar puntos','Settle points','Pagar pontos')}<small>{t('y comenzar otra','and begin another','e começar outra')}</small></span></div>
+    </div>
   </div>;
 
   if (scene === 'roadmap') return <div className="tutorial-roadmap">
@@ -130,15 +191,32 @@ function initialLanguage(): TutorialLanguage {
 
 export function TutorialWorkspace() {
   const [language, setLanguage] = useState<TutorialLanguage>(initialLanguage);
-  const [index, setIndex] = useState(0);
-  const step = tutorialSteps[index];
-  const chapter = tutorialChapters.find((item) => item.id === step.chapter) ?? tutorialChapters[0];
-  const chapterSteps = useMemo(() => tutorialSteps.filter((item) => item.chapter === step.chapter), [step.chapter]);
+  const [index, setIndex] = useState<number | null>(null);
+  const [motion, setMotion] = useState<'zoom' | 'forward' | 'backward'>('zoom');
+  const step = index === null ? null : tutorialSteps[index];
+  const chapter = step ? (tutorialChapters.find((item) => item.id === step.chapter) ?? tutorialChapters[0]) : null;
+  const activeAct = step ? tutorialActs.find((act) => act.stepIds.includes(step.id)) ?? tutorialActs[0] : null;
+  const activeActSteps = useMemo(
+    () => activeAct ? tutorialSteps.filter((item) => activeAct.stepIds.includes(item.id)) : [],
+    [activeAct],
+  );
 
-  const go = (next: number) => setIndex(Math.max(0, Math.min(tutorialSteps.length - 1, next)));
-  const goToChapter = (id: TutorialChapter) => {
-    const next = tutorialSteps.findIndex((item) => item.chapter === id);
-    if (next >= 0) setIndex(next);
+  const openStep = (next: number, nextMotion: 'zoom' | 'forward' | 'backward' = 'zoom') => {
+    setMotion(nextMotion);
+    setIndex(Math.max(0, Math.min(tutorialSteps.length - 1, next)));
+  };
+  const openAct = (actId: string) => {
+    const act = tutorialActs.find((item) => item.id === actId);
+    const next = act ? tutorialSteps.findIndex((item) => act.stepIds.includes(item.id)) : -1;
+    if (next >= 0) openStep(next, 'zoom');
+  };
+  const showOverview = () => setIndex(null);
+  const go = (next: number) => {
+    if (next < 0) {
+      showOverview();
+      return;
+    }
+    openStep(next, index !== null && next < index ? 'backward' : 'forward');
   };
 
   useEffect(() => {
@@ -179,8 +257,9 @@ export function TutorialWorkspace() {
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'ArrowLeft') go(index - 1);
-      if (event.key === 'ArrowRight') go(index + 1);
+      if (event.key === 'Escape') showOverview();
+      if (event.key === 'ArrowLeft') index === null ? openStep(tutorialSteps.length - 1, 'backward') : go(index - 1);
+      if (event.key === 'ArrowRight') index === null ? openStep(0, 'zoom') : go(index + 1);
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
@@ -189,30 +268,49 @@ export function TutorialWorkspace() {
   return <section className="tutorial" aria-label={localize({ es: 'Tutorial de Mahjong Riichi', en: 'Riichi Mahjong tutorial', pt: 'Tutorial de Mahjong Riichi' }, language)}>
     <header className="tutorial-intro">
       <div><p>{localize({ es: 'Ruta para principiantes', en: 'Beginner path', pt: 'Rota para iniciantes' }, language)}</p><h1>{localize({ es: 'Riichi, paso a paso', en: 'Riichi, step by step', pt: 'Riichi, passo a passo' }, language)}</h1></div>
-      <span>{index + 1} / {tutorialSteps.length}</span>
+      <span>{index === null ? localize({ es: 'Mapa completo', en: 'Full map', pt: 'Mapa completo' }, language) : `${index + 1} / ${tutorialSteps.length}`}</span>
     </header>
 
-    <nav className="tutorial-chapters" aria-label={localize({ es: 'Capítulos', en: 'Chapters', pt: 'Capítulos' }, language)}>
-      {tutorialChapters.map((item) => <button key={item.id} className={item.id === step.chapter ? 'is-active' : ''} type="button" onClick={() => goToChapter(item.id)} aria-current={item.id === step.chapter ? 'step' : undefined}><strong>{localize(item.label, language)}</strong><small>{localize(item.description, language)}</small></button>)}
-    </nav>
-
-    <div className="tutorial-progress" aria-hidden="true"><span style={{ width: `${((index + 1) / tutorialSteps.length) * 100}%` }} /></div>
-
-    <article className="tutorial-card">
-      <div className="tutorial-scene"><Scene scene={step.scene} language={language} /></div>
-      <div className="tutorial-copy">
-        <div className="tutorial-meta"><span>{localize(chapter.label, language)}</span><small>{localize(step.eyebrow, language)}</small></div>
-        <h2>{localize(step.title, language)}</h2>
-        <p>{localize(step.body, language)}</p>
-        <ul>{step.bullets.map((bullet, bulletIndex) => <li key={bulletIndex}>{localize(bullet, language)}</li>)}</ul>
-        <aside><strong>{localize({ es: 'Qué recordar', en: 'Remember this', pt: 'O que lembrar' }, language)}</strong><span>{localize(step.remember, language)}</span></aside>
+    {index === null ? <section className="tutorial-brochure-shell">
+      <div className="tutorial-brochure-heading"><strong>{localize({ es: 'Tu recorrido completo', en: 'Your complete journey', pt: 'Seu percurso completo' }, language)}</strong><span>{localize({ es: 'Mira el mapa y entra por cualquier sección', en: 'See the map and enter any section', pt: 'Veja o mapa e entre por qualquer seção' }, language)}</span></div>
+      <div className="tutorial-brochure">
+        {tutorialActs.map((act) => {
+          const actSteps = tutorialSteps.filter((item) => act.stepIds.includes(item.id));
+          return <button key={act.id} className={`tutorial-brochure-panel is-${act.id}`} type="button" onClick={() => openAct(act.id)}>
+            <span className="tutorial-brochure-number">{act.number}</span>
+            <small>{localize({ es: 'Parte', en: 'Part', pt: 'Parte' }, language)} {act.number}</small>
+            <h2>{localize(act.title, language)}</h2>
+            <p>{localize(act.description, language)}</p>
+            <ol>{actSteps.map((actStep, actIndex) => <li key={actStep.id}><b>{String(actIndex + 1).padStart(2, '0')}</b><span>{localize(actStep.title, language)}</span></li>)}</ol>
+            <strong>{localize({ es: 'Explorar esta parte', en: 'Explore this part', pt: 'Explorar esta parte' }, language)} <i>→</i></strong>
+          </button>;
+        })}
       </div>
-    </article>
+      <p className="tutorial-brochure-hint">← &nbsp; {localize({ es: 'También puedes comenzar con las flechas del teclado', en: 'You can also begin with the keyboard arrows', pt: 'Você também pode começar com as setas do teclado' }, language)} &nbsp; →</p>
+    </section> : step && chapter && <>
+      <nav className="tutorial-act-nav" aria-label={localize({ es: 'Partes del tutorial', en: 'Tutorial parts', pt: 'Partes do tutorial' }, language)}>
+        <button className="tutorial-overview-button" type="button" onClick={showOverview}>⊞ <span>{localize({ es: 'Ver tríptico', en: 'View brochure', pt: 'Ver tríptico' }, language)}</span></button>
+        {tutorialActs.map((act) => <button key={act.id} className={activeAct?.id === act.id ? 'is-active' : ''} type="button" onClick={() => openAct(act.id)}><b>{act.number}</b><span>{localize(act.title, language)}</span></button>)}
+      </nav>
 
-    <footer className="tutorial-nav">
-      <button type="button" onClick={() => go(index - 1)} disabled={index === 0}>← <span>{localize({ es: 'Anterior', en: 'Previous', pt: 'Anterior' }, language)}</span></button>
-      <div>{chapterSteps.map((chapterStep) => { const absoluteIndex = tutorialSteps.indexOf(chapterStep); return <button key={chapterStep.id} type="button" className={absoluteIndex === index ? 'is-active' : ''} onClick={() => setIndex(absoluteIndex)} aria-label={`${absoluteIndex + 1}. ${localize(chapterStep.title, language)}`} />; })}</div>
-      <button type="button" onClick={() => go(index + 1)} disabled={index === tutorialSteps.length - 1}><span>{localize({ es: 'Siguiente', en: 'Next', pt: 'Próximo' }, language)}</span> →</button>
-    </footer>
+      <div className="tutorial-progress" aria-hidden="true"><span style={{ width: `${((index + 1) / tutorialSteps.length) * 100}%` }} /></div>
+
+      <article key={step.id} className={`tutorial-card tutorial-camera is-${motion}`}>
+        <div className="tutorial-scene"><Scene scene={step.scene} language={language} /></div>
+        <div className="tutorial-copy">
+          <div className="tutorial-meta"><span>{localize(chapter.label, language)}</span><small>{localize(step.eyebrow, language)}</small></div>
+          <h2>{localize(step.title, language)}</h2>
+          <p>{localize(step.body, language)}</p>
+          <ul>{step.bullets.map((bullet, bulletIndex) => <li key={bulletIndex}>{localize(bullet, language)}</li>)}</ul>
+          <aside><strong>{localize({ es: 'Qué recordar', en: 'Remember this', pt: 'O que lembrar' }, language)}</strong><span>{localize(step.remember, language)}</span></aside>
+        </div>
+      </article>
+
+      <footer className="tutorial-nav">
+        <button type="button" onClick={() => go(index - 1)}>← <span>{index === 0 ? localize({ es: 'Mapa', en: 'Map', pt: 'Mapa' }, language) : localize({ es: 'Anterior', en: 'Previous', pt: 'Anterior' }, language)}</span></button>
+        <div>{activeActSteps.map((actStep) => { const absoluteIndex = tutorialSteps.indexOf(actStep); return <button key={actStep.id} type="button" className={absoluteIndex === index ? 'is-active' : ''} onClick={() => openStep(absoluteIndex, absoluteIndex < index ? 'backward' : 'forward')} aria-label={`${absoluteIndex + 1}. ${localize(actStep.title, language)}`} />; })}</div>
+        <button type="button" onClick={() => go(index + 1)} disabled={index === tutorialSteps.length - 1}><span>{localize({ es: 'Siguiente', en: 'Next', pt: 'Próximo' }, language)}</span> →</button>
+      </footer>
+    </>}
   </section>;
 }

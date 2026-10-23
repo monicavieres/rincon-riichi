@@ -12,7 +12,6 @@ export type ModuleCard = {
 
 export const learnModules: ModuleCard[] = [
   { id: 'tutorial', title: 'Tutorial', description: 'Guía paso a paso: mesa, muro, fichas y yakus.', route: 'aprender/tutorial.html', icon: 'icon-tutorial', tone: 'pink', translationBase: 'module.tutorial' },
-  { id: 'visual-guide', title: 'Guía visual', description: 'Riichi explicado con escenas y fichas FluffyStuff.', route: 'aprender/visual-guide.html', icon: 'icon-visual-guide', tone: 'blue', translationBase: 'module.visualGuide' },
   { id: 'fichas', title: 'Fichas', description: 'Manzu, pinzu, souzu, vientos, dragones y aka dora.', route: 'aprender/tiles.html', icon: 'icon-tiles', tone: 'green', translationBase: 'module.fichas' },
   { id: 'machi', title: 'Tipos de Espera', description: 'Ryanmen, kanchan, penchan, tanki, nobetan y más esperas.', route: 'aprender/machi.html', icon: 'icon-machi', tone: 'yellow', translationBase: 'module.machi' },
   { id: 'yaku-ref', title: 'Guía de Yakus', description: 'Todos los yaku con su valor y ejemplo de fichas.', route: 'aprender/yaku-reference.html', icon: 'icon-yaku', tone: 'green', translationBase: 'module.yakuRef' },

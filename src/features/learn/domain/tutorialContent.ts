@@ -83,18 +83,18 @@ export const tutorialSteps: TutorialStep[] = [
   {
     id: 'what-happens', chapter: 'intro', scene: 'match',
     eyebrow: { es: 'Una partida', en: 'A game', pt: 'Uma partida' },
-    title: { es: 'La partida contiene varias manos cortas', en: 'A game contains several short hands', pt: 'Uma partida contém várias mãos curtas' },
+    title: { es: 'Una partida se juega mano por mano', en: 'A game is played one hand at a time', pt: 'Uma partida é jogada mão por mão' },
     body: {
-      es: 'Cada mano es una carrera independiente por completar primero. Cuando alguien gana —o se acaba el muro— se ajustan los puntos y comienza la siguiente.',
-      en: 'Each hand is a separate race to finish first. When someone wins—or the wall runs out—points are adjusted and the next hand begins.',
-      pt: 'Cada mão é uma corrida separada para terminar primeiro. Quando alguém vence—ou o muro acaba—os pontos são ajustados e começa a próxima.',
+      es: 'Una mano es un episodio corto: se reparten las fichas, todos toman turnos y termina cuando alguien gana o se agota el muro vivo. Entonces se pagan puntos y comienza otra mano.',
+      en: 'A hand is one short episode: tiles are dealt, everyone takes turns, and it ends when someone wins or the live wall runs out. Points are then settled and another hand begins.',
+      pt: 'Uma mão é um episódio curto: as peças são distribuídas, todos jogam em turnos e ela termina quando alguém vence ou o muro vivo acaba. Depois os pontos são pagos e começa outra mão.',
     },
     bullets: [
-      { es: 'Los puntos pasan entre jugadores; no obtienes puntos por cada ficha.', en: 'Points move between players; you do not score each individual tile.', pt: 'Os pontos passam entre jogadores; você não pontua cada peça individual.' },
-      { es: 'El dealer se llama Este y puede repetir si gana.', en: 'The dealer is called East and may repeat after winning.', pt: 'O dealer é chamado Leste e pode repetir depois de vencer.' },
-      { es: 'Al terminar todas las manos, gana quien conserva más puntos.', en: 'After all hands are played, the player with the most points wins.', pt: 'Depois de todas as mãos, vence quem conserva mais pontos.' },
+      { es: 'Una partida habitual recorre la ronda Este y luego la ronda Sur: Este 1–4 y Sur 1–4.', en: 'A usual game goes through the East round and then the South round: East 1–4 and South 1–4.', pt: 'Uma partida habitual passa pela rodada Leste e depois pela rodada Sul: Leste 1–4 e Sul 1–4.' },
+      { es: 'El dealer se llama Este. Si conserva el turno, la misma mano se repite; por eso una partida puede tener más de ocho manos.', en: 'The dealer is called East. If they retain the dealership, the same hand repeats, so a game may contain more than eight hands.', pt: 'O dealer é chamado Leste. Se ele mantiver o posto, a mesma mão se repete; por isso uma partida pode ter mais de oito mãos.' },
+      { es: 'Los puntos suben y bajan durante toda la partida. Al terminar, gana quien tenga más.', en: 'Points rise and fall throughout the game. When it ends, the player with the most wins.', pt: 'Os pontos sobem e descem durante toda a partida. Ao terminar, vence quem tiver mais.' },
     ],
-    remember: { es: 'Mano = una ronda corta. Partida = la suma de muchas manos.', en: 'Hand = one short round. Game = the sum of many hands.', pt: 'Mão = uma rodada curta. Partida = a soma de várias mãos.' },
+    remember: { es: 'Mano = un episodio. Ronda = cuatro manos previstas. Partida habitual = ronda Este + ronda Sur, con posibles repeticiones.', en: 'Hand = one episode. Round = four scheduled hands. A usual game = East round + South round, with possible repeats.', pt: 'Mão = um episódio. Rodada = quatro mãos previstas. Partida habitual = rodada Leste + rodada Sul, com possíveis repetições.' },
   },
   {
     id: 'learning-map', chapter: 'intro', scene: 'roadmap',
