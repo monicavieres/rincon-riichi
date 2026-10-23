@@ -207,13 +207,15 @@ def tile_lying(s, x, y, z, along_x=True):
     s.box(x, y, z, w, d, 15, t['back'], bands=[(0.5, t['cream']), (1.0, t['back'])], deco=[tile_back_top], sw=1.2)
 
 
-def wall(s, x, y, n, along_x, z, gaps=(), face_up=None):
-    """face_up: {stack index: tile code} flips that stack's top tile, e.g. the dora indicator."""
+def wall(s, x, y, n, along_x, z, gaps=(), face_up=None, split=()):
+    """face_up: {stack index: tile code} flips that stack's top tile, e.g. the dora indicator.
+    split: stack indices where a small gap opens before that stack, e.g. around the dead wall."""
     face_up = face_up or {}
     for i in range(n):
         if i in gaps:
             continue
-        xx, yy = (x + i * 20, y) if along_x else (x, y + i * 20)
+        off = i * 20 + 6 * sum(1 for b in split if i >= b)
+        xx, yy = (x + off, y) if along_x else (x, y + off)
         tile_lying(s, xx, yy, z, along_x)
         if i in face_up:
             tile_face_up(s, xx, yy, z + 15, face_up[i], 'S' if along_x else 'E')
@@ -232,21 +234,27 @@ def stick(s, x, y, z, kind, length=96, key=None):
           deco=[stick_marks(kind)], sw=1.2, key=key)
 
 
-def console(s, x, y, z, a=90):
+def console(s, x, y, z, a=96, dealer='E'):
+    """Automatic-table console: each side shows that seat's wind (lit for the dealer), the dial shows the round wind.
+    Seats: South at +y (the viewer's seat), West at +x, North at -y, East at -x (turn order runs counter-clockwise)."""
     t = s.t
     s.box(x, y, z, a, a, 8, t['console'], key=(x + y + a, z))
-    lights = [((x + a / 2 - 9, y + 4), (18, 6), t['man']), ((x + a - 10, y + a / 2 - 9), (6, 18), t['pin']),
-              ((x + a / 2 - 9, y + a - 10), (18, 6), t['sou']), ((x + 4, y + a / 2 - 9), (6, 18), t['gold'])]
-    for (lx, ly), (lw, ld), col in lights:
-        s.raw((x + y + a + 1, z + 9), s.poly([(lx, ly, z + 8.5), (lx + lw, ly, z + 8.5), (lx + lw, ly + ld, z + 8.5), (lx, ly + ld, z + 8.5)], col, sw=1))
-    for (dx, dy) in ((a / 2 - 13, 16), (a / 2 - 13, a - 26)):
-        s.raw((x + y + a + 1, z + 9), s.poly([(x + dx, y + dy, z + 8.5), (x + dx + 26, y + dy, z + 8.5), (x + dx + 26, y + dy + 10, z + 8.5), (x + dx, y + dy + 10, z + 8.5)], t['screen'], sw=1))
-    s.raw((x + y + a + 2, z + 9), s.circle((x + a / 2, y + a / 2, z + 8.5), (1, 0, 0), (0, 1, 0), 11, shade(t['console'], 0.7), sw=1.2))
-    s.raw((x + y + a + 3, z + 9), text_top('東', t['gold'], 13)(s, x, y, z + 0.5, a, a, 8))
-    for (dx, dy) in ((a / 2 - 13, 16), (a / 2 - 13, a - 26)):
-        cx, cy = x + dx + 13, y + dy + 5
-        e, f_ = P(cx, cy, z + 8.6)
-        s.raw((x + y + a + 3, z + 9), f'<text transform="matrix({C30:.4f} {S30} {-C30:.4f} {S30} {e:.1f} {f_:.1f})" font-family="\'JetBrains Mono\',ui-monospace,monospace" font-weight="700" font-size="6.5" fill="{t["console"]}" text-anchor="middle" dominant-baseline="central">25000</text>')
+    top, k = z + 8.5, (x + y + a + 1, z + 9)
+    mid = a / 2
+    sides = {
+        'N': ((x + mid - 10, y + 4, 20, 5), (x + mid, y + 18), '北'),
+        'S': ((x + mid - 10, y + a - 9, 20, 5), (x + mid, y + a - 18), '南'),
+        'E': ((x + 4, y + mid - 10, 5, 20), (x + 18, y + mid), '東'),
+        'W': ((x + a - 9, y + mid - 10, 5, 20), (x + a - 18, y + mid), '西'),
+    }
+    for seat, ((lx, ly, lw, ld), (cx, cy), ch) in sides.items():
+        lit = seat == dealer
+        light = t['man'] if lit else shade(t['console'], 1.7)
+        s.raw(k, s.poly([(lx, ly, top), (lx + lw, ly, top), (lx + lw, ly + ld, top), (lx, ly + ld, top)], light, sw=1))
+        s.raw(k, text_top(ch, t['man'] if lit else t['cream'], 14)(s, cx, cy, z + 0.5, 0, 0, 8))
+    s.raw((k[0] + 1, k[1]), s.circle((x + mid, y + mid, top), (1, 0, 0), (0, 1, 0), 13, shade(t['console'], 0.7), sw=1.2))
+    s.raw((k[0] + 2, k[1]), s.circle((x + mid, y + mid, top + 0.1), (1, 0, 0), (0, 1, 0), 10.5, 'none', sw=0.8))
+    s.raw((k[0] + 3, k[1]), text_top('東', t['gold'], 15)(s, x + mid, y + mid, z + 0.5, 0, 0, 8))
 
 
 def face_glyph(s, code, origin, u, v):
@@ -330,13 +338,10 @@ def scene_table(t):
     s.box(0, 0, 92, 600, 600, 26, t['rail'], key=(-1.8e8, 0), sw=2)
     s.box(30, 30, 118, 540, 540, 3, t['felt'], key=(-1.7e8, 0), sw=1.6)
     s.raw((-1.6e8, 0), s.poly([(48, 48, 121.3), (552, 48, 121.3), (552, 552, 121.3), (48, 552, 121.3)], 'none', sw=1.2, extra=f' stroke-opacity=".35" stroke-dasharray="6 6"'))
-    # corner plates with the four winds
-    for (px, py), col, ch in (((4, 4), t['man'], '東'), ((570, 4), t['pin'], '南'), ((570, 570), t['sou'], '西'), ((4, 570), t['gold'], '北')):
-        s.box(px, py, 118, 26, 26, 4, col, key=(-1.5e8, 0), sw=1.2, deco=[text_top(ch, t['white'], 17)])
     z = 121
     wall(s, 130, 103, 17, True, z)
     wall(s, 103, 130, 17, False, z)
-    wall(s, 470, 130, 17, False, z, gaps=(12, 13), face_up={9: '4p'})
+    wall(s, 470, 130, 17, False, z, gaps=(12, 13), face_up={9: '4p'}, split=(5, 12))
     wall(s, 130, 470, 17, True, z)
     for wx, wy, ww, wd in ((130, 103, 340, 27), (103, 130, 27, 340), (470, 130, 27, 340), (130, 470, 340, 27)):
         s.cast(wx, wy, ww, wd, z, 30)
@@ -344,11 +349,11 @@ def scene_table(t):
         s.cast(hx, hy, hw, hd, z, 27)
     for px, py, pw, pd in ((240, 366, 120, 54), (240, 180, 120, 54), (366, 240, 54, 120), (180, 240, 54, 120)):
         s.cast(px, py, pw, pd, z, 15)
-    s.cast(260, 260, 80, 80, z, 8)
-    console(s, 260, 260, z, a=80)
-    die(s, 326, 264, z + 8, a=10, faces=(5, 2, 3))
-    die(s, 264, 326, z + 8, a=10, faces=(1, 4, 2))
-    stick(s, 254, 350, z, 1000, length=92)
+    s.cast(252, 252, 96, 96, z, 8)
+    console(s, 252, 252, z, a=96)
+    die(s, 256, 256, z + 8, a=10, faces=(5, 2, 3))
+    die(s, 334, 334, z + 8, a=10, faces=(1, 4, 2))
+    stick(s, 254, 354, z, 1000, length=92)
     hand(s, 'N', ['1m'] * 13, z)
     hand(s, 'W', ['1m'] * 13, z)
     hand(s, 'E', ['1m', '1m', '5m', '6m', '7m', '2p', '2p', '9p', '3s', '4s', '5s', '6z', '6z'], z)
