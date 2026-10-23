@@ -2,7 +2,14 @@ import { AppHeader } from '../../../shared/ui/AppHeader';
 import { SoftBackground } from '../../../shared/ui/SoftBackground';
 import { learnModules, practiceModules } from '../domain/moduleCatalog';
 import { ModuleGrid } from '../ui/ModuleGrid';
+import { explorerText } from '../domain/tableExplorerCopy';
+import { pick, useLanguage } from '../../../shared/i18n/useLanguage';
 import { RiichiTableExplorer } from '../ui/RiichiTableExplorer';
+
+function HomeHeadline() {
+  const language = useLanguage();
+  return <><h1 id="table-explorer-title">{pick(explorerText.headline, language)}</h1><p>{pick(explorerText.hint, language)}</p></>;
+}
 
 export function HomePage() {
   return (
@@ -11,7 +18,7 @@ export function HomePage() {
       <main className="app-shell">
         <AppHeader
           home
-          headline={<><h1 id="table-explorer-title">Explora la mesa</h1><p>Toca un punto o usa las flechas.</p></>}
+          headline={<HomeHeadline />}
         />
         <div id="inicio" data-home-section><RiichiTableExplorer /></div>
         <section className="section-heading" id="aprender" data-home-section><h2 data-i18n="modules.title">Aprender</h2><p data-i18n="modules.subtitle">Conceptos, reglas y referencias para entender Riichi.</p></section>

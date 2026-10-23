@@ -881,10 +881,6 @@
     background: rgba(0, 0, 0, 0.5);
 }
 
-[data-theme="dark"] .score-header h1,
-[data-theme="dark"] .panel-heading h2 {
-    color: var(--green);
-}
 
 [data-theme="dark"] .honba-card {
     border-color: var(--sticker-border);
@@ -910,10 +906,6 @@
     text-shadow: 0 0.08rem 0 rgba(0, 0, 0, 0.12);
 }
 
-[data-theme="dark"] .score-panel,
-[data-theme="dark"] #fuPanel.score-panel {
-    color: var(--ink);
-}
 
 [data-theme="dark"] .fu-set-head {
     border-color: rgba(201, 168, 192, 0.16);
@@ -921,11 +913,6 @@
     background: rgba(15, 47, 26, 0.66);
 }
 
-[data-theme="dark"] .fu-set-kind,
-[data-theme="dark"] .fu-set-cell {
-    border-color: rgba(201, 168, 192, 0.14);
-    background: linear-gradient(90deg, rgba(26, 15, 22, 0.9), rgba(31, 20, 33, 0.78));
-}
 
 [data-theme="dark"] .fu-set-kind {
     color: var(--ink);
@@ -937,11 +924,6 @@
     box-shadow: 0 0.42rem 0 var(--shadow);
 }
 
-[data-theme="dark"] .fu-row,
-[data-theme="dark"] .fu-section .fu-row:nth-child(even) {
-    border-color: rgba(201, 168, 192, 0.14);
-    background: linear-gradient(90deg, rgba(26, 15, 22, 0.9), rgba(31, 20, 33, 0.78));
-}
 
 [data-theme="dark"] .fu-example-tiles {
     background: rgba(10, 6, 10, 0.5);
@@ -989,14 +971,6 @@
     color: var(--muted);
 }
 
-[data-theme="dark"] .torpedo-corner,
-[data-theme="dark"] .torpedo-fu,
-[data-theme="dark"] .torpedo-han,
-[data-theme="dark"] .torpedo-cell {
-    border-color: rgba(255, 255, 255, 0.1);
-    background: rgba(30, 28, 34, 0.85);
-    box-shadow: 0 0.18rem 0 var(--shadow);
-}
 
 [data-theme="dark"] .torpedo-fu {
     background: rgba(15, 47, 26, 0.7);
@@ -1027,11 +1001,6 @@
     color: var(--purple-dark);
 }
 
-[data-theme="dark"] .torpedo-fu small,
-[data-theme="dark"] .torpedo-han small,
-[data-theme="dark"] .pay-tsumo small {
-    color: var(--muted);
-}
 
 [data-theme="dark"] .limit-strip > strong {
     color: var(--orange-dark);

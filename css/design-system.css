@@ -2031,22 +2031,6 @@ body:has(.side-rail) {
     background: var(--page-bg);
 }
 
-:root[data-theme]:not([data-theme="light"]) .feedback.good,
-:root[data-theme]:not([data-theme="light"]) .status.ready,
-:root[data-theme]:not([data-theme="light"]) .family-tab.is-active,
-:root[data-theme]:not([data-theme="light"]) .score-tab.is-active,
-:root[data-theme]:not([data-theme="light"]) .answer-button.is-correct,
-:root[data-theme]:not([data-theme="light"]) .results-row.is-correct .results-mark,
-:root[data-theme]:not([data-theme="light"]) .ref-value,
-:root[data-theme]:not([data-theme="light"]) .guide-step,
-:root[data-theme]:not([data-theme="light"]) .yakuref-value,
-:root[data-theme]:not([data-theme="light"]) .torpedo-han,
-:root[data-theme]:not([data-theme="light"]) .fu-base h3,
-:root[data-theme]:not([data-theme="light"]) .tile-set-picker select,
-:root[data-theme]:not([data-theme="light"]) .switch-control input:checked + .switch-track {
-    background: linear-gradient(180deg, var(--accent-a), var(--accent-b));
-}
-
 :root[data-theme]:not([data-theme="light"]) .module-card .status.ready {
     border-color: color-mix(in srgb, var(--accent-a) 45%, transparent);
     color: var(--ink);

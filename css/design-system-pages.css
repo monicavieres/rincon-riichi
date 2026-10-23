@@ -1,0 +1,496 @@
+/*
+ * Page skin: brings the older pages (practice games, reference pages, resources) to the design system.
+ * It only touches the look (surface, border, radius, shadow, type, colour), never the layout, and it is
+ * driven by the same tokens as the home, so every style works without extra rules.
+ * Loaded after css/design-system.css.
+ */
+
+/* ── Surfaces: flat paper with a hairline border ──────────────── */
+.sticker-panel,
+.coach-zone,
+.quick-panel article,
+.practice-strip,
+.coach-banner,
+.hero,
+.hand-card,
+.feedback-panel,
+.results-card,
+.module-card-screen,
+.tile-modal-card,
+.machi-card,
+.ref-card,
+.yakuref-card,
+.link-card,
+.honba-card,
+.torpedo-section,
+.torpedo-note,
+.fu-section,
+.score-panel,
+.tile-explain-modal {
+    border: var(--border-hair) solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+/* The play area itself reads as the stage: sunk paper with a soft light, like the table's home. */
+.module-card-screen,
+.results-card {
+    border-radius: var(--radius-xl);
+    background: radial-gradient(ellipse at 50% 30%, var(--card) 0, var(--card-sunk) 82%);
+}
+
+.module-hand-card,
+.module-question-card {
+    border: var(--border-hair) solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    box-shadow: none;
+}
+
+/* The hand lies on the table's cloth, like the tutorial's tile rack, so tiles pop in every style. */
+.module-hand-card,
+.hand-card {
+    border-color: var(--ink);
+    background: radial-gradient(ellipse at 50% 30%, color-mix(in oklab, var(--table-felt) 82%, white) 0, var(--table-felt) 72%);
+    box-shadow: inset 0 0 0 4px color-mix(in oklab, var(--table-felt) 55%, transparent), 0 3px 0 var(--ink);
+}
+
+.module-hand-card .eyebrow,
+.hand-card .eyebrow,
+.module-hand-card .panel-label,
+.hand-card .panel-label {
+    color: color-mix(in oklab, white 82%, var(--table-felt));
+}
+
+.module-hand-card .round-context .context-chip,
+.hand-card .round-context .context-chip,
+.module-hand-card .round-context,
+.hand-card .round-context {
+    color: color-mix(in oklab, white 86%, var(--table-felt));
+}
+
+.module-hand-card .round-context .context-chip::before,
+.hand-card .round-context .context-chip::before {
+    color: currentColor;
+}
+
+.feedback-panel {
+    background: var(--card);
+}
+
+.feedback-panel strong {
+    color: var(--sou-strong);
+    font-family: var(--font-display);
+    letter-spacing: 0.02em;
+}
+
+/* ── Headings and copy ───────────────────────────────────────── */
+.hero h1,
+.module-question-card h1,
+.tile-start h1,
+.yaku-hero h1,
+.score-header h1,
+.links-hero h1,
+.ref-hero h1,
+.tiles-header h1 {
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0;
+    text-shadow: none;
+    text-wrap: balance;
+}
+
+.panel-heading h2,
+.practice-strip h2,
+.coach-banner h2 {
+    color: var(--ink);
+    font-family: var(--font-display);
+    text-shadow: none;
+}
+
+.answer-zone h2,
+.quiz-question h2,
+.module-question-card h2 {
+    color: var(--ink);
+    font-family: var(--font-display);
+}
+
+.speech-bubble {
+    border: var(--border-hair) solid var(--line);
+    border-radius: var(--radius-md);
+    color: var(--ink);
+    background: var(--card);
+    box-shadow: none;
+    font-weight: 600;
+}
+
+.subtitle,
+.module-question-card p,
+.feedback-panel p {
+    color: var(--muted);
+    font-weight: 500;
+}
+
+:is(.ref-card, .yakuref-card, .machi-card, .link-card, .score-panel, .fu-section, .machi-filters) :is(h2, h3),
+.machi-filter-heading h2 {
+    color: var(--ink);
+    font-family: var(--font-display);
+    letter-spacing: 0.01em;
+}
+
+/* ── Choices: answers, modes and tabs share the tile-edge button ── */
+.answer-button,
+.tile-mode,
+.score-tab,
+.family-tab,
+.machi-filter-reset {
+    border: var(--border-hair) solid var(--line);
+    border-radius: var(--radius-md);
+    color: var(--ink);
+    background: var(--card);
+    box-shadow: 0 2px 0 var(--line);
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+}
+
+.answer-button:hover:not(:disabled),
+.tile-mode:hover,
+.score-tab:hover,
+.family-tab:hover {
+    border-color: var(--felt);
+    box-shadow: 0 3px 0 var(--felt);
+    transform: translateY(-1px);
+    filter: none;
+}
+
+.answer-button:active:not(:disabled),
+.tile-mode:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 var(--line);
+}
+
+.tile-mode img {
+    filter: drop-shadow(0 2px 0 var(--tile-edge));
+}
+
+.tile-mode span {
+    color: var(--ink);
+    font-family: var(--font-display);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.answer-button.is-selected {
+    border-color: var(--riichi);
+    color: var(--riichi-strong);
+    background: var(--riichi-soft);
+    box-shadow: 0 2px 0 var(--riichi);
+}
+
+.answer-button.is-correct,
+.answer-button.is-correct:hover {
+    border-color: var(--sou-strong);
+    color: var(--sou-strong);
+    background: var(--sou-soft);
+    box-shadow: 0 2px 0 var(--sou-strong);
+}
+
+.answer-button.is-wrong,
+.answer-button.is-wrong:hover {
+    border-color: var(--man-strong);
+    color: var(--man-strong);
+    background: var(--man-soft);
+    box-shadow: 0 2px 0 var(--man-strong);
+}
+
+.score-tab.is-active,
+.family-tab.is-active {
+    border-color: var(--felt-strong);
+    color: var(--on-accent);
+    background: var(--felt-strong);
+    box-shadow: 0 3px 0 color-mix(in oklab, var(--felt-strong) 70%, black);
+}
+
+/* ── Tile examples sit on the cloth, like the tutorial's rack ───── */
+.ref-example,
+.yakuref-example,
+.machi-pattern {
+    padding: var(--space-2) var(--space-3);
+    border: var(--border-hair) solid var(--ink);
+    border-radius: var(--radius-md);
+    background: radial-gradient(ellipse at 50% 30%, color-mix(in oklab, var(--table-felt) 82%, white) 0, var(--table-felt) 72%);
+    box-shadow: inset 0 0 0 3px color-mix(in oklab, var(--table-felt) 55%, transparent), 0 2px 0 var(--ink);
+}
+
+.ref-example .ref-minilabel,
+.yakuref-example .yakuref-minilabel,
+.machi-pattern .machi-minilabel {
+    color: color-mix(in oklab, white 82%, var(--table-felt));
+    font-family: var(--font-display);
+    letter-spacing: 0.1em;
+}
+
+/* The tile you wait for: a dashed gold slot instead of a second box */
+.machi-wait {
+    border: var(--border-hair) dashed var(--gold-strong);
+    border-radius: var(--radius-md);
+    background: var(--gold-soft);
+}
+
+.wait-gap {
+    border-color: var(--riichi);
+    color: var(--riichi-strong);
+    background: var(--riichi-soft);
+}
+
+.wait-options .is-answer {
+    outline-color: var(--sou);
+}
+
+.fu-waits h3 {
+    background: var(--riichi-strong);
+}
+
+.module-hand-card .honba-chip b,
+.hand-card .honba-chip b {
+    color: inherit;
+}
+
+/* ── Chips ───────────────────────────────────────────────────── */
+.module-pill,
+.tile-start-chips span,
+.start-chips span,
+.score-pill,
+.hero-chip,
+.context-chip {
+    border: var(--border-hair) solid var(--line);
+    border-radius: var(--radius-sm);
+    color: var(--ink);
+    background: var(--card);
+    box-shadow: none;
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.round-context .context-chip,
+.round-context.context-lg .context-chip {
+    border: 0;
+    background: none;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+/* ── Badges: flat felt, same in every style ────────────────── */
+.status,
+.status.ready,
+.ref-value,
+.guide-step,
+.yakuref-value,
+.torpedo-han,
+.fu-base h3 {
+    border: var(--border-hair) solid color-mix(in oklab, var(--felt-strong) 75%, black);
+    border-radius: var(--radius-sm);
+    color: var(--on-accent);
+    background: var(--felt-strong);
+    box-shadow: none;
+    text-shadow: none;
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.tile-set-picker select,
+.switch-control input:checked + .switch-track {
+    background: var(--felt-strong);
+}
+
+/* ── Statuses ────────────────────────────────────────────────── */
+.feedback.good {
+    border-color: var(--sou-strong);
+    color: var(--sou-strong);
+    background: var(--sou-soft);
+    text-shadow: none;
+}
+
+.feedback.bad {
+    border-color: var(--man-strong);
+    color: var(--man-strong);
+    background: var(--man-soft);
+    text-shadow: none;
+}
+
+/* ── Tiles on paper: a little lift and the tile edge, no purple glow ── */
+.tile-modal-card,
+.tile-explain-modal {
+    box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.5);
+}
+
+.sticker-img,
+.mini-chibi {
+    filter: none;
+}
+
+/* ── Resources ───────────────────────────────────────────────── */
+.link-card:hover,
+.machi-card:hover,
+.ref-card:hover,
+.yakuref-card:hover {
+    border-color: var(--felt);
+    transform: translateY(-2px);
+}
+
+.link-tag {
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    color: var(--riichi-strong);
+    background: var(--riichi-soft);
+    font-family: var(--font-display);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.link-domain {
+    color: var(--felt-strong);
+    font-family: var(--font-display);
+    letter-spacing: 0.06em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .answer-button,
+    .tile-mode,
+    .score-tab,
+    .family-tab {
+        transition: none;
+    }
+}
+
+/* ── Scores page: every colour from tokens, so it reads in all styles ── */
+.honba-card,
+.torpedo-section,
+.torpedo-section.is-dealer,
+.torpedo-section.is-non-dealer,
+.torpedo-note,
+.fu-section {
+    border: var(--border-hair) solid var(--line);
+    background: var(--card);
+}
+
+.torpedo-note {
+    background: var(--gold-soft);
+    color: var(--ink);
+}
+
+.torpedo-side {
+    border-color: var(--riichi);
+    color: var(--riichi-strong);
+    background: var(--riichi-soft);
+}
+
+.is-non-dealer .torpedo-side {
+    border-color: var(--man);
+    color: var(--man-strong);
+    background: var(--man-soft);
+}
+
+.torpedo-corner,
+.torpedo-fu,
+.torpedo-han,
+.torpedo-cell {
+    border: var(--border-hair) solid var(--line);
+    border-radius: var(--radius-sm);
+    color: var(--ink);
+    background: var(--card);
+}
+
+.torpedo-fu {
+    color: var(--felt-strong);
+    background: var(--felt-soft);
+}
+
+.torpedo-han,
+.torpedo-han small {
+    border-color: transparent;
+    color: var(--on-accent);
+    background: var(--felt-strong);
+}
+
+.torpedo-cell:nth-child(odd) {
+    background: var(--card-sunk);
+}
+
+.torpedo-cell.is-empty {
+    color: var(--faint);
+    background: var(--paper-deep);
+}
+
+.limit-strip > strong {
+    border-color: var(--tsumo);
+    color: var(--tsumo-strong);
+    background: var(--tsumo-soft);
+}
+
+.limit-card {
+    border: var(--border-hair) solid var(--line);
+    color: var(--ink);
+    background: var(--card);
+}
+
+.limit-card em {
+    color: var(--sou-strong);
+    background: var(--sou-soft);
+}
+
+.fu-base-note {
+    border: var(--border-hair) solid var(--line);
+    color: var(--text);
+    background: var(--card-sunk);
+}
+
+.fu-section h3 {
+    color: var(--on-accent);
+}
+
+.fu-base h3 { background: var(--felt-strong); }
+.fu-pairs h3 { background: var(--pin-strong); }
+.fu-waits h3 { background: var(--riichi-strong); }
+.fu-sets h3 { background: var(--tsumo-strong); }
+
+.fu-row,
+.fu-section .fu-row:nth-child(even) {
+    color: var(--ink);
+    background: var(--card);
+}
+
+.fu-section .fu-row:nth-child(even) {
+    background: var(--card-sunk);
+}
+
+.fu-example-tiles {
+    background: color-mix(in oklab, var(--table-felt) 86%, white);
+    box-shadow: inset 0 0 0 2px color-mix(in oklab, var(--table-felt) 55%, transparent);
+}
+
+.fu-amount {
+    border-color: var(--man-strong);
+    color: var(--on-accent);
+    background: var(--man-strong);
+}
+
+.fu-set-head {
+    color: var(--sou-strong);
+    background: var(--sou-soft);
+}
+
+.fu-set-kind,
+.fu-set-cell {
+    color: var(--ink);
+    background: var(--card);
+}

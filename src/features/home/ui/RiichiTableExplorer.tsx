@@ -1,18 +1,33 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { TableStage, ZoneThumb } from '../../../shared/ui/TableStage';
-import { tableExplorerStops, type ExplorerTab } from '../domain/tableExplorer';
+import { tableExplorerStops as baseStops, type ExplorerTab } from '../domain/tableExplorer';
+import { explorerText as t, stopCopy } from '../domain/tableExplorerCopy';
+import { pick, useLanguage, type Language } from '../../../shared/i18n/useLanguage';
 
-const tabs: Array<{ id: ExplorerTab; label: string }> = [
-  { id: 'summary', label: 'Resumen' },
-  { id: 'observe', label: 'Qué mirar' },
-  { id: 'practice', label: 'Pruébalo' },
-];
+const tabIds: ExplorerTab[] = ['summary', 'observe', 'practice'];
+
+/** The stops with their wording in the chosen language; geometry never changes. */
+const localizeStops = (language: Language) => {
+  if (language === 'es') return baseStops;
+  const copy = stopCopy[language];
+  return baseStops.map((stop) => {
+    const text = copy[stop.id];
+    if (!text) return stop;
+    return {
+      ...stop,
+      ...text,
+      callouts: stop.callouts.map((callout, index) => ({ ...callout, label: text.callouts[index] ?? callout.label })),
+    };
+  });
+};
 
 const chevron = (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg>
 );
 
 export function RiichiTableExplorer() {
+  const language = useLanguage();
+  const tableExplorerStops = useMemo(() => localizeStops(language), [language]);
   const explorerRef = useRef<HTMLElement>(null);
   const railRef = useRef<HTMLElement>(null);
   const [activeId, setActiveId] = useState(tableExplorerStops[0].id);
@@ -21,7 +36,7 @@ export function RiichiTableExplorer() {
   const activeIndex = tableExplorerStops.findIndex((stop) => stop.id === activeId);
   const active = useMemo(
     () => tableExplorerStops[Math.max(activeIndex, 0)],
-    [activeIndex],
+    [activeIndex, tableExplorerStops],
   );
 
   const selectStop = (id: string) => {
@@ -69,9 +84,9 @@ export function RiichiTableExplorer() {
     <section className="table-explorer" aria-labelledby="table-explorer-title" ref={explorerRef}>
 
       <div className="table-explorer-workspace">
-        <div className="table-explorer-stage" aria-label="Mesa de riichi interactiva">
-          <div className="explorer-progress" aria-label={`Paso ${activeIndex + 1} de ${tableExplorerStops.length}`}>
-            <span>Ruta inicial</span>
+        <div className="table-explorer-stage" aria-label={pick(t.stageLabel, language)}>
+          <div className="explorer-progress" aria-label={`${pick(t.step, language)} ${activeIndex + 1} ${pick(t.of, language)} ${tableExplorerStops.length}`}>
+            <span>{pick(t.route, language)}</span>
             <strong>{activeIndex + 1}/{tableExplorerStops.length}</strong>
             <div aria-hidden="true"><i style={{ width: `${((activeIndex + 1) / tableExplorerStops.length) * 100}%` }} /></div>
           </div>
@@ -83,21 +98,21 @@ export function RiichiTableExplorer() {
             hotspots={tableExplorerStops.map((stop) => ({ id: stop.id, label: stop.shortTitle, at: stop.hotspot }))}
             activeHotspot={active.id}
             onHotspot={selectStop}
-            hotspotAria={(label) => `Explorar: ${label}`}
-            alt="Mesa de riichi en perspectiva, con los cuatro muros, las manos de cada jugador, los descartes en filas de seis y el compass de vientos"
+            hotspotAria={(label) => `${pick(t.explore, language)}: ${label}`}
+            alt={pick(t.alt, language)}
           />
-          <div className="explorer-stage-controls" aria-label="Navegación de la mesa">
-            <button type="button" onClick={() => move(-1)} aria-label="Concepto anterior">←</button>
-            <span>Paso {activeIndex + 1} de {tableExplorerStops.length} · usa las flechas</span>
-            <button type="button" onClick={() => move(1)} aria-label="Concepto siguiente">→</button>
+          <div className="explorer-stage-controls" aria-label={pick(t.stageLabel, language)}>
+            <button type="button" onClick={() => move(-1)} aria-label={pick(t.prev, language)}>←</button>
+            <span>{pick(t.step, language)} {activeIndex + 1} {pick(t.of, language)} {tableExplorerStops.length} · {pick(t.arrows, language)}</span>
+            <button type="button" onClick={() => move(1)} aria-label={pick(t.next, language)}>→</button>
             <i aria-hidden="true" />
             <button
               type="button"
               className={overview ? 'is-on' : ''}
               onClick={() => setOverview((value) => !value)}
               aria-pressed={overview}
-              aria-label={overview ? 'Acercar a la zona' : 'Ver la mesa completa'}
-              title={overview ? 'Acercar a la zona' : 'Ver la mesa completa'}
+              aria-label={pick(overview ? t.zoom : t.full, language)}
+              title={pick(overview ? t.zoom : t.full, language)}
               disabled={active.focus.zoom === 1}
             >
               {overview ? '+' : '⤢'}
@@ -106,17 +121,17 @@ export function RiichiTableExplorer() {
         </div>
 
         <aside className="table-explorer-inspector" aria-live="polite">
-          <nav className="explorer-tabs" aria-label="Detalle del concepto" role="tablist">
-            {tabs.map((tab) => (
+          <nav className="explorer-tabs" aria-label={pick(t.stageLabel, language)} role="tablist">
+            {tabIds.map((id) => (
               <button
                 type="button"
-                key={tab.id}
-                className={activeTab === tab.id ? 'is-active' : ''}
-                aria-selected={activeTab === tab.id}
+                key={id}
+                className={activeTab === id ? 'is-active' : ''}
+                aria-selected={activeTab === id}
                 role="tab"
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => setActiveTab(id)}
               >
-                {tab.label}
+                {pick(t.tabs[id], language)}
               </button>
             ))}
           </nav>
@@ -138,13 +153,13 @@ export function RiichiTableExplorer() {
 
           <div className="explorer-inspector-footer">
             <span aria-hidden="true">雀</span>
-            <p><strong>Sin presión:</strong> toca los puntos en cualquier orden.</p>
+            <p><strong>{pick(t.noPressure, language)}</strong> {pick(t.noPressureText, language)}</p>
           </div>
         </aside>
       </div>
 
-      <h2 className="explorer-lesson-heading">Lecciones de la mesa</h2>
-      <nav className="explorer-lesson-rail" ref={railRef} aria-label="Conceptos de la mesa">
+      <h2 className="explorer-lesson-heading">{pick(t.lessons, language)}</h2>
+      <nav className="explorer-lesson-rail" ref={railRef} aria-label={pick(t.lessons, language)}>
         {tableExplorerStops.map((stop, index) => (
           <button
             type="button"
