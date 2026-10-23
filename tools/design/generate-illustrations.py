@@ -1,9 +1,21 @@
 """Isometric illustration generator for Rincón Riichi.
 Draws flat-shaded, outlined boxes (table, walls, console, dice, point sticks)
 and writes each scene in a light and a dark variant."""
-import math, os, sys
+import base64, math, os, subprocess, sys, tempfile
 
 OUT = sys.argv[1]
+GLYPHS = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'assets', 'tiles-fluffystuff-png')
+_glyph_cache = {}
+
+
+def glyph_data(code):
+    """The site's own tile artwork (FluffyStuff glyphs), shrunk with macOS sips and inlined."""
+    if code not in _glyph_cache:
+        with tempfile.TemporaryDirectory() as tmp:
+            out = os.path.join(tmp, f'{code}.png')
+            subprocess.run(['sips', '-Z', '72', os.path.join(GLYPHS, f'{code}.png'), '--out', out], check=True, capture_output=True)
+            _glyph_cache[code] = 'data:image/png;base64,' + base64.b64encode(open(out, 'rb').read()).decode()
+    return _glyph_cache[code]
 os.makedirs(OUT, exist_ok=True)
 C30, S30 = math.cos(math.radians(30)), 0.5
 
@@ -37,7 +49,7 @@ def P(x, y, z):
 
 class Scene:
     def __init__(self, t):
-        self.t, self.items, self.pts = t, [], []
+        self.t, self.items, self.pts, self.glyphs = t, [], [], set()
 
     def poly(self, pts3, fill, stroke=True, sw=1.6, extra=''):
         pts = [P(*p) for p in pts3]
@@ -84,8 +96,10 @@ class Scene:
         body = ''.join(s for _, s in sorted(self.items, key=lambda i: i[0]))
         rim = ''
         g_open = '<g>'
+        if self.glyphs:
+            rim += '<defs>' + ''.join(f'<image id="g-{c}" href="{glyph_data(c)}" width="1" height="1" preserveAspectRatio="none"/>' for c in sorted(self.glyphs)) + '</defs>'
         if self.t['rim']:
-            rim = (f'<defs><filter id="rim" x="-10%" y="-10%" width="120%" height="120%">'
+            rim += (f'<defs><filter id="rim" x="-10%" y="-10%" width="120%" height="120%">'
                    f'<feMorphology in="SourceAlpha" operator="dilate" radius="2.2" result="d"/>'
                    f'<feFlood flood-color="{self.t["rim"]}"/><feComposite in2="d" operator="in" result="r"/>'
                    f'<feMerge><feMergeNode in="r"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>')
@@ -207,6 +221,76 @@ def console(s, x, y, z, a=90):
     s.raw((x + y + a + 2, z + 9), s.circle((x + a / 2, y + a / 2, z + 8.5), (1, 0, 0), (0, 1, 0), 11, shade(t['console'], 0.7), sw=1.2))
 
 
+def face_glyph(s, code, origin, u, v):
+    """Map the tile's glyph (unit square) onto a face: origin = image top-left, u = image right, v = image down."""
+    s.glyphs.add(code)
+    ox, oy = P(*origin)
+    ux, uy = P(*u)
+    vx, vy = P(*v)
+    return f'<use href="#g-{code}" transform="matrix({ux:.3f} {uy:.3f} {vx:.3f} {vy:.3f} {ox:.2f} {oy:.2f})"/>'
+
+
+# A seat is where the player sits; 'up' on their tiles points away from them.
+def tile_face_up(s, x, y, z, code, seat):
+    t = s.t
+    w, d = (20, 27) if seat in ('S', 'N') else (27, 20)
+    top = z + 15
+    if seat == 'S':
+        g = (code, (x + 1, y + 1.5, top), (18, 0, 0), (0, 24, 0))
+    elif seat == 'N':
+        g = (code, (x + 19, y + 25.5, top), (-18, 0, 0), (0, -24, 0))
+    elif seat == 'E':
+        g = (code, (x + 1.5, y + 19, top), (0, -18, 0), (24, 0, 0))
+    else:
+        g = (code, (x + 25.5, y + 1, top), (0, 18, 0), (-24, 0, 0))
+    s.box(x, y, z, w, d, 15, t['white'], left=shade(t['cream'], 0.9), right=shade(t['cream'], 0.78),
+          bands=[(0.4, t['back']), (1.0, t['cream'])], deco=[lambda s_, *a: face_glyph(s_, *g)], sw=1.1)
+
+
+def tile_standing(s, x, y, z, code, seat):
+    """Hand tile on its edge. S and E faces point at the viewer; N and W show their backs."""
+    t = s.t
+    back, face, side = t['back'], t['white'], shade(t['cream'], 0.8)
+    if seat == 'S':
+        s.box(x, y, z, 20, 15, 27, t['cream'], left=face, right=side, sw=1.1,
+              deco=[lambda s_, *a: face_glyph(s_, code, (x + 1, y + 15, z + 25.5), (18, 0, 0), (0, 0, -24))])
+    elif seat == 'E':
+        s.box(x, y, z, 15, 20, 27, t['cream'], left=side, right=face, sw=1.1,
+              deco=[lambda s_, *a: face_glyph(s_, code, (x + 15, y + 19, z + 25.5), (0, -18, 0), (0, 0, -24))])
+    elif seat == 'N':
+        s.box(x, y, z, 20, 15, 27, t['cream'], left=back, right=side, sw=1.1)
+    else:
+        s.box(x, y, z, 15, 20, 27, t['cream'], left=side, right=back, sw=1.1)
+
+
+def hand(s, seat, codes, z):
+    n = len(codes)
+    start = 300 - n * 10
+    for i, c in enumerate(codes):
+        if seat == 'S':
+            tile_standing(s, start + i * 20, 534, z, c, 'S')
+        elif seat == 'N':
+            tile_standing(s, 600 - start - (i + 1) * 20, 51, z, c, 'N')
+        elif seat == 'E':
+            tile_standing(s, 534, 600 - start - (i + 1) * 20, z, c, 'E')
+        else:
+            tile_standing(s, 51, start + i * 20, z, c, 'W')
+
+
+def pond(s, seat, codes, z):
+    """Discards in rows of six, starting near the centre and growing toward the player."""
+    for i, c in enumerate(codes):
+        row, col = divmod(i, 6)
+        if seat == 'S':
+            tile_face_up(s, 240 + col * 20, 366 + row * 27, z, c, 'S')
+        elif seat == 'N':
+            tile_face_up(s, 340 - col * 20, 207 - row * 27, z, c, 'N')
+        elif seat == 'E':
+            tile_face_up(s, 366 + row * 27, 340 - col * 20, z, c, 'E')
+        else:
+            tile_face_up(s, 207 - row * 27, 240 + col * 20, z, c, 'W')
+
+
 # ── scenes ───────────────────────────────────────────────────
 def scene_table(t):
     s = Scene(t)
@@ -226,13 +310,19 @@ def scene_table(t):
     wall(s, 103, 130, 17, False, z)
     wall(s, 470, 130, 17, False, z, gaps=(12, 13))
     wall(s, 130, 470, 17, True, z)
-    console(s, 255, 255, z)
-    die(s, 372, 212, z, faces=(5, 2, 3))
-    die(s, 352, 232, z, faces=(1, 4, 2))
-    stick(s, 252, 412, z, 1000)
-    for i, k in enumerate((10000, 5000, 1000, 100)):
-        stick(s, 200 + i * 6, 512 + i * 12, z, k, length=110)
-    return s.svg('Mesa de mahjong riichi con muros, consola y dados')
+    console(s, 260, 260, z, a=80)
+    die(s, 270, 272, z + 8, a=11, faces=(5, 2, 3))
+    die(s, 318, 314, z + 8, a=11, faces=(1, 4, 2))
+    stick(s, 254, 350, z, 1000, length=92)
+    hand(s, 'N', ['1m'] * 13, z)
+    hand(s, 'W', ['1m'] * 13, z)
+    hand(s, 'E', ['1m', '1m', '5m', '6m', '7m', '2p', '2p', '9p', '3s', '4s', '5s', '6z', '6z'], z)
+    hand(s, 'S', ['2m', '3m', '4m', '3p', '4p', '0p', '6s', '7s', '8s', '1z', '1z', '5z', '5z'], z)
+    pond(s, 'S', ['9m', '1p', '7z', '4z', '2s', '8p', '3z', '9s'], z)
+    pond(s, 'E', ['1s', '9p', '2z', '7z', '5m', '3p', '8m'], z)
+    pond(s, 'N', ['4z', '9s', '1m', '6p', '2z', '7p', '3s'], z)
+    pond(s, 'W', ['3z', '1p', '9m', '5s', '8s', '2m'], z)
+    return s.svg('Mesa de mahjong riichi con muros, manos, descartes, consola y dados')
 
 
 def scene_dice(t):

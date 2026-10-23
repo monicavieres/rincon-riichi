@@ -76,7 +76,7 @@ export function RiichiTableExplorer() {
       <div className="table-explorer-workspace">
         <div className="table-explorer-stage" aria-label="Mesa de riichi interactiva">
           <div className="table-explorer-visual">
-            <ThemedArt art="mesa" alt="Mesa de riichi en perspectiva, con los cuatro muros, la consola de vientos, dados y palitos de puntos" />
+            <ThemedArt art="mesa" alt="Mesa de riichi en perspectiva, con los cuatro muros, las manos de cada jugador, los descartes en filas de seis y la consola de vientos" />
             {tableExplorerStops.map((stop, index) => (
               <button
                 className={`table-hotspot${active.id === stop.id ? ' is-active' : ''}`}

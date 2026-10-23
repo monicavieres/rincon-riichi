@@ -67,7 +67,7 @@ export const tableExplorerStops: TableExplorerStop[] = [
     practicePrompt: 'Mira primero qué honores y terminales ya salieron. Después compara esos descartes con las fichas que completarían tu mano.',
     actionLabel: 'Practicar furiten',
     route: 'practicar/furiten.html',
-    hotspot: { x: 41.8, y: 51.2 },
+    hotspot: { x: 42.4, y: 48.5 },
     art: 'riichi',
   },
   {
@@ -101,7 +101,7 @@ export const tableExplorerStops: TableExplorerStop[] = [
     practicePrompt: 'Antes de descartar, pregunta qué grupos ya tienes, qué fichas te faltan y cuántas fichas diferentes mejoran tu mano.',
     actionLabel: 'Practicar eficiencia',
     route: 'aprender/eficiencia.html',
-    hotspot: { x: 27, y: 58.4 },
+    hotspot: { x: 30.2, y: 57.4 },
     art: 'dados',
   },
 ];
