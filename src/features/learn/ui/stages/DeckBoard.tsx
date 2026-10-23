@@ -9,7 +9,7 @@ const SIDE_SIZE = 34;
 const BOARD_H = 62.5;
 const TILE_W = 2.6;
 const TILE_H = TILE_W * (4 / 3);
-const STACK_RISE = 0.55;
+const STACK_RISE = 0.7;
 const SWEEP_R = 10;
 const FELT = { x0: 12, x1: 88, y0: 7, y1: BOARD_H - 7 };
 
@@ -81,7 +81,9 @@ export function DeckBoard({ mode, language, onStatus }: { mode: 'shuffle' | 'wal
     el.style.top = `${(pose.y / BOARD_H) * 100}%`;
     el.style.transform = `translate(-50%, -50%) rotate(${pose.rot}deg)`;
     el.style.zIndex = String(pose.z);
-    el.style.transitionDelay = wall ? `${(Math.floor((index % SIDE_SIZE) / 2)) * 0.035}s` : '0s';
+    // the lower row of 17 goes down first, the upper row of 17 lands on top of it afterwards
+    const within = index % SIDE_SIZE;
+    el.style.transitionDelay = wall ? `${(within % 2) * 0.9 + Math.floor(within / 2) * 0.04}s` : '0s';
   }, [built, mode]);
 
   useEffect(() => {
