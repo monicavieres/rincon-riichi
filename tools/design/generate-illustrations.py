@@ -207,13 +207,18 @@ def tile_lying(s, x, y, z, along_x=True):
     s.box(x, y, z, w, d, 15, t['back'], bands=[(0.5, t['cream']), (1.0, t['back'])], deco=[tile_back_top], sw=1.2)
 
 
-def wall(s, x, y, n, along_x, z, gaps=()):
+def wall(s, x, y, n, along_x, z, gaps=(), face_up=None):
+    """face_up: {stack index: tile code} flips that stack's top tile, e.g. the dora indicator."""
+    face_up = face_up or {}
     for i in range(n):
         if i in gaps:
             continue
         xx, yy = (x + i * 20, y) if along_x else (x, y + i * 20)
         tile_lying(s, xx, yy, z, along_x)
-        tile_lying(s, xx, yy, z + 15, along_x)
+        if i in face_up:
+            tile_face_up(s, xx, yy, z + 15, face_up[i], 'S' if along_x else 'E')
+        else:
+            tile_lying(s, xx, yy, z + 15, along_x)
 
 
 def die(s, x, y, z, a=14, faces=(1, 3, 5)):
@@ -331,7 +336,7 @@ def scene_table(t):
     z = 121
     wall(s, 130, 103, 17, True, z)
     wall(s, 103, 130, 17, False, z)
-    wall(s, 470, 130, 17, False, z, gaps=(12, 13))
+    wall(s, 470, 130, 17, False, z, gaps=(12, 13), face_up={9: '4p'})
     wall(s, 130, 470, 17, True, z)
     for wx, wy, ww, wd in ((130, 103, 340, 27), (103, 130, 27, 340), (470, 130, 27, 340), (130, 470, 340, 27)):
         s.cast(wx, wy, ww, wd, z, 30)
@@ -341,14 +346,17 @@ def scene_table(t):
         s.cast(px, py, pw, pd, z, 15)
     s.cast(260, 260, 80, 80, z, 8)
     console(s, 260, 260, z, a=80)
-    die(s, 270, 272, z + 8, a=11, faces=(5, 2, 3))
-    die(s, 318, 314, z + 8, a=11, faces=(1, 4, 2))
+    die(s, 326, 264, z + 8, a=10, faces=(5, 2, 3))
+    die(s, 264, 326, z + 8, a=10, faces=(1, 4, 2))
     stick(s, 254, 350, z, 1000, length=92)
     hand(s, 'N', ['1m'] * 13, z)
     hand(s, 'W', ['1m'] * 13, z)
     hand(s, 'E', ['1m', '1m', '5m', '6m', '7m', '2p', '2p', '9p', '3s', '4s', '5s', '6z', '6z'], z)
     hand(s, 'S', ['2m', '3m', '4m', '3p', '4p', '0p', '6s', '7s', '8s', '1z', '1z', '5z', '5z'], z)
-    pond(s, 'S', ['9m', '1p', '7z', '4z', '2s', '8p', '3z', '9s'], z)
+    tile_standing(s, 438, 534, z, '7p', 'S')  # the tile just drawn, set apart
+    pond(s, 'S', ['9m', '1p', '7z', '4z', '2s', '8p'], z)
+    tile_face_up(s, 240, 400, z, '3z', 'E')  # turned sideways: riichi was declared with this discard
+    tile_face_up(s, 267, 393, z, '9s', 'S')
     pond(s, 'E', ['1s', '9p', '2z', '7z', '5m', '3p', '8m'], z)
     pond(s, 'N', ['4z', '9s', '1m', '6p', '2z', '7p', '3s'], z)
     pond(s, 'W', ['3z', '1p', '9m', '5s', '8s', '2m'], z)

@@ -2,6 +2,7 @@ export type ExplorerTab = 'summary' | 'observe' | 'practice';
 
 export type TableArt = 'mesa' | 'muro' | 'riichi' | 'dealer' | 'dados' | 'palitos' | 'consola';
 
+
 export const tableArtPath = (art: TableArt, theme: 'light' | 'dark') => `assets/illustrations/${art}-${theme}.svg`;
 
 /** A point on the table illustration, in the generator's table units (x, y on the felt, z up). */
@@ -15,11 +16,12 @@ export type TableFocus = {
   zoom: number;
 };
 
+/** A label tied to a point by a leader line; dx/dy is where the label sits, in screen px from the point. */
 export type TableCallout = {
   label: string;
   at: TablePoint;
-  /** Which side of the dot the label sits on (default: right). */
-  side?: 'left' | 'right';
+  dx: number;
+  dy: number;
 };
 
 // Must match the viewBox that tools/design/generate-illustrations.py writes for mesa-*.svg.
@@ -63,7 +65,6 @@ export type TableExplorerStop = {
   hotspot: TablePoint;
   focus: TableFocus;
   callouts: TableCallout[];
-  art: TableArt;
 };
 
 const FELT = 121;
@@ -80,42 +81,102 @@ export const tableExplorerStops: TableExplorerStop[] = [
       'El centro ordena los vientos y muestra la ronda actual.',
       'Muros, manos y descartes ocupan zonas distintas.',
     ],
-    practicePrompt: 'Recorre los puntos de la mesa. No necesitas memorizarlo todo: primero ubica de dónde se roba, dónde se descarta y dónde miras la ronda.',
+    practicePrompt: 'Recorre los pasos de la mesa. No necesitas memorizarlo todo: primero ubica de dónde se roba, dónde se descarta y dónde miras la ronda.',
     actionLabel: 'Abrir tutorial desde cero',
     route: 'aprender/tutorial.html',
     hotspot: [585, 585, 122],
     focus: { boxes: [{ x: 0, y: 0, z: 92, w: 600, d: 600, h: 29 }], zoom: 1 },
     callouts: [
-      { label: 'Sur · tu asiento', at: [180, 541, FELT + 27], side: 'left' },
-      { label: 'Este', at: [541, 420, FELT + 27] },
-      { label: 'Norte', at: [300, 58, FELT + 27] },
-      { label: 'Oeste', at: [58, 300, FELT + 27], side: 'left' },
+      { label: 'Sur · tu asiento', at: [240, 541, FELT + 27], dx: -24, dy: 62 },
+      { label: 'Este', at: [541, 360, FELT + 27], dx: 56, dy: 30 },
+      { label: 'Norte', at: [360, 58, FELT + 27], dx: 56, dy: -30 },
+      { label: 'Oeste', at: [58, 240, FELT + 27], dx: -60, dy: -30 },
     ],
-    art: 'mesa',
   },
   {
     id: 'muro',
     eyebrow: 'De aquí se roba',
     title: 'El muro guarda las fichas que todavía no entran en juego',
     shortTitle: 'El muro',
-    description: 'Al comenzar se levantan cuatro lados. Normalmente robas una ficha del extremo abierto del muro y luego descartas una de tu mano.',
+    description: 'Al comenzar se levantan cuatro lados, uno frente a cada jugador. Durante la partida se roba del muro, ficha por ficha, en orden.',
     observe: [
       'Cada lado se arma con 17 pilas de dos fichas: 34 fichas.',
       'Los cuatro lados suman las 136 fichas del juego.',
-      'Una sección de 14 fichas queda reservada como muro muerto.',
+      'Las fichas del muro van boca abajo: nadie sabe qué viene.',
     ],
-    practicePrompt: 'Sigue un turno con la vista: roba del muro, lleva temporalmente 14 fichas y descarta para volver a 13.',
+    practicePrompt: 'Cuenta las pilas de un lado: 17. Multiplica por dos fichas y por cuatro lados y llegas a 136.',
     actionLabel: 'Ver cómo se prepara la mesa',
     route: 'aprender/tutorial.html',
-    hotspot: [483, 200, FELT + 30],
-    focus: { boxes: [{ x: 470, y: 130, z: FELT, w: 27, d: 340, h: 30 }], zoom: 1.9 },
+    hotspot: [116, 470, 151],
+    focus: { boxes: [{ x: 103, y: 130, z: FELT, w: 27, d: 340, h: 30 }], zoom: 2 },
     callouts: [
-      { label: '17 pilas de 2 fichas', at: [483, 160, FELT + 30] },
-      { label: 'Muro muerto: 7 pilas', at: [483, 300, FELT + 30] },
-      { label: 'Corte del muro', at: [483, 390, FELT + 30] },
-      { label: 'Se roba desde aquí', at: [483, 440, FELT + 30] },
+      { label: '17 pilas por lado', at: [116, 140, FELT + 30], dx: -40, dy: -46 },
+      { label: '2 fichas de alto', at: [103, 300, FELT + 15], dx: -86, dy: 20 },
     ],
-    art: 'muro',
+  },
+  {
+    id: 'muro-muerto',
+    eyebrow: 'Reservado',
+    title: 'El muro muerto guarda la dora y las fichas de reemplazo',
+    shortTitle: 'Muro muerto',
+    description: 'Junto al corte del muro quedan apartadas 7 pilas: 14 fichas que nunca se roban en un turno normal. Ahí se voltea el indicador de dora.',
+    observe: [
+      'El corte del muro marca dónde empieza a robarse y dónde termina el muro vivo.',
+      'La ficha volteada es el indicador: la dora es la siguiente en orden.',
+      'Tras un kan, se roba un reemplazo desde el muro muerto.',
+    ],
+    practicePrompt: 'Mira el indicador: un 4 de círculos. Eso hace que el 5 de círculos sea dora y valga un han extra.',
+    actionLabel: 'Aprender dora',
+    route: 'aprender/dora.html',
+    hotspot: [483, 240, 151],
+    focus: { boxes: [{ x: 470, y: 230, z: FELT, w: 27, d: 140, h: 30 }], zoom: 3 },
+    callouts: [
+      { label: 'Indicador de dora', at: [483, 320, FELT + 30], dx: 70, dy: -54 },
+      { label: 'Corte del muro', at: [483, 390, FELT], dx: 64, dy: 30 },
+      { label: '7 pilas: 14 fichas', at: [497, 240, FELT + 15], dx: 64, dy: -14 },
+    ],
+  },
+  {
+    id: 'mano',
+    eyebrow: 'Solo tú la ves',
+    title: 'Tu mano son 13 fichas de pie frente a ti',
+    shortTitle: 'Tu mano',
+    description: 'Cada jugador mantiene 13 fichas paradas, con la cara hacia sí. El objetivo es convertirlas en cuatro grupos y una pareja.',
+    observe: [
+      'Ordenarlas por palo ayuda a ver los grupos.',
+      'Las manos rivales solo se ven por detrás.',
+      'Una mano ganadora tiene 14 fichas: 4 grupos + 1 pareja.',
+    ],
+    practicePrompt: 'Busca en esta mano los grupos ya formados: 2-3-4 de caracteres, 3-4-5 de círculos y 6-7-8 de bambúes.',
+    actionLabel: 'Conocer las fichas',
+    route: 'aprender/tiles.html',
+    hotspot: [170, 541, 148],
+    focus: { boxes: [{ x: 170, y: 534, z: FELT, w: 260, d: 15, h: 27 }], zoom: 2.6 },
+    callouts: [
+      { label: '13 fichas, cara hacia ti', at: [220, 549, FELT + 20], dx: -40, dy: 54 },
+      { label: 'Grupos de 3 + pareja', at: [330, 549, FELT + 20], dx: 30, dy: 58 },
+    ],
+  },
+  {
+    id: 'turno',
+    eyebrow: 'La acción principal',
+    title: 'Tu turno es una decisión: roba una, descarta una',
+    shortTitle: 'Tu turno',
+    description: 'La mayor parte del juego alterna ese ritmo sencillo. Con 13 fichas esperas; al robar tienes 14 y eliges qué conservar para acercarte a una mano ganadora.',
+    observe: [
+      'Normalmente solo una ficha entra y una sale en cada turno.',
+      'Chi, pon y kan pueden interrumpir el orden normal.',
+      'Ganar exige completar la forma y tener al menos un yaku.',
+    ],
+    practicePrompt: 'Antes de descartar, pregunta qué grupos ya tienes, qué fichas te faltan y cuántas fichas diferentes mejoran tu mano.',
+    actionLabel: 'Practicar eficiencia',
+    route: 'aprender/eficiencia.html',
+    hotspot: [448, 541, 148],
+    focus: { boxes: [{ x: 330, y: 534, z: FELT, w: 128, d: 15, h: 27 }], zoom: 3.2 },
+    callouts: [
+      { label: 'Ficha 14: la que robaste', at: [448, 549, FELT + 20], dx: 40, dy: 50 },
+      { label: 'Eliges una para descartar', at: [360, 534, FELT + 27], dx: -60, dy: -56 },
+    ],
   },
   {
     id: 'descartes',
@@ -125,20 +186,39 @@ export const tableExplorerStops: TableExplorerStop[] = [
     description: 'Cada ficha descartada se deja boca arriba frente a quien la jugó. Se ordenan en filas de seis para que todos puedan leer la partida.',
     observe: [
       'Cada jugador mantiene su propio río de descartes.',
-      'Un descarte girado puede señalar una declaración de riichi.',
+      'Las filas de seis permiten contar los turnos de un vistazo.',
       'Tus propios descartes importan para determinar furiten.',
     ],
     practicePrompt: 'Mira primero qué honores y terminales ya salieron. Después compara esos descartes con las fichas que completarían tu mano.',
     actionLabel: 'Practicar furiten',
     route: 'practicar/furiten.html',
-    hotspot: [330, 393, FELT + 15],
-    focus: { boxes: [{ x: 240, y: 366, z: FELT, w: 120, d: 54, h: 15 }, { x: 254, y: 350, z: FELT, w: 92, d: 9, h: 5 }], zoom: 2.6 },
+    hotspot: [360, 380, 136],
+    focus: { boxes: [{ x: 240, y: 366, z: FELT, w: 120, d: 27, h: 15 }, { x: 240, y: 393, z: FELT, w: 47, d: 27, h: 15 }], zoom: 3.6 },
     callouts: [
-      { label: 'Fila de 6 descartes', at: [356, 372, FELT + 15] },
-      { label: 'La 2ª fila sigue debajo', at: [262, 406, FELT + 15] },
-      { label: 'Palito de riichi: 1000 pts', at: [258, 354, FELT + 5], side: 'left' },
+      { label: 'Fila de 6', at: [350, 393, FELT + 15], dx: 56, dy: 40 },
+      { label: 'Boca arriba, a la vista', at: [250, 366, FELT + 15], dx: -40, dy: -50 },
     ],
-    art: 'riichi',
+  },
+  {
+    id: 'riichi',
+    eyebrow: 'Declaración',
+    title: 'Riichi: una ficha girada y un palito de 1000',
+    shortTitle: 'Riichi',
+    description: 'Cuando te falta una ficha para ganar y no has llamado fichas, puedes declarar riichi. Giras el descarte de ese turno y apuestas un palito de 1000 puntos.',
+    observe: [
+      'La ficha girada marca el turno en que declaraste.',
+      'El palito queda en la mesa y se lo lleva quien gane la mano.',
+      'Desde ese momento ya no puedes cambiar tu mano.',
+    ],
+    practicePrompt: 'Busca en los ríos de la mesa una ficha acostada: ese jugador está en riichi y te conviene defenderte.',
+    actionLabel: 'Aprender defensa',
+    route: 'aprender/defensa.html',
+    hotspot: [253, 410, 136],
+    focus: { boxes: [{ x: 240, y: 400, z: FELT, w: 27, d: 20, h: 15 }, { x: 254, y: 350, z: FELT, w: 92, d: 9, h: 5 }], zoom: 3.2 },
+    callouts: [
+      { label: 'Ficha girada', at: [240, 410, FELT + 15], dx: -60, dy: 40 },
+      { label: 'Palito de 1000', at: [346, 354, FELT + 5], dx: 54, dy: -36 },
+    ],
   },
   {
     id: 'vientos',
@@ -155,36 +235,12 @@ export const tableExplorerStops: TableExplorerStop[] = [
     actionLabel: 'Aprender los honores',
     route: 'aprender/tiles.html',
     hotspot: [300, 300, FELT + 8],
-    focus: { boxes: [{ x: 260, y: 260, z: FELT, w: 80, d: 80, h: 8 }], zoom: 2.8 },
+    focus: { boxes: [{ x: 260, y: 260, z: FELT, w: 80, d: 80, h: 8 }], zoom: 3.6 },
     callouts: [
-      { label: 'Viento de ronda: Este', at: [312, 306, FELT + 8] },
-      { label: 'Puntos de cada jugador', at: [300, 319, FELT + 8], side: 'left' },
-      { label: 'Dados para abrir el muro', at: [272, 277, FELT + 19], side: 'left' },
-      { label: 'Luz del dealer', at: [300, 264, FELT + 8] },
+      { label: 'Viento de ronda: Este', at: [300, 300, FELT + 9], dx: 110, dy: 6 },
+      { label: 'Puntos', at: [300, 281, FELT + 9], dx: -50, dy: -100 },
+      { label: 'Dados', at: [269, 331, FELT + 18], dx: -70, dy: 36 },
+      { label: 'Luz del dealer', at: [300, 266, FELT + 9], dx: 80, dy: -70 },
     ],
-    art: 'consola',
-  },
-  {
-    id: 'turno',
-    eyebrow: 'La acción principal',
-    title: 'Tu turno es una decisión: roba una, descarta una',
-    shortTitle: 'Tu turno',
-    description: 'La mayor parte del juego alterna ese ritmo sencillo. Con 13 fichas esperas; al robar tienes 14 y eliges qué conservar para acercarte a una mano ganadora.',
-    observe: [
-      'Normalmente solo una ficha entra y una sale en cada turno.',
-      'Chi, pon y kan pueden interrumpir el orden normal.',
-      'Ganar exige completar la forma y tener al menos un yaku.',
-    ],
-    practicePrompt: 'Antes de descartar, pregunta qué grupos ya tienes, qué fichas te faltan y cuántas fichas diferentes mejoran tu mano.',
-    actionLabel: 'Practicar eficiencia',
-    route: 'aprender/eficiencia.html',
-    hotspot: [300, 541, FELT + 27],
-    focus: { boxes: [{ x: 170, y: 534, z: FELT, w: 260, d: 15, h: 27 }], zoom: 2.2 },
-    callouts: [
-      { label: '13 fichas en tu mano', at: [190, 541, FELT + 27] },
-      { label: 'Robas la 14ª', at: [420, 541, FELT + 27] },
-      { label: 'Descartas una al río', at: [330, 470, FELT + 30] },
-    ],
-    art: 'dados',
   },
 ];

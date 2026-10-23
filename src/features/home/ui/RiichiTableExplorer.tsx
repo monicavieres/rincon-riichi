@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { boxOutline, projectToPercent, tableArtPath, tableExplorerStops, type ExplorerTab, type TableArt } from '../domain/tableExplorer';
+import { boxOutline, projectToPercent, tableArtPath, tableExplorerStops, type ExplorerTab, type TableArt, type TableExplorerStop } from '../domain/tableExplorer';
 
 const tabs: Array<{ id: ExplorerTab; label: string }> = [
   { id: 'summary', label: 'Resumen' },
@@ -13,6 +13,38 @@ function ThemedArt({ art, className, alt = '' }: { art: TableArt; className?: st
       <img className={`rr-only-light${className ? ` ${className}` : ''}`} src={tableArtPath(art, 'light')} alt={alt} />
       <img className={`rr-only-dark${className ? ` ${className}` : ''}`} src={tableArtPath(art, 'dark')} alt="" aria-hidden="true" />
     </>
+  );
+}
+
+/** Bounding box (in % of the illustration) of a stop's zone. */
+function zoneBounds(stop: TableExplorerStop) {
+  const outlines = stop.focus.boxes.map(boxOutline);
+  const pts = outlines.flat();
+  const xs = pts.map((p) => p[0]);
+  const ys = pts.map((p) => p[1]);
+  const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
+  return { outlines, x0, x1, y0, y1, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
+}
+
+// Thumbnail = the table itself, framed on the stop's zone, so each card shows exactly what the step is about.
+const THUMB = { w: 72, h: 56 };
+const TABLE_RATIO = 1055.2 / 694;
+
+function ZoneThumb({ stop }: { stop: TableExplorerStop }) {
+  const b = zoneBounds(stop);
+  const scale = Math.min((0.86 * 100) / (b.x1 - b.x0), (0.86 * 100 * THUMB.h * TABLE_RATIO) / ((b.y1 - b.y0) * THUMB.w));
+  const width = THUMB.w * scale;
+  const height = width / TABLE_RATIO;
+  const style = {
+    width: `${width}px`,
+    left: `${THUMB.w / 2 - (b.cx / 100) * width}px`,
+    top: `${THUMB.h / 2 - (b.cy / 100) * height}px`,
+  };
+  return (
+    <span className="lesson-thumb" aria-hidden="true">
+      <img className="rr-only-light" src={tableArtPath('mesa', 'light')} alt="" style={style} />
+      <img className="rr-only-dark" src={tableArtPath('mesa', 'dark')} alt="" style={style} />
+    </span>
   );
 }
 
@@ -37,15 +69,10 @@ export function RiichiTableExplorer() {
     setOverview(false);
   };
 
-  // Camera: zoom into the active stop's zone, centred on its outline and kept inside the picture.
+  // Camera: zoom into the active stop's zone, centred on it and kept inside the picture.
   const camera = useMemo(() => {
-    const outlines = active.focus.boxes.map(boxOutline);
-    const pts = outlines.flat();
+    const { outlines, cx, cy } = zoneBounds(active);
     const zoom = overview ? 1 : active.focus.zoom;
-    const xs = pts.map((p) => p[0]);
-    const ys = pts.map((p) => p[1]);
-    const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
-    const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
     const clamp = (v: number) => Math.min(0, Math.max(100 - 100 * zoom, v));
     return { outlines, zoom, tx: clamp(50 - cx * zoom), ty: clamp(50 - cy * zoom) };
   }, [active, overview]);
@@ -131,14 +158,23 @@ export function RiichiTableExplorer() {
               })}
               {active.callouts.map((callout, index) => {
                 const [x, y] = projectToPercent(callout.at);
+                const length = Math.hypot(callout.dx, callout.dy);
+                const angle = (Math.atan2(callout.dy, callout.dx) * 180) / Math.PI;
                 return (
                   <span
-                    className={`table-callout${callout.side === 'left' ? ' is-left' : ''}`}
+                    className={`table-callout${callout.dx < 0 ? ' is-left' : ''}`}
                     key={`${active.id}-${callout.label}`}
-                    style={{ left: `${x}%`, top: `${y}%`, ['--delay' as string]: `${0.45 + index * 0.08}s` }}
+                    style={{
+                      left: `${x}%`,
+                      top: `${y}%`,
+                      ['--delay' as string]: `${0.5 + index * 0.1}s`,
+                      ['--dx' as string]: `${callout.dx}px`,
+                      ['--dy' as string]: `${callout.dy}px`,
+                    }}
                   >
-                    <i aria-hidden="true" />
-                    {callout.label}
+                    <i className="table-callout-dot" />
+                    <i className="table-callout-line" style={{ width: `calc(${length}px * var(--leader, 1))`, transform: `rotate(${angle}deg)` }} />
+                    <b className="table-callout-label">{callout.label}</b>
                   </span>
                 );
               })}
@@ -210,7 +246,7 @@ export function RiichiTableExplorer() {
             className={active.id === stop.id ? 'is-active' : ''}
             onClick={() => selectStop(stop.id)}
           >
-            <span className="lesson-thumb"><ThemedArt art={stop.art} /></span>
+            <ZoneThumb stop={stop} />
             <span className="lesson-title">
               <strong>{index + 1}. {stop.shortTitle}</strong>
               <small>{stop.eyebrow}</small>

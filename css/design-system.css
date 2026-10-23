@@ -635,10 +635,10 @@ h4 {
 }
 
 .table-spotlight-edge {
-    fill: color-mix(in oklab, var(--gold) 16%, transparent);
+    fill: none;
     stroke: var(--gold);
     /* user units of the 0–100 overlay; vector-effect is unreliable under the 3D tilt */
-    stroke-width: calc(0.7px * var(--inv-zoom));
+    stroke-width: calc(0.5px * var(--inv-zoom));
     stroke-linejoin: round;
     animation: rr-zone-in 0.5s ease 0.35s both;
 }
@@ -662,12 +662,13 @@ h4 {
     cursor: pointer;
 }
 
-.is-zoomed .table-hotspot:not(.is-active) {
-    opacity: 0.5;
+/* Zoomed in, the outline and callouts do the talking; numbers would sit on top of the tiles. */
+.is-zoomed .table-hotspot {
+    opacity: 0;
+    pointer-events: none;
 }
 
-/* Zoomed in, the callouts do the talking: hotspot names would only collide with them. */
-.is-zoomed .table-hotspot > b {
+.table-hotspot:not(.is-active):not(:hover):not(:focus-visible) > b {
     display: none;
 }
 
@@ -712,46 +713,60 @@ h4 {
     color: var(--felt-strong);
 }
 
-/* Detail labels that appear once the camera has arrived. */
+/* Detail labels on leader lines; they appear once the camera has arrived. */
 .table-callout {
     position: absolute;
     z-index: 1;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 3px 8px 3px 5px;
-    border: var(--border-hair) solid var(--line);
-    border-radius: var(--radius-sm);
-    color: var(--ink);
-    background: var(--card);
-    box-shadow: var(--shadow-float);
-    font: 600 12px/16px var(--font-sans);
-    white-space: nowrap;
+    width: 0;
+    height: 0;
     pointer-events: none;
-    transform: translate(-6px, -50%) scale(var(--inv-zoom));
-    transform-origin: 6px 50%;
-    animation: rr-callout-in 0.35s ease var(--delay, 0.45s) both;
+    transform: scale(var(--inv-zoom));
+    transform-origin: 0 0;
+    animation: rr-callout-in 0.35s ease var(--delay, 0.5s) both;
 }
 
-.table-callout.is-left {
-    flex-direction: row-reverse;
-    padding: 3px 5px 3px 8px;
-    transform: translate(calc(-100% + 6px), -50%) scale(var(--inv-zoom));
-    transform-origin: calc(100% - 6px) 50%;
-}
-
-.table-callout > i {
-    width: 9px;
-    height: 9px;
+.table-callout-dot {
+    position: absolute;
+    left: -5px;
+    top: -5px;
+    width: 10px;
+    height: 10px;
     border-radius: var(--radius-pill);
     background: var(--gold);
     box-shadow: 0 0 0 2px var(--card), 0 0 0 3.5px var(--gold-strong);
 }
 
+.table-callout-line {
+    position: absolute;
+    left: 0;
+    top: -0.75px;
+    height: 1.5px;
+    background: var(--gold-strong);
+    transform-origin: 0 50%;
+}
+
+.table-callout-label {
+    position: absolute;
+    left: calc(var(--dx) * var(--leader, 1));
+    top: calc(var(--dy) * var(--leader, 1));
+    padding: 4px 9px;
+    border: var(--border-hair) solid var(--gold-strong);
+    border-radius: var(--radius-sm);
+    color: var(--ink);
+    background: var(--card);
+    box-shadow: var(--shadow-float);
+    font: 600 12.5px/16px var(--font-sans);
+    white-space: nowrap;
+    transform: translate(0, -50%);
+}
+
+.table-callout.is-left .table-callout-label {
+    transform: translate(-100%, -50%);
+}
+
 @keyframes rr-callout-in {
     from {
         opacity: 0;
-        translate: 0 6px;
     }
 }
 
@@ -961,7 +976,7 @@ h4 {
 .explorer-lesson-rail {
     display: grid;
     grid-auto-flow: column;
-    grid-auto-columns: minmax(200px, 1fr);
+    grid-auto-columns: minmax(230px, 1fr);
     gap: var(--space-3);
     padding-bottom: var(--space-2);
     overflow-x: auto;
@@ -970,10 +985,10 @@ h4 {
 
 .explorer-lesson-rail button {
     display: grid;
-    grid-template-columns: 64px 1fr 16px;
+    grid-template-columns: 72px 1fr 16px;
     align-items: center;
     gap: var(--space-3);
-    min-height: 64px;
+    min-height: 68px;
     padding: 6px var(--space-3) 6px 6px;
     border: var(--border-hair) solid var(--line);
     border-radius: var(--radius-md);
@@ -995,17 +1010,19 @@ h4 {
 }
 
 .lesson-thumb {
-    display: grid;
-    place-items: center;
-    width: 64px;
-    height: 52px;
+    position: relative;
+    display: block;
+    width: 72px;
+    height: 56px;
     border-radius: 6px;
     background: var(--card-sunk);
+    overflow: hidden;
 }
 
 .lesson-thumb img {
-    max-width: 58px;
-    max-height: 44px;
+    position: absolute;
+    max-width: none;
+    height: auto;
 }
 
 .lesson-title {
@@ -1050,6 +1067,15 @@ h4 {
 }
 
 @media (max-width: 640px) {
+    .table-callout {
+        --leader: 0.55;
+    }
+
+    .table-callout-label {
+        padding: 3px 7px;
+        font-size: 11px;
+    }
+
     .table-explorer-stage {
         padding: var(--space-2);
     }
