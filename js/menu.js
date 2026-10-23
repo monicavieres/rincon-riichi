@@ -6,15 +6,24 @@
     cyberpunk: "tiles-cyberpunk",
     vaquero: "tiles-vaquero",
     frutiger: "tiles-frutiger",
-    shinto: "tiles-shinto",
+    fox: "tiles-fox",
   };
   const THEMED_FOLDERS = Object.values(THEME_TILES).join("|");
   const THEMED_TILE = new RegExp(`assets/(?:${THEMED_FOLDERS})/([^/?#]+\\.svg)`);
   const NORMAL_TILE = /assets\/(?:tiles-fluffystuff-composite|tiles)\/([^/?#]+\.svg)/;
   const isTileSrc = (src) => NORMAL_TILE.test(src) || THEMED_TILE.test(src);
 
+  // Face-down tiles: each theme has its own back with its emblem; the light theme keeps the Rincón back.
+  const TILE_BACK = /assets\/tile-back-[a-z]+\.svg/;
+  const backFor = (theme) => `assets/tile-back-${THEME_TILES[theme] ? theme : "rincon"}.svg`;
+
   const syncTile = (img) => {
     const src = img.getAttribute("src") || "";
+    if (TILE_BACK.test(src)) {
+      const nextBack = src.replace(TILE_BACK, backFor(document.documentElement.getAttribute("data-theme")));
+      if (nextBack !== src) img.setAttribute("src", nextBack);
+      return;
+    }
     if (!isTileSrc(src)) return;
 
     if (!THEMED_TILE.test(src)) img.dataset.rinconTileSrc = src;
@@ -93,7 +102,7 @@
             cyberpunk: "#070b12",
             vaquero: "#f4e3c1",
             frutiger: "#e8f7ff",
-            shinto: "#f6efe2",
+            fox: "#fbf1e2",
           };
           themeColor.setAttribute("content", colors[theme] || colors.light);
         }
@@ -107,11 +116,12 @@
         });
       };
 
-      const stored =
+      const storedRaw =
         document.documentElement.getAttribute("data-theme") ||
         (typeof localStorage !== "undefined" && localStorage.getItem("theme")) ||
         "light";
-      const initial = ["light", "dark", "cute", "samurai", "cyberpunk", "vaquero", "frutiger", "shinto"].includes(stored) ? stored : "light";
+      const stored = storedRaw === "shinto" ? "fox" : storedRaw; // the shrine style became Fox
+      const initial = ["light", "dark", "cute", "samurai", "cyberpunk", "vaquero", "frutiger", "fox"].includes(stored) ? stored : "light";
 
       radios.forEach((radio) => {
         radio.addEventListener("change", () => {

@@ -41,12 +41,12 @@
     border: var(--border-hair) solid var(--ink);
     border-radius: var(--radius-xl);
     background:
-        radial-gradient(ellipse at 50% 40%, color-mix(in oklab, var(--felt) 82%, white) 0, var(--felt) 70%);
+        radial-gradient(ellipse at 50% 40%, color-mix(in oklab, var(--table-felt) 82%, white) 0, var(--table-felt) 70%);
     box-shadow: inset 0 0 0 4px color-mix(in oklab, var(--felt-strong) 40%, transparent), 0 3px 0 var(--ink);
 }
 
 .sort-felt span {
-    color: color-mix(in oklab, white 78%, var(--felt));
+    color: color-mix(in oklab, white 78%, var(--table-felt));
     font: 700 11px/1 var(--font-display);
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -290,7 +290,7 @@
     padding: var(--space-6) var(--space-4) var(--space-4);
     border: var(--border-hair) solid var(--ink);
     border-radius: var(--radius-xl);
-    background: radial-gradient(ellipse at 50% 30%, color-mix(in oklab, var(--felt) 82%, white) 0, var(--felt) 72%);
+    background: radial-gradient(ellipse at 50% 30%, color-mix(in oklab, var(--table-felt) 82%, white) 0, var(--table-felt) 72%);
     box-shadow: inset 0 0 0 4px color-mix(in oklab, var(--felt-strong) 40%, transparent), 0 3px 0 var(--ink);
 }
 
@@ -477,9 +477,3 @@
     }
 }
 
-/* Darker felt at night so the tiles stay the brightest thing on the stage */
-:root[data-theme="dark"] .sort-felt,
-:root[data-theme="dark"] .rack-board {
-    background: radial-gradient(ellipse at 50% 35%, color-mix(in oklab, var(--felt) 55%, #0b0a12) 0, color-mix(in oklab, var(--felt) 38%, #0b0a12) 75%);
-    box-shadow: inset 0 0 0 4px color-mix(in oklab, var(--felt) 30%, transparent), 0 3px 0 var(--ink);
-}

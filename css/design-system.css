@@ -118,25 +118,25 @@
 :root[data-theme="cyberpunk"] {
     color-scheme: dark;
 
-    --paper: #070b12;
-    --paper-deep: #04070b;
-    --card: #0d1622;
-    --card-sunk: #0a111a;
-    --line: #1f3a4a;
-    --line-soft: #142833;
+    --paper: #06080f;
+    --paper-deep: #03050a;
+    --card: #0d1522;
+    --card-sunk: #091019;
+    --line: #1d3b4d;
+    --line-soft: #112733;
     --ink: #eaffff;
-    --text: #c5f6ff;
-    --muted: #6fb3c8;
+    --text: #bcefff;
+    --muted: #72b9cf;
     --faint: #3f6f80;
-    --felt: #fcee0a;
-    --felt-strong: #fff56b;
-    --felt-soft: #2a2a00;
+    --felt: #00e5ff;
+    --felt-strong: #7ff4ff;
+    --felt-soft: #003640;
     --man: #ff2a6d;
-    --man-strong: #ff7aa8;
+    --man-strong: #ff80a8;
     --man-soft: #3a0b1c;
-    --pin: #00f0ff;
-    --pin-strong: #7af8ff;
-    --pin-soft: #00323a;
+    --pin: #4d8dff;
+    --pin-strong: #9cc0ff;
+    --pin-soft: #0f2347;
     --sou: #a8ff60;
     --sou-strong: #cfff9e;
     --sou-soft: #1d3300;
@@ -149,234 +149,302 @@
     --tsumo: #ff9f1c;
     --tsumo-strong: #ffc06b;
     --tsumo-soft: #3a2200;
-    --on-accent: #05080c;
+    --on-accent: #03121a;
     --tile-face: #f7ffff;
     --tile-edge: #00f0ff;
     --focus: var(--man);
 
-    --shadow-float: 0 6px 18px -10px rgba(0, 240, 255, 0.45);
+    --shadow-float: 0 6px 18px -10px rgba(0, 240, 255, 0.5);
     --shadow-gloss: inset 0 1px 0 rgba(255, 255, 255, 0.1);
     --shadow-tile: 0 3px 0 #00f0ff;
+
+    --page-bg: radial-gradient(circle at 8% 6%, rgba(252, 238, 10, 0.10) 0, transparent 26rem), radial-gradient(circle at 92% 12%, rgba(0, 229, 255, 0.16) 0, transparent 28rem), radial-gradient(circle at 50% 96%, rgba(255, 42, 109, 0.14) 0, transparent 30rem), var(--paper);
+    --accent-a: #00e5ff;
+    --accent-b: #ff2a6d;
+    --stage-from: rgba(13, 21, 34, 0.92);
+    --stage-to: rgba(6, 8, 15, 0.96);
+    --stage-line: rgba(0, 229, 255, 0.3);
 }
 
 :root[data-theme="vaquero"] {
     color-scheme: light;
 
-    --paper: #f4e3c1;
-    --paper-deep: #e8d3a9;
-    --card: #fff6e5;
-    --card-sunk: #f0dfbf;
-    --line: #c9a97a;
-    --line-soft: #e2cda6;
-    --ink: #3b2a1a;
-    --text: #5a422c;
-    --muted: #8a6a4a;
-    --faint: #b59a78;
-    --felt: #2a9d8f;
-    --felt-strong: #1f7a70;
-    --felt-soft: #d6efe9;
-    --man: #bc4749;
-    --man-strong: #8f2f31;
-    --man-soft: #f3d6d6;
-    --pin: #3b5b7a;
-    --pin-strong: #29445c;
-    --pin-soft: #d9e5ef;
-    --sou: #6a994e;
-    --sou-strong: #4c7037;
-    --sou-soft: #e2edd8;
-    --gold: #e9c46a;
-    --gold-strong: #a67c1f;
-    --gold-soft: #f9efcf;
-    --riichi: #7b5e7b;
-    --riichi-strong: #5a3f5a;
-    --riichi-soft: #ebdfeb;
-    --tsumo: #e76f51;
-    --tsumo-strong: #b24a30;
-    --tsumo-soft: #f8ddd4;
-    --on-accent: #fffaf0;
-    --tile-face: #fffaf0;
-    --tile-edge: #c98a4b;
+    --paper: #f3e1bd;
+    --paper-deep: #e8d2a6;
+    --card: #faf0d9;
+    --card-sunk: #efdcb4;
+    --line: #cda66a;
+    --line-soft: #e2c88f;
+    --ink: #3b2412;
+    --text: #573f27;
+    --muted: #745a3c;
+    --faint: #b99a68;
+    --felt: #1f8a8a;
+    --felt-strong: #136363;
+    --felt-soft: #d3ecea;
+    --man: #b5442f;
+    --man-strong: #8a2c1b;
+    --man-soft: #f4d9d0;
+    --pin: #3b628a;
+    --pin-strong: #264a70;
+    --pin-soft: #d9e4f0;
+    --sou: #6a8f3c;
+    --sou-strong: #46662a;
+    --sou-soft: #e1ecce;
+    --gold: #e3a92b;
+    --gold-strong: #7a5000;
+    --gold-soft: #f8e4b0;
+    --riichi: #8a4f7a;
+    --riichi-strong: #6a335c;
+    --riichi-soft: #eddae8;
+    --tsumo: #d9731f;
+    --tsumo-strong: #954408;
+    --tsumo-soft: #f8e0c7;
+    --on-accent: #fff8ea;
+    --tile-face: #fff6e5;
+    --tile-edge: #bb7c40;
     --focus: var(--man);
 
-    --shadow-float: 0 6px 16px -12px rgba(80, 50, 20, 0.35);
+    --shadow-float: 0 6px 16px -12px rgba(80, 50, 20, 0.55);
     --shadow-gloss: inset 0 1px 0 rgba(255, 255, 255, 0.7);
-    --shadow-tile: 0 3px 0 #c98a4b;
+    --shadow-tile: 0 3px 0 #bb7c40;
+
+    --page-bg: radial-gradient(circle at 8% 6%, rgba(181, 68, 47, 0.10) 0, transparent 26rem), radial-gradient(circle at 92% 12%, rgba(31, 138, 138, 0.12) 0, transparent 28rem), radial-gradient(circle at 50% 96%, rgba(227, 169, 43, 0.18) 0, transparent 30rem), var(--paper);
+    --accent-a: #e3a92b;
+    --accent-b: #136363;
+    --stage-from: rgba(250, 240, 217, 0.92);
+    --stage-to: rgba(239, 220, 180, 0.94);
+    --stage-line: rgba(187, 124, 64, 0.35);
 }
 
 :root[data-theme="frutiger"] {
     color-scheme: light;
 
-    --paper: #e8f7ff;
-    --paper-deep: #d4efff;
-    --card: #ffffff;
-    --card-sunk: #e3f4ff;
-    --line: #b7e4f9;
-    --line-soft: #d8f1ff;
-    --ink: #0b4f6c;
-    --text: #1b6b8c;
-    --muted: #5b9bb8;
-    --faint: #9cc9dd;
-    --felt: #33c3f0;
-    --felt-strong: #0f9fce;
-    --felt-soft: #d6f4ff;
-    --man: #ff6fa5;
-    --man-strong: #d93e7b;
-    --man-soft: #ffe0ec;
-    --pin: #5aa9ff;
-    --pin-strong: #2f7fd6;
-    --pin-soft: #e0efff;
-    --sou: #7ed957;
-    --sou-strong: #4fa82f;
-    --sou-soft: #e6f9dd;
-    --gold: #ffd93d;
-    --gold-strong: #b89000;
-    --gold-soft: #fff6cc;
-    --riichi: #b388ff;
-    --riichi-strong: #7c4dff;
-    --riichi-soft: #eee3ff;
-    --tsumo: #ff9f43;
-    --tsumo-strong: #c96b00;
-    --tsumo-soft: #ffead2;
-    --on-accent: #063c52;
+    --paper: #e7f6ff;
+    --paper-deep: #d3eefb;
+    --card: #f7fcff;
+    --card-sunk: #e3f3fb;
+    --line: #9fd3ea;
+    --line-soft: #c9e7f4;
+    --ink: #0b3f5c;
+    --text: #23526c;
+    --muted: #3f6f88;
+    --faint: #8fb7c8;
+    --felt: #1aa6e0;
+    --felt-strong: #0a6a9c;
+    --felt-soft: #d4f0fb;
+    --man: #ff5f9a;
+    --man-strong: #bb2562;
+    --man-soft: #ffdbe8;
+    --pin: #3d8bff;
+    --pin-strong: #1f5ccc;
+    --pin-soft: #d9e7ff;
+    --sou: #6ccf3a;
+    --sou-strong: #2a7210;
+    --sou-soft: #e0f6d0;
+    --gold: #ffc928;
+    --gold-strong: #7f5600;
+    --gold-soft: #fff0b8;
+    --riichi: #8e7bff;
+    --riichi-strong: #5a45d1;
+    --riichi-soft: #e7e3ff;
+    --tsumo: #ff8f3a;
+    --tsumo-strong: #a64605;
+    --tsumo-soft: #ffe3cc;
+    --on-accent: #ffffff;
     --tile-face: #ffffff;
     --tile-edge: #9ad9f0;
     --focus: var(--pin);
 
-    --shadow-float: 0 8px 20px -12px rgba(20, 100, 140, 0.28);
-    --shadow-gloss: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    --shadow-float: 0 8px 18px -12px rgba(20, 110, 160, 0.5);
+    --shadow-gloss: inset 0 1px 0 rgba(255, 255, 255, 0.7);
     --shadow-tile: 0 3px 0 #9ad9f0;
+
+    --page-bg: radial-gradient(circle at 10% 4%, rgba(255, 255, 255, 0.9) 0, transparent 22rem), radial-gradient(circle at 92% 10%, rgba(61, 139, 255, 0.18) 0, transparent 28rem), radial-gradient(circle at 50% 98%, rgba(108, 207, 58, 0.2) 0, transparent 30rem), linear-gradient(180deg, #d9f1ff 0, #eaf8ff 45%, #f1fff0 100%);
+    --accent-a: #6ccf3a;
+    --accent-b: #1aa6e0;
+    --stage-from: rgba(255, 255, 255, 0.92);
+    --stage-to: rgba(207, 238, 252, 0.94);
+    --stage-line: rgba(61, 139, 255, 0.32);
 }
 
-:root[data-theme="shinto"] {
+:root[data-theme="fox"] {
     color-scheme: light;
 
-    --paper: #f6efe2;
-    --paper-deep: #ebdfc9;
-    --card: #fffaf0;
-    --card-sunk: #f0e4cf;
-    --line: #d8b28a;
-    --line-soft: #ecd9bd;
-    --ink: #2b1a18;
-    --text: #4a2f28;
-    --muted: #8a6a5a;
-    --faint: #b89a86;
-    --felt: #2f6b4f;
-    --felt-strong: #24543d;
-    --felt-soft: #dcebe2;
-    --man: #c73e1d;
-    --man-strong: #9e2f14;
-    --man-soft: #f7d9cf;
-    --pin: #3b6b8f;
-    --pin-strong: #2a506d;
-    --pin-soft: #dbe8f0;
-    --sou: #6a8f3f;
-    --sou-strong: #4e6f2c;
-    --sou-soft: #e5efd8;
-    --gold: #c9a227;
-    --gold-strong: #8a6d12;
-    --gold-soft: #f4e9c5;
+    --paper: #fbf1e2;
+    --paper-deep: #f3e2c8;
+    --card: #fffaf1;
+    --card-sunk: #f6e8d1;
+    --line: #e3c79d;
+    --line-soft: #f0dcbb;
+    --ink: #3a1d0e;
+    --text: #5a3a24;
+    --muted: #7a5640;
+    --faint: #c9a67c;
+    --felt: #f08a1f;
+    --felt-strong: #a94c05;
+    --felt-soft: #fde4c2;
+    --man: #d9483a;
+    --man-strong: #a1291d;
+    --man-soft: #f9dad4;
+    --pin: #3f7aa6;
+    --pin-strong: #285b82;
+    --pin-soft: #d9e8f3;
+    --sou: #4a8a4f;
+    --sou-strong: #2f6a34;
+    --sou-soft: #dcecd9;
+    --gold: #e9b13a;
+    --gold-strong: #7a5500;
+    --gold-soft: #fbebc0;
     --riichi: #8a5a8f;
-    --riichi-strong: #6a3f70;
-    --riichi-soft: #efe2f1;
-    --tsumo: #d9772b;
-    --tsumo-strong: #a8571a;
-    --tsumo-soft: #f7e1d0;
-    --on-accent: #fffaf0;
+    --riichi-strong: #653d6a;
+    --riichi-soft: #eadcec;
+    --tsumo: #d4622a;
+    --tsumo-strong: #8f3c0c;
+    --tsumo-soft: #fadfcc;
+    --on-accent: #fffaf1;
     --tile-face: #fffaf0;
-    --tile-edge: #c73e1d;
-    --focus: var(--man);
+    --tile-edge: #f08a30;
+    --focus: var(--felt);
 
-    --shadow-float: 0 6px 16px -12px rgba(120, 40, 20, 0.32);
+    --shadow-float: 0 6px 16px -12px rgba(110, 50, 10, 0.55);
     --shadow-gloss: inset 0 1px 0 rgba(255, 255, 255, 0.7);
-    --shadow-tile: 0 3px 0 #c73e1d;
+    --shadow-tile: 0 3px 0 #f08a30;
+
+    --page-bg: radial-gradient(circle at 8% 6%, rgba(240, 138, 31, 0.14) 0, transparent 26rem), radial-gradient(circle at 92% 12%, rgba(74, 138, 79, 0.12) 0, transparent 28rem), radial-gradient(circle at 50% 96%, rgba(233, 177, 58, 0.16) 0, transparent 30rem), var(--paper);
+    --accent-a: #ffb35a;
+    --accent-b: #d96a10;
+    --stage-from: rgba(255, 250, 241, 0.94);
+    --stage-to: rgba(246, 232, 209, 0.94);
+    --stage-line: rgba(240, 138, 31, 0.34);
 }
 
 :root[data-theme="cute"] {
     color-scheme: light;
 
-    --paper: #fff1f7;
-    --paper-deep: #ffe4ef;
-    --card: #fff8fb;
-    --card-sunk: #ffe9f2;
-    --line: #f3bfd4;
-    --line-soft: #f9d9e6;
-    --ink: #5c2f4a;
-    --text: #74425f;
-    --muted: #9a6a83;
-    --faint: #c79bb0;
-    --felt: #ef6aa3;
-    --felt-strong: #c93d7b;
-    --felt-soft: #ffe0ec;
-    --man: #e84f8f;
-    --man-strong: #b82f68;
-    --man-soft: #ffd6e7;
-    --pin: #b18cff;
-    --pin-strong: #7c53d6;
-    --pin-soft: #ece2ff;
-    --sou: #ff7fae;
-    --sou-strong: #d94f86;
-    --sou-soft: #ffe1ec;
-    --gold: #ffb3d1;
-    --gold-strong: #b85b84;
-    --gold-soft: #ffe7f1;
+    --paper: #fff4f8;
+    --paper-deep: #ffe6f0;
+    --card: #fffafc;
+    --card-sunk: #ffeef5;
+    --line: #f0bcd3;
+    --line-soft: #fad8e6;
+    --ink: #5a2a4a;
+    --text: #6a4260;
+    --muted: #8a5f7e;
+    --faint: #d9a8c2;
+    --felt: #ff7eb3;
+    --felt-strong: #b0215f;
+    --felt-soft: #ffdceb;
+    --man: #f0609a;
+    --man-strong: #b0245f;
+    --man-soft: #ffdbe9;
+    --pin: #9b8cf0;
+    --pin-strong: #5646c2;
+    --pin-soft: #e8e3ff;
+    --sou: #4cc9a4;
+    --sou-strong: #17775a;
+    --sou-soft: #d6f7ea;
+    --gold: #ffc94d;
+    --gold-strong: #845500;
+    --gold-soft: #fff0c2;
     --riichi: #b46bd6;
-    --riichi-strong: #8a3fae;
-    --riichi-soft: #f3e3fb;
-    --tsumo: #ff9f7a;
-    --tsumo-strong: #c95f38;
-    --tsumo-soft: #ffe5d8;
+    --riichi-strong: #7a2fa3;
+    --riichi-soft: #f1ddfb;
+    --tsumo: #ff9a76;
+    --tsumo-strong: #a8431b;
+    --tsumo-soft: #ffe3d6;
     --on-accent: #ffffff;
-    --tile-face: #fff8fc;
-    --tile-edge: #f3bfd6;
+    --tile-face: #fffafc;
+    --tile-edge: #f4b9d3;
+    --focus: var(--riichi);
 
-    --shadow-float: 0 6px 16px -12px rgba(160, 60, 110, 0.35);
-    --shadow-gloss: inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    --shadow-tile: 0 3px 0 #f3bfd6;
+    --shadow-float: 0 6px 16px -12px rgba(170, 70, 120, 0.5);
+    --shadow-gloss: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    --shadow-tile: 0 3px 0 #f4b9d3;
+
+    --page-bg: radial-gradient(circle at 8% 6%, #ffe1ee 0, transparent 26rem), radial-gradient(circle at 92% 12%, #ece2ff 0, transparent 28rem), radial-gradient(circle at 50% 96%, #dcf6ec 0, transparent 30rem), var(--paper);
+    --accent-a: #ff9ec7;
+    --accent-b: #b0215f;
+    --stage-from: rgba(255, 250, 252, 0.92);
+    --stage-to: rgba(255, 232, 242, 0.92);
+    --stage-line: rgba(255, 126, 179, 0.3);
 }
 
 :root[data-theme="samurai"] {
     color-scheme: light;
 
-    --paper: #ece4d2;
-    --paper-deep: #e0d5bd;
-    --card: #f6f0e2;
-    --card-sunk: #eae1ce;
-    --line: #c9b892;
-    --line-soft: #ded1b5;
-    --ink: #1d2635;
-    --text: #3d4654;
-    --muted: #6b7280;
-    --faint: #a79a80;
-    --felt: #33566b;
-    --felt-strong: #244355;
-    --felt-soft: #dbe6ec;
-    --man: #9e2b2b;
-    --man-strong: #7a1f1f;
-    --man-soft: #f0dada;
-    --pin: #2f5d7c;
-    --pin-strong: #1f4058;
-    --pin-soft: #d7e4ed;
-    --sou: #4f6b4a;
-    --sou-strong: #365033;
-    --sou-soft: #dfe8da;
-    --gold: #c9a227;
-    --gold-strong: #8a6d12;
-    --gold-soft: #f4e9c5;
+    --paper: #efe7d6;
+    --paper-deep: #e4d9c2;
+    --card: #f8f2e3;
+    --card-sunk: #ece2cc;
+    --line: #c9b98f;
+    --line-soft: #ddd0ac;
+    --ink: #1c2740;
+    --text: #3a4258;
+    --muted: #5c6376;
+    --faint: #a59a7c;
+    --felt: #2a3f73;
+    --felt-strong: #1f2f5c;
+    --felt-soft: #d9dfee;
+    --man: #b3262e;
+    --man-strong: #8e1c24;
+    --man-soft: #f3d6d4;
+    --pin: #3f6f95;
+    --pin-strong: #2b5273;
+    --pin-soft: #d9e6ef;
+    --sou: #5b7a4a;
+    --sou-strong: #3e5a31;
+    --sou-soft: #dfe8d4;
+    --gold: #c99a1f;
+    --gold-strong: #6f5000;
+    --gold-soft: #f4e6b8;
     --riichi: #6b4c7a;
-    --riichi-strong: #4f3560;
-    --riichi-soft: #e7dcec;
-    --tsumo: #b5651d;
-    --tsumo-strong: #8a4a12;
-    --tsumo-soft: #f1dfcf;
-    --on-accent: #fffaf0;
+    --riichi-strong: #4d3459;
+    --riichi-soft: #e7dced;
+    --tsumo: #c0651e;
+    --tsumo-strong: #8b4510;
+    --tsumo-soft: #f5dfc9;
+    --on-accent: #fbf7ec;
     --tile-face: #fbf7ec;
     --tile-edge: #b08a3e;
-    --focus: var(--gold-strong);
+    --focus: var(--man);
 
-    --shadow-float: 0 6px 16px -12px rgba(45, 35, 15, 0.45);
+    --shadow-float: 0 6px 16px -12px rgba(40, 30, 15, 0.55);
     --shadow-gloss: inset 0 1px 0 rgba(255, 255, 255, 0.7);
     --shadow-tile: 0 3px 0 #b08a3e;
+
+    --page-bg: radial-gradient(circle at 8% 6%, rgba(179, 38, 46, 0.10) 0, transparent 26rem), radial-gradient(circle at 92% 12%, rgba(42, 63, 115, 0.12) 0, transparent 28rem), radial-gradient(circle at 50% 96%, rgba(201, 154, 31, 0.12) 0, transparent 30rem), var(--paper);
+    --accent-a: #d9b64a;
+    --accent-b: #2a3f73;
+    --stage-from: rgba(248, 242, 227, 0.94);
+    --stage-to: rgba(228, 217, 194, 0.94);
+    --stage-line: rgba(201, 154, 31, 0.32);
 }
+
+/* Neon (dark): extra variables used by the shared theme rules below */
+:root[data-theme="dark"] {
+    --page-bg:
+        radial-gradient(circle at 8% 6%, rgba(255, 45, 149, 0.18) 0, transparent 26rem),
+        radial-gradient(circle at 92% 12%, rgba(0, 229, 255, 0.16) 0, transparent 28rem),
+        radial-gradient(circle at 50% 96%, rgba(182, 255, 0, 0.10) 0, transparent 30rem),
+        var(--paper);
+    --accent-a: #ff2d95;
+    --accent-b: #9d4edd;
+    --stage-from: rgba(28, 16, 41, 0.88);
+    --stage-to: rgba(18, 11, 26, 0.94);
+    --stage-line: rgba(255, 45, 149, 0.28);
+}
+
+
+/* Colour of the cloth on the illustrated table; the tutorial stage uses it so tiles read the same everywhere. */
+:root { --table-felt: #1f8a78; }
+:root[data-theme="dark"] { --table-felt: #47173c; }
+:root[data-theme="cute"] { --table-felt: #7fd6bd; }
+:root[data-theme="samurai"] { --table-felt: #2f4f86; }
+:root[data-theme="cyberpunk"] { --table-felt: #0e2a45; }
+:root[data-theme="vaquero"] { --table-felt: #8f2f35; }
+:root[data-theme="frutiger"] { --table-felt: #2fb4e8; }
+:root[data-theme="fox"] { --table-felt: #2f5d46; }
 
 /* ── 2 · Legacy aliases: older pages keep working on the new palette ── */
 :root,
@@ -387,7 +455,7 @@
 :root[data-theme="cyberpunk"],
 :root[data-theme="vaquero"],
 :root[data-theme="frutiger"],
-:root[data-theme="shinto"] {
+:root[data-theme="fox"] {
     --green: var(--sou);
     --green-dark: var(--sou-strong);
     --pink: var(--man);
@@ -450,8 +518,8 @@
     --shadow: rgba(30, 120, 160, 0.12);
 }
 
-:root[data-theme="shinto"] {
-    --shadow: rgba(100, 50, 25, 0.12);
+:root[data-theme="fox"] {
+    --shadow: rgba(120, 60, 15, 0.12);
 }
 
 /* ── 3 · Global surfaces ────────────────────────────────────── */
@@ -485,7 +553,7 @@ h4 {
 .rr-only-cyberpunk,
 .rr-only-vaquero,
 .rr-only-frutiger,
-.rr-only-shinto {
+.rr-only-fox {
     display: none !important;
 }
 
@@ -495,7 +563,7 @@ h4 {
 :root[data-theme="cyberpunk"] .rr-only-light,
 :root[data-theme="vaquero"] .rr-only-light,
 :root[data-theme="frutiger"] .rr-only-light,
-:root[data-theme="shinto"] .rr-only-light {
+:root[data-theme="fox"] .rr-only-light {
     display: none !important;
 }
 
@@ -505,7 +573,7 @@ h4 {
 :root[data-theme="cyberpunk"] .rr-only-cyberpunk,
 :root[data-theme="vaquero"] .rr-only-vaquero,
 :root[data-theme="frutiger"] .rr-only-frutiger,
-:root[data-theme="shinto"] .rr-only-shinto {
+:root[data-theme="fox"] .rr-only-fox {
     display: block !important;
 }
 
@@ -589,7 +657,7 @@ body:has(.side-rail) {
 }
 
 .side-rail-nav a,
-.side-rail-bottom > * {
+.side-rail-bottom > :not(.theme-picker) {
     position: relative;
     display: flex;
     align-items: center;
@@ -666,40 +734,104 @@ body:has(.side-rail) {
     margin-top: auto;
 }
 
-.side-rail-theme {
-    display: grid !important;
-    grid-template-columns: repeat(2, 26px);
-    justify-content: center;
-    justify-items: center;
-    gap: 2px;
-    padding: 0 4px !important;
-}
-
-.side-rail.menu-open .side-rail-theme {
-    grid-template-columns: repeat(4, 40px);
-    grid-auto-rows: 34px;
-    justify-content: start;
-    gap: 4px;
-    padding: 0 12px !important;
-}
-
-.side-rail-theme label {
+/* ── Style picker: one emblem button that opens a panel of cards ── */
+.theme-picker {
     position: relative;
-    display: grid;
-    place-items: center;
-    width: 26px;
-    height: 26px;
-    border-radius: var(--radius-md);
+    padding: 0;
+}
+
+.theme-trigger {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    width: 100%;
+    min-height: 44px;
+    padding: 0 18px;
+    border: 0;
     color: var(--muted);
+    background: none;
     cursor: pointer;
 }
 
-.side-rail.menu-open .side-rail-theme label {
-    width: 40px;
-    height: 34px;
+.theme-trigger img {
+    flex: none;
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    transition: transform 0.15s ease;
 }
 
-.side-rail-theme input {
+.theme-trigger:hover img,
+.theme-picker.is-open .theme-trigger img {
+    transform: scale(1.12) rotate(-4deg);
+}
+
+.theme-panel {
+    position: fixed;
+    left: 72px;
+    bottom: var(--space-4);
+    z-index: 80;
+    width: min(380px, calc(100vw - 88px));
+    padding: var(--space-4);
+    border: var(--border-hair) solid var(--line);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.45), var(--shadow-gloss);
+    animation: rr-panel-in 0.18s ease both;
+}
+
+.theme-panel[hidden] {
+    display: none;
+}
+
+.theme-panel-title {
+    margin: 0 0 var(--space-3);
+    color: var(--ink);
+    font: 700 13px/1 var(--font-display);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.theme-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+}
+
+.theme-card {
+    position: relative;
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    grid-template-areas: "icon name" "icon mood" "sw sw";
+    align-items: center;
+    column-gap: var(--space-2);
+    row-gap: 1px;
+    padding: var(--space-2);
+    border: var(--border-hair) solid var(--line);
+    border-radius: var(--radius-md);
+    color: var(--text);
+    background: var(--card-sunk);
+    cursor: pointer;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.theme-card:hover {
+    border-color: var(--faint);
+    transform: translateY(-1px);
+}
+
+.theme-card:has(input:checked) {
+    border: var(--border-active) solid var(--felt);
+    padding: calc(var(--space-2) - 0.5px);
+    background: var(--felt-soft);
+}
+
+.theme-card:has(input:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+}
+
+.theme-card input {
     position: absolute;
     inset: 0;
     margin: 0;
@@ -707,25 +839,47 @@ body:has(.side-rail) {
     cursor: pointer;
 }
 
-.side-rail-theme label:has(input:checked) {
-    color: var(--felt-strong);
-    background: var(--felt-soft);
-    box-shadow: inset 0 0 0 1.5px var(--felt);
+.theme-card img {
+    grid-area: icon;
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
 }
 
-.side-rail-theme label:has(input:focus-visible) {
-    outline: 2px solid var(--focus);
-    outline-offset: 2px;
+.theme-card b {
+    grid-area: name;
+    align-self: end;
+    color: var(--ink);
+    font: 700 15px/1.1 var(--font-display);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
-.side-rail-theme svg {
-    width: 15px;
-    height: 15px;
+.theme-card small {
+    grid-area: mood;
+    align-self: start;
+    color: var(--muted);
+    font: 500 11.5px/1.25 var(--font-sans);
 }
 
-.side-rail.menu-open .side-rail-theme svg {
-    width: 18px;
-    height: 18px;
+.theme-swatches {
+    grid-area: sw;
+    display: flex;
+    gap: 4px;
+    margin-top: var(--space-2);
+}
+
+.theme-swatches i {
+    flex: 1;
+    height: 8px;
+    border-radius: var(--radius-pill);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+
+@keyframes rr-panel-in {
+    from {
+        transform: translateY(8px);
+    }
 }
 
 .side-rail-lang {
@@ -940,7 +1094,7 @@ body:has(.side-rail) {
     }
 
     .side-rail-nav a,
-    .side-rail-bottom > * {
+    .side-rail-bottom > :not(.theme-picker) {
         padding: 0 10px;
     }
 
@@ -951,22 +1105,18 @@ body:has(.side-rail) {
         border-radius: 3px 3px 0 0;
     }
 
-    .side-rail-theme {
-        display: grid !important;
-        grid-template-columns: repeat(4, 24px);
-        grid-auto-rows: 24px;
-        gap: 0;
-        padding: 0 !important;
+    .theme-trigger {
+        justify-content: center;
+        padding: 0 10px;
     }
 
-    .side-rail-theme label {
-        width: 24px;
-        height: 24px;
-    }
-
-    .side-rail-theme svg {
-        width: 16px;
-        height: 16px;
+    .theme-panel {
+        left: var(--space-2);
+        right: var(--space-2);
+        bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+        width: auto;
+        max-height: 70vh;
+        overflow-y: auto;
     }
 
     .brand-bar {
@@ -1867,401 +2017,71 @@ body:has(.side-rail) {
     }
 
     .table-spotlight-edge,
-    .table-callout {
+    .table-callout,
+    .theme-panel {
         animation: none;
     }
 }
 
-/* ── Cute theme refinements ─────────────────────────────────── */
-:root[data-theme="cute"] body {
-    background:
-        radial-gradient(circle at 8% 6%, #ffe1ee 0, transparent 26rem),
-        radial-gradient(circle at 92% 12%, #efe3ff 0, transparent 28rem),
-        radial-gradient(circle at 50% 96%, #ffe8f2 0, transparent 30rem),
-        var(--paper);
+/* ── Decorative themes: shared refinements ──────────────────────
+ * Every theme except "light" supplies --page-bg, --accent-a/-b and --stage-*;
+ * the rules below turn them into the page glow, the active gradients and the
+ * tile showcase, so a theme is defined by its tokens and nothing else. */
+:root[data-theme]:not([data-theme="light"]) body {
+    background: var(--page-bg);
 }
 
-:root[data-theme="cute"] .feedback.good,
-:root[data-theme="cute"] .status.ready,
-:root[data-theme="cute"] .family-tab.is-active,
-:root[data-theme="cute"] .score-tab.is-active,
-:root[data-theme="cute"] .answer-button.is-correct,
-:root[data-theme="cute"] .results-row.is-correct .results-mark,
-:root[data-theme="cute"] .ref-value,
-:root[data-theme="cute"] .guide-step,
-:root[data-theme="cute"] .yakuref-value,
-:root[data-theme="cute"] .torpedo-han,
-:root[data-theme="cute"] .fu-base h3,
-:root[data-theme="cute"] .tile-set-picker select,
-:root[data-theme="cute"] .switch-control input:checked + .switch-track {
-    background: linear-gradient(180deg, #ff9ec7, var(--green));
+:root[data-theme]:not([data-theme="light"]) .feedback.good,
+:root[data-theme]:not([data-theme="light"]) .status.ready,
+:root[data-theme]:not([data-theme="light"]) .family-tab.is-active,
+:root[data-theme]:not([data-theme="light"]) .score-tab.is-active,
+:root[data-theme]:not([data-theme="light"]) .answer-button.is-correct,
+:root[data-theme]:not([data-theme="light"]) .results-row.is-correct .results-mark,
+:root[data-theme]:not([data-theme="light"]) .ref-value,
+:root[data-theme]:not([data-theme="light"]) .guide-step,
+:root[data-theme]:not([data-theme="light"]) .yakuref-value,
+:root[data-theme]:not([data-theme="light"]) .torpedo-han,
+:root[data-theme]:not([data-theme="light"]) .fu-base h3,
+:root[data-theme]:not([data-theme="light"]) .tile-set-picker select,
+:root[data-theme]:not([data-theme="light"]) .switch-control input:checked + .switch-track {
+    background: linear-gradient(180deg, var(--accent-a), var(--accent-b));
 }
 
-:root[data-theme="cute"] .module-card .status.ready {
-    border-color: color-mix(in srgb, var(--green) 38%, transparent);
-    color: var(--man-strong);
-    background: color-mix(in srgb, var(--green) 12%, var(--card-bg));
-}
-
-:root[data-theme="cute"] .tiles-card {
-    background:
-        radial-gradient(circle at 20% 24%, rgba(255, 158, 199, 0.14), transparent 30%),
-        radial-gradient(circle at 80% 78%, rgba(177, 140, 255, 0.12), transparent 34%),
-        color-mix(in srgb, var(--card) 82%, transparent);
-}
-
-:root[data-theme="cute"] .tiles-stage {
-    border-color: rgba(255, 158, 199, 0.22);
-    background:
-        radial-gradient(circle at 18% 22%, rgba(255, 158, 199, 0.18), transparent 28%),
-        radial-gradient(circle at 82% 74%, rgba(177, 140, 255, 0.12), transparent 32%),
-        linear-gradient(135deg, rgba(255, 246, 251, 0.72), rgba(255, 236, 246, 0.82));
-    box-shadow: inset 0 0 0 0.08rem rgba(255, 255, 255, 0.8);
-}
-
-:root[data-theme="cute"] .green-card { --module-accent: var(--sou); --module-tint: rgba(255, 127, 174, 0.12); }
-:root[data-theme="cute"] .blue-card { --module-accent: var(--pin); --module-tint: rgba(177, 140, 255, 0.12); }
-:root[data-theme="cute"] .pink-card { --module-accent: var(--man); --module-tint: rgba(232, 79, 143, 0.12); }
-:root[data-theme="cute"] .yellow-card { --module-accent: var(--gold); --module-tint: rgba(255, 179, 209, 0.16); }
-:root[data-theme="cute"] .orange-card { --module-accent: var(--tsumo); --module-tint: rgba(255, 159, 122, 0.12); }
-:root[data-theme="cute"] .purple-card { --module-accent: var(--riichi); --module-tint: rgba(180, 107, 214, 0.12); }
-:root[data-theme="cute"] .red-card { --module-accent: var(--man); --module-tint: rgba(232, 79, 143, 0.12); }
-
-/* ── Samurai theme refinements ──────────────────────────────── */
-:root[data-theme="samurai"] body {
-    background:
-        radial-gradient(circle at 8% 6%, rgba(158, 43, 43, 0.10) 0, transparent 26rem),
-        radial-gradient(circle at 92% 12%, rgba(47, 93, 124, 0.12) 0, transparent 28rem),
-        radial-gradient(circle at 50% 96%, rgba(201, 162, 39, 0.12) 0, transparent 30rem),
-        var(--paper);
-}
-
-:root[data-theme="samurai"] .feedback.good,
-:root[data-theme="samurai"] .status.ready,
-:root[data-theme="samurai"] .family-tab.is-active,
-:root[data-theme="samurai"] .score-tab.is-active,
-:root[data-theme="samurai"] .answer-button.is-correct,
-:root[data-theme="samurai"] .results-row.is-correct .results-mark,
-:root[data-theme="samurai"] .ref-value,
-:root[data-theme="samurai"] .guide-step,
-:root[data-theme="samurai"] .yakuref-value,
-:root[data-theme="samurai"] .torpedo-han,
-:root[data-theme="samurai"] .fu-base h3,
-:root[data-theme="samurai"] .tile-set-picker select,
-:root[data-theme="samurai"] .switch-control input:checked + .switch-track {
-    background: linear-gradient(180deg, #d9b64a, var(--green));
-}
-
-:root[data-theme="samurai"] .module-card .status.ready {
-    border-color: color-mix(in srgb, var(--gold) 42%, transparent);
+:root[data-theme]:not([data-theme="light"]) .module-card .status.ready {
+    border-color: color-mix(in srgb, var(--accent-a) 45%, transparent);
     color: var(--ink);
-    background: color-mix(in srgb, var(--gold) 14%, var(--card-bg));
+    background: color-mix(in srgb, var(--accent-a) 14%, var(--card-bg));
 }
 
-:root[data-theme="samurai"] .tiles-card {
+:root[data-theme]:not([data-theme="light"]) .tiles-card {
     background:
-        radial-gradient(circle at 20% 24%, rgba(47, 93, 124, 0.14), transparent 30%),
-        radial-gradient(circle at 80% 78%, rgba(158, 43, 43, 0.10), transparent 34%),
-        color-mix(in srgb, var(--card) 84%, transparent);
-}
-
-:root[data-theme="samurai"] .tiles-stage {
-    border-color: rgba(176, 138, 62, 0.30);
-    background:
-        radial-gradient(circle at 18% 22%, rgba(47, 93, 124, 0.16), transparent 28%),
-        radial-gradient(circle at 82% 74%, rgba(201, 162, 39, 0.14), transparent 32%),
-        linear-gradient(135deg, rgba(248, 243, 232, 0.82), rgba(234, 225, 206, 0.86));
-    box-shadow: inset 0 0 0 0.08rem rgba(255, 250, 240, 0.8);
-}
-
-:root[data-theme="samurai"] .green-card { --module-accent: var(--sou); --module-tint: rgba(79, 107, 74, 0.12); }
-:root[data-theme="samurai"] .blue-card { --module-accent: var(--pin); --module-tint: rgba(47, 93, 124, 0.12); }
-:root[data-theme="samurai"] .pink-card { --module-accent: var(--man); --module-tint: rgba(158, 43, 43, 0.10); }
-:root[data-theme="samurai"] .yellow-card { --module-accent: var(--gold); --module-tint: rgba(201, 162, 39, 0.14); }
-:root[data-theme="samurai"] .orange-card { --module-accent: var(--tsumo); --module-tint: rgba(181, 101, 29, 0.12); }
-:root[data-theme="samurai"] .purple-card { --module-accent: var(--riichi); --module-tint: rgba(107, 76, 122, 0.12); }
-:root[data-theme="samurai"] .red-card { --module-accent: var(--man); --module-tint: rgba(158, 43, 43, 0.12); }
-
-/* ── Neon punk dark theme ──────────────────────────────────── */
-:root[data-theme="dark"] body {
-    background:
-        radial-gradient(circle at 8% 6%, rgba(255, 45, 149, 0.18) 0, transparent 26rem),
-        radial-gradient(circle at 92% 12%, rgba(0, 229, 255, 0.16) 0, transparent 28rem),
-        radial-gradient(circle at 50% 96%, rgba(182, 255, 0, 0.10) 0, transparent 30rem),
-        var(--paper);
-}
-
-:root[data-theme="dark"] .feedback.good,
-:root[data-theme="dark"] .status.ready,
-:root[data-theme="dark"] .family-tab.is-active,
-:root[data-theme="dark"] .score-tab.is-active,
-:root[data-theme="dark"] .answer-button.is-correct,
-:root[data-theme="dark"] .results-row.is-correct .results-mark,
-:root[data-theme="dark"] .ref-value,
-:root[data-theme="dark"] .guide-step,
-:root[data-theme="dark"] .yakuref-value,
-:root[data-theme="dark"] .torpedo-han,
-:root[data-theme="dark"] .fu-base h3,
-:root[data-theme="dark"] .tile-set-picker select,
-:root[data-theme="dark"] .switch-control input:checked + .switch-track {
-    background: linear-gradient(180deg, #ff2d95, #9d4edd);
-}
-
-:root[data-theme="dark"] .module-card .status.ready {
-    border-color: color-mix(in srgb, var(--pin) 45%, transparent);
-    color: var(--ink);
-    background: color-mix(in srgb, var(--pin) 14%, var(--card-bg));
-}
-
-:root[data-theme="dark"] .tiles-card {
-    background:
-        radial-gradient(circle at 20% 24%, rgba(255, 45, 149, 0.18), transparent 30%),
-        radial-gradient(circle at 80% 78%, rgba(0, 229, 255, 0.14), transparent 34%),
+        radial-gradient(circle at 20% 24%, color-mix(in srgb, var(--accent-a) 16%, transparent), transparent 30%),
+        radial-gradient(circle at 80% 78%, color-mix(in srgb, var(--accent-b) 12%, transparent), transparent 34%),
         color-mix(in srgb, var(--card) 88%, transparent);
 }
 
-:root[data-theme="dark"] .tiles-stage {
-    border-color: rgba(255, 45, 149, 0.28);
+:root[data-theme]:not([data-theme="light"]) .tiles-stage {
+    border-color: var(--stage-line);
     background:
-        radial-gradient(circle at 18% 22%, rgba(255, 45, 149, 0.20), transparent 28%),
-        radial-gradient(circle at 82% 74%, rgba(0, 229, 255, 0.16), transparent 32%),
-        linear-gradient(135deg, rgba(28, 16, 41, 0.88), rgba(18, 11, 26, 0.94));
-    box-shadow: inset 0 0 0 0.08rem rgba(255, 255, 255, 0.06);
+        radial-gradient(circle at 18% 22%, color-mix(in srgb, var(--accent-a) 18%, transparent), transparent 28%),
+        radial-gradient(circle at 82% 74%, color-mix(in srgb, var(--accent-b) 14%, transparent), transparent 32%),
+        linear-gradient(135deg, var(--stage-from), var(--stage-to));
+    box-shadow: inset 0 0 0 0.08rem color-mix(in srgb, var(--paper) 55%, transparent);
 }
 
-:root[data-theme="dark"] .green-card { --module-accent: var(--sou); --module-tint: rgba(182, 255, 0, 0.10); }
-:root[data-theme="dark"] .blue-card { --module-accent: var(--pin); --module-tint: rgba(0, 229, 255, 0.12); }
-:root[data-theme="dark"] .pink-card { --module-accent: var(--man); --module-tint: rgba(255, 45, 149, 0.12); }
-:root[data-theme="dark"] .yellow-card { --module-accent: var(--gold); --module-tint: rgba(255, 230, 0, 0.10); }
-:root[data-theme="dark"] .orange-card { --module-accent: var(--tsumo); --module-tint: rgba(255, 122, 24, 0.10); }
-:root[data-theme="dark"] .purple-card { --module-accent: var(--riichi); --module-tint: rgba(185, 103, 255, 0.12); }
-:root[data-theme="dark"] .red-card { --module-accent: var(--man); --module-tint: rgba(255, 45, 149, 0.12); }
-
-/* ── Cyberpunk theme refinements ───────────────────────────── */
-:root[data-theme="cyberpunk"] body {
-    background:
-        radial-gradient(circle at 8% 6%, rgba(252, 238, 10, 0.12) 0, transparent 26rem),
-        radial-gradient(circle at 92% 12%, rgba(0, 240, 255, 0.16) 0, transparent 28rem),
-        radial-gradient(circle at 50% 96%, rgba(255, 42, 109, 0.14) 0, transparent 30rem),
-        var(--paper);
-}
-
-:root[data-theme="cyberpunk"] .feedback.good,
-:root[data-theme="cyberpunk"] .status.ready,
-:root[data-theme="cyberpunk"] .family-tab.is-active,
-:root[data-theme="cyberpunk"] .score-tab.is-active,
-:root[data-theme="cyberpunk"] .answer-button.is-correct,
-:root[data-theme="cyberpunk"] .results-row.is-correct .results-mark,
-:root[data-theme="cyberpunk"] .ref-value,
-:root[data-theme="cyberpunk"] .guide-step,
-:root[data-theme="cyberpunk"] .yakuref-value,
-:root[data-theme="cyberpunk"] .torpedo-han,
-:root[data-theme="cyberpunk"] .fu-base h3,
-:root[data-theme="cyberpunk"] .tile-set-picker select,
-:root[data-theme="cyberpunk"] .switch-control input:checked + .switch-track {
-    background: linear-gradient(180deg, #fcee0a, #00f0ff);
-}
-
-:root[data-theme="cyberpunk"] .module-card .status.ready {
-    border-color: color-mix(in srgb, var(--gold) 45%, transparent);
-    color: var(--ink);
-    background: color-mix(in srgb, var(--gold) 12%, var(--card-bg));
-}
-
-:root[data-theme="cyberpunk"] .tiles-card {
-    background:
-        radial-gradient(circle at 20% 24%, rgba(252, 238, 10, 0.12), transparent 30%),
-        radial-gradient(circle at 80% 78%, rgba(0, 240, 255, 0.14), transparent 34%),
-        color-mix(in srgb, var(--card) 88%, transparent);
-}
-
-:root[data-theme="cyberpunk"] .tiles-stage {
-    border-color: rgba(0, 240, 255, 0.30);
-    background:
-        radial-gradient(circle at 18% 22%, rgba(252, 238, 10, 0.14), transparent 28%),
-        radial-gradient(circle at 82% 74%, rgba(0, 240, 255, 0.18), transparent 32%),
-        linear-gradient(135deg, rgba(13, 22, 34, 0.92), rgba(7, 11, 18, 0.96));
-    box-shadow: inset 0 0 0 0.08rem rgba(255, 255, 255, 0.06);
-}
-
-:root[data-theme="cyberpunk"] .green-card { --module-accent: var(--sou); --module-tint: rgba(168, 255, 96, 0.10); }
-:root[data-theme="cyberpunk"] .blue-card { --module-accent: var(--pin); --module-tint: rgba(0, 240, 255, 0.12); }
-:root[data-theme="cyberpunk"] .pink-card { --module-accent: var(--man); --module-tint: rgba(255, 42, 109, 0.12); }
-:root[data-theme="cyberpunk"] .yellow-card { --module-accent: var(--gold); --module-tint: rgba(252, 238, 10, 0.10); }
-:root[data-theme="cyberpunk"] .orange-card { --module-accent: var(--tsumo); --module-tint: rgba(255, 159, 28, 0.10); }
-:root[data-theme="cyberpunk"] .purple-card { --module-accent: var(--riichi); --module-tint: rgba(185, 103, 255, 0.12); }
-:root[data-theme="cyberpunk"] .red-card { --module-accent: var(--man); --module-tint: rgba(255, 42, 109, 0.12); }
-
-/* ── Vaquero theme refinements ─────────────────────────────── */
-:root[data-theme="vaquero"] body {
-    background:
-        radial-gradient(circle at 8% 6%, rgba(188, 71, 73, 0.10) 0, transparent 26rem),
-        radial-gradient(circle at 92% 12%, rgba(42, 157, 143, 0.12) 0, transparent 28rem),
-        radial-gradient(circle at 50% 96%, rgba(233, 196, 106, 0.16) 0, transparent 30rem),
-        var(--paper);
-}
-
-:root[data-theme="vaquero"] .feedback.good,
-:root[data-theme="vaquero"] .status.ready,
-:root[data-theme="vaquero"] .family-tab.is-active,
-:root[data-theme="vaquero"] .score-tab.is-active,
-:root[data-theme="vaquero"] .answer-button.is-correct,
-:root[data-theme="vaquero"] .results-row.is-correct .results-mark,
-:root[data-theme="vaquero"] .ref-value,
-:root[data-theme="vaquero"] .guide-step,
-:root[data-theme="vaquero"] .yakuref-value,
-:root[data-theme="vaquero"] .torpedo-han,
-:root[data-theme="vaquero"] .fu-base h3,
-:root[data-theme="vaquero"] .tile-set-picker select,
-:root[data-theme="vaquero"] .switch-control input:checked + .switch-track {
-    background: linear-gradient(180deg, #e9c46a, #2a9d8f);
-}
-
-:root[data-theme="vaquero"] .module-card .status.ready {
-    border-color: color-mix(in srgb, var(--gold) 42%, transparent);
-    color: var(--ink);
-    background: color-mix(in srgb, var(--gold) 16%, var(--card-bg));
-}
-
-:root[data-theme="vaquero"] .tiles-card {
-    background:
-        radial-gradient(circle at 20% 24%, rgba(42, 157, 143, 0.12), transparent 30%),
-        radial-gradient(circle at 80% 78%, rgba(188, 71, 73, 0.10), transparent 34%),
-        color-mix(in srgb, var(--card) 86%, transparent);
-}
-
-:root[data-theme="vaquero"] .tiles-stage {
-    border-color: rgba(201, 138, 75, 0.32);
-    background:
-        radial-gradient(circle at 18% 22%, rgba(42, 157, 143, 0.14), transparent 28%),
-        radial-gradient(circle at 82% 74%, rgba(233, 196, 106, 0.18), transparent 32%),
-        linear-gradient(135deg, rgba(255, 246, 229, 0.86), rgba(240, 223, 191, 0.9));
-    box-shadow: inset 0 0 0 0.08rem rgba(255, 255, 255, 0.8);
-}
-
-:root[data-theme="vaquero"] .green-card { --module-accent: var(--sou); --module-tint: rgba(106, 153, 78, 0.12); }
-:root[data-theme="vaquero"] .blue-card { --module-accent: var(--pin); --module-tint: rgba(59, 91, 122, 0.12); }
-:root[data-theme="vaquero"] .pink-card { --module-accent: var(--man); --module-tint: rgba(188, 71, 73, 0.10); }
-:root[data-theme="vaquero"] .yellow-card { --module-accent: var(--gold); --module-tint: rgba(233, 196, 106, 0.16); }
-:root[data-theme="vaquero"] .orange-card { --module-accent: var(--tsumo); --module-tint: rgba(231, 111, 81, 0.12); }
-:root[data-theme="vaquero"] .purple-card { --module-accent: var(--riichi); --module-tint: rgba(123, 94, 123, 0.12); }
-:root[data-theme="vaquero"] .red-card { --module-accent: var(--man); --module-tint: rgba(188, 71, 73, 0.12); }
-
-/* ── Frutiger Aero theme refinements ───────────────────────── */
-:root[data-theme="frutiger"] body {
-    background:
-        radial-gradient(circle at 8% 6%, rgba(126, 217, 87, 0.16) 0, transparent 26rem),
-        radial-gradient(circle at 92% 12%, rgba(90, 169, 255, 0.18) 0, transparent 28rem),
-        radial-gradient(circle at 50% 96%, rgba(255, 217, 61, 0.14) 0, transparent 30rem),
-        var(--paper);
-}
-
-:root[data-theme="frutiger"] .feedback.good,
-:root[data-theme="frutiger"] .status.ready,
-:root[data-theme="frutiger"] .family-tab.is-active,
-:root[data-theme="frutiger"] .score-tab.is-active,
-:root[data-theme="frutiger"] .answer-button.is-correct,
-:root[data-theme="frutiger"] .results-row.is-correct .results-mark,
-:root[data-theme="frutiger"] .ref-value,
-:root[data-theme="frutiger"] .guide-step,
-:root[data-theme="frutiger"] .yakuref-value,
-:root[data-theme="frutiger"] .torpedo-han,
-:root[data-theme="frutiger"] .fu-base h3,
-:root[data-theme="frutiger"] .tile-set-picker select,
-:root[data-theme="frutiger"] .switch-control input:checked + .switch-track {
-    background: linear-gradient(180deg, #7ed957, #33c3f0);
-}
-
-:root[data-theme="frutiger"] .module-card .status.ready {
-    border-color: color-mix(in srgb, var(--pin) 40%, transparent);
-    color: var(--ink);
-    background: color-mix(in srgb, var(--pin) 12%, var(--card-bg));
-}
-
-:root[data-theme="frutiger"] .tiles-card {
-    background:
-        radial-gradient(circle at 20% 24%, rgba(51, 195, 240, 0.16), transparent 30%),
-        radial-gradient(circle at 80% 78%, rgba(126, 217, 87, 0.12), transparent 34%),
-        color-mix(in srgb, var(--card) 92%, transparent);
-}
-
-:root[data-theme="frutiger"] .tiles-stage {
-    border-color: rgba(90, 169, 255, 0.30);
-    background:
-        radial-gradient(circle at 18% 22%, rgba(51, 195, 240, 0.20), transparent 28%),
-        radial-gradient(circle at 82% 74%, rgba(126, 217, 87, 0.16), transparent 32%),
-        linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(212, 239, 255, 0.9));
-    box-shadow: inset 0 0 0 0.08rem rgba(255, 255, 255, 0.95);
-}
-
-:root[data-theme="frutiger"] .green-card { --module-accent: var(--sou); --module-tint: rgba(126, 217, 87, 0.14); }
-:root[data-theme="frutiger"] .blue-card { --module-accent: var(--pin); --module-tint: rgba(90, 169, 255, 0.14); }
-:root[data-theme="frutiger"] .pink-card { --module-accent: var(--man); --module-tint: rgba(255, 111, 165, 0.12); }
-:root[data-theme="frutiger"] .yellow-card { --module-accent: var(--gold); --module-tint: rgba(255, 217, 61, 0.16); }
-:root[data-theme="frutiger"] .orange-card { --module-accent: var(--tsumo); --module-tint: rgba(255, 159, 67, 0.12); }
-:root[data-theme="frutiger"] .purple-card { --module-accent: var(--riichi); --module-tint: rgba(179, 136, 255, 0.14); }
-:root[data-theme="frutiger"] .red-card { --module-accent: var(--man); --module-tint: rgba(255, 111, 165, 0.12); }
-
-/* ── Shinto shrine theme refinements ────────────────────────── */
-:root[data-theme="shinto"] body {
-    background:
-        radial-gradient(circle at 8% 6%, rgba(199, 62, 29, 0.10) 0, transparent 26rem),
-        radial-gradient(circle at 92% 12%, rgba(47, 107, 79, 0.12) 0, transparent 28rem),
-        radial-gradient(circle at 50% 96%, rgba(201, 162, 39, 0.14) 0, transparent 30rem),
-        var(--paper);
-}
-
-:root[data-theme="shinto"] .feedback.good,
-:root[data-theme="shinto"] .status.ready,
-:root[data-theme="shinto"] .family-tab.is-active,
-:root[data-theme="shinto"] .score-tab.is-active,
-:root[data-theme="shinto"] .answer-button.is-correct,
-:root[data-theme="shinto"] .results-row.is-correct .results-mark,
-:root[data-theme="shinto"] .ref-value,
-:root[data-theme="shinto"] .guide-step,
-:root[data-theme="shinto"] .yakuref-value,
-:root[data-theme="shinto"] .torpedo-han,
-:root[data-theme="shinto"] .fu-base h3,
-:root[data-theme="shinto"] .tile-set-picker select,
-:root[data-theme="shinto"] .switch-control input:checked + .switch-track {
-    background: linear-gradient(180deg, #9fc47a, #2f6b4f);
-}
-
-:root[data-theme="shinto"] .module-card .status.ready {
-    border-color: color-mix(in srgb, var(--gold) 42%, transparent);
-    color: var(--ink);
-    background: color-mix(in srgb, var(--gold) 14%, var(--card-bg));
-}
-
-:root[data-theme="shinto"] .tiles-card {
-    background:
-        radial-gradient(circle at 20% 24%, rgba(47, 107, 79, 0.12), transparent 30%),
-        radial-gradient(circle at 80% 78%, rgba(199, 62, 29, 0.10), transparent 34%),
-        color-mix(in srgb, var(--card) 86%, transparent);
-}
-
-:root[data-theme="shinto"] .tiles-stage {
-    border-color: rgba(201, 162, 39, 0.32);
-    background:
-        radial-gradient(circle at 18% 22%, rgba(47, 107, 79, 0.16), transparent 28%),
-        radial-gradient(circle at 82% 74%, rgba(199, 62, 29, 0.12), transparent 32%),
-        linear-gradient(135deg, rgba(255, 250, 240, 0.88), rgba(240, 228, 207, 0.92));
-    box-shadow: inset 0 0 0 0.08rem rgba(255, 255, 255, 0.8);
-}
-
-:root[data-theme="shinto"] .green-card { --module-accent: var(--sou); --module-tint: rgba(106, 143, 63, 0.12); }
-:root[data-theme="shinto"] .blue-card { --module-accent: var(--pin); --module-tint: rgba(59, 107, 143, 0.12); }
-:root[data-theme="shinto"] .pink-card { --module-accent: var(--man); --module-tint: rgba(199, 62, 29, 0.10); }
-:root[data-theme="shinto"] .yellow-card { --module-accent: var(--gold); --module-tint: rgba(201, 162, 39, 0.16); }
-:root[data-theme="shinto"] .orange-card { --module-accent: var(--tsumo); --module-tint: rgba(217, 119, 43, 0.12); }
-:root[data-theme="shinto"] .purple-card { --module-accent: var(--riichi); --module-tint: rgba(138, 90, 143, 0.12); }
-:root[data-theme="shinto"] .red-card { --module-accent: var(--man); --module-tint: rgba(199, 62, 29, 0.12); }
+:root[data-theme]:not([data-theme="light"]) .green-card { --module-accent: var(--sou); --module-tint: color-mix(in srgb, var(--sou) 12%, transparent); }
+:root[data-theme]:not([data-theme="light"]) .blue-card { --module-accent: var(--pin); --module-tint: color-mix(in srgb, var(--pin) 12%, transparent); }
+:root[data-theme]:not([data-theme="light"]) .pink-card,
+:root[data-theme]:not([data-theme="light"]) .red-card { --module-accent: var(--man); --module-tint: color-mix(in srgb, var(--man) 12%, transparent); }
+:root[data-theme]:not([data-theme="light"]) .yellow-card { --module-accent: var(--gold); --module-tint: color-mix(in srgb, var(--gold) 14%, transparent); }
+:root[data-theme]:not([data-theme="light"]) .orange-card { --module-accent: var(--tsumo); --module-tint: color-mix(in srgb, var(--tsumo) 12%, transparent); }
+:root[data-theme]:not([data-theme="light"]) .purple-card { --module-accent: var(--riichi); --module-tint: color-mix(in srgb, var(--riichi) 12%, transparent); }
 
 /* Warm lacquered surfaces for the hand rack and the tile family titles. */
-:root[data-theme="shinto"] .sort-rack {
-    background: color-mix(in oklab, var(--man) 24%, var(--paper-deep));
+:root[data-theme="fox"] .sort-rack {
+    background: color-mix(in oklab, var(--felt) 26%, var(--paper-deep));
 }
 
-:root[data-theme="shinto"] .slide-text h2 {
-    color: var(--man-strong);
+:root[data-theme="fox"] .slide-text h2 {
+    color: var(--felt-strong);
 }

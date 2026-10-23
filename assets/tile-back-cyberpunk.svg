@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 128" role="img" aria-label="Reverso cyberpunk">
+  <defs>
+    <linearGradient id="face" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#f7ffff"/>
+      <stop offset="1" stop-color="#dffbff"/>
+    </linearGradient>
+    <linearGradient id="backbody" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#16283f"/>
+      <stop offset="1" stop-color="#050a10"/>
+    </linearGradient>
+    <filter id="shadow" x="-18%" y="-18%" width="136%" height="146%">
+      <feDropShadow dx="0" dy="3" stdDeviation="1.4" flood-color="#050a10" flood-opacity=".30"/>
+    </filter>
+    <filter id="glow" x="-45%" y="-45%" width="190%" height="190%">
+      <feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="#00f0ff" flood-opacity=".9"/>
+    </filter>
+  </defs>
+  <rect x="10" y="7" width="76" height="113" rx="7" fill="#00f0ff"/>
+  <rect x="10" y="7" width="76" height="105" rx="7" fill="url(#backbody)" stroke="#050a10" stroke-width="3.4" filter="url(#shadow)"/>
+  <path d="M17 112h62l-6 8H23z" fill="#fcee0a" opacity=".55"/>
+  <rect x="17" y="14" width="62" height="91" rx="5" fill="none" stroke="#00f0ff" stroke-width="1.8" opacity=".95"/>
+  <rect x="21" y="18" width="54" height="83" rx="3" fill="none" stroke="#ff2a6d" stroke-width="1.1" opacity=".7"/>
+  <g transform="translate(22 33.5) scale(0.8125)"><g filter="url(#glow)">
+  <defs>
+    <radialGradient id="emb-bg" cx=".5" cy=".4" r=".8"><stop offset="0" stop-color="#16304a"/><stop offset="1" stop-color="#050a12"/></radialGradient>
+  </defs>
+  <path d="M32 2.5 57 17v30L32 61.5 7 47V17Z" fill="url(#emb-bg)" stroke="#00f0ff" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M32 7.5 52.6 19.5v25L32 56.5 11.4 44.5v-25Z" fill="none" stroke="#ff2a6d" stroke-width="1.2" opacity=".8"/>
+  <path d="M11 32c6-9.5 13-14 21-14s15 4.500 21 14c-6 9.500-13 14-21 14S17 41.500 11 32Z" fill="#00f0ff" opacity=".6" transform="translate(-2 0)"/>
+  <path d="M11 32c6-9.5 13-14 21-14s15 4.500 21 14c-6 9.500-13 14-21 14S17 41.500 11 32Z" fill="#ff2a6d" opacity=".6" transform="translate(2 0)"/>
+  <path d="M11 32c6-9.5 13-14 21-14s15 4.500 21 14c-6 9.500-13 14-21 14S17 41.500 11 32Z" fill="#f4feff" stroke="#050a12" stroke-width="2.2" stroke-linejoin="round"/>
+  <circle cx="32" cy="32" r="10.5" fill="#fcee0a" stroke="#050a12" stroke-width="2.2"/>
+  <circle cx="32" cy="32" r="5" fill="#050a12"/>
+  <path d="M32 24v-3M32 43v-3M24 32h-3M43 32h-3" stroke="#050a12" stroke-width="1.6"/>
+  <circle cx="34.6" cy="29.2" r="1.7" fill="#fff"/>
+  <path d="M6 24h5M53 40h5M14 56h6" stroke="#00f0ff" stroke-width="1.6" stroke-linecap="round" opacity=".7"/>
+</g></g>
+</svg>

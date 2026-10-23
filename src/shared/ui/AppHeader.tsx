@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { ThemePicker } from './ThemePicker';
 
 type AppHeaderProps = {
   title?: string;
@@ -97,40 +98,7 @@ export function AppHeader({ title, headline, backTo = 'aprender', home = false }
           ))}
         </nav>
         <div className="side-rail-bottom" id="topbar-controls">
-          <div className="side-rail-theme" role="radiogroup" aria-label="Tema">
-            <label title="Tema claro">
-              <input type="radio" name="theme" value="light" aria-label="Tema claro" />
-              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2" /><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" /></svg>
-            </label>
-            <label title="Tema oscuro neón">
-              <input type="radio" name="theme" value="dark" aria-label="Tema oscuro neón" />
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.6A8 8 0 0 1 9.4 4.5a8 8 0 1 0 10.1 10.1z" /></svg>
-            </label>
-            <label title="Tema cute">
-              <input type="radio" name="theme" value="cute" aria-label="Tema cute" />
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9.5 6.6 3l4.1 3.2a8.4 8.4 0 0 1 2.6 0L17.4 3 19 9.5a8.5 8.5 0 1 1-14 0Z" /><path d="M9.3 13h.01M14.7 13h.01" /></svg>
-            </label>
-            <label title="Tema samurái">
-              <input type="radio" name="theme" value="samurai" aria-label="Tema samurái" />
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 10c0-3 2.5-5.5 5.5-5.5s5.5 2.5 5.5 5.5v1.5l1.5 1.2-1.5.8v2.5c0 1.1-.9 2-2 2h-7c-1.1 0-2-.9-2-2v-2.5l-1.5-.8L6.5 11.5Z" /><path d="M12 1.5c-2.2 1.8-3.5 4.2-3.5 6.5h2.2c0-1.7.8-3.3 2.1-4.5 1.3 1.2 2.1 2.8 2.1 4.5H17c0-2.3-1.3-4.7-3.5-6.5Z" /></svg>
-            </label>
-            <label title="Tema cyberpunk">
-              <input type="radio" name="theme" value="cyberpunk" aria-label="Tema cyberpunk" />
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 20.5 7v10L12 22 3.5 17V7Z" /><path d="m13 6-5 7h4l-1 5 5-7h-4l1-5Z" /></svg>
-            </label>
-            <label title="Tema vaquero">
-              <input type="radio" name="theme" value="vaquero" aria-label="Tema vaquero" />
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15c1.8 2.5 4.4 4 8 4s6.2-1.5 8-4c-2.2-.8-5-1.2-8-1.2S6.2 14.2 4 15Z" /><path d="M7 14c0-4.5 2-7.5 5-7.5s5 3 5 7.5" /></svg>
-            </label>
-            <label title="Tema frutiger aero">
-              <input type="radio" name="theme" value="frutiger" aria-label="Tema frutiger aero" />
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5C9.2 6.7 6 10.5 6 14a6 6 0 0 0 12 0c0-3.5-3.2-7.3-6-11.5Z" /><path d="M9 14.5a3 3 0 0 0 3 3" /></svg>
-            </label>
-            <label title="Tema templo sintoísta">
-              <input type="radio" name="theme" value="shinto" aria-label="Tema templo sintoísta" />
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 5.2h19M4.2 8.2h15.6M7 8.2v12.6M17 8.2v12.6M6.2 11h11.6" /></svg>
-            </label>
-          </div>
+          <ThemePicker assetBase={home ? '' : '../'} />
           <label className="side-rail-lang" title="Idioma">
             <span className="sr-only" data-i18n={home ? 'language.short' : 'language'}>Idioma</span>
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" /><path d="M3.5 12h17M12 3.5c2.4 2.3 3.5 5.2 3.5 8.5s-1.1 6.2-3.5 8.5c-2.4-2.3-3.5-5.2-3.5-8.5s1.1-6.2 3.5-8.5z" /></svg>

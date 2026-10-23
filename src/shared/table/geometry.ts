@@ -1,5 +1,5 @@
 export type TableArt = 'mesa' | 'muro' | 'riichi' | 'dealer' | 'dados' | 'palitos' | 'consola';
-export type TableTheme = 'light' | 'dark' | 'cute' | 'samurai' | 'cyberpunk' | 'vaquero' | 'frutiger' | 'shinto';
+export type TableTheme = 'light' | 'dark' | 'cute' | 'samurai' | 'cyberpunk' | 'vaquero' | 'frutiger' | 'fox';
 
 /** Pages under /aprender, /practicar and /recursos sit one folder deeper than the home page. */
 const assetBase = () => (typeof window !== 'undefined' && /\/(aprender|practicar|recursos)\//.test(window.location.pathname) ? '../' : '');

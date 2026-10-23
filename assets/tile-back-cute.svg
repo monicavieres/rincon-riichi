@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 128" role="img" aria-label="Reverso cute">
+  <defs>
+    <linearGradient id="face" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#fffafc"/>
+      <stop offset="1" stop-color="#ffe9f3"/>
+    </linearGradient>
+    <linearGradient id="backbody" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#ffc9df"/>
+      <stop offset="1" stop-color="#ff9ec7"/>
+    </linearGradient>
+    <filter id="shadow" x="-18%" y="-18%" width="136%" height="146%">
+      <feDropShadow dx="0" dy="3" stdDeviation="1.4" flood-color="#9b4a72" flood-opacity=".30"/>
+    </filter>
+  </defs>
+  <rect x="10" y="7" width="76" height="113" rx="7" fill="#f4b9d3"/>
+  <rect x="10" y="7" width="76" height="105" rx="7" fill="url(#backbody)" stroke="#9b4a72" stroke-width="3.4" filter="url(#shadow)"/>
+  <path d="M17 112h62l-6 8H23z" fill="#e08fb4" opacity=".55"/>
+  <rect x="17" y="14" width="62" height="91" rx="5" fill="none" stroke="#ffffff" stroke-width="1.8" opacity=".95"/>
+  <rect x="21" y="18" width="54" height="83" rx="3" fill="none" stroke="#ff6fa5" stroke-width="1.1" opacity=".7"/>
+  <g transform="translate(22 33.5) scale(0.8125)">
+  <defs>
+    <radialGradient id="emb-bg" cx=".5" cy=".3" r=".8"><stop offset="0" stop-color="#ffe3f0"/><stop offset="1" stop-color="#ff9ec7"/></radialGradient>
+  </defs>
+  <circle cx="32" cy="32" r="29.5" fill="url(#emb-bg)" stroke="#fff" stroke-width="3"/>
+  <circle cx="32" cy="32" r="29.5" fill="none" stroke="#e0679a" stroke-width="1.6"/>
+  <path d="M13 33 14 13l13 9h10l13-9 1 20" fill="#fff" stroke="#7a3358" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M18 27 19 18l7 5ZM46 27l-1-9-7 5Z" fill="#ffb3d1"/>
+  <ellipse cx="32" cy="39" rx="19" ry="15.5" fill="#fff" stroke="#7a3358" stroke-width="3"/>
+  <ellipse cx="20.5" cy="42" rx="4.2" ry="2.8" fill="#ff9ec7"/>
+  <ellipse cx="43.5" cy="42" rx="4.2" ry="2.8" fill="#ff9ec7"/>
+  <ellipse cx="25" cy="37" rx="2.7" ry="3.5" fill="#4a2040"/>
+  <ellipse cx="39" cy="37" rx="2.7" ry="3.5" fill="#4a2040"/>
+  <circle cx="26" cy="35.6" r="1" fill="#fff"/><circle cx="40" cy="35.6" r="1" fill="#fff"/>
+  <path d="M30 42.2h4l-2 2.4Z" fill="#ff5f9a" stroke="#7a3358" stroke-width="1.2" stroke-linejoin="round"/>
+  <path d="M32 44.6c0 2.6-3.2 3-4.6 1.2M32 44.6c0 2.6 3.2 3 4.6 1.2" fill="none" stroke="#7a3358" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M9 40l7 1.4M9.5 46l6.5-1.6M55 40l-7 1.4M54.5 46 48 44.4" stroke="#7a3358" stroke-width="1.5" stroke-linecap="round"/>
+  <g transform="translate(46.5 17)"><path d="M0 0 -7-5v10Z M0 0 7-5v10Z" fill="#b48cff" stroke="#6a3fb0" stroke-width="1.6" stroke-linejoin="round"/><circle r="2.2" fill="#d9c4ff" stroke="#6a3fb0" stroke-width="1.4"/></g>
+</g>
+</svg>

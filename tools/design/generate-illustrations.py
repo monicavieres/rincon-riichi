@@ -31,58 +31,58 @@ THEMES = {
     'dark': {
         'ink': '#2a1038', 'shadow': 'rgba(0,0,0,0.55)', 'rim': '#ff2d95', 'cast': 'rgba(0,0,0,0.50)',
         'rail': '#2a1538', 'felt': '#3a0d2e', 'console': '#241335',
-        'cream': '#fff4fb', 'back': '#00e5ff', 'gold': '#00e5ff', 'pin': '#00e5ff',
+        'cream': '#fff4fb', 'back': '#41134f', 'back_emblem': 'neon', 'gold': '#00e5ff', 'pin': '#00e5ff',
         'sou': '#b6ff00', 'tsumo': '#ff7a18', 'man': '#ff2d95', 'white': '#fff4fb',
         'wood': '#3d1f4f', 'screen': '#00e5ff', 'cplate': '#ff2d95', 'cpurple': '#9d4edd', 'cwell': '#050208', 'cinset': '#2a1538', 'cnum': '#00e5ff', 'cnumline': '#ff2d95',
         'emblem': 'rose',
     },
     'cute': {
         'ink': '#6b3a5a', 'shadow': 'rgba(170,80,130,0.18)', 'rim': '#ffd1e6', 'cast': 'rgba(140,50,100,0.20)',
-        'rail': '#f2a7c3', 'felt': '#ff9ec7', 'console': '#e58bb5',
-        'cream': '#fff5fa', 'back': '#ffd1e6', 'gold': '#ffb3d1', 'pin': '#b18cff',
+        'rail': '#f6bdd2', 'felt': '#9fe3cf', 'console': '#e58bb5',
+        'cream': '#fff5fa', 'back': '#ffb6d3', 'back_emblem': 'cute', 'gold': '#ffb3d1', 'pin': '#b18cff',
         'sou': '#ff7fae', 'tsumo': '#ff9f7a', 'man': '#e84f8f', 'white': '#fffafd',
         'wood': '#ffc2d9', 'screen': '#ffd9ea', 'cplate': '#ff9ec7', 'cpurple': '#b46bd6', 'cwell': '#6b3a5a', 'cinset': '#8f5b77', 'cnum': '#fff5fa', 'cnumline': '#b46bd6',
         'emblem': 'cat',
     },
     'samurai': {
         'ink': '#1d2635', 'shadow': 'rgba(60,45,20,0.18)', 'rim': '#c9a227', 'cast': 'rgba(20,30,40,0.24)',
-        'rail': '#6f4a2f', 'felt': '#33566b', 'console': '#2b2f3a',
-        'cream': '#f7f0df', 'back': '#d9c38a', 'gold': '#c9a227', 'pin': '#2f5d7c',
+        'rail': '#3d2b22', 'felt': '#2f4f86', 'console': '#2b2f3a',
+        'cream': '#f7f0df', 'back': '#2f4670', 'back_emblem': 'samurai', 'gold': '#c9a227', 'pin': '#2f5d7c',
         'sou': '#4f6b4a', 'tsumo': '#b5651d', 'man': '#9e2b2b', 'white': '#fbf7ec',
         'wood': '#9a6a42', 'screen': '#cfe0e8', 'cplate': '#33566b', 'cpurple': '#6b4c7a', 'cwell': '#14171c', 'cinset': '#3a2a1d', 'cnum': '#f7e9c8', 'cnumline': '#6b4c7a',
         'emblem': 'kabuto',
     },
     'cyberpunk': {
         'ink': '#050a10', 'shadow': 'rgba(0,0,0,0.60)', 'rim': '#00f0ff', 'cast': 'rgba(0,0,0,0.52)',
-        'rail': '#1b2430', 'felt': '#0a1420', 'console': '#101c2b',
-        'cream': '#f7ffff', 'back': '#fcee0a', 'gold': '#fcee0a', 'pin': '#00f0ff',
+        'rail': '#18212f', 'felt': '#08182a', 'console': '#101c2b',
+        'cream': '#f7ffff', 'back': '#12233a', 'back_emblem': 'cyberpunk', 'gold': '#fcee0a', 'pin': '#00f0ff',
         'sou': '#a8ff60', 'tsumo': '#ff9f1c', 'man': '#ff2a6d', 'white': '#f7ffff',
         'wood': '#26384a', 'screen': '#00f0ff', 'cplate': '#ff2a6d', 'cpurple': '#b967ff', 'cwell': '#02050a', 'cinset': '#1b2430', 'cnum': '#fcee0a', 'cnumline': '#ff2a6d',
         'emblem': 'eye',
     },
     'vaquero': {
         'ink': '#3b2a1a', 'shadow': 'rgba(80,50,20,0.20)', 'rim': None, 'cast': 'rgba(60,40,20,0.25)',
-        'rail': '#8b5a2b', 'felt': '#2a9d8f', 'console': '#5c3a1b',
-        'cream': '#fff6e5', 'back': '#e9c46a', 'gold': '#e9c46a', 'pin': '#3b5b7a',
+        'rail': '#6a3f1f', 'felt': '#8f2f35', 'console': '#5c3a1b',
+        'cream': '#fff6e5', 'back': '#bb7c40', 'back_emblem': 'vaquero', 'gold': '#e9c46a', 'pin': '#3b5b7a',
         'sou': '#6a994e', 'tsumo': '#e76f51', 'man': '#bc4749', 'white': '#fffaf0',
-        'wood': '#c98a4b', 'screen': '#a8dadc', 'cplate': '#2a9d8f', 'cpurple': '#7b5e7b', 'cwell': '#2b1d12', 'cinset': '#5c3a1b', 'cnum': '#fff6e5', 'cnumline': '#3b5b7a',
+        'wood': '#c98a4b', 'screen': '#a8dadc', 'cplate': '#d9a05b', 'cpurple': '#7a3b22', 'cwell': '#2b1d12', 'cinset': '#5c3a1b', 'cnum': '#fff6e5', 'cnumline': '#4a2c14',
         'emblem': 'star',
     },
     'frutiger': {
         'ink': '#0b4f6c', 'shadow': 'rgba(20,80,120,0.18)', 'rim': '#ffffff', 'cast': 'rgba(20,100,140,0.18)',
-        'rail': '#7ed0f0', 'felt': '#33c3f0', 'console': '#8fe3ff',
-        'cream': '#ffffff', 'back': '#b7e4f9', 'gold': '#ffd93d', 'pin': '#5aa9ff',
+        'rail': '#d6f2ff', 'felt': '#3ec4f0', 'console': '#8fe3ff',
+        'cream': '#ffffff', 'back': '#a6e8ff', 'back_emblem': 'frutiger', 'gold': '#ffd93d', 'pin': '#5aa9ff',
         'sou': '#7ed957', 'tsumo': '#ff9f43', 'man': '#ff6fa5', 'white': '#ffffff',
         'wood': '#a8e6ff', 'screen': '#d8f6ff', 'cplate': '#5aa9ff', 'cpurple': '#b388ff', 'cwell': '#0b4f6c', 'cinset': '#6fbcd8', 'cnum': '#ffffff', 'cnumline': '#5aa9ff',
         'emblem': 'drop',
     },
-    'shinto': {
-        'ink': '#2b1a18', 'shadow': 'rgba(80,30,15,0.20)', 'rim': '#e0b34a', 'cast': 'rgba(60,30,15,0.24)',
-        'rail': '#c73e1d', 'felt': '#2f6b4f', 'console': '#3a211b',
-        'cream': '#fff8ea', 'back': '#e9c46a', 'gold': '#c9a227', 'pin': '#3b6b8f',
-        'sou': '#6a8f3f', 'tsumo': '#d9772b', 'man': '#c73e1d', 'white': '#fffaf0',
-        'wood': '#a86b43', 'screen': '#d8f0e2', 'cplate': '#c73e1d', 'cpurple': '#3a211b', 'cwell': '#1a0f0c', 'cinset': '#6e2316', 'cnum': '#fff6e5', 'cnumline': '#8a2a16',
-        'emblem': 'fox', 'rail_top': '#c73e1d', 'rail_skirt': '#4a241a', 'rail_leg': '#2b1a18',
+    'fox': {
+        'ink': '#3a1a0c', 'shadow': 'rgba(120,60,15,0.20)', 'rim': '#ffd29a', 'cast': 'rgba(80,35,10,0.26)',
+        'rail': '#e8742a', 'felt': '#2f5d46', 'console': '#4a2a18',
+        'cream': '#fff6e8', 'back': '#f08a30', 'back_emblem': 'fox', 'gold': '#f0b347', 'pin': '#3b6b8f',
+        'sou': '#6a8f3f', 'tsumo': '#e8742a', 'man': '#d9531e', 'white': '#fffaf0',
+        'wood': '#c98a4b', 'screen': '#d8f0e2', 'cplate': '#e8742a', 'cpurple': '#4a2a18', 'cwell': '#1f0f08', 'cinset': '#7a3510', 'cnum': '#fff6e5', 'cnumline': '#7a3510',
+        'rail_top': '#e8742a', 'rail_skirt': '#7a3510', 'rail_leg': '#3a1a0c',
     },
 }
 
@@ -100,6 +100,7 @@ def P(x, y, z):
 class Scene:
     def __init__(self, t):
         self.t, self.items, self.pts, self.glyphs = t, [], [], set()
+        self.emblem = t.get('back_emblem')
 
     def poly(self, pts3, fill, stroke=True, sw=1.6, extra=''):
         pts = [P(*p) for p in pts3]
@@ -164,6 +165,8 @@ class Scene:
         body = ''.join(s for _, s in sorted(self.items, key=lambda i: i[0]))
         rim = ''
         g_open = '<g>'
+        if self.emblem and any('href="#emb"' in item for _, item in self.items):
+            rim += '<defs><g id="emb">' + emblem_markup(self.emblem) + '</g></defs>'
         if self.glyphs:
             rim += '<defs>' + ''.join(f'<image id="g-{c}" href="{glyph_data(c)}" width="1" height="1" preserveAspectRatio="none"/>' for c in sorted(self.glyphs)) + '</defs>'
         if self.t['rim']:
@@ -175,6 +178,44 @@ class Scene:
         dims = f' width="{size[0]}" height="{size[1]}"' if size else ''
         return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x0:.1f} {y0:.1f} {w:.1f} {h:.1f}"{dims} role="img" aria-label="{label}">'
                 f'{rim}{g_open}{body}</g></svg>\n')
+
+
+def emblem_markup(name):
+    """Inner markup of assets/emblems/<name>.svg (64x64), the logo shown on the back of the theme's tiles."""
+    svg = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'assets', 'emblems', f'{name}.svg')).read()
+    return re.sub(r'<svg[^>]*>', '', svg, count=1).replace('</svg>', '').replace('id="emb-', 'id="embg-').replace('url(#emb-', 'url(#embg-')
+
+
+def emblem_use(a, b, c, d, e, f):
+    return f'<use href="#emb" transform="matrix({a:.4f} {b:.4f} {c:.4f} {d:.4f} {e:.2f} {f:.2f})"/>'
+
+
+def emblem_top(size=12):
+    """Emblem lying on a tile's top face, upright for the viewer at the table's front corner."""
+    def f(s, x, y, z, w, d, h):
+        if not s.emblem:
+            return ''
+        k = size / 64.0
+        a, dd = k * math.sqrt(2) * C30, k * math.sqrt(0.5)
+        px, py = P(x + w / 2, y + d / 2, z + h + 0.05)
+        return emblem_use(a, 0, 0, dd, px - 32 * a, py - 32 * dd)
+    return f
+
+
+def emblem_side(face, size=15):
+    """Emblem on the +y face ('y') or +x face ('x') of a standing tile."""
+    def f(s, x, y, z, w, d, h):
+        if not s.emblem:
+            return ''
+        k = size / 64.0
+        if face == 'y':
+            px, py = P(x + w / 2, y + d + 0.05, z + h / 2)
+            a, b = k * C30, k * S30
+        else:
+            px, py = P(x + w + 0.05, y + d / 2, z + h / 2)
+            a, b = k * C30, -k * S30
+        return emblem_use(a, b, 0, k, px - 32 * a, py - 32 * b - 32 * k)
+    return f
 
 
 # ── decorations ──────────────────────────────────────────────
@@ -339,10 +380,10 @@ def text_top(char, colour, size):
 
 
 # ── builders ─────────────────────────────────────────────────
-def tile_lying(s, x, y, z, along_x=True):
+def tile_lying(s, x, y, z, along_x=True, emblem=False):
     w, d = (20, 27) if along_x else (27, 20)
     t = s.t
-    s.box(x, y, z, w, d, 15, t['back'], bands=[(0.5, t['cream']), (1.0, t['back'])], sw=1.2)
+    s.box(x, y, z, w, d, 15, t['back'], bands=[(0.5, t['cream']), (1.0, t['back'])], deco=[emblem_top(12)] if emblem else (), sw=1.2)
 
 
 def wall(s, x, y, n, along_x, z, gaps=(), face_up=None, split=()):
@@ -358,7 +399,7 @@ def wall(s, x, y, n, along_x, z, gaps=(), face_up=None, split=()):
         if i in face_up:
             tile_face_up(s, xx, yy, z + 15, face_up[i], 'S' if along_x else 'E')
         else:
-            tile_lying(s, xx, yy, z + 15, along_x)
+            tile_lying(s, xx, yy, z + 15, along_x, emblem=True)
 
 
 def die(s, x, y, z, a=14, faces=(1, 3, 5)):
@@ -433,125 +474,6 @@ NUM_FONT = "'Barlow Semi Condensed','Barlow',system-ui,sans-serif"
 SEAT_TEXT = {'E': ((1, 0), (0, 1)), 'W': ((-1, 0), (0, -1)), 'N': ((0, 1), (-1, 0)), 'S': ((0, -1), (1, 0))}
 
 
-def draw_emblem(flat, t, kind):
-    """Theme artwork in the middle of the wind plate, in plate coordinates (centre 350, 350)."""
-    ink = t['ink']
-
-    def poly(pts, fill, layer=2, stroke=True, sw=1.6, extra=''):
-        flat(pts, fill, sw=sw, stroke=stroke, extra=extra, n=layer)
-
-    def circ(cx, cy, r, fill, layer=2, stroke=True, sw=1.2, extra=''):
-        poly(ellipse_pts(cx, cy, r, r), fill, layer=layer, stroke=stroke, sw=sw, extra=extra)
-
-    def bar(x1, y1, x2, y2, width=2.4, fill=None, layer=3, extra=''):
-        dx, dy = x2 - x1, y2 - y1
-        length = math.hypot(dx, dy) or 1.0
-        nx, ny = -dy / length * width / 2, dx / length * width / 2
-        poly([(x1 + nx, y1 + ny), (x2 + nx, y2 + ny), (x2 - nx, y2 - ny), (x1 - nx, y1 - ny)],
-             fill or ink, layer=layer, stroke=False, extra=extra)
-
-    if kind == 'cat':
-        poly([(300, 326), (291, 266), (340, 304)], t['cream'], layer=2, sw=2.2)
-        poly([(400, 326), (409, 266), (360, 304)], t['cream'], layer=2, sw=2.2)
-        poly([(307, 318), (301, 281), (331, 307)], t['man'], layer=3, stroke=False)
-        poly([(393, 318), (399, 281), (369, 307)], t['man'], layer=3, stroke=False)
-        circ(350, 362, 61, t['cream'], layer=2, sw=2.2)
-        for side in (-1, 1):
-            for x1, y1, x2, y2 in ((310, 368, 272, 360), (310, 380, 268, 380), (310, 392, 274, 400)):
-                bar(350 + side * (x1 - 350), y1, 350 + side * (x2 - 350), y2, width=2.2, fill=ink, layer=3)
-        circ(327, 355, 7.2, ink, layer=4, stroke=False)
-        circ(373, 355, 7.2, ink, layer=4, stroke=False)
-        circ(329.5, 352, 2.6, t['white'], layer=5, stroke=False)
-        circ(375.5, 352, 2.6, t['white'], layer=5, stroke=False)
-        poly([(342, 372), (358, 372), (350, 381)], t['man'], layer=4, stroke=False)
-        bar(350, 382, 337, 390, width=2.4, fill=ink, layer=4)
-        bar(350, 382, 363, 390, width=2.4, fill=ink, layer=4)
-    elif kind == 'fox':
-        poly([(312, 322), (288, 250), (344, 298)], t['cream'], layer=2, sw=2.2)
-        poly([(388, 322), (412, 250), (356, 298)], t['cream'], layer=2, sw=2.2)
-        poly([(315, 314), (301, 266), (335, 301)], t['man'], layer=3, stroke=False)
-        poly([(385, 314), (399, 266), (365, 301)], t['man'], layer=3, stroke=False)
-        poly([(350, 290), (382, 302), (410, 338), (404, 380), (378, 404), (350, 420),
-              (322, 404), (296, 380), (290, 338), (318, 302)], t['cream'], layer=2, sw=2.2)
-        poly([(290, 350), (268, 360), (292, 372)], t['cream'], layer=2, sw=1.6)
-        poly([(410, 350), (432, 360), (408, 372)], t['cream'], layer=2, sw=1.6)
-        poly(ellipse_pts(350, 376, 36, 22), t['white'], layer=3, stroke=False)
-        poly([(320, 414), (380, 414), (394, 440), (306, 440)], t['man'], layer=3, sw=2)
-        circ(350, 431, 7, t['gold'], layer=4, sw=1.4)
-        poly([(316, 348), (330, 342), (334, 352), (320, 357)], t['ink'], layer=4, stroke=False)
-        poly([(384, 348), (370, 342), (366, 352), (380, 357)], t['ink'], layer=4, stroke=False)
-        circ(324, 349, 1.8, t['white'], layer=5, stroke=False)
-        circ(376, 349, 1.8, t['white'], layer=5, stroke=False)
-        poly([(303, 338), (313, 335), (310, 347)], t['man'], layer=4, stroke=False)
-        poly([(397, 338), (387, 335), (390, 347)], t['man'], layer=4, stroke=False)
-        poly([(342, 312), (358, 312), (350, 326)], t['man'], layer=4, stroke=False)
-        poly([(344, 371), (356, 371), (350, 380)], t['ink'], layer=4, stroke=False)
-        bar(350, 380, 340, 388, width=2.2, fill=ink, layer=4)
-        bar(350, 380, 360, 388, width=2.2, fill=ink, layer=4)
-        for side in (-1, 1):
-            for x1, y1, x2, y2 in ((316, 372, 278, 364), (316, 382, 274, 382), (316, 392, 280, 400)):
-                bar(350 + side * (x1 - 350), y1, 350 + side * (x2 - 350), y2, width=2, fill=ink, layer=3)
-    elif kind == 'kabuto':
-        poly([(288, 362), (412, 362), (424, 382), (276, 382)], shade(t['gold'], 0.72), layer=2, sw=2)
-        poly([(280, 382), (420, 382), (432, 401), (268, 401)], shade(t['gold'], 0.62), layer=2, sw=2)
-        poly([(296, 362), (305, 326), (322, 303), (344, 292), (356, 292), (378, 303), (395, 326), (404, 362)],
-             t['gold'], layer=3, sw=2.2)
-        poly([(322, 326), (282, 268), (296, 258), (336, 314)], t['gold'], layer=3, sw=2)
-        poly([(378, 326), (418, 268), (404, 258), (364, 314)], t['gold'], layer=3, sw=2)
-        poly([(319, 318), (292, 274), (300, 268), (330, 310)], shade(t['gold'], 1.15), layer=4, stroke=False)
-        poly([(381, 318), (408, 274), (400, 268), (370, 310)], shade(t['gold'], 1.15), layer=4, stroke=False)
-        poly([(308, 346), (392, 346), (392, 365), (308, 365)], ink, layer=4, stroke=False)
-        poly([(308, 346), (392, 346), (392, 351), (308, 351)], t['cream'], layer=5, stroke=False)
-        circ(350, 319, 13, t['man'], layer=5, sw=1.8)
-        circ(350, 319, 6, t['gold'], layer=6, stroke=False)
-        for x in (300, 350, 400):
-            circ(x, 389, 3.2, t['gold'], layer=5, stroke=False)
-    elif kind == 'eye':
-        def almond(scale=1.0):
-            pts = [(278, 350), (292, 331), (313, 317), (336, 309), (350, 307), (364, 309),
-                   (387, 317), (408, 331), (422, 350), (408, 369), (387, 383), (364, 391),
-                   (350, 393), (336, 391), (313, 383), (292, 369)]
-            return [(350 + (x - 350) * scale, 350 + (y - 350) * scale) for x, y in pts]
-        poly(almond(1.3), t['pin'], layer=2, stroke=False)
-        poly(almond(1.18), t['cwell'], layer=3, stroke=False)
-        bar(256, 350, 230, 350, width=3, fill=t['pin'], layer=3)
-        bar(444, 350, 470, 350, width=3, fill=t['pin'], layer=3)
-        bar(230, 350, 220, 338, width=2.2, fill=t['pin'], layer=3)
-        bar(470, 350, 480, 362, width=2.2, fill=t['pin'], layer=3)
-        circ(220, 338, 4, t['pin'], layer=4, stroke=False)
-        circ(480, 362, 4, t['pin'], layer=4, stroke=False)
-        circ(350, 350, 38, t['pin'], layer=4, stroke=False)
-        circ(350, 350, 33, t['man'], layer=5, stroke=False)
-        circ(350, 350, 15, t['cwell'], layer=6, stroke=False)
-        circ(341, 341, 5.5, t['white'], layer=7, stroke=False)
-        bar(320, 350, 380, 350, width=2, fill=t['gold'], layer=7, extra=' opacity="0.7"')
-    elif kind == 'star':
-        def star(r_out, r_in, layer, fill, sw):
-            pts = []
-            for i in range(10):
-                r = r_out if i % 2 == 0 else r_in
-                ang = -math.pi / 2 + i * math.pi / 5
-                pts.append((350 + r * math.cos(ang), 350 + r * math.sin(ang)))
-            poly(pts, fill, layer=layer, sw=sw)
-        star(84, 35, 2, t['gold'], 2.4)
-        star(52, 22, 3, shade(t['gold'], 0.84), 1.6)
-        circ(350, 350, 15, t['man'], layer=4, sw=1.8)
-        circ(350, 350, 7, t['gold'], layer=5, stroke=False)
-        for i in range(5):
-            ang = -math.pi / 2 + i * 2 * math.pi / 5
-            circ(350 + 70 * math.cos(ang), 350 + 70 * math.sin(ang), 3.2, t['cream'], layer=4, stroke=False)
-    elif kind == 'drop':
-        drop = parse_path('M350 276 C378 316 410 346 410 374 C410 406 383 430 350 430 '
-                          'C317 430 290 406 290 374 C290 346 322 316 350 276 Z', steps=12)
-        poly([(350 + (x - 350) * 1.05, 350 + (y - 350) * 1.05) for x, y in drop], t['white'], layer=2, stroke=False)
-        poly(drop, t['pin'], layer=3, stroke=False)
-        poly(rotate_pts(ellipse_pts(326, 340, 12, 19), 326, 340, -24), t['white'], layer=4, stroke=False,
-             extra=' opacity="0.85"')
-        circ(370, 398, 7, t['white'], layer=4, stroke=False, extra=' opacity="0.65"')
-        circ(302, 386, 4, t['white'], layer=4, stroke=False, extra=' opacity="0.55"')
-        circ(388, 326, 3, t['white'], layer=4, stroke=False, extra=' opacity="0.55"')
-
-
 def console(s, x, y, z, a=120, riichi=('E',)):
     """The compass: the site's wind-indicator plate (assets/wind-indicator-rincon.svg) laid on the table, without its
     round-wind screen. Same orientation as the original: East at the bottom (the viewer's seat, the dealer),
@@ -608,14 +530,18 @@ def console(s, x, y, z, a=120, riichi=('E',)):
               deco=[dot], sw=0.9, key=(k[0] + 2, k[1]))
     # compass rose in the middle (light/dark) or the theme's emblem
     emblem = t.get('emblem', 'rose')
-    if emblem == 'rose':
+    if t.get('back_emblem'):
+        # the theme's badge, the same artwork as the logo on its tile backs
+        kk = 30 / 64.0
+        ea, ed = kk * math.sqrt(2) * C30, kk * math.sqrt(0.5)
+        epx, epy = P(cx, cy, top + 0.25)
+        s.raw((k[0] + 3, k[1]), emblem_use(ea, 0, 0, ed, epx - 32 * ea, epy - 32 * ed))
+    elif emblem == 'rose':
         ring = lambda r: [(350 + r * math.cos(math.pi * n / 12), 350 + r * math.sin(math.pi * n / 12)) for n in range(24)]
         for r_, w_ in ((82, 1.0), (62, 0.7)):
             flat(ring(r_), 'none', stroke=False, extra=f' stroke="#eee9ff" stroke-width="{w_}"', n=2)
         rose = 'M350 263L368 330L437 312L387 360L437 408L368 390L350 457L332 390L263 408L313 360L263 312L332 330L350 263Z'
         flat(parse_path(rose), '#f7f2ff', sw=0.6, n=2)
-    else:
-        draw_emblem(flat, t, emblem)
     # seat labels, each upright for the player in that seat
     labels = (('E', 350, 565, '5 · 9', 31, 350, 492, '東'), ('W', 350, 140, '3 · 7 · 11', 31, 350, 225, '西'),
               ('N', 140, 350, '4 · 8 · 12', 29, 230, 350, '北'), ('S', 560, 350, '2 · 6 · 10', 29, 470, 350, '南'))
@@ -670,9 +596,9 @@ def tile_standing(s, x, y, z, code, seat):
         s.box(x, y, z, 15, 20, 27, t['cream'], left=side, right=face, sw=1.1,
               deco=[lambda s_, *a: face_glyph(s_, code, (x + 15, y + 19, z + 25.5), (0, -18, 0), (0, 0, -24))])
     elif seat == 'N':
-        s.box(x, y, z, 20, 15, 27, t['cream'], left=back, right=side, sw=1.1)
+        s.box(x, y, z, 20, 15, 27, t['cream'], left=back, right=side, deco=[emblem_side('y', 15)], sw=1.1)
     else:
-        s.box(x, y, z, 15, 20, 27, t['cream'], left=side, right=back, sw=1.1)
+        s.box(x, y, z, 15, 20, 27, t['cream'], left=side, right=back, deco=[emblem_side('x', 15)], sw=1.1)
 
 
 def hand(s, seat, codes, z):

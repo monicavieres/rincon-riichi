@@ -35,7 +35,7 @@ export const tableExplorerStops: TableExplorerStop[] = [
     practicePrompt: 'Recorre los pasos de la mesa. No necesitas memorizarlo todo: primero ubica de dónde se roba, dónde se descarta y dónde miras la ronda.',
     actionLabel: 'Abrir tutorial desde cero',
     route: 'aprender/tutorial.html',
-    hotspot: [585, 585, 122],
+    hotspot: [26, 26, 122],
     focus: { boxes: [{ x: 0, y: 0, z: 92, w: 600, d: 600, h: 29 }], zoom: 1 },
     callouts: [],
   },

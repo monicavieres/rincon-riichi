@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 128" role="img" aria-label="Reverso neon">
+  <defs>
+    <linearGradient id="face" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#fff6fb"/>
+      <stop offset="1" stop-color="#f6d9ea"/>
+    </linearGradient>
+    <linearGradient id="backbody" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#41134f"/>
+      <stop offset="1" stop-color="#170a24"/>
+    </linearGradient>
+    <filter id="shadow" x="-18%" y="-18%" width="136%" height="146%">
+      <feDropShadow dx="0" dy="3" stdDeviation="1.4" flood-color="#2a1038" flood-opacity=".30"/>
+    </filter>
+    <filter id="glow" x="-45%" y="-45%" width="190%" height="190%">
+      <feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="#ff2d95" flood-opacity=".9"/>
+    </filter>
+  </defs>
+  <rect x="10" y="7" width="76" height="113" rx="7" fill="#ff2d95"/>
+  <rect x="10" y="7" width="76" height="105" rx="7" fill="url(#backbody)" stroke="#2a1038" stroke-width="3.4" filter="url(#shadow)"/>
+  <path d="M17 112h62l-6 8H23z" fill="#ff2d95" opacity=".55"/>
+  <rect x="17" y="14" width="62" height="91" rx="5" fill="none" stroke="#00e5ff" stroke-width="1.8" opacity=".95"/>
+  <rect x="21" y="18" width="54" height="83" rx="3" fill="none" stroke="#ff2d95" stroke-width="1.1" opacity=".7"/>
+  <g transform="translate(22 33.5) scale(0.8125)"><g filter="url(#glow)">
+  <defs>
+    <radialGradient id="emb-bg" cx=".5" cy=".38" r=".75"><stop offset="0" stop-color="#5a1c78"/><stop offset="1" stop-color="#1a0a2a"/></radialGradient>
+    <linearGradient id="emb-bolt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff59a"/><stop offset=".55" stop-color="#ffd400"/><stop offset="1" stop-color="#ff9a00"/></linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="29.5" fill="url(#emb-bg)" stroke="#ff2d95" stroke-width="3"/>
+  <circle cx="32" cy="32" r="25" fill="none" stroke="#00e5ff" stroke-width="1.4" opacity=".85"/>
+  <path d="M37 7 17 35h12l-5 21 23-29H34l7-20Z" fill="#ff2d95" opacity=".5" transform="translate(0 0) scale(1.0)" stroke="#ff2d95" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M37 7 17 35h12l-5 21 23-29H34l7-20Z" fill="url(#emb-bolt)" stroke="#2a1038" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M36 12 24 31" stroke="#fffde0" stroke-width="2.2" stroke-linecap="round" opacity=".9"/>
+  <path d="M9 22l1.2 3 3 1.2-3 1.2L9 30.4 7.8 27.4 4.8 26.2l3-1.2Z" fill="#00e5ff" transform="translate(3 -6) scale(.9)"/>
+  <path d="M50 40l1 2.4 2.4 1-2.4 1L50 47l-1-2.6-2.4-1 2.4-1Z" fill="#fff"/>
+</g></g>
+</svg>

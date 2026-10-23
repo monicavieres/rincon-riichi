@@ -51,6 +51,7 @@ for (const page of pages) {
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
+    <script>try{var t=localStorage.getItem("theme");if(t==="shinto")t="fox";if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#fdf9f7" />
     <title>${title}</title>

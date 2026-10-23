@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 128" role="img" aria-label="Reverso fox">
+  <defs>
+    <linearGradient id="face" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#fffaf0"/>
+      <stop offset="1" stop-color="#fbe9cf"/>
+    </linearGradient>
+    <linearGradient id="backbody" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#ff9a38"/>
+      <stop offset="1" stop-color="#d4570f"/>
+    </linearGradient>
+    <filter id="shadow" x="-18%" y="-18%" width="136%" height="146%">
+      <feDropShadow dx="0" dy="3" stdDeviation="1.4" flood-color="#4a2410" flood-opacity=".30"/>
+    </filter>
+  </defs>
+  <rect x="10" y="7" width="76" height="113" rx="7" fill="#f08a30"/>
+  <rect x="10" y="7" width="76" height="105" rx="7" fill="url(#backbody)" stroke="#4a2410" stroke-width="3.4" filter="url(#shadow)"/>
+  <path d="M17 112h62l-6 8H23z" fill="#e5651a" opacity=".55"/>
+  <rect x="17" y="14" width="62" height="91" rx="5" fill="none" stroke="#fff1d6" stroke-width="1.8" opacity=".95"/>
+  <rect x="21" y="18" width="54" height="83" rx="3" fill="none" stroke="#4a2410" stroke-width="1.1" opacity=".7"/>
+  <g transform="translate(22 33.5) scale(0.8125)">
+  <defs>
+    <radialGradient id="emb-bg" cx=".5" cy=".3" r=".85"><stop offset="0" stop-color="#ffe2b8"/><stop offset="1" stop-color="#f6a04a"/></radialGradient>
+    <linearGradient id="emb-fur" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a2e"/><stop offset="1" stop-color="#e5651a"/></linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="29.5" fill="url(#emb-bg)" stroke="#5a2a12" stroke-width="3"/>
+  <path d="M10 30 12.500 7 29 19Z" fill="url(#emb-fur)" stroke="#5a2a12" stroke-width="2.800" stroke-linejoin="round"/>
+  <path d="M54 30 51.500 7 35 19Z" fill="url(#emb-fur)" stroke="#5a2a12" stroke-width="2.800" stroke-linejoin="round"/>
+  <path d="M15 24 15.800 13.500 23.500 19.500ZM49 24 48.200 13.500 40.500 19.500Z" fill="#3a1a0c"/>
+  <path d="M9.500 33C9.500 25 17 19.500 32 19.500S54.500 25 54.500 33c0 9-8 18-22.500 24.500C17.500 51 9.500 42 9.500 33Z" fill="url(#emb-fur)" stroke="#5a2a12" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M9.800 36c5 1.600 11 3 15.200 7.500l7 14C18 51 11 45 9.800 36ZM54.200 36c-5 1.600-11 3-15.200 7.500l-7 14C46 51 53 45 54.200 36Z" fill="#fff8ec"/>
+  <path d="M25 43.500c3.500 2.200 10.500 2.200 14 0L32 58Z" fill="#fff8ec"/>
+  <ellipse cx="21" cy="34.600" rx="4.800" ry="2.700" fill="#3a1a0c" transform="rotate(-20 21 34.600)"/>
+  <ellipse cx="43" cy="34.600" rx="4.800" ry="2.700" fill="#3a1a0c" transform="rotate(20 43 34.600)"/>
+  <circle cx="22.300" cy="33.600" r="1.300" fill="#fff"/><circle cx="41.700" cy="33.600" r="1.300" fill="#fff"/>
+  <path d="M32 21v7" stroke="#c4501a" stroke-width="2.400" stroke-linecap="round"/>
+  <ellipse cx="32" cy="51.500" rx="3.600" ry="2.800" fill="#2a1208"/>
+  <path d="M32 54.300v1.500" stroke="#2a1208" stroke-width="1.600" stroke-linecap="round"/>
+</g>
+</svg>
