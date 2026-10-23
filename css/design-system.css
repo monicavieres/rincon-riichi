@@ -164,12 +164,7 @@
 body {
     color: var(--text);
     font-family: var(--font-sans);
-    background-color: var(--paper);
-    background-image:
-        linear-gradient(var(--line-soft) 1px, transparent 1px),
-        linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
-    background-size: var(--space-6) var(--space-6);
-    background-attachment: fixed;
+    background: var(--paper);
 }
 
 h1,
@@ -1010,11 +1005,7 @@ body:has(.side-rail) {
     padding: var(--space-4) var(--space-4) var(--space-3);
     border: var(--border-hair) solid var(--line);
     border-radius: var(--radius-xl);
-    background-color: var(--card-sunk);
-    background-image:
-        linear-gradient(var(--line-soft) 1px, transparent 1px),
-        linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
-    background-size: var(--space-6) var(--space-6);
+    background: radial-gradient(ellipse at 50% 46%, var(--card) 0, var(--card-sunk) 78%);
     overflow: hidden;
 }
 
