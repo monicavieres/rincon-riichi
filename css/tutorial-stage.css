@@ -444,6 +444,10 @@
     filter: drop-shadow(0 2px 1px rgba(10, 30, 28, 0.3));
 }
 
+.tutorial-rail {
+    margin-top: var(--space-6);
+}
+
 .tutorial-rail button.is-part-play.is-active { border-color: var(--riichi); }
 .tutorial-rail button.is-part-win.is-active { border-color: var(--gold-strong); }
 

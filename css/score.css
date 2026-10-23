@@ -5,14 +5,14 @@
 
 .score-shell {
     width: min(1560px, calc(100% - clamp(1rem, 3vw, 2.5rem)));
-    padding-bottom: 1.5rem;
+    padding-bottom: 3rem;
 }
 
 .score-page {
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
     gap: clamp(0.5rem, 1vw, 0.78rem);
-    min-height: calc(100vh - 6.45rem);
+    min-height: calc(100vh - 8.7rem);
     margin-top: 0.45rem;
     padding: clamp(0.75rem, 1.45vw, 1.1rem);
 }
