@@ -105,7 +105,7 @@ export const tableExplorerStops: TableExplorerStop[] = [
     hotspot: [116, 470, 151],
     focus: { boxes: [{ x: 103, y: 130, z: FELT, w: 27, d: 340, h: 30 }], zoom: 2 },
     callouts: [
-      { label: '17 pilas por lado', at: [116, 140, FELT + 30], dx: -40, dy: -46 },
+      { label: '17 pilas por lado', at: [103, 130, FELT + 30], dx: -40, dy: -46 },
       { label: '2 fichas de alto', at: [103, 300, FELT + 15], dx: -86, dy: 20 },
     ],
   },
@@ -126,9 +126,9 @@ export const tableExplorerStops: TableExplorerStop[] = [
     hotspot: [483, 246, 151],
     focus: { boxes: [{ x: 470, y: 236, z: FELT, w: 27, d: 140, h: 30 }], zoom: 2.8 },
     callouts: [
-      { label: 'Indicador de dora', at: [483, 326, FELT + 30], dx: 70, dy: -54 },
+      { label: 'Indicador de dora', at: [497, 326, FELT + 30], dx: 70, dy: -54 },
       { label: 'Corte del muro', at: [483, 400, FELT], dx: 64, dy: 30 },
-      { label: '7 pilas apartadas: 14 fichas', at: [483, 250, FELT + 30], dx: -30, dy: -96 },
+      { label: '7 pilas apartadas: 14 fichas', at: [470, 246, FELT + 30], dx: -30, dy: -96 },
     ],
   },
   {
@@ -148,8 +148,8 @@ export const tableExplorerStops: TableExplorerStop[] = [
     hotspot: [170, 541, 148],
     focus: { boxes: [{ x: 170, y: 534, z: FELT, w: 260, d: 15, h: 27 }], zoom: 2.6 },
     callouts: [
-      { label: '13 fichas, cara hacia ti', at: [220, 549, FELT + 20], dx: -40, dy: 54 },
-      { label: 'Grupos de 3 + pareja', at: [330, 549, FELT + 20], dx: 30, dy: 58 },
+      { label: '13 fichas, cara hacia ti', at: [220, 552, FELT], dx: -40, dy: 54 },
+      { label: 'Grupos de 3 + pareja', at: [330, 552, FELT], dx: 30, dy: 58 },
     ],
   },
   {
@@ -169,8 +169,8 @@ export const tableExplorerStops: TableExplorerStop[] = [
     hotspot: [448, 541, 148],
     focus: { boxes: [{ x: 330, y: 534, z: FELT, w: 128, d: 15, h: 27 }], zoom: 3.2 },
     callouts: [
-      { label: 'Ficha 14: la que robaste', at: [448, 549, FELT + 20], dx: 40, dy: 50 },
-      { label: 'Eliges una para descartar', at: [360, 534, FELT + 27], dx: -60, dy: -56 },
+      { label: 'Ficha 14: la que robaste', at: [448, 552, FELT], dx: 40, dy: 50 },
+      { label: 'Eliges una para descartar', at: [360, 533, FELT + 27], dx: -60, dy: -56 },
     ],
   },
   {
@@ -190,8 +190,8 @@ export const tableExplorerStops: TableExplorerStop[] = [
     hotspot: [360, 380, 136],
     focus: { boxes: [{ x: 240, y: 366, z: FELT, w: 120, d: 27, h: 15 }, { x: 240, y: 393, z: FELT, w: 47, d: 27, h: 15 }], zoom: 3.6 },
     callouts: [
-      { label: 'Fila de 6', at: [350, 393, FELT + 15], dx: 56, dy: 40 },
-      { label: 'Boca arriba, a la vista', at: [250, 366, FELT + 15], dx: -40, dy: -50 },
+      { label: 'Fila de 6', at: [361, 380, FELT + 7], dx: 56, dy: 40 },
+      { label: 'Boca arriba, a la vista', at: [236, 372, FELT], dx: -40, dy: -50 },
     ],
   },
   {
@@ -211,8 +211,8 @@ export const tableExplorerStops: TableExplorerStop[] = [
     hotspot: [253, 410, 136],
     focus: { boxes: [{ x: 240, y: 400, z: FELT, w: 27, d: 20, h: 15 }, { x: 272, y: 345, z: FELT, w: 56, d: 9, h: 10 }], zoom: 2.8 },
     callouts: [
-      { label: 'Ficha girada', at: [240, 410, FELT + 15], dx: -60, dy: 40 },
-      { label: 'Palito de 1000 en tu ranura del compass', at: [300, 354, FELT + 10], dx: -20, dy: 74 },
+      { label: 'Ficha girada', at: [238, 410, FELT + 6], dx: -60, dy: 40 },
+      { label: 'Palito de 1000 en tu ranura del compass', at: [328, 354, FELT + 7], dx: -20, dy: 74 },
     ],
   },
   {
@@ -232,11 +232,11 @@ export const tableExplorerStops: TableExplorerStop[] = [
     hotspot: [300, 702, 76],
     focus: { boxes: [{ x: 190, y: 598, z: 69, w: 220, d: 104, h: 23 }], zoom: 2.5 },
     callouts: [
-      { label: '1 × 10 000', at: [204, 612, 82], dx: -20, dy: -70 },
-      { label: '2 × 5 000', at: [228, 690, 82], dx: -50, dy: 56 },
-      { label: '9 × 1 000', at: [290, 612, 82], dx: 10, dy: -84 },
-      { label: '1 × 500', at: [348, 690, 82], dx: 20, dy: 66 },
-      { label: '4 × 100', at: [382, 612, 82], dx: 44, dy: -56 },
+      { label: '1 × 10 000', at: [204, 600, 90], dx: -20, dy: -70 },
+      { label: '2 × 5 000', at: [228, 702, 92], dx: -50, dy: 56 },
+      { label: '9 × 1 000', at: [290, 600, 90], dx: 10, dy: -84 },
+      { label: '1 × 500', at: [348, 702, 92], dx: 20, dy: 66 },
+      { label: '4 × 100', at: [382, 600, 90], dx: 44, dy: -56 },
     ],
   },
   {
@@ -256,10 +256,9 @@ export const tableExplorerStops: TableExplorerStop[] = [
     hotspot: [300, 300, FELT + 8],
     focus: { boxes: [{ x: 240, y: 240, z: FELT, w: 120, d: 120, h: 6 }], zoom: 3 },
     callouts: [
-      { label: 'Este: el dealer', at: [281, 300, FELT + 6], dx: -50, dy: -96 },
-      { label: 'Tu asiento: Sur', at: [300, 319, FELT + 6], dx: -120, dy: 40 },
-      { label: 'Ranura para el palito de riichi', at: [300, 250, FELT + 6], dx: 40, dy: -80 },
-      { label: 'Dados del dealer: 1 · 5 · 9', at: [263, 300, FELT + 6], dx: -90, dy: 30 },
+      { label: 'Este: el dealer', at: [272, 300, FELT + 6], dx: -60, dy: -90 },
+      { label: 'Tu asiento: Sur', at: [300, 328, FELT + 6], dx: -120, dy: 40 },
+      { label: 'Ranura para el palito de riichi', at: [331, 250, FELT + 6], dx: 40, dy: -80 },
     ],
   },
   {
