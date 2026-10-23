@@ -28,11 +28,11 @@ THEMES = {
         'wood': '#e9a25a', 'screen': '#9ff0d8', 'cplate': '#55bdeb', 'cpurple': '#4d3eb8', 'cwell': '#0a0a0b', 'cinset': '#3b3020', 'cnum': '#fff6dc', 'cnumline': '#2f2984',
     },
     'dark': {
-        'ink': '#0c0a14', 'shadow': 'rgba(0,0,0,0.45)', 'rim': '#4a4466', 'cast': 'rgba(0,0,0,0.38)',
-        'rail': '#a8693a', 'felt': '#2bb39c', 'console': '#3a3558',
-        'cream': '#f6ead3', 'back': '#f5cd55', 'gold': '#f5c451', 'pin': '#5aa2ee',
-        'sou': '#3fc283', 'tsumo': '#f59560', 'man': '#f06d9e', 'white': '#fffaf0',
-        'wood': '#eeac68', 'screen': '#b6f7e4', 'cplate': '#46a6d6', 'cpurple': '#6454d0', 'cwell': '#050506', 'cinset': '#33291a', 'cnum': '#fff6dc', 'cnumline': '#2f2984',
+        'ink': '#2a1038', 'shadow': 'rgba(0,0,0,0.55)', 'rim': '#ff2d95', 'cast': 'rgba(0,0,0,0.50)',
+        'rail': '#2a1538', 'felt': '#3a0d2e', 'console': '#241335',
+        'cream': '#fff4fb', 'back': '#00e5ff', 'gold': '#00e5ff', 'pin': '#00e5ff',
+        'sou': '#b6ff00', 'tsumo': '#ff7a18', 'man': '#ff2d95', 'white': '#fff4fb',
+        'wood': '#3d1f4f', 'screen': '#00e5ff', 'cplate': '#ff2d95', 'cpurple': '#9d4edd', 'cwell': '#050208', 'cinset': '#2a1538', 'cnum': '#00e5ff', 'cnumline': '#ff2d95',
     },
     'cute': {
         'ink': '#6b3a5a', 'shadow': 'rgba(170,80,130,0.18)', 'rim': '#ffd1e6', 'cast': 'rgba(140,50,100,0.20)',
@@ -47,6 +47,27 @@ THEMES = {
         'cream': '#f7f0df', 'back': '#d9c38a', 'gold': '#c9a227', 'pin': '#2f5d7c',
         'sou': '#4f6b4a', 'tsumo': '#b5651d', 'man': '#9e2b2b', 'white': '#fbf7ec',
         'wood': '#9a6a42', 'screen': '#cfe0e8', 'cplate': '#33566b', 'cpurple': '#6b4c7a', 'cwell': '#14171c', 'cinset': '#3a2a1d', 'cnum': '#f7e9c8', 'cnumline': '#6b4c7a',
+    },
+    'cyberpunk': {
+        'ink': '#050a10', 'shadow': 'rgba(0,0,0,0.60)', 'rim': '#00f0ff', 'cast': 'rgba(0,0,0,0.52)',
+        'rail': '#1b2430', 'felt': '#0a1420', 'console': '#101c2b',
+        'cream': '#f7ffff', 'back': '#fcee0a', 'gold': '#fcee0a', 'pin': '#00f0ff',
+        'sou': '#a8ff60', 'tsumo': '#ff9f1c', 'man': '#ff2a6d', 'white': '#f7ffff',
+        'wood': '#26384a', 'screen': '#00f0ff', 'cplate': '#ff2a6d', 'cpurple': '#b967ff', 'cwell': '#02050a', 'cinset': '#1b2430', 'cnum': '#fcee0a', 'cnumline': '#ff2a6d',
+    },
+    'vaquero': {
+        'ink': '#3b2a1a', 'shadow': 'rgba(80,50,20,0.20)', 'rim': None, 'cast': 'rgba(60,40,20,0.25)',
+        'rail': '#8b5a2b', 'felt': '#2a9d8f', 'console': '#5c3a1b',
+        'cream': '#fff6e5', 'back': '#e9c46a', 'gold': '#e9c46a', 'pin': '#3b5b7a',
+        'sou': '#6a994e', 'tsumo': '#e76f51', 'man': '#bc4749', 'white': '#fffaf0',
+        'wood': '#c98a4b', 'screen': '#a8dadc', 'cplate': '#2a9d8f', 'cpurple': '#7b5e7b', 'cwell': '#2b1d12', 'cinset': '#5c3a1b', 'cnum': '#fff6e5', 'cnumline': '#3b5b7a',
+    },
+    'frutiger': {
+        'ink': '#0b4f6c', 'shadow': 'rgba(20,80,120,0.18)', 'rim': '#ffffff', 'cast': 'rgba(20,100,140,0.18)',
+        'rail': '#7ed0f0', 'felt': '#33c3f0', 'console': '#8fe3ff',
+        'cream': '#ffffff', 'back': '#b7e4f9', 'gold': '#ffd93d', 'pin': '#5aa9ff',
+        'sou': '#7ed957', 'tsumo': '#ff9f43', 'man': '#ff6fa5', 'white': '#ffffff',
+        'wood': '#a8e6ff', 'screen': '#d8f6ff', 'cplate': '#5aa9ff', 'cpurple': '#b388ff', 'cwell': '#0b4f6c', 'cinset': '#6fbcd8', 'cnum': '#ffffff', 'cnumline': '#5aa9ff',
     },
 }
 

@@ -74,44 +74,177 @@
 :root[data-theme="dark"] {
     color-scheme: dark;
 
-    --paper: #1a1826;
-    --paper-deep: #14121e;
-    --card: #24212f;
-    --card-sunk: #1f1c29;
-    --line: #3d3852;
-    --line-soft: #2c283b;
-    --ink: #f4ede0;
-    --text: #d8d1e0;
-    --muted: #a59eb4;
-    --faint: #625b76;
-    --felt: #3bb39d;
-    --felt-strong: #6fd0bd;
-    --felt-soft: #173631;
-    --man: #f06d9e;
-    --man-strong: #f797bb;
-    --man-soft: #3b1e2d;
-    --pin: #5aa2ee;
-    --pin-strong: #93c3f5;
-    --pin-soft: #1b2a44;
-    --sou: #3fc283;
-    --sou-strong: #7fdcab;
-    --sou-soft: #163224;
-    --gold: #f5c451;
-    --gold-strong: #f7d27c;
-    --gold-soft: #3a2e14;
-    --riichi: #9d7df2;
-    --riichi-strong: #c4b0fa;
-    --riichi-soft: #2a2144;
-    --tsumo: #f59560;
-    --tsumo-strong: #f8b68f;
-    --tsumo-soft: #3b2418;
-    --on-accent: #15131f;
+    --paper: #120b1a;
+    --paper-deep: #0b0710;
+    --card: #1c1029;
+    --card-sunk: #160c20;
+    --line: #3b2352;
+    --line-soft: #29173a;
+    --ink: #f9eaff;
+    --text: #e4d4f2;
+    --muted: #b59ac9;
+    --faint: #6e5584;
+    --felt: #ff2d95;
+    --felt-strong: #ff6bb5;
+    --felt-soft: #3a1030;
+    --man: #ff2d95;
+    --man-strong: #ff7abf;
+    --man-soft: #3b0f2b;
+    --pin: #00e5ff;
+    --pin-strong: #7af4ff;
+    --pin-soft: #07323d;
+    --sou: #b6ff00;
+    --sou-strong: #d4ff6b;
+    --sou-soft: #233300;
+    --gold: #ffe600;
+    --gold-strong: #fff27a;
+    --gold-soft: #3b3600;
+    --riichi: #b967ff;
+    --riichi-strong: #d7a8ff;
+    --riichi-soft: #2c1640;
+    --tsumo: #ff7a18;
+    --tsumo-strong: #ffb07a;
+    --tsumo-soft: #3d1d08;
+    --on-accent: #0b0710;
     --tile-face: #fffdf4;
-    --tile-edge: #b07a42;
+    --tile-edge: #ff2d95;
+    --focus: var(--pin);
 
-    --shadow-float: 0 6px 16px -10px rgba(0, 0, 0, 0.7);
-    --shadow-gloss: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    --shadow-tile: 0 3px 0 #b07a42;
+    --shadow-float: 0 6px 18px -10px rgba(255, 45, 149, 0.5);
+    --shadow-gloss: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    --shadow-tile: 0 3px 0 #ff2d95;
+}
+
+:root[data-theme="cyberpunk"] {
+    color-scheme: dark;
+
+    --paper: #070b12;
+    --paper-deep: #04070b;
+    --card: #0d1622;
+    --card-sunk: #0a111a;
+    --line: #1f3a4a;
+    --line-soft: #142833;
+    --ink: #eaffff;
+    --text: #c5f6ff;
+    --muted: #6fb3c8;
+    --faint: #3f6f80;
+    --felt: #fcee0a;
+    --felt-strong: #fff56b;
+    --felt-soft: #2a2a00;
+    --man: #ff2a6d;
+    --man-strong: #ff7aa8;
+    --man-soft: #3a0b1c;
+    --pin: #00f0ff;
+    --pin-strong: #7af8ff;
+    --pin-soft: #00323a;
+    --sou: #a8ff60;
+    --sou-strong: #cfff9e;
+    --sou-soft: #1d3300;
+    --gold: #fcee0a;
+    --gold-strong: #fff56b;
+    --gold-soft: #333000;
+    --riichi: #b967ff;
+    --riichi-strong: #d7a8ff;
+    --riichi-soft: #2a1640;
+    --tsumo: #ff9f1c;
+    --tsumo-strong: #ffc06b;
+    --tsumo-soft: #3a2200;
+    --on-accent: #05080c;
+    --tile-face: #f7ffff;
+    --tile-edge: #00f0ff;
+    --focus: var(--man);
+
+    --shadow-float: 0 6px 18px -10px rgba(0, 240, 255, 0.45);
+    --shadow-gloss: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    --shadow-tile: 0 3px 0 #00f0ff;
+}
+
+:root[data-theme="vaquero"] {
+    color-scheme: light;
+
+    --paper: #f4e3c1;
+    --paper-deep: #e8d3a9;
+    --card: #fff6e5;
+    --card-sunk: #f0dfbf;
+    --line: #c9a97a;
+    --line-soft: #e2cda6;
+    --ink: #3b2a1a;
+    --text: #5a422c;
+    --muted: #8a6a4a;
+    --faint: #b59a78;
+    --felt: #2a9d8f;
+    --felt-strong: #1f7a70;
+    --felt-soft: #d6efe9;
+    --man: #bc4749;
+    --man-strong: #8f2f31;
+    --man-soft: #f3d6d6;
+    --pin: #3b5b7a;
+    --pin-strong: #29445c;
+    --pin-soft: #d9e5ef;
+    --sou: #6a994e;
+    --sou-strong: #4c7037;
+    --sou-soft: #e2edd8;
+    --gold: #e9c46a;
+    --gold-strong: #a67c1f;
+    --gold-soft: #f9efcf;
+    --riichi: #7b5e7b;
+    --riichi-strong: #5a3f5a;
+    --riichi-soft: #ebdfeb;
+    --tsumo: #e76f51;
+    --tsumo-strong: #b24a30;
+    --tsumo-soft: #f8ddd4;
+    --on-accent: #fffaf0;
+    --tile-face: #fffaf0;
+    --tile-edge: #c98a4b;
+    --focus: var(--man);
+
+    --shadow-float: 0 6px 16px -12px rgba(80, 50, 20, 0.35);
+    --shadow-gloss: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    --shadow-tile: 0 3px 0 #c98a4b;
+}
+
+:root[data-theme="frutiger"] {
+    color-scheme: light;
+
+    --paper: #e8f7ff;
+    --paper-deep: #d4efff;
+    --card: #ffffff;
+    --card-sunk: #e3f4ff;
+    --line: #b7e4f9;
+    --line-soft: #d8f1ff;
+    --ink: #0b4f6c;
+    --text: #1b6b8c;
+    --muted: #5b9bb8;
+    --faint: #9cc9dd;
+    --felt: #33c3f0;
+    --felt-strong: #0f9fce;
+    --felt-soft: #d6f4ff;
+    --man: #ff6fa5;
+    --man-strong: #d93e7b;
+    --man-soft: #ffe0ec;
+    --pin: #5aa9ff;
+    --pin-strong: #2f7fd6;
+    --pin-soft: #e0efff;
+    --sou: #7ed957;
+    --sou-strong: #4fa82f;
+    --sou-soft: #e6f9dd;
+    --gold: #ffd93d;
+    --gold-strong: #b89000;
+    --gold-soft: #fff6cc;
+    --riichi: #b388ff;
+    --riichi-strong: #7c4dff;
+    --riichi-soft: #eee3ff;
+    --tsumo: #ff9f43;
+    --tsumo-strong: #c96b00;
+    --tsumo-soft: #ffead2;
+    --on-accent: #063c52;
+    --tile-face: #ffffff;
+    --tile-edge: #9ad9f0;
+    --focus: var(--pin);
+
+    --shadow-float: 0 8px 20px -12px rgba(20, 100, 140, 0.28);
+    --shadow-gloss: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    --shadow-tile: 0 3px 0 #9ad9f0;
 }
 
 :root[data-theme="cute"] {
@@ -206,7 +339,10 @@
 :root[data-theme="dark"],
 :root[data-theme="light"],
 :root[data-theme="cute"],
-:root[data-theme="samurai"] {
+:root[data-theme="samurai"],
+:root[data-theme="cyberpunk"],
+:root[data-theme="vaquero"],
+:root[data-theme="frutiger"] {
     --green: var(--sou);
     --green-dark: var(--sou-strong);
     --pink: var(--man);
@@ -257,6 +393,18 @@
     --shadow: rgba(70, 55, 20, 0.12);
 }
 
+:root[data-theme="cyberpunk"] {
+    --shadow: rgba(0, 240, 255, 0.12);
+}
+
+:root[data-theme="vaquero"] {
+    --shadow: rgba(90, 60, 25, 0.12);
+}
+
+:root[data-theme="frutiger"] {
+    --shadow: rgba(30, 120, 160, 0.12);
+}
+
 /* ── 3 · Global surfaces ────────────────────────────────────── */
 body {
     color: var(--text);
@@ -284,28 +432,28 @@ h4 {
 
 .rr-only-dark,
 .rr-only-cute,
-.rr-only-samurai {
+.rr-only-samurai,
+.rr-only-cyberpunk,
+.rr-only-vaquero,
+.rr-only-frutiger {
     display: none !important;
 }
 
 :root[data-theme="dark"] .rr-only-light,
 :root[data-theme="cute"] .rr-only-light,
-:root[data-theme="cute"] .rr-only-dark,
 :root[data-theme="samurai"] .rr-only-light,
-:root[data-theme="samurai"] .rr-only-dark,
-:root[data-theme="samurai"] .rr-only-cute {
+:root[data-theme="cyberpunk"] .rr-only-light,
+:root[data-theme="vaquero"] .rr-only-light,
+:root[data-theme="frutiger"] .rr-only-light {
     display: none !important;
 }
 
-:root[data-theme="dark"] .rr-only-dark {
-    display: block !important;
-}
-
-:root[data-theme="cute"] .rr-only-cute {
-    display: block !important;
-}
-
-:root[data-theme="samurai"] .rr-only-samurai {
+:root[data-theme="dark"] .rr-only-dark,
+:root[data-theme="cute"] .rr-only-cute,
+:root[data-theme="samurai"] .rr-only-samurai,
+:root[data-theme="cyberpunk"] .rr-only-cyberpunk,
+:root[data-theme="vaquero"] .rr-only-vaquero,
+:root[data-theme="frutiger"] .rr-only-frutiger {
     display: block !important;
 }
 
@@ -468,25 +616,35 @@ body:has(.side-rail) {
 
 .side-rail-theme {
     display: grid !important;
+    grid-template-columns: repeat(2, 26px);
+    justify-content: center;
     justify-items: center;
-    gap: 4px;
-    padding: 0 12px !important;
+    gap: 2px;
+    padding: 0 4px !important;
 }
 
 .side-rail.menu-open .side-rail-theme {
     grid-template-columns: repeat(4, 40px);
+    grid-auto-rows: 34px;
     justify-content: start;
+    gap: 4px;
+    padding: 0 12px !important;
 }
 
 .side-rail-theme label {
     position: relative;
     display: grid;
     place-items: center;
-    width: 40px;
-    height: 34px;
+    width: 26px;
+    height: 26px;
     border-radius: var(--radius-md);
     color: var(--muted);
     cursor: pointer;
+}
+
+.side-rail.menu-open .side-rail-theme label {
+    width: 40px;
+    height: 34px;
 }
 
 .side-rail-theme input {
@@ -509,6 +667,11 @@ body:has(.side-rail) {
 }
 
 .side-rail-theme svg {
+    width: 15px;
+    height: 15px;
+}
+
+.side-rail.menu-open .side-rail-theme svg {
     width: 18px;
     height: 18px;
 }
@@ -737,12 +900,21 @@ body:has(.side-rail) {
     }
 
     .side-rail-theme {
-        display: flex !important;
+        display: grid !important;
+        grid-template-columns: repeat(4, 24px);
+        grid-auto-rows: 24px;
+        gap: 0;
         padding: 0 !important;
     }
 
     .side-rail-theme label {
-        width: 34px;
+        width: 24px;
+        height: 24px;
+    }
+
+    .side-rail-theme svg {
+        width: 16px;
+        height: 16px;
     }
 
     .brand-bar {
@@ -1757,3 +1929,223 @@ body:has(.side-rail) {
 :root[data-theme="samurai"] .orange-card { --module-accent: var(--tsumo); --module-tint: rgba(181, 101, 29, 0.12); }
 :root[data-theme="samurai"] .purple-card { --module-accent: var(--riichi); --module-tint: rgba(107, 76, 122, 0.12); }
 :root[data-theme="samurai"] .red-card { --module-accent: var(--man); --module-tint: rgba(158, 43, 43, 0.12); }
+
+/* ── Neon punk dark theme ──────────────────────────────────── */
+:root[data-theme="dark"] body {
+    background:
+        radial-gradient(circle at 8% 6%, rgba(255, 45, 149, 0.18) 0, transparent 26rem),
+        radial-gradient(circle at 92% 12%, rgba(0, 229, 255, 0.16) 0, transparent 28rem),
+        radial-gradient(circle at 50% 96%, rgba(182, 255, 0, 0.10) 0, transparent 30rem),
+        var(--paper);
+}
+
+:root[data-theme="dark"] .feedback.good,
+:root[data-theme="dark"] .status.ready,
+:root[data-theme="dark"] .family-tab.is-active,
+:root[data-theme="dark"] .score-tab.is-active,
+:root[data-theme="dark"] .answer-button.is-correct,
+:root[data-theme="dark"] .results-row.is-correct .results-mark,
+:root[data-theme="dark"] .ref-value,
+:root[data-theme="dark"] .guide-step,
+:root[data-theme="dark"] .yakuref-value,
+:root[data-theme="dark"] .torpedo-han,
+:root[data-theme="dark"] .fu-base h3,
+:root[data-theme="dark"] .tile-set-picker select,
+:root[data-theme="dark"] .switch-control input:checked + .switch-track {
+    background: linear-gradient(180deg, #ff2d95, #9d4edd);
+}
+
+:root[data-theme="dark"] .module-card .status.ready {
+    border-color: color-mix(in srgb, var(--pin) 45%, transparent);
+    color: var(--ink);
+    background: color-mix(in srgb, var(--pin) 14%, var(--card-bg));
+}
+
+:root[data-theme="dark"] .tiles-card {
+    background:
+        radial-gradient(circle at 20% 24%, rgba(255, 45, 149, 0.18), transparent 30%),
+        radial-gradient(circle at 80% 78%, rgba(0, 229, 255, 0.14), transparent 34%),
+        color-mix(in srgb, var(--card) 88%, transparent);
+}
+
+:root[data-theme="dark"] .tiles-stage {
+    border-color: rgba(255, 45, 149, 0.28);
+    background:
+        radial-gradient(circle at 18% 22%, rgba(255, 45, 149, 0.20), transparent 28%),
+        radial-gradient(circle at 82% 74%, rgba(0, 229, 255, 0.16), transparent 32%),
+        linear-gradient(135deg, rgba(28, 16, 41, 0.88), rgba(18, 11, 26, 0.94));
+    box-shadow: inset 0 0 0 0.08rem rgba(255, 255, 255, 0.06);
+}
+
+:root[data-theme="dark"] .green-card { --module-accent: var(--sou); --module-tint: rgba(182, 255, 0, 0.10); }
+:root[data-theme="dark"] .blue-card { --module-accent: var(--pin); --module-tint: rgba(0, 229, 255, 0.12); }
+:root[data-theme="dark"] .pink-card { --module-accent: var(--man); --module-tint: rgba(255, 45, 149, 0.12); }
+:root[data-theme="dark"] .yellow-card { --module-accent: var(--gold); --module-tint: rgba(255, 230, 0, 0.10); }
+:root[data-theme="dark"] .orange-card { --module-accent: var(--tsumo); --module-tint: rgba(255, 122, 24, 0.10); }
+:root[data-theme="dark"] .purple-card { --module-accent: var(--riichi); --module-tint: rgba(185, 103, 255, 0.12); }
+:root[data-theme="dark"] .red-card { --module-accent: var(--man); --module-tint: rgba(255, 45, 149, 0.12); }
+
+/* ── Cyberpunk theme refinements ───────────────────────────── */
+:root[data-theme="cyberpunk"] body {
+    background:
+        radial-gradient(circle at 8% 6%, rgba(252, 238, 10, 0.12) 0, transparent 26rem),
+        radial-gradient(circle at 92% 12%, rgba(0, 240, 255, 0.16) 0, transparent 28rem),
+        radial-gradient(circle at 50% 96%, rgba(255, 42, 109, 0.14) 0, transparent 30rem),
+        var(--paper);
+}
+
+:root[data-theme="cyberpunk"] .feedback.good,
+:root[data-theme="cyberpunk"] .status.ready,
+:root[data-theme="cyberpunk"] .family-tab.is-active,
+:root[data-theme="cyberpunk"] .score-tab.is-active,
+:root[data-theme="cyberpunk"] .answer-button.is-correct,
+:root[data-theme="cyberpunk"] .results-row.is-correct .results-mark,
+:root[data-theme="cyberpunk"] .ref-value,
+:root[data-theme="cyberpunk"] .guide-step,
+:root[data-theme="cyberpunk"] .yakuref-value,
+:root[data-theme="cyberpunk"] .torpedo-han,
+:root[data-theme="cyberpunk"] .fu-base h3,
+:root[data-theme="cyberpunk"] .tile-set-picker select,
+:root[data-theme="cyberpunk"] .switch-control input:checked + .switch-track {
+    background: linear-gradient(180deg, #fcee0a, #00f0ff);
+}
+
+:root[data-theme="cyberpunk"] .module-card .status.ready {
+    border-color: color-mix(in srgb, var(--gold) 45%, transparent);
+    color: var(--ink);
+    background: color-mix(in srgb, var(--gold) 12%, var(--card-bg));
+}
+
+:root[data-theme="cyberpunk"] .tiles-card {
+    background:
+        radial-gradient(circle at 20% 24%, rgba(252, 238, 10, 0.12), transparent 30%),
+        radial-gradient(circle at 80% 78%, rgba(0, 240, 255, 0.14), transparent 34%),
+        color-mix(in srgb, var(--card) 88%, transparent);
+}
+
+:root[data-theme="cyberpunk"] .tiles-stage {
+    border-color: rgba(0, 240, 255, 0.30);
+    background:
+        radial-gradient(circle at 18% 22%, rgba(252, 238, 10, 0.14), transparent 28%),
+        radial-gradient(circle at 82% 74%, rgba(0, 240, 255, 0.18), transparent 32%),
+        linear-gradient(135deg, rgba(13, 22, 34, 0.92), rgba(7, 11, 18, 0.96));
+    box-shadow: inset 0 0 0 0.08rem rgba(255, 255, 255, 0.06);
+}
+
+:root[data-theme="cyberpunk"] .green-card { --module-accent: var(--sou); --module-tint: rgba(168, 255, 96, 0.10); }
+:root[data-theme="cyberpunk"] .blue-card { --module-accent: var(--pin); --module-tint: rgba(0, 240, 255, 0.12); }
+:root[data-theme="cyberpunk"] .pink-card { --module-accent: var(--man); --module-tint: rgba(255, 42, 109, 0.12); }
+:root[data-theme="cyberpunk"] .yellow-card { --module-accent: var(--gold); --module-tint: rgba(252, 238, 10, 0.10); }
+:root[data-theme="cyberpunk"] .orange-card { --module-accent: var(--tsumo); --module-tint: rgba(255, 159, 28, 0.10); }
+:root[data-theme="cyberpunk"] .purple-card { --module-accent: var(--riichi); --module-tint: rgba(185, 103, 255, 0.12); }
+:root[data-theme="cyberpunk"] .red-card { --module-accent: var(--man); --module-tint: rgba(255, 42, 109, 0.12); }
+
+/* ── Vaquero theme refinements ─────────────────────────────── */
+:root[data-theme="vaquero"] body {
+    background:
+        radial-gradient(circle at 8% 6%, rgba(188, 71, 73, 0.10) 0, transparent 26rem),
+        radial-gradient(circle at 92% 12%, rgba(42, 157, 143, 0.12) 0, transparent 28rem),
+        radial-gradient(circle at 50% 96%, rgba(233, 196, 106, 0.16) 0, transparent 30rem),
+        var(--paper);
+}
+
+:root[data-theme="vaquero"] .feedback.good,
+:root[data-theme="vaquero"] .status.ready,
+:root[data-theme="vaquero"] .family-tab.is-active,
+:root[data-theme="vaquero"] .score-tab.is-active,
+:root[data-theme="vaquero"] .answer-button.is-correct,
+:root[data-theme="vaquero"] .results-row.is-correct .results-mark,
+:root[data-theme="vaquero"] .ref-value,
+:root[data-theme="vaquero"] .guide-step,
+:root[data-theme="vaquero"] .yakuref-value,
+:root[data-theme="vaquero"] .torpedo-han,
+:root[data-theme="vaquero"] .fu-base h3,
+:root[data-theme="vaquero"] .tile-set-picker select,
+:root[data-theme="vaquero"] .switch-control input:checked + .switch-track {
+    background: linear-gradient(180deg, #e9c46a, #2a9d8f);
+}
+
+:root[data-theme="vaquero"] .module-card .status.ready {
+    border-color: color-mix(in srgb, var(--gold) 42%, transparent);
+    color: var(--ink);
+    background: color-mix(in srgb, var(--gold) 16%, var(--card-bg));
+}
+
+:root[data-theme="vaquero"] .tiles-card {
+    background:
+        radial-gradient(circle at 20% 24%, rgba(42, 157, 143, 0.12), transparent 30%),
+        radial-gradient(circle at 80% 78%, rgba(188, 71, 73, 0.10), transparent 34%),
+        color-mix(in srgb, var(--card) 86%, transparent);
+}
+
+:root[data-theme="vaquero"] .tiles-stage {
+    border-color: rgba(201, 138, 75, 0.32);
+    background:
+        radial-gradient(circle at 18% 22%, rgba(42, 157, 143, 0.14), transparent 28%),
+        radial-gradient(circle at 82% 74%, rgba(233, 196, 106, 0.18), transparent 32%),
+        linear-gradient(135deg, rgba(255, 246, 229, 0.86), rgba(240, 223, 191, 0.9));
+    box-shadow: inset 0 0 0 0.08rem rgba(255, 255, 255, 0.8);
+}
+
+:root[data-theme="vaquero"] .green-card { --module-accent: var(--sou); --module-tint: rgba(106, 153, 78, 0.12); }
+:root[data-theme="vaquero"] .blue-card { --module-accent: var(--pin); --module-tint: rgba(59, 91, 122, 0.12); }
+:root[data-theme="vaquero"] .pink-card { --module-accent: var(--man); --module-tint: rgba(188, 71, 73, 0.10); }
+:root[data-theme="vaquero"] .yellow-card { --module-accent: var(--gold); --module-tint: rgba(233, 196, 106, 0.16); }
+:root[data-theme="vaquero"] .orange-card { --module-accent: var(--tsumo); --module-tint: rgba(231, 111, 81, 0.12); }
+:root[data-theme="vaquero"] .purple-card { --module-accent: var(--riichi); --module-tint: rgba(123, 94, 123, 0.12); }
+:root[data-theme="vaquero"] .red-card { --module-accent: var(--man); --module-tint: rgba(188, 71, 73, 0.12); }
+
+/* ── Frutiger Aero theme refinements ───────────────────────── */
+:root[data-theme="frutiger"] body {
+    background:
+        radial-gradient(circle at 8% 6%, rgba(126, 217, 87, 0.16) 0, transparent 26rem),
+        radial-gradient(circle at 92% 12%, rgba(90, 169, 255, 0.18) 0, transparent 28rem),
+        radial-gradient(circle at 50% 96%, rgba(255, 217, 61, 0.14) 0, transparent 30rem),
+        var(--paper);
+}
+
+:root[data-theme="frutiger"] .feedback.good,
+:root[data-theme="frutiger"] .status.ready,
+:root[data-theme="frutiger"] .family-tab.is-active,
+:root[data-theme="frutiger"] .score-tab.is-active,
+:root[data-theme="frutiger"] .answer-button.is-correct,
+:root[data-theme="frutiger"] .results-row.is-correct .results-mark,
+:root[data-theme="frutiger"] .ref-value,
+:root[data-theme="frutiger"] .guide-step,
+:root[data-theme="frutiger"] .yakuref-value,
+:root[data-theme="frutiger"] .torpedo-han,
+:root[data-theme="frutiger"] .fu-base h3,
+:root[data-theme="frutiger"] .tile-set-picker select,
+:root[data-theme="frutiger"] .switch-control input:checked + .switch-track {
+    background: linear-gradient(180deg, #7ed957, #33c3f0);
+}
+
+:root[data-theme="frutiger"] .module-card .status.ready {
+    border-color: color-mix(in srgb, var(--pin) 40%, transparent);
+    color: var(--ink);
+    background: color-mix(in srgb, var(--pin) 12%, var(--card-bg));
+}
+
+:root[data-theme="frutiger"] .tiles-card {
+    background:
+        radial-gradient(circle at 20% 24%, rgba(51, 195, 240, 0.16), transparent 30%),
+        radial-gradient(circle at 80% 78%, rgba(126, 217, 87, 0.12), transparent 34%),
+        color-mix(in srgb, var(--card) 92%, transparent);
+}
+
+:root[data-theme="frutiger"] .tiles-stage {
+    border-color: rgba(90, 169, 255, 0.30);
+    background:
+        radial-gradient(circle at 18% 22%, rgba(51, 195, 240, 0.20), transparent 28%),
+        radial-gradient(circle at 82% 74%, rgba(126, 217, 87, 0.16), transparent 32%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(212, 239, 255, 0.9));
+    box-shadow: inset 0 0 0 0.08rem rgba(255, 255, 255, 0.95);
+}
+
+:root[data-theme="frutiger"] .green-card { --module-accent: var(--sou); --module-tint: rgba(126, 217, 87, 0.14); }
+:root[data-theme="frutiger"] .blue-card { --module-accent: var(--pin); --module-tint: rgba(90, 169, 255, 0.14); }
+:root[data-theme="frutiger"] .pink-card { --module-accent: var(--man); --module-tint: rgba(255, 111, 165, 0.12); }
+:root[data-theme="frutiger"] .yellow-card { --module-accent: var(--gold); --module-tint: rgba(255, 217, 61, 0.16); }
+:root[data-theme="frutiger"] .orange-card { --module-accent: var(--tsumo); --module-tint: rgba(255, 159, 67, 0.12); }
+:root[data-theme="frutiger"] .purple-card { --module-accent: var(--riichi); --module-tint: rgba(179, 136, 255, 0.14); }
+:root[data-theme="frutiger"] .red-card { --module-accent: var(--man); --module-tint: rgba(255, 111, 165, 0.12); }

@@ -17,6 +17,9 @@ export function ThemedArt({ art, className, alt = '' }: { art: TableArt; classNa
       <img className={`rr-only-dark${className ? ` ${className}` : ''}`} src={tableArtPath(art, 'dark')} alt="" aria-hidden="true" />
       <img className={`rr-only-cute${className ? ` ${className}` : ''}`} src={tableArtPath(art, 'cute')} alt="" aria-hidden="true" />
       <img className={`rr-only-samurai${className ? ` ${className}` : ''}`} src={tableArtPath(art, 'samurai')} alt="" aria-hidden="true" />
+      <img className={`rr-only-cyberpunk${className ? ` ${className}` : ''}`} src={tableArtPath(art, 'cyberpunk')} alt="" aria-hidden="true" />
+      <img className={`rr-only-vaquero${className ? ` ${className}` : ''}`} src={tableArtPath(art, 'vaquero')} alt="" aria-hidden="true" />
+      <img className={`rr-only-frutiger${className ? ` ${className}` : ''}`} src={tableArtPath(art, 'frutiger')} alt="" aria-hidden="true" />
     </>
   );
 }
@@ -41,6 +44,9 @@ export function ZoneThumb({ focus }: { focus: TableFocus }) {
       <img className="rr-only-dark" src={tableArtPath('mesa', 'dark')} alt="" style={style} />
       <img className="rr-only-cute" src={tableArtPath('mesa', 'cute')} alt="" style={style} />
       <img className="rr-only-samurai" src={tableArtPath('mesa', 'samurai')} alt="" style={style} />
+      <img className="rr-only-cyberpunk" src={tableArtPath('mesa', 'cyberpunk')} alt="" style={style} />
+      <img className="rr-only-vaquero" src={tableArtPath('mesa', 'vaquero')} alt="" style={style} />
+      <img className="rr-only-frutiger" src={tableArtPath('mesa', 'frutiger')} alt="" style={style} />
     </span>
   );
 }
