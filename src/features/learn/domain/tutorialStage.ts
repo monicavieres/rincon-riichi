@@ -9,6 +9,7 @@ export type LocalCallout = Omit<TableCallout, 'label'> & { label: LocalizedText 
 
 export type StageSpec =
   | { kind: 'sort' }
+  | { kind: 'deck'; mode: 'shuffle' | 'walls' }
   | { kind: 'table'; focus: TableFocus; callouts: LocalCallout[] }
   | { kind: 'rack'; rows: RackRow[]; footer?: LocalizedText };
 
@@ -144,24 +145,44 @@ const tableCallouts = {
 
 export const tutorialStops: TutorialStop[] = [
   {
-    id: 'sort',
+    id: 'shuffle',
     part: 'discover',
-    short: L('Fichas', 'Tiles', 'Peças'),
+    short: L('Mezclar', 'Shuffle', 'Embaralhar'),
     eyebrow: L('Empieza aquí', 'Start here', 'Comece aqui'),
-    title: L('Revuelve las fichas y ordénalas', 'Shuffle the tiles and sort them', 'Embaralhe as peças e ordene-as'),
+    title: L('Mezcla las 136 fichas boca abajo', 'Shuffle all 136 tiles face down', 'Embaralhe as 136 peças viradas para baixo'),
     body: L(
-      'El mahjong se juega con 136 fichas. Pulsa «Revolver» para mezclarlas todas boca abajo; después trabaja con tus trece: muévelas con el dedo o el mouse, llévalas a tu mano y ordénalas. Con buen orden, los grupos se ven de un vistazo.',
-      'Mahjong is played with 136 tiles. Press “Shuffle” to mix them all face down; then work with your thirteen: move them with your finger or mouse, bring them to your hand and sort them. With a good order, the sets show at a glance.',
-      'O mahjong é jogado com 136 peças. Pressione «Embaralhar» para misturar todas viradas para baixo; depois trabalhe com as suas treze: mova-as com o dedo ou o mouse, leve-as à sua mão e ordene-as. Com boa ordem, os grupos aparecem num relance.',
+      'Toda partida empieza igual: las 136 fichas se ponen boca abajo sobre la mesa y se revuelven con las manos. Arrastra sobre el montón como si las barrieras con la palma hasta que llegue al 100 %.',
+      'Every game starts the same way: all 136 tiles go face down on the table and are mixed with both hands. Drag across the heap as if sweeping it with your palm until it reaches 100%.',
+      'Toda partida começa igual: as 136 peças ficam viradas para baixo na mesa e são misturadas com as mãos. Arraste sobre o monte como se o varresse com a palma até chegar a 100%.',
     ),
     bullets: [
-      L('Hay tres palos numerados del 1 al 9: manzu (caracteres), pinzu (círculos) y souzu (bambúes).', 'There are three suits numbered 1 to 9: manzu (characters), pinzu (circles) and souzu (bamboo).', 'Há três naipes numerados de 1 a 9: manzu (caracteres), pinzu (círculos) e souzu (bambus).'),
-      L('Los honores no tienen número: cuatro vientos y tres dragones.', 'Honors have no number: four winds and three dragons.', 'As honras não têm número: quatro ventos e três dragões.'),
-      L('Orden habitual: manzu, pinzu, souzu y honores, de menor a mayor.', 'Usual order: manzu, pinzu, souzu and honors, lowest to highest.', 'Ordem habitual: manzu, pinzu, souzu e honras, do menor ao maior.'),
+      L('Hay 136 fichas: tres palos de 1 a 9 con cuatro copias cada uno, más vientos y dragones.', 'There are 136 tiles: three suits from 1 to 9 with four copies each, plus winds and dragons.', 'São 136 peças: três naipes de 1 a 9 com quatro cópias cada, mais ventos e dragões.'),
+      L('Boca abajo todas se ven iguales: nadie sabe qué viene.', 'Face down they all look the same: nobody knows what comes next.', 'Viradas para baixo todas parecem iguais: ninguém sabe o que vem.'),
+      L('Con mesa automática esto lo hace la máquina; en mesa normal, se hace a mano.', 'On an automatic table the machine does this; on a normal table it is done by hand.', 'Em mesa automática a máquina faz isso; em mesa normal, é feito à mão.'),
     ],
-    remember: L('Ordenar tu mano no cambia el juego, pero te ayuda a ver los grupos.', 'Sorting your hand does not change the game, but it helps you see the sets.', 'Ordenar sua mão não muda o jogo, mas ajuda a ver os grupos.'),
-    stage: { kind: 'sort' },
+    remember: L('Mezclar bien es lo que hace justo el juego: el azar decide las manos.', 'A good shuffle is what makes the game fair: chance decides the hands.', 'Embaralhar bem é o que torna o jogo justo: o acaso decide as mãos.'),
+    stage: { kind: 'deck', mode: 'shuffle' },
     practice: { href: '../practicar/que-ficha-es.html', label: L('Practicar nombres de fichas', 'Practise tile names', 'Praticar nomes de peças') },
+  },
+  {
+    id: 'walls',
+    part: 'discover',
+    short: L('Armar muros', 'Build walls', 'Montar muros'),
+    eyebrow: L('Siguiente paso', 'Next step', 'Próximo passo'),
+    title: L('Arma los cuatro muros', 'Build the four walls', 'Monte os quatro muros'),
+    body: L(
+      'Con las fichas mezcladas, cada jugador arma un muro frente a sí: 17 pilas de dos fichas, 34 en total. Pulsa «Armar» para levantar un lado a la vez; los cuatro juntos forman el cuadrado de la mesa.',
+      'With the tiles mixed, each player builds a wall in front of them: 17 stacks of two tiles, 34 in all. Press “Build” to raise one side at a time; together the four form the square of the table.',
+      'Com as peças misturadas, cada jogador monta um muro à sua frente: 17 pilhas de duas peças, 34 no total. Toque em «Montar» para levantar um lado de cada vez; os quatro juntos formam o quadrado da mesa.',
+    ),
+    bullets: [
+      L('Cada lado: 17 pilas × 2 fichas = 34 fichas.', 'Each side: 17 stacks × 2 tiles = 34 tiles.', 'Cada lado: 17 pilhas × 2 peças = 34 peças.'),
+      L('Cuatro lados: 4 × 34 = 136, el mazo completo.', 'Four sides: 4 × 34 = 136, the whole deck.', 'Quatro lados: 4 × 34 = 136, o baralho completo.'),
+      L('Las fichas del muro siguen boca abajo; de aquí se roba durante la partida.', 'Wall tiles stay face down; you draw from here during the game.', 'As peças do muro continuam viradas para baixo; daqui se compra durante a partida.'),
+    ],
+    remember: L('Después se tiran los dados para decidir dónde se abre el muro.', 'Then the dice are rolled to decide where the wall is opened.', 'Depois lançam-se os dados para decidir onde se abre o muro.'),
+    stage: { kind: 'deck', mode: 'walls' },
+    practice: { href: '../aprender/tiles.html', label: L('Conocer las fichas', 'Meet the tiles', 'Conhecer as peças') },
   },
   {
     id: 'what-is-mahjong', part: 'discover', short: L('La mesa', 'The table', 'A mesa'), ...text('what-is-mahjong'),
@@ -189,6 +210,26 @@ export const tutorialStops: TutorialStop[] = [
     id: 'deal', part: 'discover', short: L('Reparto', 'The deal', 'Distribuição'), ...text('deal'),
     stage: { kind: 'rack', rows: handRows.deal, footer: L('Tu mano normalmente espera con 13', 'Your hand normally waits with 13', 'Sua mão normalmente espera com 13') },
     practice: { href: '../aprender/eficiencia.html', label: L('Aprender eficiencia', 'Learn efficiency', 'Aprender eficiência') },
+  },
+  {
+    id: 'sort',
+    part: 'discover',
+    short: L('Ordenar', 'Sorting', 'Ordenar'),
+    eyebrow: L('Tu mano', 'Your hand', 'Sua mão'),
+    title: L('Ordena tus trece fichas', 'Sort your thirteen tiles', 'Ordene as suas treze peças'),
+    body: L(
+      'Recibes trece fichas sueltas. Muévelas con el dedo o el mouse, llévalas a tu mano y ordénalas. Con buen orden, los grupos se ven de un vistazo.',
+      'You receive thirteen loose tiles. Move them with your finger or mouse, bring them to your hand and sort them. With a good order, the sets show at a glance.',
+      'Você recebe treze peças soltas. Mova-as com o dedo ou o mouse, leve-as à sua mão e ordene-as. Com boa ordem, os grupos aparecem num relance.',
+    ),
+    bullets: [
+      L('Hay tres palos numerados del 1 al 9: manzu (caracteres), pinzu (círculos) y souzu (bambúes).', 'There are three suits numbered 1 to 9: manzu (characters), pinzu (circles) and souzu (bamboo).', 'Há três naipes numerados de 1 a 9: manzu (caracteres), pinzu (círculos) e souzu (bambus).'),
+      L('Los honores no tienen número: cuatro vientos y tres dragones.', 'Honors have no number: four winds and three dragons.', 'As honras não têm número: quatro ventos e três dragões.'),
+      L('Orden habitual: manzu, pinzu, souzu y honores, de menor a mayor.', 'Usual order: manzu, pinzu, souzu and honors, lowest to highest.', 'Ordem habitual: manzu, pinzu, souzu e honras, do menor ao maior.'),
+    ],
+    remember: L('Ordenar tu mano no cambia el juego, pero te ayuda a ver los grupos.', 'Sorting your hand does not change the game, but it helps you see the sets.', 'Ordenar sua mão não muda o jogo, mas ajuda a ver os grupos.'),
+    stage: { kind: 'sort' },
+    practice: { href: '../practicar/que-ficha-es.html', label: L('Practicar nombres de fichas', 'Practise tile names', 'Praticar nomes de peças') },
   },
   {
     id: 'dead-wall', part: 'discover', short: L('Muro muerto', 'Dead wall', 'Muro morto'), ...text('dead-wall'),

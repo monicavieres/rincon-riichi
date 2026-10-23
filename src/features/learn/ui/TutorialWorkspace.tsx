@@ -3,6 +3,7 @@ import { TableStage, ZoneThumb } from '../../../shared/ui/TableStage';
 import { localize, type LocalizedText, type TutorialLanguage } from '../domain/tutorialContent';
 import { tutorialParts, tutorialStops, type TutorialStop } from '../domain/tutorialStage';
 import { RackStage } from './stages/RackStage';
+import { DeckBoard, TILE_BACK, type DeckStatus } from './stages/DeckBoard';
 import { SortBoard, tilePath, type SortStatus } from './stages/SortBoard';
 
 type Tab = 'summary' | 'observe' | 'practice';
@@ -17,9 +18,19 @@ const TABS: Array<{ id: Tab; label: LocalizedText }> = [
 
 const PRACTICE_COPY = {
   sort: L(
-    '1. Pulsa «Revolver» para mezclar las 136 fichas boca abajo. 2. Arrastra tus trece fichas a la mano. 3. Ordénalas: manzu, pinzu, souzu y honores. ¿Te atoras? «Ordenar» lo hace por ti.',
-    '1. Press “Shuffle” to mix all 136 tiles face down. 2. Drag your thirteen tiles into your hand. 3. Sort them: manzu, pinzu, souzu, then honors. Stuck? “Sort” does it for you.',
-    '1. Toque em «Embaralhar» para misturar as 136 peças viradas para baixo. 2. Arraste as suas treze peças para a mão. 3. Ordene: manzu, pinzu, souzu e honras. Travou? «Ordenar» faz por você.',
+    '1. Arrastra tus trece fichas a la mano. 2. Ordénalas: manzu, pinzu, souzu y honores. ¿Te atoras? «Ordenar» lo hace por ti.',
+    '1. Drag your thirteen tiles into your hand. 2. Sort them: manzu, pinzu, souzu, then honors. Stuck? “Sort” does it for you.',
+    '1. Arraste as suas treze peças para a mão. 2. Ordene: manzu, pinzu, souzu e honras. Travou? «Ordenar» faz por você.',
+  ),
+  shuffle: L(
+    'Mantén pulsado y barre el montón con el mouse o el dedo hasta llenar la barra. ¿Sin mouse? «Revolver» da un empujón a todas las fichas.',
+    'Hold and sweep the heap with the mouse or your finger until the bar fills. No mouse? “Stir” gives all the tiles a shove.',
+    'Segure e varra o monte com o mouse ou o dedo até encher a barra. Sem mouse? «Mexer» dá um empurrão em todas as peças.',
+  ),
+  walls: L(
+    'Pulsa «Armar» cuatro veces, un lado cada vez, y cuenta: 17 pilas de dos fichas por lado. «Todos» arma los cuatro de golpe.',
+    'Press “Build” four times, one side each, and count: 17 stacks of two tiles per side. “All” builds the four at once.',
+    'Toque em «Montar» quatro vezes, um lado cada, e conte: 17 pilhas de duas peças por lado. «Todos» monta os quatro de uma vez.',
   ),
   table: L(
     'Mira la zona resaltada y lee cada etiqueta. Usa ⤢ para ver la mesa completa y volver a ubicarte.',
@@ -50,6 +61,8 @@ const UI = {
     'Riichi table in perspective, with the four walls, the hands, the discards and the wind compass',
     'Mesa de riichi em perspectiva, com as quatro paredes, as mãos, os descartes e o compass de ventos',
   ),
+  shuffled: L('mezclado', 'shuffled', 'embaralhado'),
+  walls: L('muros armados', 'walls built', 'muros montados'),
   sortedIn: L('en tu mano', 'in your hand', 'na sua mão'),
   sorted: L('¡Mano ordenada!', 'Hand sorted!', 'Mão ordenada!'),
   go: L('Practicar', 'Practise', 'Praticar'),
@@ -65,6 +78,16 @@ const chevron = (
 );
 
 /** Rail thumbnail for lessons that are about tiles rather than a corner of the table. */
+function BackThumb() {
+  return (
+    <span className="lesson-thumb is-tiles" aria-hidden="true">
+      {[0, 1, 2].map((index) => (
+        <img key={index} src={TILE_BACK} alt="" style={{ transform: `translateY(${index === 1 ? -4 : 3}px) rotate(${(index - 1) * 22}deg)` }} />
+      ))}
+    </span>
+  );
+}
+
 function TileThumb({ codes, scattered = false }: { codes: string[]; scattered?: boolean }) {
   return (
     <span className="lesson-thumb is-tiles" aria-hidden="true">
@@ -83,6 +106,7 @@ function TileThumb({ codes, scattered = false }: { codes: string[]; scattered?: 
 function thumbFor(stop: TutorialStop) {
   const spec = stop.stage;
   if (spec.kind === 'table') return <ZoneThumb focus={spec.focus} />;
+  if (spec.kind === 'deck') return <BackThumb />;
   if (spec.kind === 'sort') return <TileThumb codes={['4p', '1m', '6z']} scattered />;
   return <TileThumb codes={spec.rows[0].groups[0].tiles} />;
 }
@@ -93,6 +117,7 @@ export function TutorialWorkspace() {
   const [tab, setTab] = useState<Tab>('summary');
   const [overview, setOverview] = useState(false);
   const [sort, setSort] = useState<SortStatus>({ inRack: 0, total: 13, sorted: false });
+  const [deck, setDeck] = useState<DeckStatus>({ progress: 0, done: false, built: 0 });
   const railRef = useRef<HTMLElement>(null);
   const t = (value: LocalizedText) => localize(value, language);
 
@@ -172,7 +197,7 @@ export function TutorialWorkspace() {
     [spec, language],
   );
 
-  const practiceCopy = spec.kind === 'sort' ? PRACTICE_COPY.sort : spec.kind === 'table' ? PRACTICE_COPY.table : PRACTICE_COPY.rack;
+  const practiceCopy = spec.kind === 'deck' ? PRACTICE_COPY[spec.mode] : spec.kind === 'sort' ? PRACTICE_COPY.sort : spec.kind === 'table' ? PRACTICE_COPY.table : PRACTICE_COPY.rack;
   const canZoom = spec.kind === 'table' && spec.focus.zoom > 1;
 
   return (
@@ -185,6 +210,7 @@ export function TutorialWorkspace() {
             <div aria-hidden="true"><i style={{ width: `${((index + 1) / tutorialStops.length) * 100}%` }} /></div>
           </div>
 
+          {spec.kind === 'deck' && <DeckBoard key={spec.mode} mode={spec.mode} language={language} onStatus={setDeck} />}
           {spec.kind === 'sort' && <SortBoard language={language} onStatus={setSort} />}
           {spec.kind === 'table' && (
             <TableStage focus={spec.focus} callouts={callouts} stepKey={`${stop.id}-${language}`} overview={overview} alt={t(UI.tableAlt)} />
@@ -227,6 +253,11 @@ export function TutorialWorkspace() {
             {tab === 'practice' && (
               <div className="explorer-practice">
                 <p>{t(practiceCopy)}</p>
+                {spec.kind === 'deck' && (
+                  <p className={`sort-readout${deck.done ? ' is-done' : ''}`}>
+                    <b>{spec.mode === 'shuffle' ? `${Math.round(deck.progress * 100)}%` : `${deck.built}/4`}</b> {t(spec.mode === 'shuffle' ? UI.shuffled : UI.walls)}
+                  </p>
+                )}
                 {spec.kind === 'sort' && (
                   <p className={`sort-readout${sort.sorted ? ' is-done' : ''}`}>
                     <b>{sort.inRack}/{sort.total}</b> {t(UI.sortedIn)}{sort.sorted ? ` · ${t(UI.sorted)}` : ''}

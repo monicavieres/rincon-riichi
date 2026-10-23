@@ -2,8 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as
 import { localize, type TutorialLanguage } from '../../domain/tutorialContent';
 
 export const tilePath = (code: string) => `../assets/tiles-fluffystuff-composite/${code}.svg`;
-const TILE_BACK = '../assets/tile-back-rincon.svg';
-const DECK_SIZE = 136;
 
 /** The thirteen tiles of the first lesson: three sequences, two pairs. Sorted, they read 123m 456p 345s 11z 66z. */
 const HAND = ['1m', '2m', '3m', '4p', '5p', '6p', '3s', '4s', '5s', '1z', '1z', '6z', '6z'];
@@ -19,7 +17,6 @@ const FELT_Y = [15, 48];
 
 type SuitId = 'man' | 'pin' | 'sou' | 'honor';
 type Tile = { id: number; code: string; x: number; y: number; rot: number; slot: number | null; z: number };
-type ShuffleTile = { x: number; y: number; rot: number; delay: number };
 
 export type SortStatus = { inRack: number; total: number; sorted: boolean };
 
@@ -49,8 +46,6 @@ export function SortBoard({ language, onStatus }: { language: TutorialLanguage; 
   const t = (es: string, en: string, pt: string) => ({ es, en, pt }[language]);
   const boardRef = useRef<HTMLDivElement>(null);
   const [tiles, setTiles] = useState<Tile[]>(freshPile);
-  const [shuffling, setShuffling] = useState(false);
-  const [shuffleLayout, setShuffleLayout] = useState<ShuffleTile[]>([]);
   const [dragging, setDragging] = useState<number | null>(null);
   const zTop = useRef(HAND.length + 1);
   const drag = useRef<{ id: number; dx: number; dy: number } | null>(null);
@@ -60,29 +55,10 @@ export function SortBoard({ language, onStatus }: { language: TutorialLanguage; 
 
   useEffect(() => { onStatus?.({ inRack: rack.length, total: HAND.length, sorted }); }, [rack.length, sorted, onStatus]);
 
-  useEffect(() => {
-    if (!shuffling) return;
-    const timer = window.setTimeout(() => setShuffling(false), 1150);
-    return () => window.clearTimeout(timer);
-  }, [shuffling]);
-
   const shuffle = useCallback(() => {
-    if (shuffling) return;
-    const layout = Array.from({ length: DECK_SIZE }, (_, index) => {
-      const col = index % 17;
-      const row = Math.floor(index / 17);
-      return {
-        x: 18 + col * 3.72 + rand(-0.45, 0.45),
-        y: 3.5 + row * 6.9 + rand(-0.4, 0.4),
-        rot: rand(-16, 16),
-        delay: rand(-0.34, 0),
-      };
-    });
-    setShuffleLayout(layout);
-    setShuffling(true);
     zTop.current = HAND.length + 1;
     setTiles((current) => current.map((tile, index) => scatter(tile, index + 1)));
-  }, [shuffling]);
+  }, []);
 
   const autoSort = useCallback(() => {
     setTiles((current) => {
@@ -155,30 +131,17 @@ export function SortBoard({ language, onStatus }: { language: TutorialLanguage; 
 
   return (
     <div className="sort-stage">
-      <div className={`sort-board${sorted ? ' is-sorted' : ''}${shuffling ? ' is-shuffling' : ''}`} ref={boardRef}>
+      <div className={`sort-board${sorted ? ' is-sorted' : ''}`} ref={boardRef}>
         <div className="sort-felt" aria-hidden="true"><span>{t('Fichas sobre el paño', 'Tiles on the felt', 'Peças sobre o pano')}</span></div>
         <div className="sort-actions">
           <span>{rack.length}/{HAND.length} {t('en tu mano', 'in your hand', 'na sua mão')}</span>
-          <button type="button" className="sort-button" onClick={shuffle} disabled={shuffling} aria-busy={shuffling}>{t('Revolver', 'Shuffle', 'Embaralhar')}</button>
+          <button type="button" className="sort-button" onClick={shuffle}>{t('Desordenar', 'Scramble', 'Desordenar')}</button>
           <button type="button" className="sort-button is-primary" onClick={autoSort}>{t('Ordenar', 'Sort', 'Ordenar')}</button>
         </div>
         <div className="sort-rack" aria-hidden="true">
           <span className="sort-rack-title">{t('Tu mano', 'Your hand', 'Sua mão')}</span>
           {Array.from({ length: HAND.length }, (_, slot) => <i key={slot} className="sort-slot" style={{ left: `${rackPos(slot).x + 0.6}%` }} />)}
         </div>
-        {shuffling && (
-          <div className="sort-shuffle" aria-hidden="true">
-            {shuffleLayout.map((tile, index) => (
-              <span
-                key={index}
-                className="sort-shuffle-tile"
-                style={{ left: `${tile.x}%`, top: `${tile.y}%`, animationDelay: `${tile.delay}s` }}
-              >
-                <img src={TILE_BACK} alt="" draggable={false} style={{ transform: `rotate(${tile.rot}deg)` }} />
-              </span>
-            ))}
-          </div>
-        )}
         {runs.map((run) => (
           <span
             key={`${run.suit}-${run.from}`}
