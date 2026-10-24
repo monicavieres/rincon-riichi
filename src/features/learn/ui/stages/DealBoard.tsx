@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
+import { DEALT_HAND } from '../../domain/dealtHand';
 import { wallSlot } from './DeckBoard';
 import { FELT_Z, IsoCanvas, TILE_T, picture, type IsoHandle, type Painter } from './iso3d';
 
@@ -73,6 +74,9 @@ export function DealBoard({ language, onStatus }: { language: TutorialLanguage; 
   const [finished, setFinished] = useState(false);
   const [run, setRun] = useState(0);
   const takesRef = useRef<Take[]>([]);
+  const revealStart = useRef(0);
+  const viewNow = useRef({ u: 50, v: 50, zoom: 0.86 });
+  const lastFrame = useRef(0);
 
   const plan = (): Take[] => {
     const order = drawOrder();
@@ -94,6 +98,7 @@ export function DealBoard({ language, onStatus }: { language: TutorialLanguage; 
   useEffect(() => {
     flights.current = new Map();
     counts.current = [0, 0, 0, 0];
+    revealStart.current = 0;
     setFinished(false);
     setCurrent(-1);
     const takes = plan();
@@ -113,7 +118,13 @@ export function DealBoard({ language, onStatus }: { language: TutorialLanguage; 
       }, start));
       at += take.tiles.length > 1 ? 1050 : 800;
     });
-    timers.current.push(window.setTimeout(() => { setFinished(true); setCaption(''); }, at + 700));
+    // then the camera comes in on your hand and the tiles turn face up, one by one
+    timers.current.push(window.setTimeout(() => {
+      revealStart.current = performance.now();
+      setCaption(t('Ahora, ¡mira tu mano!', 'Now, look at your hand!', 'Agora, veja a sua mão!'));
+      scene.current?.invalidate();
+    }, at + 700));
+    timers.current.push(window.setTimeout(() => { setFinished(true); setCaption(''); }, at + 700 + 14 * 110 + 1500));
     return () => { timers.current.forEach(window.clearTimeout); timers.current = []; };
   }, [run, language]);
 
@@ -124,7 +135,16 @@ export function DealBoard({ language, onStatus }: { language: TutorialLanguage; 
     g.tilt = 38;
     g.cs = Math.cos((38 * Math.PI) / 180);
     g.sn = Math.sin((38 * Math.PI) / 180);
-    g.view = { u: 50, v: 50, zoom: 0.86 };
+    const target = revealStart.current > 0 ? { u: 50, v: 90, zoom: 2.3 } : { u: 50, v: 50, zoom: 0.86 };
+    const cam = viewNow.current;
+    const dt = Math.min(200, g.now - lastFrame.current);
+    lastFrame.current = g.now;
+    const ease = 1 - Math.exp(-dt / 380);
+    cam.u += (target.u - cam.u) * ease;
+    cam.v += (target.v - cam.v) * ease;
+    cam.zoom += (target.zoom - cam.zoom) * ease;
+    if (Math.abs(target.zoom - cam.zoom) + Math.abs(target.v - cam.v) * 0.02 > 0.01) g.needsFrame = true;
+    g.view = { ...cam };
     g.table();
     const { palette: p } = g;
     const doraAt = gAt(FIRST_DEAD + 2);
@@ -161,9 +181,18 @@ export function DealBoard({ language, onStatus }: { language: TutorialLanguage; 
       const raw = Math.max(0, Math.min(1, (now - flight.start) / 700));
       const e = raw < 0.5 ? 2 * raw * raw : 1 - Math.pow(-2 * raw + 2, 2) / 2;
       if (raw < 1) moving = true;
+      // your own tiles turn face up once the deal is over
+      let flip = 0;
+      let faceImage: CanvasImageSource | null = null;
+      if (raw >= 1 && flight.player === 0 && revealStart.current > 0) {
+        const q = Math.max(0, Math.min(1, (now - revealStart.current - flight.slot * 110) / 850));
+        flip = q < 0.5 ? 4 * q * q * q : 1 - Math.pow(-2 * q + 2, 3) / 2;
+        if (q > 0 && q < 1) moving = true;
+        if (q > 0) faceImage = picture(`${p.faces}/${DEALT_HAND[flight.slot]}.svg`);
+      }
       const fromX = home.x + dx;
       const fromY = home.y + dy;
-      g.tile(fromX + (goal.x - fromX) * e, fromY + (goal.y - fromY) * e, home.rot + turn(home.rot, goal.rot) * e, FELT_Z + level * TILE_T * (1 - e) + Math.sin(Math.PI * raw) * 6, { order: raw < 1 ? 1e5 + index : undefined });
+      g.tile(fromX + (goal.x - fromX) * e, fromY + (goal.y - fromY) * e, home.rot + turn(home.rot, goal.rot) * e, FELT_Z + level * TILE_T * (1 - e) + Math.sin(Math.PI * raw) * 6, { order: raw < 1 ? 1e5 + index : undefined, flip, arc: 5, face: faceImage });
     }
     if (moving) g.needsFrame = true;
     g.flush();
@@ -189,8 +218,8 @@ export function DealBoard({ language, onStatus }: { language: TutorialLanguage; 
         </div>
         {finished && (
           <p className="sort-win is-top" role="status">
-            <b>{t('13 fichas cada uno; el dealer, 14', '13 tiles each; the dealer, 14', '13 peças cada; o dealer, 14')}</b>
-            <span>{t('El dealer descarta primero.', 'The dealer discards first.', 'O dealer descarta primeiro.')}</span>
+            <b>{t('Esta es tu mano: 13 fichas y la robada', 'This is your hand: 13 tiles and the draw', 'Esta é a sua mão: 13 peças e a comprada')}</b>
+            <span>{t('Solo tú ves tus fichas. Siguiente: ordénalas.', 'Only you see your tiles. Next: sort them.', 'Só você vê as suas peças. Próximo: ordene-as.')}</span>
           </p>
         )}
       </div>

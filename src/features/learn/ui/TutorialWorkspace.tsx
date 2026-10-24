@@ -21,9 +21,9 @@ const TABS: Array<{ id: Tab; label: LocalizedText }> = [
 
 const PRACTICE_COPY = {
   sort: L(
-    'Arrastra una ficha a otro lugar de tu mano. Junta manzu, pinzu y souzu, cada uno de menor a mayor, y los honores al final con los iguales juntos. ¿Te atoras? «Ordenar» lo hace por ti.',
-    'Drag a tile to another spot in your hand. Gather manzu, pinzu and souzu, each low to high, then honors at the end with equal ones together. Stuck? “Sort” does it for you.',
-    'Arraste uma peça para outro lugar da sua mão. Junte manzu, pinzu e souzu, cada um do menor ao maior, e as honras no fim com as iguais juntas. Travou? «Ordenar» faz por você.',
+    'Arrastra una ficha a otro lugar de tu mano y junta cada palo y los honores. No importa el orden de los grupos: lo que cuenta es verlos de un vistazo. ¿Quieres el orden sugerido? «Ordenar» lo pone por ti.',
+    'Drag a tile to another spot in your hand and gather each suit and the honors. The order of the groups does not matter: what counts is seeing them at a glance. Want the suggested order? “Sort” sets it for you.',
+    'Arraste uma peça para outro lugar da sua mão e junte cada naipe e as honras. A ordem dos grupos não importa: o que conta é vê-los num relance. Quer a ordem sugerida? «Ordenar» coloca para você.',
   ),
   shuffle: L(
     'Mantén pulsado y barre el montón con el mouse o el dedo hasta llenar la barra. ¿Sin mouse? «Revolver» da un empujón a todas las fichas.',
@@ -94,7 +94,7 @@ const UI = {
   yourWall: L('en tu muro', 'in your wall', 'no seu muro'),
   rivalWalls: L('en los de tus rivales', 'in your rivals’ walls', 'nos dos seus rivais'),
   sortedIn: L('en tu mano', 'in your hand', 'na sua mão'),
-  sorted: L('¡Mano ordenada!', 'Hand sorted!', 'Mão ordenada!'),
+  sorted: L('¡Mano agrupada!', 'Hand grouped!', 'Mão agrupada!'),
   go: L('Practicar', 'Practise', 'Praticar'),
 };
 

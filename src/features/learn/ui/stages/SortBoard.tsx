@@ -1,15 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import { localize, type TutorialLanguage } from '../../domain/tutorialContent';
+import { DEALT_HAND } from '../../domain/dealtHand';
 
 export const tilePath = (code: string) => `../assets/tiles-fluffystuff-composite/${code}.svg`;
 
-/** The thirteen tiles of the first lesson: three sequences, two pairs. Sorted, they read 123m 456p 345s 11z 66z. */
-const HAND = ['1m', '2m', '3m', '4p', '5p', '6p', '3s', '4s', '5s', '1z', '1z', '6z', '6z'];
+/** The dealt hand: three sequences, two pairs of honors and the drawn 9p. */
+const HAND = ['1m', '2m', '3m', '4p', '5p', '6p', '9p', '3s', '4s', '5s', '1z', '1z', '6z', '6z'];
 
 // Everything is positioned in % of the board so it scales with the stage.
-const TILE_W = 8;
-const STEP = 7.1;
-const RACK_X0 = (100 - (12 * STEP + TILE_W)) / 2;
+const TILE_W = 7.2;
+const STEP = 6.6;
+const RACK_X0 = (100 - ((HAND.length - 1) * STEP + TILE_W)) / 2;
 const RACK_Y = 76;
 const RACK_DROP_Y = 62;
 const FELT_X = [3, 86];
@@ -22,6 +23,15 @@ export type SortStatus = { inRack: number; total: number; sorted: boolean };
 
 const suitOf = (code: string): SuitId => ({ m: 'man', p: 'pin', s: 'sou', z: 'honor' } as const)[code[1] as 'm' | 'p' | 's' | 'z'];
 const sortKey = (code: string) => ['man', 'pin', 'sou', 'honor'].indexOf(suitOf(code)) * 10 + (Number(code[0]) || 5);
+/** Grouped when every suit sits together (in any order) and equal honors are side by side. */
+function isGrouped(codes: string[]) {
+  const together = (keyOf: (code: string) => string | null) => {
+    const spots = new Map<string, number[]>();
+    codes.forEach((code, i) => { const key = keyOf(code); if (key) spots.set(key, [...(spots.get(key) ?? []), i]); });
+    return [...spots.values()].every((at) => at[at.length - 1] - at[0] + 1 === at.length);
+  };
+  return together((code) => suitOf(code)) && together((code) => (suitOf(code) === 'honor' ? code : null));
+}
 const rand = (min: number, max: number) => min + Math.random() * (max - min);
 
 const SUIT_LABEL: Record<SuitId, { es: string; en: string; pt: string }> = {
@@ -36,7 +46,7 @@ function scatter(tile: Tile, z: number): Tile {
 }
 
 /** The hand as it was dealt: already standing in the rack, in no particular order. */
-const DEALT = ['6z', '4p', '1m', '3s', '1z', '5p', '2m', '6z', '5s', '1z', '3m', '4s', '6p'];
+const DEALT = DEALT_HAND;
 
 function inRack(order: string[]): Tile[] {
   const used = new Set<number>();
@@ -63,7 +73,7 @@ export function SortBoard({ language, onStatus }: { language: TutorialLanguage; 
   const drag = useRef<{ id: number; dx: number; dy: number } | null>(null);
 
   const rack = useMemo(() => tiles.filter((tile) => tile.slot !== null).sort((a, b) => (a.slot as number) - (b.slot as number)), [tiles]);
-  const sorted = rack.length === HAND.length && rack.every((tile, i) => i === 0 || sortKey(rack[i - 1].code) <= sortKey(tile.code));
+  const sorted = rack.length === HAND.length && isGrouped(rack.map((tile) => tile.code));
 
   useEffect(() => { onStatus?.({ inRack: rack.length, total: HAND.length, sorted }); }, [rack.length, sorted, onStatus]);
 
@@ -147,11 +157,11 @@ export function SortBoard({ language, onStatus }: { language: TutorialLanguage; 
       <div className={`sort-board${sorted ? ' is-sorted' : ''}`} ref={boardRef}>
         <div className="sort-felt" aria-hidden="true"><span>{t('Tu mano recién repartida', 'Your freshly dealt hand', 'Sua mão recém-distribuída')}</span></div>
         <div className="sort-guide">
-          <b>{t('Orden de la mano', 'Hand order', 'Ordem da mão')}</b>
+          <b>{t('Agrupa por palo', 'Group by suit', 'Agrupe por naipe')}</b>
           <p>
-            <span className="is-man">Manzu 1→9</span><i>›</i><span className="is-pin">Pinzu 1→9</span><i>›</i><span className="is-sou">Souzu 1→9</span><i>›</i><span className="is-honor">{t('Honores', 'Honors', 'Honras')}</span>
+            <span className="is-man">Manzu</span><span className="is-pin">Pinzu</span><span className="is-sou">Souzu</span><span className="is-honor">{t('Honores', 'Honors', 'Honras')}</span>
           </p>
-          <small>{t('Los honores iguales, juntos', 'Equal honors stay together', 'As honras iguais ficam juntas')}</small>
+          <small>{t('Orden sugerido: manzu, pinzu, souzu y honores. Pero ordénala como quieras, mientras veas tus grupos de un vistazo.', 'Suggested order: manzu, pinzu, souzu, honors. But sort it however you like, as long as you can see your groups at a glance.', 'Ordem sugerida: manzu, pinzu, souzu e honras. Mas ordene como quiser, desde que veja seus grupos num relance.')}</small>
         </div>
         <div className="sort-actions">
           <span>{rack.length}/{HAND.length} {t('en tu mano', 'in your hand', 'na sua mão')}</span>
@@ -191,8 +201,8 @@ export function SortBoard({ language, onStatus }: { language: TutorialLanguage; 
         })}
         {sorted && (
           <p className="sort-win" role="status">
-            <b>{t('¡Mano ordenada!', 'Hand sorted!', 'Mão ordenada!')}</b>
-            <span>{t('Ahora los grupos se ven de un vistazo.', 'Now the sets show at a glance.', 'Agora os grupos aparecem num relance.')}</span>
+            <b>{t('¡Mano agrupada!', 'Hand grouped!', 'Mão agrupada!')}</b>
+            <span>{t('Ahora ves tus grupos de un vistazo. «Ordenar» pone el orden sugerido.', 'Now you see your groups at a glance. “Sort” gives the suggested order.', 'Agora você vê seus grupos num relance. «Ordenar» coloca a ordem sugerida.')}</span>
           </p>
         )}
       </div>
