@@ -232,7 +232,7 @@ export class Painter {
   }
 
   /** One tile lying face down: back colour and emblem on top, banded edges. */
-  tile(x: number, y: number, rot: number, z0: number, opts: { counting?: boolean; w?: number; l?: number; t?: number; order?: number; flip?: number; face?: CanvasImageSource | null; gold?: boolean } = {}) {
+  tile(x: number, y: number, rot: number, z0: number, opts: { counting?: boolean; w?: number; l?: number; t?: number; order?: number; flip?: number; face?: CanvasImageSource | null; gold?: boolean; arc?: number; hop?: number } = {}) {
     const { palette: p } = this;
     const w = opts.w ?? 3.6;
     const l = opts.l ?? 4.8;
@@ -245,7 +245,7 @@ export class Painter {
     // turning a tile over: it squeezes along its width, lifts, and lands face up
     const flip = opts.flip ?? 0;
     const squeeze = flip > 0 ? Math.max(0.06, Math.abs(Math.cos(flip * Math.PI))) : 1;
-    const lift = flip > 0 ? Math.sin(flip * Math.PI) * 5 : 0;
+    const lift = (flip > 0 ? Math.sin(flip * Math.PI) * (opts.arc ?? 5) : 0) + (opts.hop ?? 0);
     const faceUp = flip >= 0.5 && !!opts.face;
     this.add(opts.order ?? y * 100 + z0 + lift, () => {
       const g = this.box(x, y, z0 + lift, w * squeeze, l, t, rot);

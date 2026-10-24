@@ -220,7 +220,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
                       window.clearInterval(tally);
                       later(800, () => {
                         flipStart.current = performance.now();
-                        later(1600, () => setPhase('done'));
+                        later(2300, () => setPhase('done'));
                       });
                     }, 700);
                     timers.current.push(tally);
@@ -284,7 +284,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
       : phase === 'wall' ? { u: wallMid.x, v: wallMid.y, zoom: 2 }
         : phase === 'dead' ? { u: deadMid.x - OUT[openSide ?? 0][0] * 3.4, v: deadMid.y - OUT[openSide ?? 0][1] * 3.4, zoom: 1.9 }
         : phase === 'split' ? { u: deadMid.x, v: deadMid.y, zoom: 1.5 }
-          : phase === 'dora' ? { u: deadMid.x, v: deadMid.y, zoom: 2.2 }
+          : phase === 'dora' ? { u: deadMid.x, v: deadMid.y, zoom: flipStart.current > 0 ? 2.9 : 2.2 }
             : { u: 50, v: 50, zoom: 1 };
     const v = viewNow.current;
     const dt = Math.min(200, g.now - lastFrame.current);
@@ -303,6 +303,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     if (phase === 'split' && splitT < 1) g.needsFrame = true;
 
     // the four finished walls
+    let doraFx: { x: number; y: number; flipT: number; landT: number } | null = null;
     for (let index = 0; index < 136; index += 1) {
       const side = Math.floor(index / 34);
       const k = index % 34;
@@ -327,9 +328,80 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
         }
       }
       const isDora = k >= ROW && `${side}:${stack}` === doraKey;
-      const flip = isDora && flipStart.current > 0 ? Math.min(1, (g.now - flipStart.current) / 1300) : 0;
-      if (isDora && flip > 0 && flip < 1) g.needsFrame = true;
-      g.tile(pose.x + dx, pose.y + dy, pose.rot, FELT_Z + (pose.h ?? 0) * TILE_T + (isDead ? eased * 0.8 : 0), { gold, flip, face: isDora ? picture(`${p.faces}/4p.svg`) : null });
+      // the flip: lift with a little swing, turn over, then land with a bounce
+      const flipT = isDora && flipStart.current > 0 ? Math.min(1, (g.now - flipStart.current) / 2000) : 0;
+      const turnT = Math.min(1, flipT / 0.62);
+      const flip = turnT < 0.5 ? 4 * turnT * turnT * turnT : 1 - Math.pow(-2 * turnT + 2, 3) / 2;
+      const landT = flipT > 0.62 ? (flipT - 0.62) / 0.38 : 0;
+      const hop = landT > 0 ? Math.abs(Math.sin(landT * Math.PI * 2)) * 2.2 * Math.exp(-3 * landT) : 0;
+      const swing = flipT > 0 && flipT < 0.62 ? Math.sin(turnT * Math.PI) * 16 : 0;
+      if (isDora && flipT > 0 && flipT < 1) g.needsFrame = true;
+      if (isDora && flipT > 0) doraFx = { x: pose.x + dx, y: pose.y + dy, flipT, landT };
+      g.tile(pose.x + dx, pose.y + dy, pose.rot + swing, FELT_Z + (pose.h ?? 0) * TILE_T + (isDead ? eased * 0.8 : 0), { gold, flip, hop, arc: 11, face: isDora ? picture(`${p.faces}/4p.svg`) : null, order: isDora && flipT > 0 ? 1e6 : undefined });
+    }
+
+    // dora reveal effects: spotlight, glow, shockwave ring and sparkles
+    if (doraFx) {
+      const { x, y, flipT, landT } = doraFx;
+      const centre = g.project(x, y, FELT_Z + TILE_T);
+      const spot = Math.min(1, flipT / 0.12) * (flipT > 0.9 ? Math.max(0, (1 - flipT) / 0.1) : 1);
+      g.add(9.5e5, () => {
+        const grad = ctx.createRadialGradient(centre.x, centre.y, g.W * 0.06, centre.x, centre.y, g.W * 0.42);
+        grad.addColorStop(0, 'rgba(8,14,20,0)');
+        grad.addColorStop(1, `rgba(8,14,20,${0.62 * spot})`);
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, g.W, g.H);
+      });
+      g.add(9.6e5, () => {
+        const pulse = 0.6 + 0.4 * Math.sin(g.now / 140);
+        const glow = ctx.createRadialGradient(centre.x, centre.y + 6, 2, centre.x, centre.y + 6, g.W * 0.1);
+        glow.addColorStop(0, `rgba(255,222,110,${0.75 * spot * pulse})`);
+        glow.addColorStop(1, 'rgba(255,222,110,0)');
+        ctx.save();
+        ctx.translate(centre.x, centre.y + 8);
+        ctx.scale(1, 0.55);
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(0, 0, g.W * 0.1, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+      if (landT > 0) {
+        g.add(1.1e6, () => {
+          // shockwave rings on the felt
+          [0, 0.18].forEach((delay, ri) => {
+            const q = Math.max(0, Math.min(1, (landT - delay) / 0.8));
+            if (q <= 0 || q >= 1) return;
+            const r = 2 + q * 15;
+            const ring: Array<{ x: number; y: number }> = [];
+            for (let a = 0; a < 36; a += 1) ring.push(g.project(x + Math.cos((a / 36) * Math.PI * 2) * r, y + Math.sin((a / 36) * Math.PI * 2) * r, FELT_Z + 0.3));
+            g.poly(ring, null, `rgba(255,214,90,${(1 - q) * (ri ? 0.6 : 1)})`, g.lw * (3 - q * 2));
+          });
+          // sparkles bursting upward
+          for (let n = 0; n < 16; n += 1) {
+            const ang = (n * 2.399) % (Math.PI * 2);
+            const q = Math.max(0, Math.min(1, landT * 1.2 - (n % 4) * 0.04));
+            if (q <= 0 || q >= 1) continue;
+            const reach = 4 + (n % 5) * 2.4;
+            const at = g.project(x + Math.cos(ang) * reach * q, y + Math.sin(ang) * reach * q, FELT_Z + TILE_T + 2 + q * (6 + (n % 3) * 3) - q * q * 4);
+            const size = (3 + (n % 3)) * (1 - q * 0.6);
+            ctx.save();
+            ctx.translate(at.x, at.y);
+            ctx.rotate(q * 3 + n);
+            ctx.fillStyle = `rgba(255,${210 + (n % 3) * 15},${110 + (n % 4) * 25},${1 - q})`;
+            ctx.beginPath();
+            for (let k = 0; k < 8; k += 1) {
+              const rr = k % 2 ? size * 0.35 : size;
+              const aa = (k / 8) * Math.PI * 2;
+              ctx.lineTo(Math.cos(aa) * rr, Math.sin(aa) * rr);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+          }
+        });
+        g.needsFrame = true;
+      }
     }
 
     // goals while the player is placing pieces
@@ -448,7 +520,10 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
         const pos = g.project(pose.x + out[0] * 3.4, pose.y + out[1] * 3.4, FELT_Z + TILE_T * 2 + 3);
         g.pill(pos.x, pos.y, String(i), { bg: 'rgba(230,180,34,0.96)', fg: p.ink, size: 12 });
       }
-      if (flipStart.current > 0) g.pill(g.W / 2, 24, t('Indicador de dora', 'Dora indicator', 'Indicador de dora'), { bg: p.gold, fg: p.ink, size: 14 });
+      if (flipStart.current > 0) {
+        const landed = (g.now - flipStart.current) / 2000 > 0.62;
+        g.pill(g.W / 2, 24, landed ? t('Indicador 4 de círculos → la dora es el 5 de círculos', 'Indicator 4 of circles → the dora is the 5 of circles', 'Indicador 4 de círculos → a dora é o 5 de círculos') : t('Indicador de dora', 'Dora indicator', 'Indicador de dora'), { bg: p.gold, fg: p.ink, size: 14 });
+      }
     }
 
     // after opening: name the dead wall and show where drawing starts
