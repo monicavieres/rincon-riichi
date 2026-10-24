@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
+import { IsoWorld, TileBox, tileTransform, unitsOf } from './iso';
 
 export const TILE_BACK = '../assets/tile-back-rincon.svg';
 export const DECK_SIZE = 136;
 export const SIDE_SIZE = 34;
 
-// Everything is measured in "board widths": x runs 0–100 and y runs 0–BOARD_H, so physics stay square.
-export const BOARD_H = 62.5;
-export const TILE_W = 2.6;
+// Everything is measured in plane units: x and y both run 0–100 across the square table top.
+export const BOARD_H = 100;
+export const TILE_W = 3.6;
 export const TILE_H = TILE_W * (4 / 3);
-export const STACK_RISE = 0.7;
-const SWEEP_R = 11;
-export const FELT = { x0: 12, x1: 88, y0: 7, y1: BOARD_H - 7 };
+const SWEEP_R = 16;
+export const FELT = { x0: 13, x1: 87, y0: 13, y1: 87 };
 
-export type Pose = { x: number; y: number; rot: number; z: number };
+export type Pose = { x: number; y: number; rot: number; z: number; h?: number };
 
 export type DeckStatus = { progress: number; done: boolean };
 
@@ -40,13 +40,13 @@ export function wallSlot(side: number, stack: number, level: number): Pose {
   const x0 = (100 - box) / 2;
   const y0 = (BOARD_H - box) / 2;
   const along = stack * TILE_W + TILE_W / 2;
-  const lift = level * STACK_RISE;
   const z = 200 + level * 100 + stack;
   // sides in turn order: yours (bottom), then counter-clockwise
-  if (side === 0) return { x: x0 + TILE_H + along, y: y0 + box - TILE_H / 2 - lift, rot: 0, z };
-  if (side === 1) return { x: x0 + box - TILE_H / 2 - lift, y: y0 + box - TILE_H - along, rot: -90, z };
-  if (side === 2) return { x: x0 + run - along, y: y0 + TILE_H / 2 - lift, rot: 180, z };
-  return { x: x0 + TILE_H / 2 - lift, y: y0 + TILE_H + along, rot: 90, z };
+  const h = level;
+  if (side === 0) return { x: x0 + TILE_H + along, y: y0 + box - TILE_H / 2, rot: 0, z, h };
+  if (side === 1) return { x: x0 + box - TILE_H / 2, y: y0 + box - TILE_H - along, rot: -90, z, h };
+  if (side === 2) return { x: x0 + run - along, y: y0 + TILE_H / 2, rot: 180, z, h };
+  return { x: x0 + TILE_H / 2, y: y0 + TILE_H + along, rot: 90, z, h };
 }
 
 const HAND_SHAPES = [
@@ -78,10 +78,11 @@ function Palm() {
 export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; onStatus?: (status: DeckStatus) => void }) {
   const t = (es: string, en: string, pt: string) => ({ es, en, pt }[language]);
   const boardRef = useRef<HTMLDivElement>(null);
+  const planeRef = useRef<HTMLDivElement>(null);
   const handRef = useRef<HTMLDivElement>(null);
   const hand2Ref = useRef<HTMLDivElement>(null);
   const tileRefs = useRef<Array<HTMLSpanElement | null>>([]);
-  const poses = useRef<Pose[]>(deckPoses(26, 17));
+  const poses = useRef<Pose[]>(deckPoses(34, 34));
   const last = useRef<{ x: number; y: number } | null>(null);
   const moved = useRef(0);
   const zTop = useRef(DECK_SIZE);
@@ -93,8 +94,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
     const pose = poses.current[index];
     el.style.left = `${pose.x}%`;
     el.style.top = `${(pose.y / BOARD_H) * 100}%`;
-    el.style.transform = `translate(-50%, -50%) rotate(${pose.rot}deg)`;
-    el.style.zIndex = String(pose.z);
+    el.style.transform = tileTransform(pose);
   }, []);
 
   useEffect(() => {
@@ -104,11 +104,6 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
   useEffect(() => {
     onStatus?.({ progress, done: progress >= 1 });
   }, [progress, onStatus]);
-
-  const toUnits = (clientX: number, clientY: number) => {
-    const rect = boardRef.current!.getBoundingClientRect();
-    return { x: ((clientX - rect.left) / rect.width) * 100, y: ((clientY - rect.top) / rect.width) * 100 };
-  };
 
   // Tiles carry a little momentum, so a sweep keeps flowing after the hand has passed.
   const vel = useRef(new Float32Array(DECK_SIZE * 3)); // vx, vy, vrot per tile
@@ -136,7 +131,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
     });
     if (energy > 0) {
       moved.current += energy;
-      setProgress(Math.min(1, moved.current / 1800));
+      setProgress(Math.min(1, moved.current / 2700));
     }
     // the second hand trails the first, so the pair feels like two palms mixing
     const hand2 = hand2Ref.current;
@@ -172,9 +167,9 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
     }
   };
 
-  const onMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    moveHand(event.clientX, event.clientY);
-    const point = toUnits(event.clientX, event.clientY);
+  const onSweep = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const point = unitsOf(event);
+    if (!point) return;
     const before = last.current;
     last.current = point;
     if (!before || event.buttons === 0) return;
@@ -197,6 +192,11 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
     wake();
   };
 
+  const onSweepDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const point = unitsOf(event);
+    if (point) last.current = point;
+  };
+
   // Keyboard- and tap-friendly alternative to sweeping: one shove across the whole felt.
   const stir = useCallback(() => {
     const v = vel.current;
@@ -216,19 +216,17 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
       <div
         className={`sort-board deck-board is-shuffle${done ? ' is-sorted' : ''}`}
         ref={boardRef}
-        onPointerMove={onMove}
+        onPointerMove={(event) => moveHand(event.clientX, event.clientY)}
         onPointerLeave={() => { last.current = null; pointer.current.down = false; showHands(false); }}
         onPointerEnter={(event) => { moveHand(event.clientX, event.clientY); showHands(true); }}
         onPointerUp={() => { pointer.current.down = false; }}
-        onPointerDown={(event) => { pointer.current.down = true; last.current = toUnits(event.clientX, event.clientY); moveHand(event.clientX, event.clientY); }}
+        onPointerDown={(event) => { pointer.current.down = true; moveHand(event.clientX, event.clientY); }}
       >
-        <div className="deck-felt" aria-hidden="true"><span>{t('Las 136 fichas, boca abajo', 'All 136 tiles, face down', 'As 136 peças, viradas para baixo')}</span></div>
-
-        {tiles.map((index) => (
-          <span key={index} className="deck-tile" ref={(el) => { tileRefs.current[index] = el; }} style={{ width: `${TILE_W}%` }}>
-            <img src={TILE_BACK} alt="" draggable={false} />
-          </span>
-        ))}
+        <IsoWorld planeRef={planeRef} handlers={{ onPointerMove: onSweep, onPointerDown: onSweepDown }}>
+          {tiles.map((index) => (
+            <TileBox key={index} refCb={(el) => { tileRefs.current[index] = el; }} style={{ width: `${TILE_W}%` }} />
+          ))}
+        </IsoWorld>
 
         {(
           <>

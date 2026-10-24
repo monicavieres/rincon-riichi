@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
-import { BOARD_H, DECK_SIZE, FELT, SIDE_SIZE, STACK_RISE, TILE_H, TILE_W, TILE_BACK, clamp, deckPoses, wallSlot, type Pose } from './DeckBoard';
+import { BOARD_H, DECK_SIZE, FELT, SIDE_SIZE, TILE_W, TILE_BACK, clamp, deckPoses, wallSlot, type Pose } from './DeckBoard';
+import { IsoWorld, TILE_THICK, TileBox, billboard, tileTransform, unitsOf } from './iso';
 
 const ROW = 17;
-const SNAP = 7;
-const GRAB = TILE_W * 1.5;
+const SNAP = 9;
+const GRAB = TILE_W * 1.6;
 const BOT_DELAY = [1400, 1900, 2400];
 const BOT_TICK = 340;
 
@@ -25,9 +26,9 @@ const RIVAL_NAME = {
  */
 export function WallBoard({ language, onStatus }: { language: TutorialLanguage; onStatus?: (status: WallStatus) => void }) {
   const t = (es: string, en: string, pt: string) => ({ es, en, pt }[language]);
-  const boardRef = useRef<HTMLDivElement>(null);
+  const planeRef = useRef<HTMLDivElement>(null);
   const tileRefs = useRef<Array<HTMLSpanElement | null>>([]);
-  const poses = useRef<Pose[]>(deckPoses(16, 10).map((pose) => ({ ...pose })));
+  const poses = useRef<Pose[]>(deckPoses(34, 34).map((pose) => ({ ...pose })));
   const slotOf = useRef<Array<{ side: number; k: number } | null>>(Array(DECK_SIZE).fill(null));
   const counts = useRef([0, 0, 0, 0]);
   const dragging = useRef<{ index: number; dx: number; dy: number } | null>(null);
@@ -45,8 +46,7 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
     const pose = slot ? slotFor(slot.side, slot.k) : poses.current[index];
     el.style.left = `${pose.x}%`;
     el.style.top = `${(pose.y / BOARD_H) * 100}%`;
-    el.style.transform = `translate(-50%, -50%) rotate(${pose.rot}deg)`;
-    el.style.zIndex = String(pose.z);
+    el.style.transform = tileTransform(pose);
   }, []);
 
   const sync = useCallback(() => {
@@ -88,16 +88,12 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
   const done = mine >= SIDE_SIZE && rivals >= SIDE_SIZE * 3;
   useEffect(() => { onStatus?.({ mine, rivals, done }); }, [mine, rivals, done, onStatus]);
 
-  const toUnits = (clientX: number, clientY: number) => {
-    const rect = boardRef.current!.getBoundingClientRect();
-    return { x: ((clientX - rect.left) / rect.width) * 100, y: ((clientY - rect.top) / rect.width) * 100 };
-  };
-
   const nextMine = () => (counts.current[0] < SIDE_SIZE ? slotFor(0, counts.current[0]) : null);
 
   const onDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (counts.current[0] >= SIDE_SIZE) return;
-    const point = toUnits(event.clientX, event.clientY);
+    const point = unitsOf(event);
+    if (!point) return;
     let best = -1;
     let bestDistance = GRAB;
     free().forEach((index) => {
@@ -112,7 +108,8 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
     event.currentTarget.setPointerCapture(event.pointerId);
     const pose = poses.current[best];
     dragging.current = { index: best, dx: pose.x - point.x, dy: pose.y - point.y };
-    pose.z = ++zTop.current + 600;
+    pose.z = ++zTop.current;
+    pose.h = 1.6;
     tileRefs.current[best]?.classList.add('is-dragging');
     setGrabbing(true);
     place(best);
@@ -121,10 +118,11 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
   const onMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     const drag = dragging.current;
     if (!drag) return;
-    const point = toUnits(event.clientX, event.clientY);
+    const point = unitsOf(event);
+    if (!point) return;
     const pose = poses.current[drag.index];
-    pose.x = clamp(point.x + drag.dx, 2, 98);
-    pose.y = clamp(point.y + drag.dy, 2, BOARD_H - 2);
+    pose.x = clamp(point.x + drag.dx, 4, 96);
+    pose.y = clamp(point.y + drag.dy, 4, BOARD_H - 4);
     pose.rot *= 0.9;
     place(drag.index);
     const target = nextMine();
@@ -139,6 +137,7 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
     if (!drag) return;
     tileRefs.current[drag.index]?.classList.remove('is-dragging');
     const pose = poses.current[drag.index];
+    pose.h = 0;
     const target = nextMine();
     if (target && Math.hypot(pose.x - target.x, pose.y - target.y) < SNAP) putInWall(drag.index, 0);
     else {
@@ -176,60 +175,47 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
   const row = Math.min(1, Math.floor(mine / ROW));
   const rowFilled = mine % ROW;
   const target = nextMine();
-  const labelSlot = wallSlot(0, 8, row);
+  const labelSlot = wallSlot(0, 8, 0);
+
+  const slotStyle = (pose: Pose, extra = '') => ({ left: `${pose.x}%`, top: `${(pose.y / BOARD_H) * 100}%`, width: `${TILE_W}%`, transform: `translate3d(-50%, -50%, calc(var(--u) * ${(pose.h ?? 0) * TILE_THICK + 0.05})) rotate(${pose.rot}deg)${extra}` });
 
   return (
     <div className="sort-stage deck-stage">
-      <div
-        className={`sort-board deck-board is-walls${grabbing ? ' is-grabbing' : ''}${done ? ' is-sorted' : ''}`}
-        ref={boardRef}
-        onPointerDown={onDown}
-        onPointerMove={onMove}
-        onPointerUp={onUp}
-        onPointerCancel={onUp}
-      >
-        <div className="deck-felt" aria-hidden="true"><span>{t('Tu muro es el de abajo', 'Your wall is the bottom one', 'Seu muro é o de baixo')}</span></div>
+      <div className={`sort-board deck-board is-walls${grabbing ? ' is-grabbing' : ''}${done ? ' is-sorted' : ''}`}>
+        <IsoWorld planeRef={planeRef} handlers={{ onPointerDown: onDown, onPointerMove: onMove, onPointerUp: onUp, onPointerCancel: onUp }}>
+          {/* outlines of the three rival walls, filled in by themselves */}
+          {[1, 2, 3].map((side) => Array.from({ length: ROW }, (_, stack) => (
+            <i key={`${side}-${stack}`} className="deck-ghost is-rival" style={slotStyle(wallSlot(side, stack, 0))} />
+          )))}
 
-        {/* outlines of the three rival walls, filled in by themselves */}
-        {[1, 2, 3].map((side) => Array.from({ length: ROW }, (_, stack) => {
-          const pose = wallSlot(side, stack, 0);
-          return <i key={`${side}-${stack}`} className="deck-ghost is-rival" style={{ left: `${pose.x}%`, top: `${(pose.y / BOARD_H) * 100}%`, width: `${TILE_W}%`, transform: `translate(-50%, -50%) rotate(${pose.rot}deg)` }} />;
-        }))}
+          {/* the strip the player has to fill: lower row first, then the upper row */}
+          {Array.from({ length: ROW }, (_, stack) => {
+            const state = stack < rowFilled ? ' is-filled' : stack === rowFilled && target ? ` is-next${hot ? ' is-hot' : ''}` : '';
+            return <i key={`me-${stack}-${row}`} className={`deck-ghost is-mine${state}`} style={slotStyle(wallSlot(0, stack, row))} />;
+          })}
 
-        {/* the strip the player has to fill: lower row first, then the upper row */}
-        {Array.from({ length: ROW }, (_, stack) => {
-          const pose = wallSlot(0, stack, row);
-          const state = stack < rowFilled ? ' is-filled' : stack === rowFilled && target ? ` is-next${hot ? ' is-hot' : ''}` : '';
-          return <i key={`me-${stack}-${row}`} className={`deck-ghost is-mine${state}`} style={{ left: `${pose.x}%`, top: `${(pose.y / BOARD_H) * 100}%`, width: `${TILE_W}%` }} />;
-        })}
-        {target && (
-          <span className="deck-hint" style={{ left: `${labelSlot.x}%`, top: `${((labelSlot.y + TILE_H * 1.55) / BOARD_H) * 100}%` }}>
-            <b aria-hidden="true">↑</b>
-            {row === 0
-              ? t('Arrastra tus fichas aquí', 'Drag your tiles here', 'Arraste suas peças aqui')
-              : t('Ahora la fila de arriba', 'Now the upper row', 'Agora a fileira de cima')}
-          </span>
-        )}
-        {(['right', 'across', 'left'] as const).map((_, index) => {
-          const side = index + 1;
-          const pose = wallSlot(side, 8, 0);
-          const place = side === 2
-            ? { left: pose.x, top: pose.y - TILE_H * 1.7, anchor: '-50%, -50%' }
-            : side === 1
-              ? { left: pose.x + TILE_H * 1.3, top: pose.y, anchor: '0, -50%' }
-              : { left: pose.x - TILE_H * 1.3, top: pose.y, anchor: '-100%, -50%' };
-          return (
-            <span key={side} className={`deck-tag${counts.current[side] >= SIDE_SIZE ? ' is-done' : ''}`} style={{ left: `${place.left}%`, top: `${(place.top / BOARD_H) * 100}%`, transform: `translate(${place.anchor})` }}>
-              {RIVAL_NAME[language][index]} · {counts.current[side]}/{SIDE_SIZE}
+          {target && (
+            <span className="deck-hint" style={{ left: `${labelSlot.x}%`, top: `${labelSlot.y + 11}%`, transform: billboard('-50%, -50%', 1) }}>
+              <b aria-hidden="true">↑</b>
+              {row === 0
+                ? t('Arrastra tus fichas aquí', 'Drag your tiles here', 'Arraste suas peças aqui')
+                : t('Ahora la fila de arriba', 'Now the upper row', 'Agora a fileira de cima')}
             </span>
-          );
-        })}
+          )}
+          {[1, 2, 3].map((side) => {
+            const pose = wallSlot(side, 8, 0);
+            const out = side === 2 ? { dx: 0, dy: -10 } : side === 1 ? { dx: 12, dy: 0 } : { dx: -12, dy: 0 };
+            return (
+              <span key={side} className={`deck-tag${counts.current[side] >= SIDE_SIZE ? ' is-done' : ''}`} style={{ left: `${pose.x + out.dx}%`, top: `${pose.y + out.dy}%`, transform: billboard('-50%, -50%', 1) }}>
+                {RIVAL_NAME[language][side - 1]} · {counts.current[side]}/{SIDE_SIZE}
+              </span>
+            );
+          })}
 
-        {Array.from({ length: DECK_SIZE }, (_, index) => (
-          <span key={index} className="deck-tile" ref={(el) => { tileRefs.current[index] = el; }} style={{ width: `${TILE_W}%` }}>
-            <img src={TILE_BACK} alt="" draggable={false} />
-          </span>
-        ))}
+          {Array.from({ length: DECK_SIZE }, (_, index) => (
+            <TileBox key={index} refCb={(el) => { tileRefs.current[index] = el; }} style={{ width: `${TILE_W}%` }} />
+          ))}
+        </IsoWorld>
 
         <div className="sort-actions deck-actions">
           <span>{t('Tú', 'You', 'Você')} {mine}/{SIDE_SIZE}</span>

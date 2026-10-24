@@ -104,47 +104,151 @@
     cursor: default;
 }
 
-/* Whole deck face down: the pointer is a hand that sweeps the tiles, or they slide into walls. */
-.deck-felt {
+/* ── Isometric table (shuffle, walls, dealer, compass, dice) ───────────────
+   One square plane tilted like a corner view, with no perspective: 1u is 1% of the table top. */
+.deck-board {
+    container-type: inline-size;
+    overflow: visible;
+}
+
+.deck-world {
     position: absolute;
-    inset: 1% 1% 1% 1%;
-    display: grid;
-    place-items: end start;
-    padding: var(--space-3);
-    border: var(--border-hair) solid var(--ink);
-    border-radius: var(--radius-xl);
-    background: radial-gradient(ellipse at 50% 40%, color-mix(in oklab, var(--table-felt) 82%, white) 0, var(--table-felt) 70%);
-    box-shadow: inset 0 0 0 4px color-mix(in oklab, var(--felt-strong) 40%, transparent), 0 3px 0 var(--ink);
+    inset: 0;
+    pointer-events: none;
 }
 
-.deck-felt span {
-    color: color-mix(in oklab, white 78%, var(--table-felt));
-    font: 700 11px/1 var(--font-display);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+.deck-plane {
+    --u: 0.66cqw;
+    position: absolute;
+    left: 50%;
+    top: 53%;
+    width: 66cqw;
+    aspect-ratio: 1;
+    margin: -33cqw 0 0 -33cqw;
+    transform-style: preserve-3d;
+    transform: rotateX(60deg) rotateZ(-45deg);
+    pointer-events: auto;
+    cursor: default;
+    touch-action: none;
+    user-select: none;
 }
 
-.deck-board.is-shuffling,
-.deck-board.is-shuffle { cursor: none; }
+.deck-plane * { pointer-events: none; }
+.deck-plane [role="button"] { pointer-events: auto; cursor: pointer; }
 
-.deck-tile {
+.deck-board.is-shuffle .deck-plane { cursor: none; }
+.deck-board.is-walls .deck-plane { cursor: grab; }
+.deck-board.is-walls.is-grabbing .deck-plane { cursor: grabbing; }
+.deck-board.is-compass .deck-plane { cursor: grab; }
+.deck-board.is-compass.is-grabbing .deck-plane { cursor: grabbing; }
+
+.iso-level {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform: translateZ(calc(var(--u) * 6.2));
+}
+
+/* generic block: a top face plus four sides of thickness --t */
+.bx {
+    --t: calc(var(--u) * 2.4);
     position: absolute;
     display: block;
-    pointer-events: none;
-    will-change: left, top, transform;
+    transform-style: preserve-3d;
 }
 
-.deck-board.is-walls .deck-tile {
-    transition: left 0.75s cubic-bezier(0.65, 0, 0.25, 1), top 0.75s cubic-bezier(0.65, 0, 0.25, 1), transform 0.75s ease;
-}
-
-.deck-tile img {
+.bx-top {
+    position: absolute;
+    inset: 0;
     display: block;
     width: 100%;
-    height: auto;
-    filter: drop-shadow(0 1px 1px rgba(10, 30, 28, 0.38));
+    height: 100%;
+    transform: translateZ(var(--t));
 }
 
+.bx-f {
+    position: absolute;
+    display: block;
+    background: var(--bx-side, #efe4c8);
+}
+
+.bx-s { left: 0; top: 100%; width: 100%; height: var(--t); transform-origin: 0 0; transform: rotateX(90deg); filter: brightness(0.8); }
+.bx-n { left: 0; top: 0; width: 100%; height: var(--t); transform-origin: 0 0; transform: rotateX(90deg); filter: brightness(0.95); }
+.bx-e { left: 100%; top: 0; width: var(--t); height: 100%; transform-origin: 0 0; transform: rotateY(-90deg); filter: brightness(0.9); }
+.bx-w { left: 0; top: 0; width: var(--t); height: 100%; transform-origin: 0 0; transform: rotateY(-90deg); filter: brightness(1); }
+
+.iso-slab {
+    --t: calc(var(--u) * 6);
+    --bx-side: #b8672a;
+    left: -3%;
+    top: -3%;
+    width: 106%;
+    height: 106%;
+}
+
+.iso-slab > .bx-top {
+    border-radius: 3cqw;
+    background: linear-gradient(145deg, #e58a3c, #c9702d);
+    box-shadow: inset 0 0 0 0.4cqw rgba(255, 255, 255, 0.28), inset 0 0 0 0.9cqw #9a4f1c;
+}
+
+.iso-felt {
+    position: absolute;
+    inset: 4.6%;
+    display: block;
+    border-radius: 1.6cqw;
+    background: radial-gradient(ellipse at 50% 42%, color-mix(in oklab, var(--table-felt) 80%, white) 0, var(--table-felt) 72%);
+    box-shadow: inset 0 0 0 0.3cqw color-mix(in oklab, var(--felt-strong) 55%, transparent), inset 0 0.5cqw 1.6cqw rgba(0, 0, 0, 0.3);
+}
+
+.iso-leg {
+    --t: calc(var(--u) * 16);
+    --bx-side: #5b3318;
+    width: 8%;
+    height: 8%;
+    margin: 0;
+    transform: translate3d(-50%, -50%, calc(var(--u) * -16));
+}
+
+.iso-leg > .bx-top { background: #6e3f1d; }
+
+/* tiles: back colour, cream band and emblem follow the chosen site style, like the table on the home page */
+:root {
+    --tile-back: #f3c63d;
+    --tile-cream: #fbf2df;
+    --tile-emblem: url('../assets/rincon-mark.svg');
+}
+:root[data-theme="dark"] { --tile-back: #41134f; --tile-cream: #fff4fb; --tile-emblem: url('../assets/emblems/neon.svg'); }
+:root[data-theme="cute"] { --tile-back: #ffb6d3; --tile-cream: #fff5fa; --tile-emblem: url('../assets/emblems/cute.svg'); }
+:root[data-theme="samurai"] { --tile-back: #2f4670; --tile-cream: #f7f0df; --tile-emblem: url('../assets/emblems/samurai.svg'); }
+:root[data-theme="cyberpunk"] { --tile-back: #12233a; --tile-cream: #f7ffff; --tile-emblem: url('../assets/emblems/cyberpunk.svg'); }
+:root[data-theme="vaquero"] { --tile-back: #bb7c40; --tile-cream: #fff6e5; --tile-emblem: url('../assets/emblems/vaquero.svg'); }
+:root[data-theme="frutiger"] { --tile-back: #a6e8ff; --tile-cream: #ffffff; --tile-emblem: url('../assets/emblems/frutiger.svg'); }
+:root[data-theme="fox"] { --tile-back: #f08a30; --tile-cream: #fff6e8; --tile-emblem: url('../assets/emblems/fox.svg'); }
+
+.deck-tile {
+    --t: calc(var(--u) * 2.4);
+    aspect-ratio: 3 / 4;
+    will-change: transform, left, top;
+}
+
+.deck-tile > .bx-f {
+    background: linear-gradient(var(--tile-back) 0 30%, var(--tile-cream) 30% 70%, var(--tile-back) 70%);
+}
+
+.tile-top {
+    border-radius: 0.5cqw;
+    background: var(--tile-emblem) center / 58% no-repeat, linear-gradient(160deg, color-mix(in oklab, var(--tile-back) 88%, white), var(--tile-back));
+    box-shadow: inset 0 0 0 0.22cqw var(--tile-cream), inset 0 0 0 0.34cqw color-mix(in oklab, var(--tile-back) 60%, black);
+}
+
+.deck-board.is-walls .deck-tile,
+.deck-board.is-table .deck-tile { transition: left 0.5s ease, top 0.5s ease, transform 0.5s ease; }
+.deck-board.is-walls .deck-tile.is-dragging { transition: none; }
+.deck-tile.is-counting > .tile-top { filter: sepia(1) saturate(4) hue-rotate(-12deg) brightness(1.15); }
+.deck-tile.is-counting > .bx-f { background: #e6b422; }
+
+/* hands that follow the pointer (drawn flat on top of the scene) */
 .deck-hand {
     position: absolute;
     left: 0;
@@ -163,95 +267,26 @@
     height: auto;
 }
 
-.deck-actions { top: 3.5%; right: 3%; }
+.deck-actions { top: 3.5%; right: 3%; z-index: 450; }
 
-.deck-board.is-walls { cursor: grab; }
-.deck-board.is-walls.is-grabbing { cursor: grabbing; }
-
-.deck-board.is-walls .deck-tile.is-dragging {
-    transition: none;
-    filter: drop-shadow(0 8px 6px rgba(10, 30, 28, 0.45));
-}
-
-.deck-ghost {
+.deck-caption {
     position: absolute;
-    z-index: 1;
-    aspect-ratio: 3 / 4;
-    border: 2px dashed rgba(255, 255, 255, 0.85);
-    border-radius: 3px;
-    background: rgba(255, 255, 255, 0.1);
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-}
-
-.deck-ghost.is-rival {
-    border-width: 1px;
-    border-color: rgba(255, 255, 255, 0.35);
-    background: none;
-}
-
-.deck-ghost.is-filled { opacity: 0; }
-
-.deck-ghost.is-next {
-    z-index: 2;
-    border-style: solid;
-    border-color: var(--gold);
-    background: color-mix(in oklab, var(--gold) 38%, transparent);
-    animation: deck-pulse 1s ease-in-out infinite alternate;
-}
-
-.deck-ghost.is-next.is-hot {
-    background: color-mix(in oklab, var(--gold) 80%, transparent);
-    animation: none;
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.8);
-}
-
-@keyframes deck-pulse {
-    from { box-shadow: 0 0 0 0 color-mix(in oklab, var(--gold) 70%, transparent); }
-    to { box-shadow: 0 0 0 5px color-mix(in oklab, var(--gold) 0%, transparent); }
-}
-
-.deck-hint,
-.deck-tag {
-    position: absolute;
-    z-index: 3;
-    display: grid;
-    justify-items: center;
-    transform: translate(-50%, -50%);
-    color: #fff;
-    font: 700 11px/1.1 var(--font-display);
-    letter-spacing: 0.08em;
+    left: 3%;
+    bottom: 3%;
+    margin: 0;
+    color: var(--ink);
+    font: 700 11px/1 var(--font-display);
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+    opacity: 0.7;
     pointer-events: none;
-    white-space: nowrap;
-}
-
-.deck-hint b {
-    font-size: 18px;
-    animation: deck-bob 0.8s ease-in-out infinite alternate;
-}
-
-.deck-tag {
-    padding: 2px 8px;
-    border-radius: 99px;
-    background: rgba(0, 0, 0, 0.28);
-    letter-spacing: 0.04em;
-    font-size: 10px;
-}
-
-.deck-tag.is-done { background: var(--sou-strong); }
-
-@keyframes deck-bob {
-    from { transform: translateY(-2px); }
-    to { transform: translateY(3px); }
 }
 
 .deck-meter {
     position: absolute;
     left: 4%;
     right: 4%;
-    bottom: 3%;
+    bottom: 1%;
     z-index: 420;
     height: 8px;
     border: var(--border-hair) solid var(--ink);
@@ -267,156 +302,210 @@
     transition: width 0.2s ease;
 }
 
-/* Top-down table: finished walls, compass, round-wind plate and dice. */
-.deck-tile.is-static {
-    transition: filter 0.2s ease;
-}
-
-.deck-tile.is-static.is-counting img {
-    filter: sepia(1) saturate(4) hue-rotate(-12deg) brightness(1.15) drop-shadow(0 0 3px var(--gold));
-}
-
-.deck-board.is-table { container-type: inline-size; }
-.deck-board.is-table.is-grabbing { cursor: grabbing; }
-.deck-board.is-table.is-compass { cursor: grab; }
-
-.table-compass,
-.table-plate {
+/* slots, hints and labels on the felt */
+.deck-ghost {
     position: absolute;
-    z-index: 300;
-    transform: translate(-50%, -50%);
-    transition: left 0.3s ease, top 0.3s ease, box-shadow 0.2s ease, filter 0.2s ease;
-    filter: drop-shadow(0 3px 2px rgba(10, 30, 28, 0.4));
-    pointer-events: none;
+    display: block;
+    aspect-ratio: 3 / 4;
+    border: 0.25cqw dashed rgba(255, 255, 255, 0.85);
+    border-radius: 0.4cqw;
+    background: rgba(255, 255, 255, 0.12);
 }
 
-.table-compass.is-dragging,
-.table-plate.is-dragging {
-    z-index: 500;
-    transition: none;
-    filter: drop-shadow(0 10px 7px rgba(10, 30, 28, 0.45));
+.deck-ghost.is-rival { border-width: 1px; border-color: rgba(255, 255, 255, 0.35); background: none; }
+.deck-ghost.is-filled { opacity: 0; }
+
+.deck-ghost.is-next {
+    border-style: solid;
+    border-color: var(--gold);
+    background: color-mix(in oklab, var(--gold) 45%, transparent);
+    animation: deck-pulse 1s ease-in-out infinite alternate;
 }
 
-.table-compass svg { display: block; width: 100%; height: auto; }
-.compass-plate { fill: var(--ink); }
-.compass-inner { fill: color-mix(in oklab, var(--ink) 86%, var(--table-felt)); stroke: var(--gold); stroke-width: 1.5; }
-.compass-slots rect { fill: none; stroke: var(--card); stroke-width: 1.2; stroke-dasharray: 3 2; opacity: 0.55; }
-.compass-letters text { fill: var(--card); font: 700 15px/1 'Noto Serif JP', 'Hiragino Mincho ProN', serif; text-anchor: middle; dominant-baseline: central; }
-.compass-core { fill: var(--gold); stroke: var(--card); stroke-width: 1.5; }
+.deck-ghost.is-next.is-hot { background: color-mix(in oklab, var(--gold) 85%, transparent); animation: none; }
 
-.table-plate {
-    aspect-ratio: 6 / 4.4;
+@keyframes deck-pulse {
+    from { box-shadow: 0 0 0 0 color-mix(in oklab, var(--gold) 70%, transparent); }
+    to { box-shadow: 0 0 0 0.8cqw color-mix(in oklab, var(--gold) 0%, transparent); }
+}
+
+.deck-hint,
+.deck-tag,
+.table-seat-label {
+    position: absolute;
+    display: grid;
+    justify-items: center;
+    padding: 2px 8px;
+    border-radius: 99px;
+    color: #fff;
+    background: rgba(10, 20, 20, 0.55);
+    font: 700 11px/1.15 var(--font-display);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.deck-hint b { font-size: 16px; animation: deck-bob 0.8s ease-in-out infinite alternate; }
+.deck-tag { font-size: 10px; }
+.deck-tag.is-done { background: var(--sou-strong); }
+
+@keyframes deck-bob {
+    from { transform: translateY(-2px); }
+    to { transform: translateY(3px); }
+}
+
+/* compass, plate, dice */
+.table-compass {
+    position: absolute;
+    display: block;
+    width: 30%;
+    transition: left 0.3s ease, top 0.3s ease;
+}
+
+.table-compass.is-dragging { transition: none; }
+.table-compass img { display: block; width: 100%; height: auto; filter: drop-shadow(0 4px 3px rgba(10, 30, 28, 0.35)); }
+
+.table-plate { --t: calc(var(--u) * 2); --bx-side: #b8571a; transition: left 0.3s ease, top 0.3s ease; }
+.table-plate.is-dragging { transition: none; }
+
+.deck-wind {
+    position: absolute;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    padding: 2px 10px;
+    border: 2px solid var(--ink);
+    border-radius: 99px;
+    color: var(--ink);
+    background: var(--gold-soft, #fff1c4);
+    font: 700 11px/1.2 var(--font-display);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.deck-wind b { font: 700 15px/1 'Noto Serif JP', 'Hiragino Mincho ProN', serif; }
+
+.table-plate > .bx-top {
     display: grid;
     place-items: center;
-    border: 2px solid var(--ink);
-    border-radius: 5px;
+    border-radius: 0.6cqw;
     background: linear-gradient(#f59a3a, #e8742a);
 }
 
 .table-plate b {
     color: #fff;
-    font: 700 1.4em/1 'Noto Serif JP', 'Hiragino Mincho ProN', serif;
-    font-size: clamp(11px, 2.4cqw, 22px);
+    font: 700 2.4cqw/1 'Noto Serif JP', 'Hiragino Mincho ProN', serif;
 }
 
 .table-target {
     position: absolute;
-    z-index: 2;
+    display: block;
     aspect-ratio: 1;
-    border: 2px dashed rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    transform: translate(-50%, -50%);
-    pointer-events: none;
+    border: 0.3cqw dashed rgba(255, 255, 255, 0.9);
+    border-radius: 1.2cqw;
+    background: rgba(255, 255, 255, 0.12);
     animation: deck-pulse 1s ease-in-out infinite alternate;
 }
 
-.table-target.is-plate { aspect-ratio: 6 / 4.4; border-radius: 5px; }
-.table-target.is-hot { border-color: var(--gold); background: color-mix(in oklab, var(--gold) 50%, transparent); animation: none; }
+.table-target.is-hot { border-color: var(--gold); background: color-mix(in oklab, var(--gold) 55%, transparent); animation: none; }
+
+.die3d {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: block;
+    width: var(--s);
+    height: var(--s);
+    margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+    transform-style: preserve-3d;
+}
+
+.die3d-in {
+    position: absolute;
+    inset: 0;
+    display: block;
+    transform-style: preserve-3d;
+    transition: transform 0.45s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+.die3d-face {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+    padding: 13%;
+    border: 0.2cqw solid #1d1a24;
+    border-radius: 18%;
+    background: #fffdf6;
+    backface-visibility: hidden;
+}
+
+.die3d-face i { place-self: center; width: 72%; aspect-ratio: 1; border-radius: 50%; }
+.die3d-face i.is-pip { background: #1d1a24; }
+.die3d.is-rolling .die3d-in { animation: die-spin 0.55s linear infinite; transition: none; }
+.die3d.is-rolling { animation: die-hop 0.55s ease-in-out infinite; }
+
+@keyframes die-spin {
+    to { transform: rotateX(360deg) rotateY(540deg) rotateZ(180deg); }
+}
+
+@keyframes die-hop {
+    0%, 100% { margin-top: calc(var(--s) / -2); }
+    50% { margin-top: calc(var(--s) / -2 - 2cqw); }
+}
 
 .table-dice {
     position: absolute;
-    z-index: 320;
-    display: flex;
-    gap: 14%;
-    width: 11%;
-    padding: 0;
-    border: 0;
-    background: none;
+    display: block;
+    width: 20%;
+    height: 8%;
     transform: translate(-50%, -50%);
-    cursor: pointer;
+    transform-style: preserve-3d;
 }
 
-.table-dice:disabled { cursor: progress; }
-
-.table-die {
-    --tilt: 0deg;
-    display: grid;
-    grid-template: repeat(3, 1fr) / repeat(3, 1fr);
-    width: 100%;
-    aspect-ratio: 1;
-    padding: 12%;
-    border: 2px solid #1d1a24;
-    border-radius: 18%;
-    background: #fffdf6;
-    box-shadow: 0 3px 0 #1d1a24, 0 8px 8px rgba(10, 30, 28, 0.3);
-    transform: rotate(var(--tilt));
-}
-
-.table-die i { place-self: center; width: 70%; aspect-ratio: 1; border-radius: 50%; }
-.table-die i.is-pip { background: #1d1a24; }
-.table-die.is-rolling { animation: die-tumble 0.16s linear infinite; }
-
-@keyframes die-tumble {
-    0% { transform: rotate(calc(var(--tilt) - 14deg)) translateY(-3px); }
-    50% { transform: rotate(calc(var(--tilt) + 16deg)) translateY(2px); }
-    100% { transform: rotate(calc(var(--tilt) - 8deg)) translateY(-2px); }
+.table-dice-one {
+    position: absolute;
+    top: 50%;
+    display: block;
+    transform-style: preserve-3d;
 }
 
 .table-cut {
     position: absolute;
-    z-index: 330;
-    width: 4px;
+    display: block;
+    width: 0.7%;
     border-radius: 2px;
     background: var(--gold);
-    box-shadow: 0 0 0 2px var(--ink), 0 0 10px var(--gold);
-    pointer-events: none;
+    box-shadow: 0 0 0 0.2cqw var(--ink), 0 0 1.2cqw var(--gold);
 }
 
 .table-seat {
     position: absolute;
-    z-index: 320;
-    display: grid;
-    justify-items: center;
-    gap: 4px;
-    width: 6.5%;
-    transform: translate(-50%, -50%);
-    color: #fff;
-    font: 700 10px/1.1 var(--font-display);
-    letter-spacing: 0.04em;
-    text-align: center;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    display: block;
+    width: 0;
+    height: 0;
+    transform-style: preserve-3d;
 }
 
-.table-seat small { font: inherit; white-space: nowrap; }
-.table-seat b { padding: 1px 8px; border-radius: 99px; color: var(--ink); background: var(--gold); text-shadow: none; }
-.table-seat-die { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
-.table-seat-die:disabled { cursor: default; }
-.table-seat .table-die { width: 100%; }
-.table-seat-die .table-die { width: 100%; }
-.table-seat.is-winner .table-die { box-shadow: 0 3px 0 #1d1a24, 0 0 0 4px var(--gold), 0 8px 14px rgba(0, 0, 0, 0.35); }
+.table-seat-die { position: absolute; left: 0; top: 0; display: block; transform-style: preserve-3d; }
+.table-seat.is-ready .table-seat-die { animation: die-ready 0.9s ease-in-out infinite alternate; }
 
-.deck-board .sort-win.is-top { top: 4%; bottom: auto; }
+@keyframes die-ready {
+    from { transform: translateZ(0); }
+    to { transform: translateZ(calc(var(--u) * 2.5)); }
+}
 
-.deck-board .sort-win {
+.table-seat-label { left: 0; top: 0; margin-top: calc(var(--u) * 7); }
+.table-seat-label b { margin-top: 2px; padding: 1px 8px; border-radius: 99px; color: var(--ink); background: var(--gold); }
+.table-seat.is-winner .die3d-face { box-shadow: 0 0 0 0.4cqw var(--gold); }
+
+.deck-board .sort-win,
+.deck-board .sort-win.is-top {
     top: auto;
-    bottom: 9%;
+    bottom: 2%;
     z-index: 430;
-}
-
-.deck-board.is-walls .sort-win {
-    top: 38%;
-    bottom: auto;
+    max-width: 92%;
 }
 
 .sort-rack {

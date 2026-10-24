@@ -211,12 +211,12 @@ export const tutorialStops: TutorialStop[] = [
     eyebrow: L('Poner la mesa', 'Setting the table', 'Preparar a mesa'),
     title: L('Coloca el compass y el viento de ronda', 'Place the compass and the round wind', 'Coloque o compass e o vento da rodada'),
     body: L(
-      'Como dealer, tú pones lo que falta en la mesa: el compass en el centro, con cada viento hacia su asiento, y la placa naranja del viento de ronda pegada al borde, a la derecha del dealer inicial. Arrastra cada pieza a su recuadro punteado.',
-      'As dealer, you set what is missing on the table: the compass in the centre, each wind facing its seat, and the orange round-wind plate against the edge, to the right of the first dealer. Drag each piece to its dotted outline.',
-      'Como dealer, você coloca o que falta na mesa: o compass no centro, cada vento voltado para seu assento, e a placa laranja do vento da rodada junto à borda, à direita do dealer inicial. Arraste cada peça ao seu contorno pontilhado.',
+      'Como dealer, tú pones lo que falta en la mesa: el compass en el centro, con cada viento hacia su asiento, y la placa naranja del viento de ronda pegada al borde, a la derecha del dealer inicial. Arrastra cada pieza a su recuadro punteado. Una vez colocado el compass, tú eres el dealer y juegas como Este; el jugador a tu derecha es Sur, el de enfrente es Oeste y el de tu izquierda es Norte.',
+      'As dealer, you set what is missing on the table: the compass in the centre, each wind facing its seat, and the orange round-wind plate against the edge, to the right of the first dealer. Drag each piece to its dotted outline. Once the compass is down, you are the dealer and play as East; the player on your right is South, the one across is West and the one on your left is North.',
+      'Como dealer, você coloca o que falta na mesa: o compass no centro, cada vento voltado para seu assento, e a placa laranja do vento da rodada junto à borda, à direita do dealer inicial. Arraste cada peça ao seu contorno pontilhado. Com o compass colocado, você é o dealer e joga como Leste; o jogador à sua direita é Sul, o da frente é Oeste e o da sua esquerda é Norte.',
     ),
     bullets: [
-      L('Este queda frente al dealer; Sur, Oeste y Norte siguen en sentido antihorario.', 'East faces the dealer; South, West and North follow counter-clockwise.', 'Leste fica de frente para o dealer; Sul, Oeste e Norte seguem no sentido anti-horário.'),
+      L('Tú eres Este y el dealer; Sur está a tu derecha, Oeste enfrente y Norte a tu izquierda.', 'You are East and the dealer; South is on your right, West across and North on your left.', 'Você é Leste e o dealer; Sul está à sua direita, Oeste em frente e Norte à sua esquerda.'),
       L('Cada lado del compass tiene su ranura para el palito de riichi.', 'Each side of the compass has its slot for the riichi stick.', 'Cada lado do compass tem seu slot para o bastão de riichi.'),
       L('La placa muestra 東 en la ronda Este y se gira a 南 en la ronda Sur.', 'The plate shows 東 in the East round and flips to 南 in the South round.', 'A placa mostra 東 na rodada Leste e vira para 南 na rodada Sul.'),
     ],
