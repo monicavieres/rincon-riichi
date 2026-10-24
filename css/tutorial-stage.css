@@ -105,7 +105,7 @@
 }
 
 /* ── Isometric table (shuffle, walls, dealer, compass, dice) ───────────────
-   One square plane tilted like a corner view, with no perspective: 1u is 1% of the table top. */
+   One square plane seen from the player's seat (bottom edge), tilted with perspective: 1u is 1% of the table top. */
 .deck-board {
     container-type: inline-size;
     overflow: visible;
@@ -114,19 +114,20 @@
 .deck-world {
     position: absolute;
     inset: 0;
+    perspective: 100cqw;
     pointer-events: none;
 }
 
 .deck-plane {
-    --u: 0.66cqw;
+    --u: 0.68cqw;
     position: absolute;
     left: 50%;
-    top: 53%;
-    width: 66cqw;
+    top: 50%;
+    width: 68cqw;
     aspect-ratio: 1;
-    margin: -33cqw 0 0 -33cqw;
+    margin: -34cqw 0 0 -34cqw;
     transform-style: preserve-3d;
-    transform: rotateX(60deg) rotateZ(-45deg);
+    transform: translateY(-3cqw) rotateX(52deg);
     pointer-events: auto;
     cursor: default;
     touch-action: none;
@@ -355,15 +356,46 @@
 }
 
 /* compass, plate, dice */
-.table-compass {
+.table-compass { --t: calc(var(--u) * 3); --bx-side: color-mix(in oklab, var(--tile-back) 55%, black); transition: left 0.3s ease, top 0.3s ease; }
+.table-compass.is-dragging { transition: none; }
+
+.compass-face {
     position: absolute;
+    inset: 0;
     display: block;
-    width: 30%;
-    transition: left 0.3s ease, top 0.3s ease;
+    border-radius: 10%;
+    background: radial-gradient(circle at 50% 40%, color-mix(in oklab, var(--tile-back) 70%, white), color-mix(in oklab, var(--tile-back) 78%, black));
+    box-shadow: inset 0 0 0 0.25cqw var(--tile-cream), inset 0 0 0 0.45cqw color-mix(in oklab, var(--tile-back) 50%, black);
 }
 
-.table-compass.is-dragging { transition: none; }
-.table-compass img { display: block; width: 100%; height: auto; filter: drop-shadow(0 4px 3px rgba(10, 30, 28, 0.35)); }
+.compass-core {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 36%;
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: var(--tile-emblem) center / 100% no-repeat, var(--tile-cream);
+    box-shadow: 0 0 0 0.25cqw color-mix(in oklab, var(--tile-back) 50%, black);
+}
+
+.cw {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 24%;
+    height: 17%;
+    border-radius: 14%;
+    color: var(--tile-cream);
+    background: color-mix(in oklab, var(--tile-back) 40%, black);
+    font: 700 1.5cqw/1 'Noto Serif JP', 'Hiragino Mincho ProN', serif;
+}
+
+.cw-e { left: 38%; bottom: 5%; color: #1d1a24; background: var(--gold); box-shadow: 0 0 1.2cqw var(--gold); }
+.cw-s { right: -1%; top: 41.5%; transform: rotate(-90deg); }
+.cw-w { left: 38%; top: 5%; transform: rotate(180deg); }
+.cw-n { left: -1%; top: 41.5%; transform: rotate(90deg); }
 
 .table-plate { --t: calc(var(--u) * 2); --bx-side: #b8571a; transition: left 0.3s ease, top 0.3s ease; }
 .table-plate.is-dragging { transition: none; }
@@ -503,7 +535,7 @@
 .deck-board .sort-win,
 .deck-board .sort-win.is-top {
     top: auto;
-    bottom: 2%;
+    bottom: 1%;
     z-index: 430;
     max-width: 92%;
 }

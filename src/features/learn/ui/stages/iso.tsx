@@ -10,25 +10,34 @@ export const lift = (pose: Lifted) => (pose.h ?? 0) * TILE_THICK + (pose.z % 64)
 export const tileTransform = (pose: Lifted & { rot: number }) =>
   `translate3d(-50%, -50%, calc(var(--u) * ${lift(pose)})) rotate(${pose.rot}deg)`;
 
+/** Camera: the player sits at the bottom edge looking across the table, tilted this many degrees from flat. */
+export const TILT = 52;
+
 /** Text that stands up facing the camera. `anchor` is the translate that places it relative to its point. */
 export const billboard = (anchor = '-50%, -50%', raise = 0) =>
-  `translate(${anchor}) translateZ(calc(var(--u) * ${raise})) rotateZ(45deg) rotateX(-60deg)`;
+  `translate(${anchor}) translateZ(calc(var(--u) * ${raise})) rotateX(-${TILT}deg)`;
 
 /**
- * Plane coordinates (0–100 across the table) under a pointer. The plane is tilted rotateX(60deg) rotateZ(-45deg) with
- * no perspective, so the screen offset from its centre inverts exactly; `offsetX` is not reliable on 3D planes.
+ * Plane coordinates (0–100 across the table) under a pointer, found by casting the pointer ray onto the tilted plane
+ * through the same perspective the CSS uses (`perspective` = world width, plane nudged 3% of the width up).
+ * `offsetX` is not reliable on 3D planes, so this inverts the projection by hand.
  */
 export function unitsOf(event: ReactPointerEvent<HTMLElement>): { x: number; y: number } {
-  const el = event.currentTarget;
-  const rect = el.getBoundingClientRect();
-  const size = el.offsetWidth || 1;
-  const sx = event.clientX - (rect.left + rect.width / 2);
-  // tiles and dice sit about 8 units above the table top, which lifts them on screen
-  const sy = event.clientY - (rect.top + rect.height / 2) + size * 0.084 * 0.866;
-  const x1 = sx;
-  const y1 = sy * 2;
-  const k = Math.SQRT1_2;
-  return { x: ((x1 - y1) * k / size + 0.5) * 100, y: ((x1 + y1) * k / size + 0.5) * 100 };
+  const plane = event.currentTarget;
+  const world = plane.parentElement!.getBoundingClientRect();
+  const size = plane.offsetWidth || 1;
+  const P = world.width;
+  const c = Math.cos((TILT * Math.PI) / 180);
+  const sn = Math.sin((TILT * Math.PI) / 180);
+  const z0 = size * 0.084; // tiles and dice sit about 8 units above the table top
+  const dy0 = world.width * -0.03; // the plane is nudged 3cqw up in CSS
+  const sx = event.clientX - (world.left + world.width / 2);
+  const sy = event.clientY - (world.top + world.height / 2);
+  const v = (sy * P - sy * z0 * c - P * dy0 + P * z0 * sn) / (sy * sn + P * c);
+  const z = v * sn + z0 * c;
+  const scale = P / (P - z);
+  const u = sx / scale;
+  return { x: (u / size + 0.5) * 100, y: (v / size + 0.5) * 100 };
 }
 
 const faces = (

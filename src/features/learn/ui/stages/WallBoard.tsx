@@ -195,7 +195,7 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
           })}
 
           {target && (
-            <span className="deck-hint" style={{ left: `${labelSlot.x}%`, top: `${labelSlot.y + 11}%`, transform: billboard('-50%, -50%', 1) }}>
+            <span className="deck-hint" style={{ left: `${labelSlot.x}%`, top: `${labelSlot.y + 8}%`, transform: billboard('-50%, -50%', 7) }}>
               <b aria-hidden="true">↑</b>
               {row === 0
                 ? t('Arrastra tus fichas aquí', 'Drag your tiles here', 'Arraste suas peças aqui')
@@ -206,7 +206,7 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
             const pose = wallSlot(side, 8, 0);
             const out = side === 2 ? { dx: 0, dy: -10 } : side === 1 ? { dx: 12, dy: 0 } : { dx: -12, dy: 0 };
             return (
-              <span key={side} className={`deck-tag${counts.current[side] >= SIDE_SIZE ? ' is-done' : ''}`} style={{ left: `${pose.x + out.dx}%`, top: `${pose.y + out.dy}%`, transform: billboard('-50%, -50%', 1) }}>
+              <span key={side} className={`deck-tag${counts.current[side] >= SIDE_SIZE ? ' is-done' : ''}`} style={{ left: `${pose.x + out.dx}%`, top: `${pose.y + out.dy}%`, transform: billboard('-50%, -50%', 5) }}>
                 {RIVAL_NAME[language][side - 1]} · {counts.current[side]}/{SIDE_SIZE}
               </span>
             );
