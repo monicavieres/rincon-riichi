@@ -27,7 +27,7 @@ function useDataTheme() {
  */
 /** Where each dab of paint sits on the palette (percent of its box) and how it is tilted. */
 const DAB_AT: Array<[number, number, number]> = [
-  [21, 40, -8], [39, 21, 6], [60, 17, -4], [80, 31, 9], [86, 57, -6], [71, 78, 5], [49, 70, -9], [53, 44, 7],
+  [20, 43, -6], [31, 22, 5], [50, 14, -4], [69, 17, 6], [84, 32, -5], [87, 57, 7], [68, 77, -6], [50, 50, 4],
 ];
 
 export function ThemePicker({ assetBase }: { assetBase: string }) {
@@ -76,6 +76,9 @@ export function ThemePicker({ assetBase }: { assetBase: string }) {
       <div className="theme-panel" id="theme-panel" role="radiogroup" aria-label="Estilo del sitio" hidden={!open}>
         <div className="paint-palette">
           <svg className="paint-board" viewBox="0 0 320 240" aria-hidden="true" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="paint-wood" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#f0d29c" /><stop offset="1" stopColor="#d9b073" /></linearGradient>
+            </defs>
             <path d="M58 122C22 74 66 14 160 12c92-2 148 48 146 108-2 54-52 82-90 78-30-3-40 18-66 26C106 238 50 214 58 122Z" />
             <ellipse cx="98" cy="170" rx="17" ry="14" className="paint-hole" />
           </svg>
@@ -87,7 +90,7 @@ export function ThemePicker({ assetBase }: { assetBase: string }) {
               style={{ left: `${DAB_AT[index][0]}%`, top: `${DAB_AT[index][1]}%`, ['--c1' as string]: theme.swatches[1], ['--c2' as string]: theme.swatches[2], ['--c3' as string]: theme.swatches[0], ['--tilt' as string]: `${DAB_AT[index][2]}deg` }}
             >
               <input type="radio" name="theme" value={theme.id} aria-label={`Estilo ${theme.name}`} onChange={() => setOpen(false)} />
-              <i aria-hidden="true" />
+              <i aria-hidden="true"><img src={`${assetBase}assets/${theme.emblem}`} alt="" draggable={false} /></i>
               <small>{theme.name}</small>
             </label>
           ))}
