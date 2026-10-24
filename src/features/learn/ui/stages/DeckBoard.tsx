@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
-import { IsoWorld, TileBox, tileTransform, unitsOf } from './iso';
+import { IsoWorld, TileBox, billboard, tileTransform, unitsOf } from './iso';
 
 export const TILE_BACK = '../assets/tile-back-rincon.svg';
 export const DECK_SIZE = 136;
@@ -52,23 +52,44 @@ export function wallSlot(side: number, stack: number, level: number): Pose {
   return { x: x0 + TILE_H / 2, y: y0 + TILE_H + along, rot: 90, z, h };
 }
 
-const HAND_SHAPES = [
-  <rect key="i" x="22" y="14" width="12" height="52" rx="6" />,
-  <rect key="m" x="36" y="6" width="12" height="60" rx="6" />,
-  <rect key="r" x="50" y="10" width="12" height="56" rx="6" />,
-  <rect key="p" x="64" y="22" width="12" height="44" rx="6" />,
-  <rect key="t" x="5" y="60" width="34" height="13" rx="6.5" transform="rotate(-38 22 70)" />,
-  <rect key="a" x="22" y="48" width="56" height="58" rx="22" />,
-];
+const RIVAL_START = [{ x: 96, y: 50 }, { x: 50, y: 4 }, { x: 4, y: 50 }];
+const RIVAL_TURN = [-90, 180, 90];
+/** The rivals stop shuffling after this long. */
+const RIVAL_MS = 3000;
 
-/** A flat open palm, outlined once around the whole silhouette. */
+/** An open hand seen from above, pointing up, with a cuff in the style's colour. */
 function Palm() {
+  const skin = '#f4d0ae';
+  const shade = '#e4ad82';
+  const shapes = (
+    <>
+      <rect x="36" y="13" width="16" height="56" rx="8" transform="rotate(-7 44 69)" />
+      <rect x="53" y="6" width="16" height="62" rx="8" transform="rotate(-1.5 61 68)" />
+      <rect x="70" y="11" width="16" height="57" rx="8" transform="rotate(4 78 68)" />
+      <rect x="86" y="27" width="14" height="43" rx="7" transform="rotate(11 93 70)" />
+      <rect x="8" y="64" width="16" height="48" rx="8" transform="rotate(-48 16 90)" />
+      <path d="M32 78C28 64 32 52 42 50h46c10 2 14 14 10 28l-5 28c-2 8-10 12-26 12s-24-4-26-12Z" />
+    </>
+  );
   return (
-    <svg viewBox="0 0 100 112" aria-hidden="true">
-      <g fill="none" stroke="var(--ink)" strokeWidth="7" strokeLinejoin="round">{HAND_SHAPES}</g>
-      <g fill="#f4cba5" stroke="none">{HAND_SHAPES}</g>
-      <g fill="none" stroke="#c98f66" strokeWidth="1.6" strokeLinecap="round" opacity=".7">
-        <path d="M34 70 Q50 80 70 68" /><path d="M36 86 Q50 94 66 86" />
+    <svg viewBox="0 0 116 160" aria-hidden="true">
+      <g fill="none" stroke="var(--tile-ink)" strokeWidth="8" strokeLinejoin="round">{shapes}</g>
+      <g fill={skin} stroke="none">{shapes}</g>
+      <g fill={shade} opacity=".55">
+        <path d="M34 92c14 8 42 8 60 0l-3 16c-2 8-10 12-26 12s-24-4-26-12Z" />
+      </g>
+      <g fill="none" stroke="#c98f66" strokeWidth="1.8" strokeLinecap="round" opacity=".7">
+        <path d="M42 56v12M61 50v14M78 54v12M44 78q16 8 38 0" />
+      </g>
+      <g fill="#fbe4d0" stroke="var(--tile-ink)" strokeWidth="1.6">
+        <ellipse cx="42.500" cy="22" rx="5" ry="6.500" transform="rotate(-7 42 22)" />
+        <ellipse cx="60.500" cy="15" rx="5" ry="6.500" />
+        <ellipse cx="78.500" cy="20" rx="5" ry="6.500" transform="rotate(4 78 20)" />
+        <ellipse cx="94.500" cy="35" rx="4.500" ry="6" transform="rotate(11 94 35)" />
+      </g>
+      <g stroke="var(--tile-ink)" strokeWidth="4" strokeLinejoin="round">
+        <rect x="30" y="116" width="68" height="36" rx="8" fill="var(--tile-back)" />
+        <rect x="30" y="128" width="68" height="7" fill="var(--tile-cream)" />
       </g>
     </svg>
   );
@@ -114,9 +135,59 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
   const pointer = useRef({ x: 0, y: 0, inside: false, down: false });
   const lag = useRef({ x: 0, y: 0 });
 
+  /** A hand passing over the felt at `point`, moving (dx, dy) since the last frame, pushes the tiles around it. */
+  const sweep = useCallback((point: { x: number; y: number }, dx: number, dy: number) => {
+    const speed = Math.hypot(dx, dy);
+    if (speed < 0.03) return;
+    const v = vel.current;
+    poses.current.forEach((pose, index) => {
+      const ox = pose.x - point.x;
+      const oy = pose.y - point.y;
+      const dist = Math.hypot(ox, oy);
+      if (dist > SWEEP_R) return;
+      const falloff = (1 - dist / SWEEP_R) ** 1.3;
+      v[index * 3] += (dx * 0.55 + (ox / (dist || 1)) * speed * 0.22 + rand(-0.06, 0.06)) * falloff;
+      v[index * 3 + 1] += (dy * 0.55 + (oy / (dist || 1)) * speed * 0.22 + rand(-0.06, 0.06)) * falloff;
+      v[index * 3 + 2] += (rand(-3, 3) + dx * 1.2) * falloff;
+      pose.z = ++zTop.current;
+    });
+  }, []);
+
+  // The three rivals shuffle too, each from their own side, for the first few seconds.
+  const rivalHands = useRef<Array<HTMLSpanElement | null>>([]);
+  const rivalAt = useRef<Array<{ x: number; y: number }>>(RIVAL_START.map((start) => ({ ...start })));
+  const rivalClock = useRef<{ start: number; active: boolean }>({ start: 0, active: false });
+
+  const moveRivals = useCallback((now: number) => {
+    const clock = rivalClock.current;
+    if (!clock.active) return;
+    const elapsed = now - clock.start;
+    const done = elapsed > RIVAL_MS;
+    RIVAL_START.forEach((start, hand) => {
+      const el = rivalHands.current[hand];
+      if (!el) return;
+      const seconds = elapsed / 1000;
+      const phase = hand * 2.1;
+      const angle = seconds * 3.4 + phase;
+      const path = { x: 50 + 26 * Math.cos(angle), y: 50 + 22 * Math.sin(angle * 1.3 + phase) };
+      const ease = Math.min(1, elapsed / 700);
+      const target = { x: start.x + (path.x - start.x) * ease, y: start.y + (path.y - start.y) * ease };
+      const from = rivalAt.current[hand];
+      if (!done) sweep(target, target.x - from.x, target.y - from.y);
+      rivalAt.current[hand] = target;
+      const fade = done ? 0 : Math.min(1, elapsed / 300);
+      el.style.opacity = String(fade);
+      el.style.left = `${target.x}%`;
+      el.style.top = `${target.y}%`;
+      el.style.transform = `${billboard('-50%, -78%', 8)} rotate(${RIVAL_TURN[hand]}deg)${hand === 1 ? ' scaleX(-1)' : ''}`;
+    });
+    if (done) clock.active = false;
+  }, [sweep]);
+
   const step = useCallback(() => {
     frame.current = 0;
     let energy = 0;
+    moveRivals(performance.now());
     const v = vel.current;
     poses.current.forEach((pose, index) => {
       const vx = v[index * 3];
@@ -143,14 +214,21 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
       lag.current.y += (pointer.current.y + 18 - lag.current.y) * 0.16;
       hand2.style.transform = `translate(${lag.current.x}px, ${lag.current.y}px) translate(-50%, -50%) scaleX(-1) rotate(${pointer.current.down ? 8 : -6}deg)`;
     }
-    if (energy > 0.05 || pointer.current.inside) frame.current = requestAnimationFrame(step);
-  }, [place]);
+    if (energy > 0.05 || pointer.current.inside || rivalClock.current.active) frame.current = requestAnimationFrame(step);
+  }, [place, moveRivals]);
 
   const wake = useCallback(() => {
     if (!frame.current) frame.current = requestAnimationFrame(step);
   }, [step]);
 
-  useEffect(() => () => { if (frame.current) cancelAnimationFrame(frame.current); }, []);
+  useEffect(() => {
+    rivalClock.current = { start: performance.now(), active: true };
+    wake();
+    return () => {
+      if (frame.current) cancelAnimationFrame(frame.current);
+      frame.current = 0;
+    };
+  }, [wake]);
 
   const moveHand = (clientX: number, clientY: number) => {
     const rect = boardRef.current?.getBoundingClientRect();
@@ -172,26 +250,10 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
 
   const onSweep = (event: ReactPointerEvent<HTMLDivElement>) => {
     const point = unitsOf(event);
-    if (!point) return;
     const before = last.current;
     last.current = point;
     if (!before || event.buttons === 0) return;
-    const dx = point.x - before.x;
-    const dy = point.y - before.y;
-    const speed = Math.hypot(dx, dy);
-    if (speed < 0.03) return;
-    const v = vel.current;
-    poses.current.forEach((pose, index) => {
-      const ox = pose.x - point.x;
-      const oy = pose.y - point.y;
-      const dist = Math.hypot(ox, oy);
-      if (dist > SWEEP_R) return;
-      const falloff = (1 - dist / SWEEP_R) ** 1.3;
-      v[index * 3] += (dx * 0.55 + (ox / (dist || 1)) * speed * 0.22 + rand(-0.06, 0.06)) * falloff;
-      v[index * 3 + 1] += (dy * 0.55 + (oy / (dist || 1)) * speed * 0.22 + rand(-0.06, 0.06)) * falloff;
-      v[index * 3 + 2] += (rand(-3, 3) + dx * 1.2) * falloff;
-      pose.z = ++zTop.current;
-    });
+    sweep(point, point.x - before.x, point.y - before.y);
     wake();
   };
 
@@ -226,6 +288,9 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
         onPointerDown={(event) => { pointer.current.down = true; moveHand(event.clientX, event.clientY); }}
       >
         <IsoWorld planeRef={planeRef} handlers={{ onPointerMove: onSweep, onPointerDown: onSweepDown }}>
+          {RIVAL_START.map((_, hand) => (
+            <span key={`rival-${hand}`} className="deck-rival-hand" ref={(el) => { rivalHands.current[hand] = el; }} style={{ opacity: 0 }}><Palm /></span>
+          ))}
           {tiles.map((index) => (
             <TileBox key={index} refCb={(el) => { tileRefs.current[index] = el; }} style={{ width: `${TILE_W}%` }} />
           ))}

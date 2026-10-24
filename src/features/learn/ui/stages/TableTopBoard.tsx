@@ -5,8 +5,8 @@ import { Box, IsoWorld, TileBox, billboard, tileTransform, unitsOf } from './iso
 
 const ROW = 17;
 const CENTER = { x: 50, y: 50 };
-const COMPASS = 14;
-const COMPASS_TRAY = { x: 12, y: 90 };
+const COMPASS = 24;
+const COMPASS_TRAY = { x: 14, y: 86 };
 /** The wind plate stands against the table edge, to the right of the first dealer (bottom of the board). */
 const PLATE_TARGET = { x: 89, y: 90 };
 const PLATE_TRAY = { x: 89, y: 10 };
@@ -73,7 +73,7 @@ function Die3D({ value, rolling, yaw, size = 7 }: { value: number; rolling: bool
     <span className={`die3d${rolling ? ' is-rolling' : ''}`} style={style} aria-hidden="true">
       <span className="die3d-in" style={rolling ? undefined : { transform: FACE_UP[value] }}>
         {FACES.map(([name, face, transform]) => (
-          <span key={name} className="die3d-face" style={{ transform }}>
+          <span key={name} className={`die3d-face is-${name}${face === 1 ? ' is-one' : ''}`} style={{ transform }}>
             {Array.from({ length: 9 }, (_, cell) => <i key={cell} className={value > 0 && PIPS[face].includes(cell) ? 'is-pip' : ''} />)}
           </span>
         ))}
@@ -259,13 +259,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
                 className={`table-compass${grabbing === 'compass' ? ' is-dragging' : ''}`}
                 style={{ ...at(compassAt, grabbing === 'compass' ? 3 : 0), width: `${COMPASS}%`, aspectRatio: '1' }}
               >
-                <span className="compass-face">
-                  <i className="compass-core" />
-                  <b className="cw cw-e">東</b>
-                  <b className="cw cw-s">南</b>
-                  <b className="cw cw-w">西</b>
-                  <b className="cw cw-n">北</b>
-                </span>
+                <span className="compass-face" />
               </Box>
               <Box
                 className={`table-plate${grabbing === 'plate' ? ' is-dragging' : ''}`}
@@ -296,7 +290,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
                   onClick={seat === 0 ? rollMine : undefined}
                   onKeyDown={seat === 0 ? press(rollMine) : undefined}
                 >
-                  <Die3D value={value} rolling={seatRolling[seat]} yaw={(seat - 1.5) * 24} size={4.6} />
+                  <Die3D value={value} rolling={seatRolling[seat]} yaw={(seat - 1.5) * 24} size={6} />
                 </span>
                 <span className="table-seat-label" style={{ transform: billboard('-50%, 0', 2) }}>
                   {SEAT_NAME[language][seat]}{value > 0 && !seatRolling[seat] ? ` · ${value}` : ''}
@@ -317,8 +311,8 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
                 onKeyDown={press(roll)}
                 style={{ left: `${CENTER.x}%`, top: `${CENTER.y + 24}%` }}
               >
-                <span className="table-dice-one" style={{ left: '-5%' }}><Die3D value={faces[0]} rolling={rolling} yaw={-14} size={4.6} /></span>
-                <span className="table-dice-one" style={{ left: '5%' }}><Die3D value={faces[1]} rolling={rolling} yaw={18} size={4.6} /></span>
+                <span className="table-dice-one" style={{ left: '-5%' }}><Die3D value={faces[0]} rolling={rolling} yaw={-14} size={6} /></span>
+                <span className="table-dice-one" style={{ left: '5%' }}><Die3D value={faces[1]} rolling={rolling} yaw={18} size={6} /></span>
               </span>
               {cut && <i className="table-cut" style={{ left: `${cut.x}%`, top: `${cut.y}%`, height: '8%', transform: `translate3d(-50%, -50%, calc(var(--u) * 4)) rotate(${cut.rot}deg)` }} />}
             </>
