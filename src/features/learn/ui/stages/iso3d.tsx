@@ -48,8 +48,13 @@ const THEME_EMBLEM: Record<string, string> = {
 const assetBase = () => (/\/(aprender|practicar|recursos)\//.test(window.location.pathname) ? '../' : '');
 
 const images = new Map<string, HTMLImageElement>();
+const bitmaps = new Map<string, HTMLCanvasElement>();
 let onImage: (() => void) | null = null;
-export function picture(path: string) {
+
+/** A picture rasterised once to a canvas, so it can be drawn many times cheaply and at any angle. */
+export function picture(path: string): HTMLCanvasElement | null {
+  const cached = bitmaps.get(path);
+  if (cached) return cached;
   let img = images.get(path);
   if (!img) {
     img = new Image();
@@ -57,7 +62,14 @@ export function picture(path: string) {
     img.src = `${assetBase()}${path}`;
     images.set(path, img);
   }
-  return img.complete && img.naturalWidth > 0 ? img : null;
+  if (!img.complete || img.naturalWidth === 0) return null;
+  const size = path.includes('illustrations') ? 768 : 256;
+  const bitmap = document.createElement('canvas');
+  bitmap.width = size;
+  bitmap.height = size;
+  bitmap.getContext('2d')!.drawImage(img, 0, 0, size, size);
+  bitmaps.set(path, bitmap);
+  return bitmap;
 }
 
 const cssVar = (name: string, fallback: string) => {
@@ -302,6 +314,55 @@ export class Painter {
         });
       });
     });
+  }
+
+  /** Paints a picture flat on the table, mapped piece by piece so the perspective stays true. */
+  textured(img: CanvasImageSource, x: number, y: number, w: number, l: number, rot: number, z: number, cells = 12) {
+    const { ctx } = this;
+    const r = (rot * Math.PI) / 180;
+    const co = Math.cos(r);
+    const si = Math.sin(r);
+    const at = (a: number, b: number) => {
+      const lx = w * (a - 0.5);
+      const ly = l * (b - 0.5);
+      return this.cam(x + lx * co - ly * si, y + lx * si + ly * co, z);
+    };
+    const grid: Pt[][] = [];
+    for (let j = 0; j <= cells; j += 1) {
+      grid.push([]);
+      for (let i = 0; i <= cells; i += 1) grid[j].push(at(i / cells, j / cells));
+    }
+    const triangle = (s0: Pt, s1: Pt, s2: Pt, d0: Pt, d1: Pt, d2: Pt) => {
+      const det = (s1.x - s0.x) * (s2.y - s0.y) - (s2.x - s0.x) * (s1.y - s0.y);
+      if (!det) return;
+      const a = ((d1.x - d0.x) * (s2.y - s0.y) - (d2.x - d0.x) * (s1.y - s0.y)) / det;
+      const c = ((d2.x - d0.x) * (s1.x - s0.x) - (d1.x - d0.x) * (s2.x - s0.x)) / det;
+      const b = ((d1.y - d0.y) * (s2.y - s0.y) - (d2.y - d0.y) * (s1.y - s0.y)) / det;
+      const d = ((d2.y - d0.y) * (s1.x - s0.x) - (d1.y - d0.y) * (s2.x - s0.x)) / det;
+      const e = d0.x - a * s0.x - c * s0.y;
+      const f = d0.y - b * s0.x - d * s0.y;
+      const cx = (d0.x + d1.x + d2.x) / 3;
+      const cy = (d0.y + d1.y + d2.y) / 3;
+      const grow = (p: Pt) => ({ x: p.x + Math.sign(p.x - cx) * 0.45, y: p.y + Math.sign(p.y - cy) * 0.45 });
+      ctx.save();
+      ctx.beginPath();
+      [d0, d1, d2].map(grow).forEach((p, k) => (k ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+      ctx.closePath();
+      ctx.clip();
+      ctx.transform(a, b, c, d, e, f);
+      ctx.drawImage(img, 0, 0, 1, 1);
+      ctx.restore();
+    };
+    for (let j = 0; j < cells; j += 1) {
+      for (let i = 0; i < cells; i += 1) {
+        const s00 = { x: i / cells, y: j / cells };
+        const s10 = { x: (i + 1) / cells, y: j / cells };
+        const s01 = { x: i / cells, y: (j + 1) / cells };
+        const s11 = { x: (i + 1) / cells, y: (j + 1) / cells };
+        triangle(s00, s10, s01, grid[j][i], grid[j][i + 1], grid[j + 1][i]);
+        triangle(s10, s11, s01, grid[j][i + 1], grid[j + 1][i + 1], grid[j + 1][i]);
+      }
+    }
   }
 
   /** A flat slot on the felt, outlined where a tile will go. */

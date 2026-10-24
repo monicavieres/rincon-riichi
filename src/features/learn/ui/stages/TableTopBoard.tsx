@@ -233,7 +233,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
         box.sides.forEach((face) => g.poly(face.q, shade(mix(p.back, '#000000', 0.55), 0.9 + 0.3 * (face.n[0] === 0 ? 0 : 0.2)), p.ink, g.lw * 1.3));
         g.poly(box.top, p.back, p.ink, g.lw * 1.5);
         const art = picture(p.compass);
-        if (art) g.onQuad(box.top, () => ctx.drawImage(art, -0.08, -0.08, 1.16, 1.16));
+        if (art) g.textured(art, c.x, c.y, COMPASS * 1.16, COMPASS * 1.16, 0, FELT_Z + lift + 3);
       });
       const pl = shown.current.plate;
       const plLift = grabbing === 'plate' ? 3 : 0;
