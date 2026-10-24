@@ -115,15 +115,17 @@ export class Painter {
   now = 0;
   palette: Palette = readPalette();
   needsFrame = false;
+  /** Camera focus: which plane point sits at the centre of the canvas and how far in we are. */
+  view = { u: 50, v: 50, zoom: 1 };
   private queue: Array<{ key: number; fn: () => void }> = [];
 
   setup(ctx: CanvasRenderingContext2D, W: number, H: number, now: number) {
     this.ctx = ctx;
     this.W = W;
     this.H = H;
-    this.k = (CAM_SCALE * W) / 100;
+    this.k = (CAM_SCALE * W * this.view.zoom) / 100;
     this.cx = W / 2;
-    this.cy = H / 2 - CAM_LIFT * W;
+    this.cy = H / 2 - (CAM_LIFT * W) / this.view.zoom;
     this.P = CAM_PERSP * W;
     this.lw = Math.max(1.1, W * 0.0019);
     this.now = now;
@@ -133,8 +135,8 @@ export class Painter {
   }
 
   cam(u: number, v: number, z: number): Cam {
-    const X = (u - 50) * this.k;
-    const Y = (v - 50) * this.k;
+    const X = (u - this.view.u) * this.k;
+    const Y = (v - this.view.v) * this.k;
     const Z = z * this.k;
     const Yp = Y * COS - Z * SIN;
     const Zp = Y * SIN + Z * COS;
@@ -155,7 +157,7 @@ export class Painter {
     const Zp = Y * SIN + Z * COS;
     const f = this.P / (this.P - Zp);
     const X = (sx - this.cx) / f;
-    return { x: 50 + X / this.k, y: 50 + Y / this.k };
+    return { x: this.view.u + X / this.k, y: this.view.v + Y / this.k };
   }
 
   add(key: number, fn: () => void) { this.queue.push({ key, fn }); }
@@ -513,7 +515,6 @@ export const IsoCanvas = forwardRef<IsoHandle, { draw: (g: Painter) => void; han
     const g = painter.current;
     g.setup(ctx, W, H, performance.now());
     dirty.current = false;
-    g.table();
     drawRef.current(g);
     if (g.needsFrame || dirty.current) frame.current = requestAnimationFrame(() => run.current());
   };

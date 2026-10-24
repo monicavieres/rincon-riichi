@@ -271,6 +271,7 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
           : null;
 
   const draw = (g: Painter) => {
+    g.table();
     // slots first, flat on the felt
     if (stages.current[0] <= 1) {
       for (let stack = 0; stack < ROW; stack += 1) {

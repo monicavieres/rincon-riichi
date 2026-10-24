@@ -305,6 +305,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
   };
 
   const draw = useCallback((g: Painter) => {
+    g.table();
     poses.current.forEach((pose) => {
       g.tile(pose.x, pose.y, pose.rot, FELT_Z + (pose.h ?? 0) * TILE_T, { order: pose.y * 100 + (pose.z % 1000) * 0.01 });
     });

@@ -72,6 +72,10 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
   const [rolling, setRolling] = useState(false);
   const [rolled, setRolled] = useState<number | null>(null);
   const [counted, setCounted] = useState(0);
+  const [phase, setPhase] = useState<'idle' | 'compass' | 'wall' | 'split' | 'done'>('idle');
+  const splitStart = useRef(0);
+  const viewNow = useRef({ u: 50, v: 50, zoom: 1 });
+  const lastFrame = useRef(0);
   const timers = useRef<number[]>([]);
   const [seatFaces, setSeatFaces] = useState<number[]>([0, 0, 0, 0]);
   const [seatRolling, setSeatRolling] = useState<boolean[]>([false, false, false, false]);
@@ -107,7 +111,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     [1, 2, 3].forEach((seat, order) => rollSeat(seat, 500 + order * 1100));
   };
 
-  const done = mode === 'dealer' ? dealerRoll !== null : mode === 'compass' ? compassOn && plateOn : rolled !== null && counted >= (rolled ?? 99);
+  const done = mode === 'dealer' ? dealerRoll !== null : mode === 'compass' ? compassOn && plateOn : phase === 'done';
   useEffect(() => { onStatus?.({ compass: compassOn, plate: plateOn, rolled, dealerRoll, done }); }, [compassOn, plateOn, rolled, dealerRoll, done, onStatus]);
   useEffect(() => clearTimers, []);
 
@@ -166,19 +170,37 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     setRolling(true);
     setRolled(null);
     setCounted(0);
-    const stop = window.setTimeout(() => {
+    setPhase('idle');
+    const later = (ms: number, action: () => void) => { timers.current.push(window.setTimeout(action, ms)); };
+    later(1100, () => {
       const a = 1 + Math.floor(Math.random() * 6);
       const b = 1 + Math.floor(Math.random() * 6);
+      const total = a + b;
       setFaces([a, b]);
       setRolling(false);
-      setRolled(a + b);
-      const count = window.setInterval(() => setCounted((value) => {
-        if (value >= a + b) { window.clearInterval(count); return value; }
-        return value + 1;
-      }), 170);
-      timers.current.push(count);
-    }, 1100);
-    timers.current.push(stop);
+      setRolled(total);
+      // 1) zoom to the compass and light the number and its wind
+      setPhase('compass');
+      later(3000, () => {
+        // 2) move to that player's wall and count the stacks from its right end
+        setPhase('wall');
+        let n = 0;
+        const count = window.setInterval(() => {
+          n += 1;
+          setCounted(n);
+          if (n >= total) {
+            window.clearInterval(count);
+            // 3) open the wall: the dead wall slides apart
+            later(1000, () => {
+              splitStart.current = performance.now();
+              setPhase('split');
+              later(2300, () => setPhase('done'));
+            });
+          }
+        }, 330);
+        timers.current.push(count);
+      });
+    });
   };
 
   const press = (action: () => void) => (event: ReactKeyboardEvent) => {
@@ -196,15 +218,50 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
 
   const header = mode === 'dealer' ? t('Cada jugador lanza un dado', 'Each player rolls one die', 'Cada jogador lança um dado') : mode === 'compass' ? t('Los cuatro muros ya están armados', 'The four walls are built', 'Os quatro muros estão montados') : t('Los dados deciden dónde se abre', 'The dice decide where it opens', 'Os dados decidem onde abre');
 
+  /** The 7 stacks (14 tiles) to the right of the break: the counted stacks, running on into the next player's wall. */
+  const dead = new Set<string>();
+  if (openSide !== null && rolled !== null) {
+    for (let idx = ROW - rolled; idx <= ROW - rolled + 6; idx += 1) {
+      dead.add(idx <= ROW - 1 ? `${openSide}:${idx}` : `${(openSide + 1) % 4}:${idx - ROW}`);
+    }
+  }
+  const OUT = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+
   const draw = (g: Painter) => {
     const { palette: p, ctx } = g;
+
+    // camera: zoom to the compass, then to the chosen wall, then back out
+    const wallMid = openSide !== null ? wallSlot(openSide, 8, 0) : { x: 50, y: 50 };
+    const target = phase === 'compass' ? { u: 50, v: 50, zoom: 2.1 }
+      : phase === 'wall' ? { u: wallMid.x, v: wallMid.y, zoom: 2 }
+        : phase === 'split' ? { u: wallMid.x, v: wallMid.y, zoom: 1.7 }
+          : { u: 50, v: 50, zoom: 1 };
+    const v = viewNow.current;
+    const dt = Math.min(200, g.now - lastFrame.current);
+    lastFrame.current = g.now;
+    const ease = 1 - Math.exp(-dt / 320); // time-based, so it looks the same at any frame rate
+    v.u += (target.u - v.u) * ease;
+    v.v += (target.v - v.v) * ease;
+    v.zoom += (target.zoom - v.zoom) * ease;
+    if (Math.abs(target.u - v.u) + Math.abs(target.v - v.v) + Math.abs(target.zoom - v.zoom) * 20 > 0.08) g.needsFrame = true;
+    g.view = { ...v };
+    g.table();
+
+    // opening the wall: the dead wall slides outward, easing out
+    const splitT = phase === 'split' ? Math.min(1, (g.now - splitStart.current) / 1600) : phase === 'done' ? 1 : 0;
+    const eased = 1 - Math.pow(1 - splitT, 3);
+    if (phase === 'split' && splitT < 1) g.needsFrame = true;
+
     // the four finished walls
     for (let index = 0; index < 136; index += 1) {
       const side = Math.floor(index / 34);
       const k = index % 34;
       const stack = k % ROW;
       const pose = wallSlot(side, stack, k < ROW ? 0 : 1);
-      g.tile(pose.x, pose.y, pose.rot, FELT_Z + (pose.h ?? 0) * TILE_T, { counting: openSide === side && stack >= ROW - counted });
+      const isDead = dead.has(`${side}:${stack}`);
+      const counting = phase === 'wall' ? openSide === side && stack >= ROW - counted : splitT > 0 && isDead;
+      const shift = isDead ? eased * 3.4 : 0;
+      g.tile(pose.x + OUT[side][0] * shift, pose.y + OUT[side][1] * shift, pose.rot, FELT_Z + (pose.h ?? 0) * TILE_T + (isDead ? eased * 0.8 : 0), { counting });
     }
 
     // goals while the player is placing pieces
@@ -265,7 +322,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
       const spinning = rolling ? spin(g.now) : undefined;
       g.die(CENTER.x - 6, CENTER.y + 24, FELT_Z, 6.5, { up: faces[0], yaw: -14, spin: spinning });
       g.die(CENTER.x + 6, CENTER.y + 24, FELT_Z, 6.5, { up: faces[1], yaw: 18, spin: spinning === undefined ? undefined : spinning + 7 });
-      if (cut) {
+      if (cut && phase !== 'idle' && phase !== 'compass') {
         g.add(cut.y * 100 + 90, () => {
           const bar = g.box(cut.x, cut.y, FELT_Z + TILE_T * 2, 0.9, 7.5, 1.4, cut.rot);
           bar.sides.forEach((face) => g.poly(face.q, shade(p.gold, 0.8), p.ink, g.lw));
@@ -275,11 +332,51 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     }
     g.flush();
 
+    // compass phase: light the rolled number on the compass and its wind
+    if (mode === 'dice' && openSide !== null && rolled !== null && phase === 'compass') {
+      const sc = (COMPASS * 1.16) / 700;
+      const at = [[350, 565], [560, 350], [350, 140], [140, 350]][openSide];
+      const dir = [[1, 0], [0, -1], [-1, 0], [0, 1]][openSide];
+      const idx = (rolled - (openSide + 1)) / 4;
+      const off = (idx - 1) * 56;
+      const cx = CENTER.x + (at[0] + dir[0] * off - 350) * sc;
+      const cy = CENTER.y + (at[1] + dir[1] * off - 350) * sc;
+      const horizontal = dir[0] !== 0;
+      const pulse = 0.5 + 0.5 * Math.sin(g.now / 180);
+      g.needsFrame = true;
+      const zTop = FELT_Z + 3.15;
+      g.poly(g.plane(cx - (horizontal ? 1.9 : 1.2), cy - (horizontal ? 1.2 : 1.9), cx + (horizontal ? 1.9 : 1.2), cy + (horizontal ? 1.2 : 1.9), 0.7, zTop), `rgba(255,214,90,${0.35 + pulse * 0.35})`, p.gold, g.lw * 2.4);
+      g.pill(g.W / 2, 24, `${rolled}  →  ${WIND_NAME[language][openSide]}`, { bg: p.gold, fg: p.ink, size: 14 });
+    }
+
+    // wall phase: number each stack as it is counted from the right end
+    if (mode === 'dice' && openSide !== null && phase === 'wall') {
+      for (let i = 1; i <= counted; i += 1) {
+        const pose = wallSlot(openSide, ROW - i, 0);
+        const pos = g.project(pose.x, pose.y, FELT_Z + TILE_T * 2 + 3);
+        g.pill(pos.x, pos.y, String(i), { bg: 'rgba(230,180,34,0.96)', fg: p.ink, size: 10 });
+      }
+    }
+
+    // after opening: name the dead wall and show where drawing starts
+    if (mode === 'dice' && openSide !== null && rolled !== null && eased > 0.6) {
+      const deadList = [...dead].map((key) => key.split(':').map(Number));
+      const mid = deadList.map(([sd, st]) => wallSlot(sd, st, 0));
+      const mx = mid.reduce((acc, q) => acc + q.x, 0) / mid.length;
+      const my = mid.reduce((acc, q) => acc + q.y, 0) / mid.length;
+      const out = OUT[openSide];
+      const pos = g.project(mx - out[0] * 8, my - out[1] * 8, FELT_Z + TILE_T * 2 + 4);
+      g.pill(pos.x, pos.y, t('Muro muerto · 14 fichas', 'Dead wall · 14 tiles', 'Muro morto · 14 peças'), { bg: p.gold, fg: p.ink, size: 12 });
+      const live = wallSlot(openSide, Math.max(0, ROW - rolled - 1), 0);
+      const lp = g.project(live.x - out[0] * 6, live.y - out[1] * 6, FELT_Z + TILE_T * 2 + 4);
+      g.pill(lp.x, lp.y + 22, t('Se roba desde aquí ←', 'Drawing starts here ←', 'Compra-se daqui ←'), { bg: 'rgba(10,20,20,0.7)', size: 11 });
+    }
+
     // labels, always facing the viewer
     if (mode !== 'dealer' && compassOn) {
       WIND_TAGS.forEach((tag) => {
         const pos = g.project(tag.x, tag.y, FELT_Z + 3);
-        g.pill(pos.x, pos.y, `${tag.glyph}  ${WIND_NAME[language][tag.index]}`, { bg: '#fff1c4', fg: p.ink, border: p.ink, size: 11 });
+        g.pill(pos.x, pos.y, `${tag.glyph}  ${WIND_NAME[language][tag.index]}`, { bg: mode === 'dice' && phase === 'compass' && openSide === tag.index ? p.gold : '#fff1c4', fg: p.ink, border: p.ink, size: 11 });
       });
     }
     if (mode === 'dealer') {
@@ -343,10 +440,10 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
             <span>{t('El dealer toma el asiento Este y juega primero.', 'The dealer takes the East seat and plays first.', 'O dealer fica no assento Leste e joga primeiro.')}</span>
           </p>
         )}
-        {mode === 'dice' && rolled !== null && openSide !== null && counted >= rolled && (
+        {mode === 'dice' && rolled !== null && openSide !== null && phase === 'done' && (
           <p className="sort-win is-top" role="status">
             <b>{t(`Suma ${rolled}: se abre el muro de ${SIDE_LABEL.es[openSide]}`, `Total ${rolled}: the wall of ${SIDE_LABEL.en[openSide]} opens`, `Soma ${rolled}: abre o muro de ${SIDE_LABEL.pt[openSide]}`)}</b>
-            <span>{t(`Se cuentan ${rolled} pilas desde la derecha de ese muro y ahí se corta.`, `Count ${rolled} stacks from the right end of that wall and cut there.`, `Contam-se ${rolled} pilhas a partir da direita desse muro e corta-se ali.`)}</span>
+            <span>{t(`Se cuentan ${rolled} pilas desde la derecha y ahí se abre: 7 pilas a la derecha del corte son el muro muerto.`, `Count ${rolled} stacks from the right and open there: 7 stacks right of the cut are the dead wall.`, `Contam-se ${rolled} pilhas a partir da direita e abre-se ali: 7 pilhas à direita do corte são o muro morto.`)}</span>
           </p>
         )}
         {mode === 'compass' && done && (
