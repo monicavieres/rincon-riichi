@@ -298,7 +298,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     g.table();
 
     // opening the wall: the dead wall slides outward, easing out
-    const splitT = phase === 'split' ? Math.min(1, (g.now - splitStart.current) / 1600) : phase === 'done' ? 1 : 0;
+    const splitT = phase === 'split' ? Math.min(1, (g.now - splitStart.current) / 1600) : phase === 'dora' || phase === 'done' ? 1 : 0;
     const eased = 1 - Math.pow(1 - splitT, 3);
     if (phase === 'split' && splitT < 1) g.needsFrame = true;
 
@@ -452,7 +452,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     }
 
     // after opening: name the dead wall and show where drawing starts
-    if (mode === 'dice' && openSide !== null && rolled !== null && eased > 0.6) {
+    if (mode === 'dice' && openSide !== null && rolled !== null && eased > 0.6 && phase !== 'dora') {
       const deadList = [...dead].map((key) => key.split(':').map(Number));
       const mid = deadList.map(([sd, st]) => wallSlot(sd, st, 0));
       const mx = mid.reduce((acc, q) => acc + q.x, 0) / mid.length;
