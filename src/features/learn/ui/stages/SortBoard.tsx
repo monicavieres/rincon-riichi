@@ -35,8 +35,20 @@ function scatter(tile: Tile, z: number): Tile {
   return { ...tile, x: rand(FELT_X[0], FELT_X[1]), y: rand(FELT_Y[0], FELT_Y[1]), rot: rand(-38, 38), slot: null, z };
 }
 
+/** The hand as it was dealt: already standing in the rack, in no particular order. */
+const DEALT = ['6z', '4p', '1m', '3s', '1z', '5p', '2m', '6z', '5s', '1z', '3m', '4s', '6p'];
+
+function inRack(order: string[]): Tile[] {
+  const used = new Set<number>();
+  return order.map((code, slot) => {
+    const id = HAND.findIndex((candidate, index) => candidate === code && !used.has(index));
+    used.add(id);
+    return { id, code, x: 0, y: 0, rot: 0, slot, z: slot + 1 };
+  });
+}
+
 function freshPile(): Tile[] {
-  return HAND.map((code, id) => scatter({ id, code, x: 0, y: 0, rot: 0, slot: null, z: 0 }, id + 1));
+  return inRack(DEALT);
 }
 
 const rackPos = (slot: number) => ({ x: RACK_X0 + slot * STEP, y: RACK_Y });
@@ -57,7 +69,8 @@ export function SortBoard({ language, onStatus }: { language: TutorialLanguage; 
 
   const shuffle = useCallback(() => {
     zTop.current = HAND.length + 1;
-    setTiles((current) => current.map((tile, index) => scatter(tile, index + 1)));
+    const mixed = [...HAND].sort(() => Math.random() - 0.5);
+    setTiles(inRack(mixed));
   }, []);
 
   const autoSort = useCallback(() => {
@@ -132,7 +145,14 @@ export function SortBoard({ language, onStatus }: { language: TutorialLanguage; 
   return (
     <div className="sort-stage">
       <div className={`sort-board${sorted ? ' is-sorted' : ''}`} ref={boardRef}>
-        <div className="sort-felt" aria-hidden="true"><span>{t('Fichas sobre el paño', 'Tiles on the felt', 'Peças sobre o pano')}</span></div>
+        <div className="sort-felt" aria-hidden="true"><span>{t('Tu mano recién repartida', 'Your freshly dealt hand', 'Sua mão recém-distribuída')}</span></div>
+        <div className="sort-guide">
+          <b>{t('Orden de la mano', 'Hand order', 'Ordem da mão')}</b>
+          <p>
+            <span className="is-man">Manzu 1→9</span><i>›</i><span className="is-pin">Pinzu 1→9</span><i>›</i><span className="is-sou">Souzu 1→9</span><i>›</i><span className="is-honor">{t('Honores', 'Honors', 'Honras')}</span>
+          </p>
+          <small>{t('Los honores iguales, juntos', 'Equal honors stay together', 'As honras iguais ficam juntas')}</small>
+        </div>
         <div className="sort-actions">
           <span>{rack.length}/{HAND.length} {t('en tu mano', 'in your hand', 'na sua mão')}</span>
           <button type="button" className="sort-button" onClick={shuffle}>{t('Desordenar', 'Scramble', 'Desordenar')}</button>

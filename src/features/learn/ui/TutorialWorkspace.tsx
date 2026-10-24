@@ -21,9 +21,9 @@ const TABS: Array<{ id: Tab; label: LocalizedText }> = [
 
 const PRACTICE_COPY = {
   sort: L(
-    '1. Arrastra tus trece fichas a la mano. 2. Ordénalas: manzu, pinzu, souzu y honores. ¿Te atoras? «Ordenar» lo hace por ti.',
-    '1. Drag your thirteen tiles into your hand. 2. Sort them: manzu, pinzu, souzu, then honors. Stuck? “Sort” does it for you.',
-    '1. Arraste as suas treze peças para a mão. 2. Ordene: manzu, pinzu, souzu e honras. Travou? «Ordenar» faz por você.',
+    'Arrastra una ficha a otro lugar de tu mano. Junta manzu, pinzu y souzu, cada uno de menor a mayor, y los honores al final con los iguales juntos. ¿Te atoras? «Ordenar» lo hace por ti.',
+    'Drag a tile to another spot in your hand. Gather manzu, pinzu and souzu, each low to high, then honors at the end with equal ones together. Stuck? “Sort” does it for you.',
+    'Arraste uma peça para outro lugar da sua mão. Junte manzu, pinzu e souzu, cada um do menor ao maior, e as honras no fim com as iguais juntas. Travou? «Ordenar» faz por você.',
   ),
   shuffle: L(
     'Mantén pulsado y barre el montón con el mouse o el dedo hasta llenar la barra. ¿Sin mouse? «Revolver» da un empujón a todas las fichas.',

@@ -987,3 +987,51 @@
     background: var(--compass-top) center / 116% no-repeat;
     filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.25));
 }
+
+/* guide on the empty felt of the sorting step */
+.sort-guide {
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    transform: translateX(-50%);
+    color: #fff;
+    text-align: center;
+    pointer-events: none;
+}
+
+.sort-guide b {
+    font: 700 11px/1 var(--font-display);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.85;
+}
+
+.sort-guide p {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+}
+
+.sort-guide span {
+    padding: 4px 10px;
+    border: var(--border-hair) solid var(--ink);
+    border-radius: 99px;
+    font: 700 12px/1 var(--font-display);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.sort-guide span.is-man { color: var(--man-strong); background: var(--man-soft); }
+.sort-guide span.is-pin { color: var(--pin-strong); background: var(--pin-soft); }
+.sort-guide span.is-sou { color: var(--sou-strong); background: var(--sou-soft); }
+.sort-guide span.is-honor { color: var(--gold-strong); background: var(--gold-soft); }
+.sort-guide i { font-style: normal; opacity: 0.8; }
+.sort-guide small { font: 500 12px/1.2 var(--font-sans); opacity: 0.9; }
+
+.sort-board.is-sorted .sort-guide { display: none; }
