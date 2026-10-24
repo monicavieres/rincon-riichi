@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TableStage, ZoneThumb } from '../../../shared/ui/TableStage';
 import { localize, type LocalizedText, type TutorialLanguage } from '../domain/tutorialContent';
-import { tutorialParts, tutorialStops, type TutorialStop } from '../domain/tutorialStage';
+import { stepSubtitles, tutorialParts, tutorialStops, type TutorialStop } from '../domain/tutorialStage';
 import { RackStage } from './stages/RackStage';
 import { DeckBoard, TILE_BACK, type DeckStatus } from './stages/DeckBoard';
 import { TableTopBoard, type TableTopStatus } from './stages/TableTopBoard';
@@ -101,6 +101,49 @@ const chevron = (
 );
 
 /** Rail thumbnail for lessons that are about tiles rather than a corner of the table. */
+type Piece = [number, number, number?];
+
+/** A small picture of what a step is about, drawn with the site's current style (tile back, emblem, felt, compass). */
+function SceneThumb({ mode }: { mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' }) {
+  const tile = (key: string, [x, y, rot = 0]: Piece, extra = '') => (
+    <i key={key} className={`th-tile${extra}`} style={{ left: x, top: y, transform: `rotate(${rot}deg)` }} />
+  );
+  const die = (key: string, [x, y, rot = 0]: Piece, pips: number, extra = '') => (
+    <i key={key} className={`th-die p${pips}${extra}`} style={{ left: x, top: y, transform: `rotate(${rot}deg)` }} />
+  );
+  const scattered: Piece[] = [[8, 6, -22], [24, 4, 14], [40, 8, -8], [55, 5, 24], [12, 22, 12], [30, 20, -26], [46, 24, 18], [58, 20, -12], [20, 35, -10], [40, 36, 16]];
+  const wallRow = (y: number, from: number, n: number, name: string, extra = '') => Array.from({ length: n }, (_, i) => tile(`${name}${i}`, [from + i * 9.6, y], extra));
+  return (
+    <span className="lesson-thumb is-scene" aria-hidden="true">
+      {mode === 'shuffle' && scattered.map((piece, i) => tile(`s${i}`, piece))}
+      {mode === 'walls' && (
+        <>
+          {[[10, 4, -14], [34, 6, 10], [54, 3, -8]].map((piece, i) => tile(`l${i}`, piece as Piece))}
+          {wallRow(32, 5, 7, 'a')}
+          {wallRow(26, 5, 7, 'b')}
+        </>
+      )}
+      {mode === 'dealer' && (
+        <>
+          {die('d1', [29, 5, -8], 1)}
+          {die('d2', [46, 19, 12], 3)}
+          {die('d3', [12, 19, -12], 4)}
+          {die('d4', [29, 32, 6], 6, ' is-win')}
+        </>
+      )}
+      {mode === 'compass' && <i className="th-compass" />}
+      {mode === 'dice' && (
+        <>
+          {wallRow(5, 4, 3, 'x', ' is-dead')}
+          {wallRow(5, 40, 3, 'y')}
+          {die('e1', [24, 30, -10], 3)}
+          {die('e2', [40, 30, 14], 4)}
+        </>
+      )}
+    </span>
+  );
+}
+
 function BackThumb() {
   return (
     <span className="lesson-thumb is-tiles" aria-hidden="true">
@@ -129,7 +172,7 @@ function TileThumb({ codes, scattered = false }: { codes: string[]; scattered?: 
 function thumbFor(stop: TutorialStop) {
   const spec = stop.stage;
   if (spec.kind === 'table') return <ZoneThumb focus={spec.focus} />;
-  if (spec.kind === 'deck') return <BackThumb />;
+  if (spec.kind === 'deck') return <SceneThumb mode={spec.mode} />;
   if (spec.kind === 'sort') return <TileThumb codes={['4p', '1m', '6z']} scattered />;
   return <TileThumb codes={spec.rows[0].groups[0].tiles} />;
 }
@@ -318,7 +361,7 @@ export function TutorialWorkspace() {
             {thumbFor(item)}
             <span className="lesson-title">
               <strong>{itemIndex + 1}. {t(item.short)}</strong>
-              <small>{t(tutorialParts.find((entry) => entry.id === item.part)!.title)}</small>
+              <small>{t(stepSubtitles[item.id] ?? tutorialParts.find((entry) => entry.id === item.part)!.title)}</small>
             </span>
             <span className="lesson-chev">{chevron}</span>
           </button>

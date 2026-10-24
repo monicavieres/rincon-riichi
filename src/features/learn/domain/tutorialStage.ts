@@ -29,6 +29,34 @@ export type TutorialStop = {
   practice: { href: string; label: LocalizedText };
 };
 
+/** A one-line summary of what each step is about, shown under its name in the lesson rail. */
+export const stepSubtitles: Record<string, LocalizedText> = {
+  shuffle: L('136 fichas boca abajo', 'All 136 tiles face down', 'As 136 peças viradas'),
+  walls: L('4 muros de 17 pilas', '4 walls of 17 stacks', '4 muros de 17 pilhas'),
+  dealer: L('El dado más alto reparte', 'Highest die deals first', 'O maior dado distribui'),
+  compass: L('Tú eres Este, el dealer', 'You are East, the dealer', 'Você é Leste, o dealer'),
+  dice: L('Dónde se abre el muro', 'Where the wall opens', 'Onde o muro abre'),
+  'what-is-mahjong': L('Zonas y jugadores', 'Zones and players', 'Zonas e jogadores'),
+  objective: L('4 grupos y 1 pareja', '4 sets and 1 pair', '4 grupos e 1 par'),
+  table: L('17 pilas por lado', '17 stacks per side', '17 pilhas por lado'),
+  deal: L('13 fichas cada uno', '13 tiles each', '13 peças para cada'),
+  sort: L('Ordena tu mano', 'Sort your hand', 'Ordene sua mão'),
+  'dead-wall': L('14 fichas apartadas', '14 tiles set apart', '14 peças separadas'),
+  'what-happens': L('Rondas Este y Sur', 'East and South rounds', 'Rodadas Leste e Sul'),
+  turn: L('Roba una, descarta una', 'Draw one, discard one', 'Compre uma, descarte uma'),
+  structure: L('Secuencia, trío y pareja', 'Sequence, triplet, pair', 'Sequência, trio e par'),
+  calls: L('Chii, pon y kan', 'Chii, pon and kan', 'Chii, pon e kan'),
+  'open-closed': L('Mano abierta o cerrada', 'Open or closed hand', 'Mão aberta ou fechada'),
+  tenpai: L('A una ficha de ganar', 'One tile from winning', 'A uma peça de vencer'),
+  riichi: L('Declara y apuesta 1000', 'Declare and bet 1000', 'Declare e aposte 1000'),
+  'ron-tsumo': L('Dos formas de ganar', 'Two ways to win', 'Duas formas de vencer'),
+  furiten: L('No ganes con tu descarte', 'No winning on your discard', 'Sem vencer no seu descarte'),
+  dora: L('Fichas que suman han', 'Tiles that add han', 'Peças que somam han'),
+  kan: L('Cuarteto y reposición', 'Quad and replacement', 'Quadra e reposição'),
+  points: L('Los palitos de puntos', 'The point sticks', 'Os bastões de pontos'),
+  finish: L('¡A practicar!', 'Time to practise!', 'Hora de praticar!'),
+};
+
 export const tutorialParts: Array<{ id: TutorialPartId; title: LocalizedText }> = [
   { id: 'discover', title: L('Descubre la mesa', 'Discover the table', 'Descubra a mesa') },
   { id: 'play', title: L('Juega una mano', 'Play a hand', 'Jogue uma mão') },
@@ -187,7 +215,7 @@ export const tutorialStops: TutorialStop[] = [
   {
     id: 'dealer',
     part: 'discover',
-    short: L('Dealer', 'Dealer', 'Dealer'),
+    short: L('Elegir dealer', 'Pick the dealer', 'Escolher o dealer'),
     eyebrow: L('Quién empieza', 'Who starts', 'Quem começa'),
     title: L('Cada jugador lanza un dado: el mayor es el dealer', 'Each player rolls a die: the highest is the dealer', 'Cada jogador lança um dado: o maior é o dealer'),
     body: L(
@@ -207,7 +235,7 @@ export const tutorialStops: TutorialStop[] = [
   {
     id: 'compass',
     part: 'discover',
-    short: L('Compass', 'Compass', 'Compass'),
+    short: L('Poner el compass', 'Set the compass', 'Pôr o compass'),
     eyebrow: L('Poner la mesa', 'Setting the table', 'Preparar a mesa'),
     title: L('Coloca el compass y el viento de ronda', 'Place the compass and the round wind', 'Coloque o compass e o vento da rodada'),
     body: L(

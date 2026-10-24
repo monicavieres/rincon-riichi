@@ -933,3 +933,57 @@
     }
 }
 
+
+/* ── Lesson rail pictures for the table steps: follow the chosen style ── */
+.lesson-thumb.is-scene {
+    box-sizing: border-box;
+    border: 1.5px solid var(--tile-ink);
+    background: radial-gradient(ellipse at 50% 38%, color-mix(in oklab, var(--table-felt) 80%, white), var(--table-felt) 78%);
+}
+
+.th-tile {
+    position: absolute;
+    display: block;
+    width: 9px;
+    height: 12px;
+    box-sizing: border-box;
+    border: 1.1px solid var(--tile-ink);
+    border-radius: 2px;
+    background: var(--tile-emblem) center / 74% no-repeat, var(--tile-back);
+    box-shadow: 0 2.4px 0 -0.3px var(--tile-cream), 0 3.6px 0 -0.3px var(--tile-ink);
+}
+
+.th-tile.is-dead {
+    background: #e6b422;
+    transform: translateY(-3px);
+}
+
+.th-die {
+    position: absolute;
+    display: block;
+    width: 14px;
+    height: 14px;
+    box-sizing: border-box;
+    border: 1.2px solid var(--tile-ink);
+    border-radius: 3px;
+    background-color: #efe6d6;
+    background-repeat: no-repeat;
+    box-shadow: 0 2.4px 0 #cdc3b0, 0 3.6px 0 var(--tile-ink);
+}
+
+.th-die.is-win { box-shadow: 0 2.4px 0 #cdc3b0, 0 3.6px 0 var(--tile-ink), 0 0 0 2px var(--gold); }
+.th-die.p1 { background-image: radial-gradient(circle, color-mix(in oklab, var(--tile-back) 80%, black) 2.2px, transparent 2.6px); }
+.th-die.p3 { background-image: radial-gradient(circle at 25% 25%, var(--tile-ink) 1.2px, transparent 1.6px), radial-gradient(circle at 50% 50%, var(--tile-ink) 1.2px, transparent 1.6px), radial-gradient(circle at 75% 75%, var(--tile-ink) 1.2px, transparent 1.6px); }
+.th-die.p4 { background-image: radial-gradient(circle at 28% 28%, var(--tile-ink) 1.2px, transparent 1.6px), radial-gradient(circle at 72% 28%, var(--tile-ink) 1.2px, transparent 1.6px), radial-gradient(circle at 28% 72%, var(--tile-ink) 1.2px, transparent 1.6px), radial-gradient(circle at 72% 72%, var(--tile-ink) 1.2px, transparent 1.6px); }
+.th-die.p6 { background-image: radial-gradient(circle at 30% 22%, var(--tile-ink) 1.1px, transparent 1.5px), radial-gradient(circle at 70% 22%, var(--tile-ink) 1.1px, transparent 1.5px), radial-gradient(circle at 30% 50%, var(--tile-ink) 1.1px, transparent 1.5px), radial-gradient(circle at 70% 50%, var(--tile-ink) 1.1px, transparent 1.5px), radial-gradient(circle at 30% 78%, var(--tile-ink) 1.1px, transparent 1.5px), radial-gradient(circle at 70% 78%, var(--tile-ink) 1.1px, transparent 1.5px); }
+
+.th-compass {
+    position: absolute;
+    left: 16px;
+    top: 7px;
+    display: block;
+    width: 38px;
+    height: 38px;
+    background: var(--compass-top) center / 116% no-repeat;
+    filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.25));
+}
