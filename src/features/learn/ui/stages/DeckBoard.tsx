@@ -33,19 +33,22 @@ const heap = (spreadX: number, spreadY: number): Pose[] =>
 const shared: { poses: Pose[] | null } = { poses: null };
 export const deckPoses = (spreadX: number, spreadY: number): Pose[] => (shared.poses ??= heap(spreadX, spreadY));
 
-/** The four walls form a pinwheel: each side runs 17 stacks and tucks against the next. Row 0 is the lower one. */
+/**
+ * The four walls sit on the sides of a square: each runs 17 stacks and stops one tile-thickness short of the corner,
+ * leaving a small empty square where two walls meet. Row 0 is the lower one.
+ */
 export function wallSlot(side: number, stack: number, level: number): Pose {
   const run = 17 * TILE_W;
-  const box = run + TILE_H;
+  const box = run + 2 * TILE_H;
   const x0 = (100 - box) / 2;
   const y0 = (BOARD_H - box) / 2;
   const along = stack * TILE_W + TILE_W / 2;
   const z = 200 + level * 100 + stack;
-  // sides in turn order: yours (bottom), then counter-clockwise
   const h = level;
+  // sides in turn order: yours (bottom), then counter-clockwise
   if (side === 0) return { x: x0 + TILE_H + along, y: y0 + box - TILE_H / 2, rot: 0, z, h };
   if (side === 1) return { x: x0 + box - TILE_H / 2, y: y0 + box - TILE_H - along, rot: -90, z, h };
-  if (side === 2) return { x: x0 + run - along, y: y0 + TILE_H / 2, rot: 180, z, h };
+  if (side === 2) return { x: x0 + box - TILE_H - along, y: y0 + TILE_H / 2, rot: 180, z, h };
   return { x: x0 + TILE_H / 2, y: y0 + TILE_H + along, rot: 90, z, h };
 }
 
