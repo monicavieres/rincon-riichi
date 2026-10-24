@@ -42,7 +42,7 @@ const turn = (from: number, to: number) => {
 /** Where a player's n-th tile lands: a tidy row along their own edge, the last one set slightly apart. */
 function handSlot(player: number, n: number, extra: boolean) {
   const gap = extra ? 2.2 : 0;
-  const spacing = 3.7; // tiles touch, like the walls: only their backs show
+  const spacing = 3.6; // tiles touch, like the walls: only their backs show
   const base = { x: 50 + (n - 6) * spacing + gap, y: HAND_EDGE };
   const p = around(base, player);
   return { x: p.x, y: p.y, rot: ROT[player] };
@@ -163,7 +163,7 @@ export function DealBoard({ language, onStatus }: { language: TutorialLanguage; 
       if (raw < 1) moving = true;
       const fromX = home.x + dx;
       const fromY = home.y + dy;
-      g.tile(fromX + (goal.x - fromX) * e, fromY + (goal.y - fromY) * e, home.rot + turn(home.rot, goal.rot) * e, FELT_Z + level * TILE_T * (1 - e) + Math.sin(Math.PI * raw) * 6, { order: 9000 + index });
+      g.tile(fromX + (goal.x - fromX) * e, fromY + (goal.y - fromY) * e, home.rot + turn(home.rot, goal.rot) * e, FELT_Z + level * TILE_T * (1 - e) + Math.sin(Math.PI * raw) * 6, { order: raw < 1 ? 1e5 + index : undefined });
     }
     if (moving) g.needsFrame = true;
     g.flush();
