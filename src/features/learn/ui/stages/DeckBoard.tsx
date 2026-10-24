@@ -57,46 +57,73 @@ const RIVAL_TURN = [-90, 180, 90];
 /** The rivals stop shuffling after this long. */
 const RIVAL_MS = 3000;
 
-/** A slender open hand seen from above, pointing up, with a thin cuff in the style's colour. */
+/** A tapered finger from (cx, baseY) up to tipY, as an outline path. */
+const finger = (cx: number, baseY: number, tipY: number, w: number, lean = 0) => {
+  const tip = w * 0.34;
+  const mid = baseY + (tipY - baseY) * 0.45;
+  const mid2 = tipY + (baseY - tipY) * 0.22;
+  const left = cx - w / 2;
+  const right = cx + w / 2;
+  return `M${left} ${baseY}C${left} ${mid} ${cx - tip + lean} ${mid2} ${cx - tip + lean} ${tipY + tip}A${tip} ${tip} 0 0 1 ${cx + tip + lean} ${tipY + tip}C${cx + tip + lean} ${mid2} ${right} ${mid} ${right} ${baseY}Z`;
+};
+
+/** An almond nail sitting on a fingertip. */
+const nail = (cx: number, tipY: number, w: number, lean = 0, length = 13) => {
+  const a = w * 0.33;
+  const x = cx + lean;
+  return `M${x - a} ${tipY + length}C${x - a} ${tipY + 4} ${x - a * 0.55} ${tipY + 0.8} ${x} ${tipY + 0.8}C${x + a * 0.55} ${tipY + 0.8} ${x + a} ${tipY + 4} ${x + a} ${tipY + length}Q${x} ${tipY + length + 2.6} ${x - a} ${tipY + length}Z`;
+};
+
+/** A woman's open hand seen from above, pointing up: long fingers, almond nails, a thin ring and a soft cuff. */
 function Palm() {
-  const fingers = [
-    'M33 62C31 44 31 28 34 16c1-5 7-5 8 0 2 12 3 28 3 46Z',
-    'M46 60C45 40 45 22 48 8c1-5 7-5 8 0 2 14 2 34 2 52Z',
-    'M59 62c0-18 1-34 4-47 1-5 7-5 8 0 2 13 1 31 0 49Z',
-    'M72 68c1-14 4-26 7-34 1-4 7-3 7 2 0 12-3 26-6 40Z',
-    'M33 86C25 76 18 68 12 59c-3-5 2-9 6-5 8 7 15 15 22 23Z',
+  const outline = '#a06f5a';
+  const digits: Array<{ cx: number; tip: number; w: number; lean: number }> = [
+    { cx: 37.4, tip: 24, w: 8.8, lean: -1.2 },
+    { cx: 46.8, tip: 12, w: 9, lean: -0.3 },
+    { cx: 56.2, tip: 20, w: 8.8, lean: 0.6 },
+    { cx: 64.6, tip: 38, w: 7.6, lean: 1.8 },
   ];
-  const palm = 'M32 62h40c8 8 12 22 8 38-2 10-8 16-18 18H48c-10-2-15-8-16-18-2-10-2-24 0-38Z';
-  const skin = 'url(#hand-skin)';
+  const palm = 'M33.500 86C32 100 34 112 39 123C42 129 43 136 43 152H57C57 136 58 129 61 123C66 112 68 100 66.500 86Z';
   return (
-    <svg viewBox="0 0 100 150" aria-hidden="true">
+    <svg viewBox="0 0 100 180" aria-hidden="true">
       <defs>
         <linearGradient id="hand-skin" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#f8dcc3" />
-          <stop offset="1" stopColor="#ecc09d" />
+          <stop offset="0" stopColor="#fbe5d3" />
+          <stop offset="1" stopColor="#f0c4a6" />
+        </linearGradient>
+        <linearGradient id="hand-nail" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fff4f1" />
+          <stop offset="1" stopColor="#f6d3d0" />
         </linearGradient>
       </defs>
-      <g fill="none" stroke="var(--tile-ink)" strokeWidth="4.2" strokeLinejoin="round">
-        {fingers.map((d) => <path key={d} d={d} />)}
-        <path d={palm} />
+      {/* wrist and thumb behind the palm */}
+            <g transform="translate(36 112) rotate(-52)">
+        <path d={finger(0, 0, -50, 10.4)} fill="url(#hand-skin)" stroke={outline} strokeWidth="1.5" strokeLinejoin="round" />
+        <path d={nail(0, -50, 10.4, 0, 12)} fill="url(#hand-nail)" stroke="#e6aeb0" strokeWidth="0.8" />
       </g>
-      <g fill={skin} stroke="none">
-        {fingers.map((d) => <path key={d} d={d} />)}
-        <path d={palm} />
+      {digits.map((d) => (
+        <path key={d.cx} d={finger(d.cx, 94, d.tip, d.w, d.lean)} fill="url(#hand-skin)" stroke={outline} strokeWidth="1.5" strokeLinejoin="round" />
+      ))}
+      <path d={palm} fill="url(#hand-skin)" stroke={outline} strokeWidth="1.5" strokeLinejoin="round" />
+      {digits.map((d) => (
+        <g key={`n-${d.cx}`}>
+          <path d={nail(d.cx, d.tip, d.w, d.lean)} fill="url(#hand-nail)" stroke="#e6aeb0" strokeWidth="0.8" />
+          <path d={nail(d.cx - d.w * 0.12, d.tip + 1.6, d.w * 0.4, d.lean, 5)} fill="#fff" opacity=".7" />
+        </g>
+      ))}
+      <g fill="none" stroke="#d9a98a" strokeWidth="0.9" strokeLinecap="round" opacity=".7">
+        <path d="M35 88q3 2 6 0M44 88q3 2 6 0M53 88q3 2 6 0M61.500 88q3 2 6 0M37 104q12 7 26 0M43 116q7 3 14 0" />
       </g>
-      <g fill="none" stroke="#c99472" strokeWidth="1" strokeLinecap="round" opacity=".6">
-        <path d="M38 64v6M52 62v7M65 64v6M40 86q12 6 28 0M44 100q8 3 18 0" />
+      <ellipse cx="56.200" cy="62" rx="4.800" ry="1.800" fill="none" stroke="#d6a93c" strokeWidth="1.500" />
+      {/* soft cuff in the style's colours */}
+      <g stroke={outline} strokeWidth="1.3" strokeLinejoin="round">
+        <rect x="28" y="150" width="44" height="28" rx="9" fill="var(--tile-cream)" />
+        <rect x="28" y="158" width="44" height="4.500" fill="var(--tile-back)" />
       </g>
-      <g fill="#fdeee0" stroke="var(--tile-ink)" strokeWidth="1">
-        <path d="M35 17c1-4 5-4 6 0l1 6c-3 2-6 2-8 0Z" />
-        <path d="M49 9c1-4 5-4 6 0l1 6c-3 2-6 2-8 0Z" />
-        <path d="M64 16c1-4 5-4 6 0l1 6c-3 2-6 2-8 0Z" />
-        <path d="M80 35c1-3 4-3 5 0l0 6c-2 2-5 1-6 0Z" />
+      <g fill="var(--tile-cream)" stroke={outline} strokeWidth="1.1">
+        {[33, 40, 47, 54, 61, 67].map((x) => <circle key={x} cx={x} cy="151" r="4.200" />)}
       </g>
-      <g stroke="var(--tile-ink)" strokeWidth="2.4" strokeLinejoin="round">
-        <rect x="40" y="116" width="32" height="30" rx="5" fill="var(--tile-back)" />
-        <rect x="40" y="126" width="32" height="5" fill="var(--tile-cream)" />
-      </g>
+      <rect x="31" y="152" width="38" height="5" fill="var(--tile-cream)" />
     </svg>
   );
 }
