@@ -121,6 +121,10 @@ export class Painter {
   now = 0;
   palette: Palette = readPalette();
   needsFrame = false;
+  /** Camera tilt in degrees from flat: boards can look down more steeply than the default. */
+  tilt = TILT;
+  cs = COS;
+  sn = SIN;
   /** Camera focus: which plane point sits at the centre of the canvas and how far in we are. */
   view = { u: 50, v: 50, zoom: 1 };
   private queue: Array<{ key: number; fn: () => void }> = [];
@@ -137,6 +141,8 @@ export class Painter {
     this.now = now;
     this.palette = readPalette();
     this.needsFrame = false;
+    this.cs = Math.cos((this.tilt * Math.PI) / 180);
+    this.sn = Math.sin((this.tilt * Math.PI) / 180);
     this.queue = [];
   }
 
@@ -144,8 +150,8 @@ export class Painter {
     const X = (u - this.view.u) * this.k;
     const Y = (v - this.view.v) * this.k;
     const Z = z * this.k;
-    const Yp = Y * COS - Z * SIN;
-    const Zp = Y * SIN + Z * COS;
+    const Yp = Y * this.cs - Z * this.sn;
+    const Zp = Y * this.sn + Z * this.cs;
     const f = this.P / (this.P - Zp);
     return { x: this.cx + X * f, y: this.cy + Yp * f, f, X, Y: Yp, Z: Zp };
   }
@@ -159,8 +165,8 @@ export class Painter {
   unproject(sx: number, sy: number, z0 = 0) {
     const a = sy - this.cy;
     const Z = z0 * this.k;
-    const Y = (a * this.P - a * Z * COS + this.P * Z * SIN) / (a * SIN + this.P * COS);
-    const Zp = Y * SIN + Z * COS;
+    const Y = (a * this.P - a * Z * this.cs + this.P * Z * this.sn) / (a * this.sn + this.P * this.cs);
+    const Zp = Y * this.sn + Z * this.cs;
     const f = this.P / (this.P - Zp);
     const X = (sx - this.cx) / f;
     return { x: this.view.u + X / this.k, y: this.view.v + Y / this.k };
@@ -202,7 +208,7 @@ export class Painter {
     const camCentre = this.cam(cx, cy, z0 + t / 2);
     defs.forEach(([name, n, [a, b]]) => {
       const nw: [number, number, number] = [n[0] * co - n[1] * si, n[0] * si + n[1] * co, 0];
-      const nc: [number, number, number] = [nw[0], nw[1] * COS, nw[1] * SIN];
+      const nc: [number, number, number] = [nw[0], nw[1] * this.cs, nw[1] * this.sn];
       const mid = at((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, z0 + t / 2);
       const view: [number, number, number] = [-mid.X, -mid.Y, this.P - mid.Z];
       if (nc[0] * view[0] + nc[1] * view[1] + nc[2] * view[2] <= 0) return;
@@ -307,7 +313,7 @@ export class Painter {
         const centre = [x + n[0] * h, y + n[1] * h, zc + n[2] * h];
         const corner = (a: number, b: number) => this.cam(centre[0] + (eu[0] * a + ev[0] * b) * h, centre[1] + (eu[1] * a + ev[1] * b) * h, centre[2] + (eu[2] * a + ev[2] * b) * h);
         const mid = this.cam(centre[0], centre[1], centre[2]);
-        const nc = [n[0], n[1] * COS - n[2] * SIN, n[1] * SIN + n[2] * COS];
+        const nc = [n[0], n[1] * this.cs - n[2] * this.sn, n[1] * this.sn + n[2] * this.cs];
         const visible = nc[0] * -mid.X + nc[1] * -mid.Y + nc[2] * (this.P - mid.Z) > 0;
         return { f, n, mid, visible, quad: [corner(-1, -1), corner(1, -1), corner(1, 1), corner(-1, 1)] };
       }).filter((d) => d.visible).sort((a, b) => a.mid.Z - b.mid.Z);

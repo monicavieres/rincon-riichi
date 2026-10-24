@@ -42,7 +42,8 @@ const turn = (from: number, to: number) => {
 /** Where a player's n-th tile lands: a tidy row along their own edge, the last one set slightly apart. */
 function handSlot(player: number, n: number, extra: boolean) {
   const gap = extra ? 2.2 : 0;
-  const base = { x: 50 + (n - 6) * 4.4 + gap, y: HAND_EDGE };
+  const spacing = player % 2 === 1 ? 5.1 : 4.5;
+  const base = { x: 50 + (n - 6) * spacing + gap, y: HAND_EDGE };
   const p = around(base, player);
   return { x: p.x, y: p.y, rot: ROT[player] };
 }
@@ -119,6 +120,11 @@ export function DealBoard({ language, onStatus }: { language: TutorialLanguage; 
   useEffect(() => { onStatus?.({ done: finished, step: current }); }, [finished, current, onStatus]);
 
   const draw = (g: Painter) => {
+    // a steeper look down on the table, so the far hand and the sideways hands are not squeezed together
+    g.tilt = 38;
+    g.cs = Math.cos((38 * Math.PI) / 180);
+    g.sn = Math.sin((38 * Math.PI) / 180);
+    g.view = { u: 50, v: 50, zoom: 0.86 };
     g.table();
     const { palette: p } = g;
     const doraAt = gAt(FIRST_DEAD + 2);
@@ -183,8 +189,8 @@ export function DealBoard({ language, onStatus }: { language: TutorialLanguage; 
         </div>
         {finished && (
           <p className="sort-win is-top" role="status">
-            <b>{t('Todos tienen 13 fichas; el dealer, 14', 'Everyone has 13 tiles; the dealer, 14', 'Todos têm 13 peças; o dealer, 14')}</b>
-            <span>{t('El dealer descarta primero. Las fichas se toman del muro vivo, a la izquierda del corte.', 'The dealer discards first. Tiles come from the live wall, left of the cut.', 'O dealer descarta primeiro. As peças vêm do muro vivo, à esquerda do corte.')}</span>
+            <b>{t('13 fichas cada uno; el dealer, 14', '13 tiles each; the dealer, 14', '13 peças cada; o dealer, 14')}</b>
+            <span>{t('El dealer descarta primero.', 'The dealer discards first.', 'O dealer descarta primeiro.')}</span>
           </p>
         )}
       </div>
