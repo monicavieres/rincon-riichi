@@ -4,6 +4,7 @@ import { localize, type LocalizedText, type TutorialLanguage } from '../domain/t
 import { tutorialParts, tutorialStops, type TutorialStop } from '../domain/tutorialStage';
 import { RackStage } from './stages/RackStage';
 import { DeckBoard, TILE_BACK, type DeckStatus } from './stages/DeckBoard';
+import { TableTopBoard, type TableTopStatus } from './stages/TableTopBoard';
 import { WallBoard, type WallStatus } from './stages/WallBoard';
 import { SortBoard, tilePath, type SortStatus } from './stages/SortBoard';
 
@@ -32,6 +33,21 @@ const PRACTICE_COPY = {
     'Arrastra las fichas al recuadro punteado de abajo: primero las 17 de la fila inferior, luego las 17 de arriba. Tus rivales arman los suyos solos. ¿Sin arrastrar? «Colocar ficha →» las pone una a una y «Completar» termina tu muro.',
     'Drag tiles into the dotted strip at the bottom: first the 17 of the lower row, then the 17 on top. Your rivals build theirs on their own. Not dragging? “Place tile →” sets them one by one and “Fill” finishes your wall.',
     'Arraste as peças para o retângulo pontilhado de baixo: primeiro as 17 da fileira inferior, depois as 17 de cima. Seus rivais montam os deles sozinhos. Sem arrastar? «Colocar peça →» coloca uma a uma e «Completar» termina seu muro.',
+  ),
+  dealer: L(
+    'Espera a que lancen tus tres rivales y luego pulsa «Lanzar mi dado» (o toca tu dado). El número más alto es el dealer.',
+    'Wait for your three rivals to roll, then press “Roll my die” (or tap your die). The highest number is the dealer.',
+    'Espere seus três rivais lançarem e depois toque em «Lançar meu dado» (ou no seu dado). O número mais alto é o dealer.',
+  ),
+  compass: L(
+    'Arrastra el compass al recuadro del centro y la placa naranja al del borde. ¿Sin arrastrar? «Colocar →» pone la siguiente pieza.',
+    'Drag the compass to the centre outline and the orange plate to the edge one. Not dragging? “Place →” puts the next piece.',
+    'Arraste o compass ao contorno do centro e a placa laranja ao da borda. Sem arrastar? «Colocar →» coloca a próxima peça.',
+  ),
+  dice: L(
+    'Pulsa «Lanzar dados», mira qué muro se ilumina y cuenta las pilas desde su extremo derecho. Puedes repetirlo las veces que quieras.',
+    'Press “Roll dice”, see which wall lights up and count the stacks from its right end. Repeat as often as you like.',
+    'Toque em «Lançar dados», veja qual muro acende e conte as pilhas a partir da extremidade direita. Pode repetir quantas vezes quiser.',
   ),
   table: L(
     'Mira la zona resaltada y lee cada etiqueta. Usa ⤢ para ver la mesa completa y volver a ubicarte.',
@@ -63,6 +79,11 @@ const UI = {
     'Mesa de riichi em perspectiva, com as quatro paredes, as mãos, os descartes e o compass de ventos',
   ),
   shuffled: L('mezclado', 'shuffled', 'embaralhado'),
+  dealerIs: L('· ¡eres el dealer!', '· you are the dealer!', '· você é o dealer!'),
+  dealerWait: L('Esperando los dados…', 'Waiting for the dice…', 'Aguardando os dados…'),
+  piecesPlaced: L('piezas colocadas', 'pieces placed', 'peças colocadas'),
+  diceTotal: L('suma de los dados', 'dice total', 'soma dos dados'),
+  diceWait: L('Lanza los dados', 'Roll the dice', 'Lance os dados'),
   yourWall: L('en tu muro', 'in your wall', 'no seu muro'),
   rivalWalls: L('en los de tus rivales', 'in your rivals’ walls', 'nos dos seus rivais'),
   sortedIn: L('en tu mano', 'in your hand', 'na sua mão'),
@@ -120,6 +141,7 @@ export function TutorialWorkspace() {
   const [overview, setOverview] = useState(false);
   const [sort, setSort] = useState<SortStatus>({ inRack: 0, total: 13, sorted: false });
   const [deck, setDeck] = useState<DeckStatus>({ progress: 0, done: false });
+  const [top, setTop] = useState<TableTopStatus>({ compass: false, plate: false, rolled: null, dealerRoll: null, done: false });
   const [wall, setWall] = useState<WallStatus>({ mine: 0, rivals: 0, done: false });
   const railRef = useRef<HTMLElement>(null);
   const t = (value: LocalizedText) => localize(value, language);
@@ -200,7 +222,7 @@ export function TutorialWorkspace() {
     [spec, language],
   );
 
-  const practiceCopy = spec.kind === 'deck' ? PRACTICE_COPY[spec.mode] : spec.kind === 'sort' ? PRACTICE_COPY.sort : spec.kind === 'table' ? PRACTICE_COPY.table : PRACTICE_COPY.rack;
+  const practiceCopy = spec.kind === 'deck' ? PRACTICE_COPY[spec.mode as keyof typeof PRACTICE_COPY] : spec.kind === 'sort' ? PRACTICE_COPY.sort : spec.kind === 'table' ? PRACTICE_COPY.table : PRACTICE_COPY.rack;
   const canZoom = spec.kind === 'table' && spec.focus.zoom > 1;
 
   return (
@@ -215,6 +237,7 @@ export function TutorialWorkspace() {
 
           {spec.kind === 'deck' && spec.mode === 'shuffle' && <DeckBoard language={language} onStatus={setDeck} />}
           {spec.kind === 'deck' && spec.mode === 'walls' && <WallBoard language={language} onStatus={setWall} />}
+          {spec.kind === 'deck' && (spec.mode === 'dealer' || spec.mode === 'compass' || spec.mode === 'dice') && <TableTopBoard key={spec.mode} mode={spec.mode} language={language} onStatus={setTop} />}
           {spec.kind === 'sort' && <SortBoard language={language} onStatus={setSort} />}
           {spec.kind === 'table' && (
             <TableStage focus={spec.focus} callouts={callouts} stepKey={`${stop.id}-${language}`} overview={overview} alt={t(UI.tableAlt)} />
@@ -259,6 +282,15 @@ export function TutorialWorkspace() {
                 <p>{t(practiceCopy)}</p>
                 {spec.kind === 'deck' && spec.mode === 'shuffle' && (
                   <p className={`sort-readout${deck.done ? ' is-done' : ''}`}><b>{Math.round(deck.progress * 100)}%</b> {t(UI.shuffled)}</p>
+                )}
+                {spec.kind === 'deck' && spec.mode === 'dealer' && (
+                  <p className={`sort-readout${top.done ? ' is-done' : ''}`}>{top.dealerRoll ? <><b>{top.dealerRoll}</b> {t(UI.dealerIs)}</> : t(UI.dealerWait)}</p>
+                )}
+                {spec.kind === 'deck' && spec.mode === 'compass' && (
+                  <p className={`sort-readout${top.done ? ' is-done' : ''}`}><b>{Number(top.compass) + Number(top.plate)}/2</b> {t(UI.piecesPlaced)}</p>
+                )}
+                {spec.kind === 'deck' && spec.mode === 'dice' && (
+                  <p className={`sort-readout${top.done ? ' is-done' : ''}`}>{top.rolled ? <><b>{top.rolled}</b> {t(UI.diceTotal)}</> : t(UI.diceWait)}</p>
                 )}
                 {spec.kind === 'deck' && spec.mode === 'walls' && (
                   <p className={`sort-readout${wall.done ? ' is-done' : ''}`}><b>{wall.mine}/34</b> {t(UI.yourWall)} · <b>{wall.rivals}/102</b> {t(UI.rivalWalls)}</p>

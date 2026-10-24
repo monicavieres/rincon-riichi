@@ -267,6 +267,147 @@
     transition: width 0.2s ease;
 }
 
+/* Top-down table: finished walls, compass, round-wind plate and dice. */
+.deck-tile.is-static {
+    transition: filter 0.2s ease;
+}
+
+.deck-tile.is-static.is-counting img {
+    filter: sepia(1) saturate(4) hue-rotate(-12deg) brightness(1.15) drop-shadow(0 0 3px var(--gold));
+}
+
+.deck-board.is-table { container-type: inline-size; }
+.deck-board.is-table.is-grabbing { cursor: grabbing; }
+.deck-board.is-table.is-compass { cursor: grab; }
+
+.table-compass,
+.table-plate {
+    position: absolute;
+    z-index: 300;
+    transform: translate(-50%, -50%);
+    transition: left 0.3s ease, top 0.3s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    filter: drop-shadow(0 3px 2px rgba(10, 30, 28, 0.4));
+    pointer-events: none;
+}
+
+.table-compass.is-dragging,
+.table-plate.is-dragging {
+    z-index: 500;
+    transition: none;
+    filter: drop-shadow(0 10px 7px rgba(10, 30, 28, 0.45));
+}
+
+.table-compass svg { display: block; width: 100%; height: auto; }
+.compass-plate { fill: var(--ink); }
+.compass-inner { fill: color-mix(in oklab, var(--ink) 86%, var(--table-felt)); stroke: var(--gold); stroke-width: 1.5; }
+.compass-slots rect { fill: none; stroke: var(--card); stroke-width: 1.2; stroke-dasharray: 3 2; opacity: 0.55; }
+.compass-letters text { fill: var(--card); font: 700 15px/1 'Noto Serif JP', 'Hiragino Mincho ProN', serif; text-anchor: middle; dominant-baseline: central; }
+.compass-core { fill: var(--gold); stroke: var(--card); stroke-width: 1.5; }
+
+.table-plate {
+    aspect-ratio: 6 / 4.4;
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--ink);
+    border-radius: 5px;
+    background: linear-gradient(#f59a3a, #e8742a);
+}
+
+.table-plate b {
+    color: #fff;
+    font: 700 1.4em/1 'Noto Serif JP', 'Hiragino Mincho ProN', serif;
+    font-size: clamp(11px, 2.4cqw, 22px);
+}
+
+.table-target {
+    position: absolute;
+    z-index: 2;
+    aspect-ratio: 1;
+    border: 2px dashed rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    animation: deck-pulse 1s ease-in-out infinite alternate;
+}
+
+.table-target.is-plate { aspect-ratio: 6 / 4.4; border-radius: 5px; }
+.table-target.is-hot { border-color: var(--gold); background: color-mix(in oklab, var(--gold) 50%, transparent); animation: none; }
+
+.table-dice {
+    position: absolute;
+    z-index: 320;
+    display: flex;
+    gap: 14%;
+    width: 11%;
+    padding: 0;
+    border: 0;
+    background: none;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+
+.table-dice:disabled { cursor: progress; }
+
+.table-die {
+    --tilt: 0deg;
+    display: grid;
+    grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+    width: 100%;
+    aspect-ratio: 1;
+    padding: 12%;
+    border: 2px solid #1d1a24;
+    border-radius: 18%;
+    background: #fffdf6;
+    box-shadow: 0 3px 0 #1d1a24, 0 8px 8px rgba(10, 30, 28, 0.3);
+    transform: rotate(var(--tilt));
+}
+
+.table-die i { place-self: center; width: 70%; aspect-ratio: 1; border-radius: 50%; }
+.table-die i.is-pip { background: #1d1a24; }
+.table-die.is-rolling { animation: die-tumble 0.16s linear infinite; }
+
+@keyframes die-tumble {
+    0% { transform: rotate(calc(var(--tilt) - 14deg)) translateY(-3px); }
+    50% { transform: rotate(calc(var(--tilt) + 16deg)) translateY(2px); }
+    100% { transform: rotate(calc(var(--tilt) - 8deg)) translateY(-2px); }
+}
+
+.table-cut {
+    position: absolute;
+    z-index: 330;
+    width: 4px;
+    border-radius: 2px;
+    background: var(--gold);
+    box-shadow: 0 0 0 2px var(--ink), 0 0 10px var(--gold);
+    pointer-events: none;
+}
+
+.table-seat {
+    position: absolute;
+    z-index: 320;
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    width: 6.5%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font: 700 10px/1.1 var(--font-display);
+    letter-spacing: 0.04em;
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.table-seat small { font: inherit; white-space: nowrap; }
+.table-seat b { padding: 1px 8px; border-radius: 99px; color: var(--ink); background: var(--gold); text-shadow: none; }
+.table-seat-die { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
+.table-seat-die:disabled { cursor: default; }
+.table-seat .table-die { width: 100%; }
+.table-seat-die .table-die { width: 100%; }
+.table-seat.is-winner .table-die { box-shadow: 0 3px 0 #1d1a24, 0 0 0 4px var(--gold), 0 8px 14px rgba(0, 0, 0, 0.35); }
+
+.deck-board .sort-win.is-top { top: 4%; bottom: auto; }
+
 .deck-board .sort-win {
     top: auto;
     bottom: 9%;
@@ -606,6 +747,8 @@
     .sort-tile,
     .rack-group,
     .sort-win,
+    .table-die.is-rolling,
+    .table-target,
     .deck-ghost,
     .deck-hint b,
     .deck-tile {

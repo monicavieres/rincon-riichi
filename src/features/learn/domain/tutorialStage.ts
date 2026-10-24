@@ -9,7 +9,7 @@ export type LocalCallout = Omit<TableCallout, 'label'> & { label: LocalizedText 
 
 export type StageSpec =
   | { kind: 'sort' }
-  | { kind: 'deck'; mode: 'shuffle' | 'walls' }
+  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' }
   | { kind: 'table'; focus: TableFocus; callouts: LocalCallout[] }
   | { kind: 'rack'; rows: RackRow[]; footer?: LocalizedText };
 
@@ -182,6 +182,66 @@ export const tutorialStops: TutorialStop[] = [
     ],
     remember: L('Después se tiran los dados para decidir dónde se abre el muro.', 'Then the dice are rolled to decide where the wall is opened.', 'Depois lançam-se os dados para decidir onde se abre o muro.'),
     stage: { kind: 'deck', mode: 'walls' },
+    practice: { href: '../aprender/tiles.html', label: L('Conocer las fichas', 'Meet the tiles', 'Conhecer as peças') },
+  },
+  {
+    id: 'dealer',
+    part: 'discover',
+    short: L('Dealer', 'Dealer', 'Dealer'),
+    eyebrow: L('Quién empieza', 'Who starts', 'Quem começa'),
+    title: L('Cada jugador lanza un dado: el mayor es el dealer', 'Each player rolls a die: the highest is the dealer', 'Cada jogador lança um dado: o maior é o dealer'),
+    body: L(
+      'Con los muros listos hay que decidir quién reparte primero. Cada uno lanza un dado y quien saque el número más alto es el dealer inicial. Primero lanzan tus tres rivales; luego te toca a ti.',
+      'With the walls ready, you decide who deals first. Everyone rolls one die and the highest number is the first dealer. Your three rivals roll first; then it is your turn.',
+      'Com os muros prontos, decide-se quem distribui primeiro. Cada um lança um dado e quem tirar o número mais alto é o dealer inicial. Seus três rivais lançam primeiro; depois é a sua vez.',
+    ),
+    bullets: [
+      L('El dealer se sienta en el asiento Este y juega primero.', 'The dealer takes the East seat and plays first.', 'O dealer fica no assento Leste e joga primeiro.'),
+      L('Después de cada mano, el asiento de dealer puede pasar al siguiente jugador.', 'After each hand the dealer seat can pass to the next player.', 'Depois de cada mão, o assento de dealer pode passar ao próximo jogador.'),
+      L('En un empate se vuelve a lanzar entre los empatados.', 'On a tie, the tied players roll again.', 'Em caso de empate, os empatados lançam de novo.'),
+    ],
+    remember: L('Aquí tus rivales sacan 1, 3 y 4 y tú sacas 6: serás el dealer en los siguientes pasos.', 'Here your rivals roll 1, 3 and 4 and you roll a 6: you will be the dealer in the next steps.', 'Aqui seus rivais tiram 1, 3 e 4 e você tira 6: será o dealer nos próximos passos.'),
+    stage: { kind: 'deck', mode: 'dealer' },
+    practice: { href: '../aprender/reglas.html', label: L('Ver reglas especiales', 'See special rules', 'Ver regras especiais') },
+  },
+  {
+    id: 'compass',
+    part: 'discover',
+    short: L('Compass', 'Compass', 'Compass'),
+    eyebrow: L('Poner la mesa', 'Setting the table', 'Preparar a mesa'),
+    title: L('Coloca el compass y el viento de ronda', 'Place the compass and the round wind', 'Coloque o compass e o vento da rodada'),
+    body: L(
+      'Como dealer, tú pones lo que falta en la mesa: el compass en el centro, con cada viento hacia su asiento, y la placa naranja del viento de ronda pegada al borde, a la derecha del dealer inicial. Arrastra cada pieza a su recuadro punteado.',
+      'As dealer, you set what is missing on the table: the compass in the centre, each wind facing its seat, and the orange round-wind plate against the edge, to the right of the first dealer. Drag each piece to its dotted outline.',
+      'Como dealer, você coloca o que falta na mesa: o compass no centro, cada vento voltado para seu assento, e a placa laranja do vento da rodada junto à borda, à direita do dealer inicial. Arraste cada peça ao seu contorno pontilhado.',
+    ),
+    bullets: [
+      L('Este queda frente al dealer; Sur, Oeste y Norte siguen en sentido antihorario.', 'East faces the dealer; South, West and North follow counter-clockwise.', 'Leste fica de frente para o dealer; Sul, Oeste e Norte seguem no sentido anti-horário.'),
+      L('Cada lado del compass tiene su ranura para el palito de riichi.', 'Each side of the compass has its slot for the riichi stick.', 'Cada lado do compass tem seu slot para o bastão de riichi.'),
+      L('La placa muestra 東 en la ronda Este y se gira a 南 en la ronda Sur.', 'The plate shows 東 in the East round and flips to 南 in the South round.', 'A placa mostra 東 na rodada Leste e vira para 南 na rodada Sul.'),
+    ],
+    remember: L('El compass dice quién es quién; la placa dice en qué ronda están.', 'The compass says who is who; the plate says which round it is.', 'O compass diz quem é quem; a placa diz em que rodada estão.'),
+    stage: { kind: 'deck', mode: 'compass' },
+    practice: { href: '../aprender/reglas.html', label: L('Ver reglas especiales', 'See special rules', 'Ver regras especiais') },
+  },
+  {
+    id: 'dice',
+    part: 'discover',
+    short: L('Abrir el muro', 'Open the wall', 'Abrir o muro'),
+    eyebrow: L('Turno del dealer', 'Dealer’s move', 'Vez do dealer'),
+    title: L('Lanza los dados y abre el muro', 'Roll the dice and open the wall', 'Lance os dados e abra o muro'),
+    body: L(
+      'Ahora el dealer lanza dos dados. La suma se cuenta en sentido antihorario desde el dealer: 1, 5 y 9 son su propio muro; 2, 6 y 10, el de su derecha; 3, 7 y 11, el de enfrente; 4, 8 y 12, el de su izquierda. En ese muro se cuentan tantas pilas como indique la suma, desde su extremo derecho, y ahí se abre.',
+      'Now the dealer rolls two dice. The total is counted counter-clockwise from the dealer: 1, 5 and 9 are their own wall; 2, 6 and 10 the one on their right; 3, 7 and 11 the one across; 4, 8 and 12 the one on their left. On that wall you count as many stacks as the total, from its right end, and open there.',
+      'Agora o dealer lança dois dados. A soma conta-se no sentido anti-horário a partir do dealer: 1, 5 e 9 são o próprio muro; 2, 6 e 10, o da sua direita; 3, 7 e 11, o da frente; 4, 8 e 12, o da sua esquerda. Nesse muro contam-se tantas pilhas quanto a soma, a partir da extremidade direita, e abre-se ali.',
+    ),
+    bullets: [
+      L('El número más bajo posible es 2 y el más alto, 12.', 'The lowest possible total is 2 and the highest is 12.', 'A menor soma possível é 2 e a maior, 12.'),
+      L('El corte marca dónde empieza el muro muerto y de dónde se roba primero.', 'The cut marks where the dead wall starts and where drawing begins.', 'O corte marca onde começa o muro morto e de onde se compra primeiro.'),
+      L('Después se reparten las trece fichas de cada mano.', 'Then each hand’s thirteen tiles are dealt.', 'Depois distribuem-se as treze peças de cada mão.'),
+    ],
+    remember: L('El azar de los dados decide por dónde se abre, no quién gana.', 'The dice decide where the wall opens, not who wins.', 'Os dados decidem por onde se abre, não quem vence.'),
+    stage: { kind: 'deck', mode: 'dice' },
     practice: { href: '../aprender/tiles.html', label: L('Conocer las fichas', 'Meet the tiles', 'Conhecer as peças') },
   },
   {
