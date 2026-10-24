@@ -9,7 +9,7 @@ const OPENED_SIDE = 0;
 const FIRST_DEAD = 8;
 const OUT = [[0, 1], [1, 0], [0, -1], [-1, 0]];
 const ALONG = [[1, 0], [0, -1], [-1, 0], [0, 1]];
-const HAND_EDGE = 92.5;
+const HAND_EDGE = 94.4;
 const SEAT_NAME = {
   es: ['Tú · Este (dealer)', 'Sur', 'Oeste', 'Norte'],
   en: ['You · East (dealer)', 'South', 'West', 'North'],
@@ -42,7 +42,7 @@ const turn = (from: number, to: number) => {
 /** Where a player's n-th tile lands: a tidy row along their own edge, the last one set slightly apart. */
 function handSlot(player: number, n: number, extra: boolean) {
   const gap = extra ? 2.2 : 0;
-  const base = { x: 50 + (n - 6) * 3.9 + gap, y: HAND_EDGE };
+  const base = { x: 50 + (n - 6) * 4.4 + gap, y: HAND_EDGE };
   const p = around(base, player);
   return { x: p.x, y: p.y, rot: ROT[player] };
 }
