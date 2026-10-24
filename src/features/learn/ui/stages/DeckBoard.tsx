@@ -10,7 +10,7 @@ const BOARD_H = 62.5;
 const TILE_W = 2.6;
 const TILE_H = TILE_W * (4 / 3);
 const STACK_RISE = 0.7;
-const SWEEP_R = 10;
+const SWEEP_R = 11;
 const FELT = { x0: 12, x1: 88, y0: 7, y1: BOARD_H - 7 };
 
 type Pose = { x: number; y: number; rot: number; z: number };
@@ -49,6 +49,28 @@ function wallSlot(index: number): Pose {
   return { x: x0 + TILE_H / 2 - lift, y: y0 + TILE_H + along, rot: 90, z };
 }
 
+const HAND_SHAPES = [
+  <rect key="i" x="22" y="14" width="12" height="52" rx="6" />,
+  <rect key="m" x="36" y="6" width="12" height="60" rx="6" />,
+  <rect key="r" x="50" y="10" width="12" height="56" rx="6" />,
+  <rect key="p" x="64" y="22" width="12" height="44" rx="6" />,
+  <rect key="t" x="5" y="60" width="34" height="13" rx="6.5" transform="rotate(-38 22 70)" />,
+  <rect key="a" x="22" y="48" width="56" height="58" rx="22" />,
+];
+
+/** A flat open palm, outlined once around the whole silhouette. */
+function Palm() {
+  return (
+    <svg viewBox="0 0 100 112" aria-hidden="true">
+      <g fill="none" stroke="var(--ink)" strokeWidth="7" strokeLinejoin="round">{HAND_SHAPES}</g>
+      <g fill="#f4cba5" stroke="none">{HAND_SHAPES}</g>
+      <g fill="none" stroke="#c98f66" strokeWidth="1.6" strokeLinecap="round" opacity=".7">
+        <path d="M34 70 Q50 80 70 68" /><path d="M36 86 Q50 94 66 86" />
+      </g>
+    </svg>
+  );
+}
+
 const SIDE_NAME = {
   es: ['tu lado', 'derecha', 'enfrente', 'izquierda'],
   en: ['your side', 'right', 'across', 'left'],
@@ -63,6 +85,7 @@ export function DeckBoard({ mode, language, onStatus }: { mode: 'shuffle' | 'wal
   const t = (es: string, en: string, pt: string) => ({ es, en, pt }[language]);
   const boardRef = useRef<HTMLDivElement>(null);
   const handRef = useRef<HTMLDivElement>(null);
+  const hand2Ref = useRef<HTMLDivElement>(null);
   const tileRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const poses = useRef<Pose[]>(mode === 'shuffle' ? heap(26, 17) : heap(16, 10));
   const last = useRef<{ x: number; y: number } | null>(null);
@@ -70,7 +93,6 @@ export function DeckBoard({ mode, language, onStatus }: { mode: 'shuffle' | 'wal
   const zTop = useRef(DECK_SIZE);
   const [progress, setProgress] = useState(0);
   const [built, setBuilt] = useState(0);
-  const [settling, setSettling] = useState(false);
 
   const place = useCallback((index: number) => {
     const el = tileRefs.current[index];
@@ -99,12 +121,66 @@ export function DeckBoard({ mode, language, onStatus }: { mode: 'shuffle' | 'wal
     return { x: ((clientX - rect.left) / rect.width) * 100, y: ((clientY - rect.top) / rect.width) * 100 };
   };
 
+  // Tiles carry a little momentum, so a sweep keeps flowing after the hand has passed.
+  const vel = useRef(new Float32Array(DECK_SIZE * 3)); // vx, vy, vrot per tile
+  const frame = useRef(0);
+  const pointer = useRef({ x: 0, y: 0, inside: false, down: false });
+  const lag = useRef({ x: 0, y: 0 });
+
+  const step = useCallback(() => {
+    frame.current = 0;
+    let energy = 0;
+    const v = vel.current;
+    poses.current.forEach((pose, index) => {
+      const vx = v[index * 3];
+      const vy = v[index * 3 + 1];
+      const vr = v[index * 3 + 2];
+      if (Math.abs(vx) + Math.abs(vy) + Math.abs(vr) < 0.012) return;
+      pose.x += vx;
+      pose.y += vy;
+      pose.rot += vr;
+      if (pose.x < FELT.x0 || pose.x > FELT.x1) { pose.x = clamp(pose.x, FELT.x0, FELT.x1); v[index * 3] = -vx * 0.4; } else v[index * 3] = vx * 0.9;
+      if (pose.y < FELT.y0 || pose.y > FELT.y1) { pose.y = clamp(pose.y, FELT.y0, FELT.y1); v[index * 3 + 1] = -vy * 0.4; } else v[index * 3 + 1] = vy * 0.9;
+      v[index * 3 + 2] = vr * 0.9;
+      energy += Math.hypot(vx, vy);
+      place(index);
+    });
+    if (energy > 0) {
+      moved.current += energy;
+      setProgress(Math.min(1, moved.current / 1800));
+    }
+    // the second hand trails the first, so the pair feels like two palms mixing
+    const hand2 = hand2Ref.current;
+    if (hand2 && pointer.current.inside) {
+      lag.current.x += (pointer.current.x - 54 - lag.current.x) * 0.16;
+      lag.current.y += (pointer.current.y + 18 - lag.current.y) * 0.16;
+      hand2.style.transform = `translate(${lag.current.x}px, ${lag.current.y}px) translate(-50%, -50%) scaleX(-1) rotate(${pointer.current.down ? 8 : -6}deg)`;
+    }
+    if (energy > 0.05 || pointer.current.inside) frame.current = requestAnimationFrame(step);
+  }, [place]);
+
+  const wake = useCallback(() => {
+    if (!frame.current) frame.current = requestAnimationFrame(step);
+  }, [step]);
+
+  useEffect(() => () => { if (frame.current) cancelAnimationFrame(frame.current); }, []);
+
   const moveHand = (clientX: number, clientY: number) => {
     const rect = boardRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    pointer.current.x = clientX - rect.left;
+    pointer.current.y = clientY - rect.top;
     const hand = handRef.current;
-    if (!rect || !hand) return;
-    hand.style.left = `${clientX - rect.left}px`;
-    hand.style.top = `${clientY - rect.top}px`;
+    if (hand) hand.style.transform = `translate(${pointer.current.x}px, ${pointer.current.y}px) translate(-50%, -50%) rotate(${pointer.current.down ? -10 : 4}deg) scale(${pointer.current.down ? 0.94 : 1})`;
+  };
+
+  const showHands = (visible: boolean) => {
+    pointer.current.inside = visible;
+    [handRef.current, hand2Ref.current].forEach((el) => { if (el) el.style.opacity = visible ? '1' : '0'; });
+    if (visible) {
+      lag.current = { x: pointer.current.x - 54, y: pointer.current.y + 18 };
+      wake();
+    }
   };
 
   const onMove = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -117,49 +193,32 @@ export function DeckBoard({ mode, language, onStatus }: { mode: 'shuffle' | 'wal
     const dx = point.x - before.x;
     const dy = point.y - before.y;
     const speed = Math.hypot(dx, dy);
-    if (speed < 0.05) return;
-    let total = 0;
+    if (speed < 0.03) return;
+    const v = vel.current;
     poses.current.forEach((pose, index) => {
       const ox = pose.x - point.x;
       const oy = pose.y - point.y;
       const dist = Math.hypot(ox, oy);
       if (dist > SWEEP_R) return;
-      const falloff = 1 - dist / SWEEP_R;
-      const push = (dx * 0.85 + (ox / (dist || 1)) * speed * 0.35 + rand(-0.25, 0.25)) * falloff * 1.1;
-      const pushY = (dy * 0.85 + (oy / (dist || 1)) * speed * 0.35 + rand(-0.25, 0.25)) * falloff * 1.1;
-      pose.x = clamp(pose.x + push, FELT.x0, FELT.x1);
-      pose.y = clamp(pose.y + pushY, FELT.y0, FELT.y1);
-      pose.rot += rand(-16, 16) * falloff + dx * 2;
+      const falloff = (1 - dist / SWEEP_R) ** 1.3;
+      v[index * 3] += (dx * 0.55 + (ox / (dist || 1)) * speed * 0.22 + rand(-0.06, 0.06)) * falloff;
+      v[index * 3 + 1] += (dy * 0.55 + (oy / (dist || 1)) * speed * 0.22 + rand(-0.06, 0.06)) * falloff;
+      v[index * 3 + 2] += (rand(-3, 3) + dx * 1.2) * falloff;
       pose.z = ++zTop.current;
-      total += Math.hypot(push, pushY);
-      place(index);
     });
-    if (total > 0) {
-      moved.current += total;
-      setProgress(Math.min(1, moved.current / 1400));
-    }
+    wake();
   };
 
   // Keyboard- and tap-friendly alternative to sweeping: one shove across the whole felt.
   const stir = useCallback(() => {
-    if (settling) return;
-    setSettling(true);
-    let total = 0;
-    poses.current = poses.current.map((pose, index) => {
-      const next = {
-        x: clamp(pose.x + rand(-26, 26), FELT.x0, FELT.x1),
-        y: clamp(pose.y + rand(-16, 16), FELT.y0, FELT.y1),
-        rot: pose.rot + rand(-120, 120),
-        z: index,
-      };
-      total += Math.hypot(next.x - pose.x, next.y - pose.y);
-      return next;
-    });
-    for (let index = 0; index < DECK_SIZE; index += 1) place(index);
-    moved.current += total * 0.5;
-    setProgress(Math.min(1, moved.current / 1400));
-    window.setTimeout(() => setSettling(false), 700);
-  }, [place, settling]);
+    const v = vel.current;
+    for (let index = 0; index < DECK_SIZE; index += 1) {
+      v[index * 3] += rand(-1.6, 1.6);
+      v[index * 3 + 1] += rand(-1, 1);
+      v[index * 3 + 2] += rand(-14, 14);
+    }
+    wake();
+  }, [wake]);
 
   const buildNext = useCallback(() => setBuilt((count) => Math.min(4, count + 1)), []);
   const buildAll = useCallback(() => setBuilt(4), []);
@@ -174,9 +233,10 @@ export function DeckBoard({ mode, language, onStatus }: { mode: 'shuffle' | 'wal
         className={`sort-board deck-board is-${mode}${done ? ' is-sorted' : ''}`}
         ref={boardRef}
         onPointerMove={onMove}
-        onPointerLeave={() => { last.current = null; if (handRef.current) handRef.current.style.opacity = '0'; }}
-        onPointerEnter={() => { if (handRef.current) handRef.current.style.opacity = '1'; }}
-        onPointerDown={(event) => { last.current = toUnits(event.clientX, event.clientY); moveHand(event.clientX, event.clientY); }}
+        onPointerLeave={() => { last.current = null; pointer.current.down = false; showHands(false); }}
+        onPointerEnter={(event) => { if (mode === 'shuffle') { moveHand(event.clientX, event.clientY); showHands(true); } }}
+        onPointerUp={() => { pointer.current.down = false; }}
+        onPointerDown={(event) => { pointer.current.down = true; last.current = toUnits(event.clientX, event.clientY); moveHand(event.clientX, event.clientY); }}
       >
         <div className="deck-felt" aria-hidden="true"><span>{mode === 'shuffle' ? t('Las 136 fichas, boca abajo', 'All 136 tiles, face down', 'As 136 peças, viradas para baixo') : t('Cuatro muros de 34 fichas', 'Four walls of 34 tiles', 'Quatro muros de 34 peças')}</span></div>
 
@@ -186,13 +246,18 @@ export function DeckBoard({ mode, language, onStatus }: { mode: 'shuffle' | 'wal
           </span>
         ))}
 
-        {mode === 'shuffle' && <div className="deck-hand" ref={handRef} aria-hidden="true" style={{ opacity: 0 }}><i /></div>}
+        {mode === 'shuffle' && (
+          <>
+            <div className="deck-hand" ref={hand2Ref} aria-hidden="true" style={{ opacity: 0 }}><Palm /></div>
+            <div className="deck-hand" ref={handRef} aria-hidden="true" style={{ opacity: 0 }}><Palm /></div>
+          </>
+        )}
 
         <div className="sort-actions deck-actions">
           {mode === 'shuffle' ? (
             <>
               <span>{Math.round(progress * 100)}% {t('mezclado', 'shuffled', 'embaralhado')}</span>
-              <button type="button" className="sort-button" onClick={stir} disabled={settling}>{t('Revolver', 'Stir', 'Mexer')}</button>
+              <button type="button" className="sort-button" onClick={stir} >{t('Revolver', 'Stir', 'Mexer')}</button>
             </>
           ) : (
             <>

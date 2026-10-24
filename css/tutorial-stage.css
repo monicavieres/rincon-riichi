@@ -131,7 +131,7 @@
     position: absolute;
     display: block;
     pointer-events: none;
-    transition: left 0.16s ease-out, top 0.16s ease-out, transform 0.16s ease-out;
+    will-change: left, top, transform;
 }
 
 .deck-board.is-walls .deck-tile {
@@ -147,21 +147,20 @@
 
 .deck-hand {
     position: absolute;
+    left: 0;
+    top: 0;
     z-index: 400;
-    width: 17%;
-    aspect-ratio: 1;
-    margin: -8.5% 0 0 -8.5%;
+    width: 13%;
     pointer-events: none;
+    will-change: transform;
     transition: opacity 0.15s ease;
+    filter: drop-shadow(0 8px 6px rgba(10, 30, 28, 0.35));
 }
 
-.deck-hand i {
-    position: absolute;
-    inset: 0;
-    border: 3px solid rgba(255, 255, 255, 0.85);
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.06) 70%);
-    box-shadow: 0 0 0 2px var(--ink), 0 6px 14px rgba(10, 30, 28, 0.25);
+.deck-hand svg {
+    display: block;
+    width: 100%;
+    height: auto;
 }
 
 .deck-actions { top: 3.5%; right: 3%; }
