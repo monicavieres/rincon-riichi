@@ -57,48 +57,93 @@ const RIVAL_TURN = [-90, 180, 90];
 /** The rivals stop shuffling after this long. */
 const RIVAL_MS = 3000;
 
-type Digit = { from: [number, number]; to: [number, number]; w: number };
+type Spot2 = [number, number];
 
-/** A slender, soft hand seen from the front, fingers pointing up and the forearm trailing below. */
+const fx = (n: number) => n.toFixed(1);
+
+/** Smooth curve through points (Catmull-Rom as cubic segments), continuing an existing path. */
+const through = (pts: Spot2[]) => {
+  let d = '';
+  for (let i = 0; i < pts.length - 1; i += 1) {
+    const p0 = pts[i - 1] ?? pts[i];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[i + 2] ?? p2;
+    d += `C${fx(p1[0] + (p2[0] - p0[0]) / 6)} ${fx(p1[1] + (p2[1] - p0[1]) / 6)} ${fx(p2[0] - (p3[0] - p1[0]) / 6)} ${fx(p2[1] - (p3[1] - p1[1]) / 6)} ${fx(p2[0])} ${fx(p2[1])}`;
+  }
+  return d;
+};
+
+/** A slender tapering limb along a centre line: outline path, plus the tip direction for the nail. */
+function limb(line: Spot2[], widths: number[]) {
+  const left: Spot2[] = [];
+  const right: Spot2[] = [];
+  line.forEach((p, i) => {
+    const a = line[i - 1] ?? p;
+    const b = line[i + 1] ?? p;
+    const len = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+    const nx = -(b[1] - a[1]) / len;
+    const ny = (b[0] - a[0]) / len;
+    left.push([p[0] + (nx * widths[i]) / 2, p[1] + (ny * widths[i]) / 2]);
+    right.push([p[0] - (nx * widths[i]) / 2, p[1] - (ny * widths[i]) / 2]);
+  });
+  const r = widths[widths.length - 1] / 2;
+  const lastLeft = left[left.length - 1];
+  const lastRight = right[right.length - 1];
+  const rev = [...right].reverse();
+  return `M${fx(left[0][0])} ${fx(left[0][1])}${through(left)}A${fx(r)} ${fx(r)} 0 0 0 ${fx(lastRight[0])} ${fx(lastRight[1])}${through(rev)}Z`.replace(`A${fx(r)} ${fx(r)} 0 0 0 ${fx(lastRight[0])} ${fx(lastRight[1])}`, `Q${fx((lastLeft[0] + lastRight[0]) / 2 + (line[line.length - 1][0] - line[line.length - 2][0]) * 0.6)} ${fx((lastLeft[1] + lastRight[1]) / 2 + (line[line.length - 1][1] - line[line.length - 2][1]) * 0.6)} ${fx(lastRight[0])} ${fx(lastRight[1])}`);
+}
+
+type Digit = { line: Spot2[]; widths: number[] };
+
+/** A slender, delicate hand seen from the front, in the style of anime hand sheets: long jointed fingers, fine rose outline. */
 function Palm() {
-  const skin = '#fde8dd';
-  const shadow = '#f3c9bc';
-  const line = '#dc9d8d';
+  const ink = '#a2605f';
   const digits: Digit[] = [
-    { from: [38, 106], to: [21, 78], w: 9.5 },
-    { from: [65.5, 92], to: [71.5, 50], w: 7.4 },
-    { from: [41, 86], to: [35.5, 32], w: 8.2 },
-    { from: [58, 86], to: [61.5, 30], w: 8.4 },
-    { from: [49.5, 84], to: [49, 18], w: 8.8 },
+    { line: [[40, 114], [30, 101], [21, 88], [14, 75]], widths: [11, 9.6, 8.4, 7] },
+    { line: [[72, 100], [78, 80], [83, 62], [86, 47]], widths: [7.6, 6.8, 6.1, 5.2] },
+    { line: [[64, 94], [67, 66], [69, 42], [70, 22]], widths: [9, 8, 7.1, 6.1] },
+    { line: [[46, 94], [42, 68], [39, 46], [37, 25]], widths: [9, 8.2, 7.4, 6.4] },
+    { line: [[55, 92], [54, 62], [54, 36], [54, 10]], widths: [9.4, 8.6, 7.7, 6.6] },
   ];
-  const palm = 'M37 89C41 81 60 81 65 89C69 101 67 116 61 127C57 133 43 133 39 127C33 116 33 101 37 89Z';
-  const forearm = 'M40 124C39 142 37 168 39 190H61C63 168 61 142 60 124Z';
+  const palm = 'M43 93C49 87 68 87 74 94C79 105 77 120 70 132C66 138 52 138 48 132C41 120 39 104 43 93Z';
+  const forearm = 'M47 130C46 150 42 178 40 200H71C69 178 66 150 65 130Z';
+  const at = (d: Digit, t: number): Spot2 => {
+    const i = Math.min(d.line.length - 2, Math.floor(t * (d.line.length - 1)));
+    const f = t * (d.line.length - 1) - i;
+    return [d.line[i][0] + (d.line[i + 1][0] - d.line[i][0]) * f, d.line[i][1] + (d.line[i + 1][1] - d.line[i][1]) * f];
+  };
   return (
-    <svg viewBox="0 0 100 190" aria-hidden="true">
+    <svg viewBox="0 0 120 200" aria-hidden="true">
       <defs>
-        <linearGradient id="hand-palm" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#fff3ec" />
-          <stop offset="1" stopColor="#f6d6ca" />
+        <linearGradient id="hand-skin" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fff7f2" />
+          <stop offset="1" stopColor="#fbe3d5" />
         </linearGradient>
       </defs>
-      <g stroke={line} strokeLinecap="round" strokeLinejoin="round">
-        {digits.map((d) => <line key={`o-${d.to[0]}`} x1={d.from[0]} y1={d.from[1]} x2={d.to[0]} y2={d.to[1]} strokeWidth={d.w + 2.4} />)}
-        <path d={forearm} strokeWidth="2.4" fill={line} />
-        <path d={palm} strokeWidth="2.4" fill={line} />
+      <g stroke={ink} strokeWidth="1.1" strokeLinejoin="round" fill="url(#hand-skin)">
+        <path d={forearm} />
+        {digits.map((d) => <path key={d.line[0][0]} d={limb(d.line, d.widths)} />)}
+        <path d={palm} />
       </g>
-      <g strokeLinecap="round" fill="none">
-        {digits.map((d) => <line key={`f-${d.to[0]}`} x1={d.from[0]} y1={d.from[1]} x2={d.to[0]} y2={d.to[1]} stroke={skin} strokeWidth={d.w} />)}
-        {digits.map((d) => <line key={`h-${d.to[0]}`} x1={d.from[0] - d.w * 0.2} y1={d.from[1] - 4} x2={d.to[0] - d.w * 0.2} y2={d.to[1] + 4} stroke="#fff" strokeOpacity=".55" strokeWidth="1.8" />)}
+      {/* peach blush on the knuckles and joints */}
+      <g fill="#f6c3b3" opacity=".55">
+        {digits.slice(1).flatMap((d) => [0.12, 0.5].map((t) => {
+          const [x, y] = at(d, t);
+          return <ellipse key={`${d.line[0][0]}-${t}`} cx={x} cy={y} rx="3.2" ry="2.2" />;
+        }))}
+        <ellipse cx="58" cy="128" rx="9" ry="5" opacity=".6" />
       </g>
-      <path d={forearm} fill="url(#hand-palm)" />
-      <path d={palm} fill="url(#hand-palm)" />
-      <g fill="none" stroke={shadow} strokeWidth="1.3" strokeLinecap="round">
-        <path d="M45 84L45 94M54 84L54 94M62 88L62 96" opacity=".8" />
-        <path d="M40 112C47 118 56 118 62 111" opacity=".6" />
+      {/* nails */}
+      <g fill="#fff9f6" stroke="#c98582" strokeWidth=".7">
+        {digits.map((d) => {
+          const tip = d.line[d.line.length - 1];
+          const prev = d.line[d.line.length - 2];
+          const angle = (Math.atan2(tip[0] - prev[0], prev[1] - tip[1]) * 180) / Math.PI;
+          return <rect key={`n-${d.line[0][0]}`} x={tip[0] - 2.3} y={tip[1] + 0.5} width="4.6" height="6.4" rx="2.1" transform={`rotate(${angle} ${tip[0]} ${tip[1] + 3})`} />;
+        })}
       </g>
-      <g fill="#fff" opacity=".75">
-        {digits.slice(1).map((d) => <ellipse key={`n-${d.to[0]}`} cx={d.to[0] + (d.to[0] - d.from[0]) * 0.06} cy={d.to[1] + 6} rx="2.6" ry="4.2" transform={`rotate(${(Math.atan2(d.to[0] - d.from[0], d.from[1] - d.to[1]) * 180) / Math.PI} ${d.to[0]} ${d.to[1] + 6})`} />)}
-      </g>
+      <path d="M44 100C50 108 64 108 71 100" fill="none" stroke="#e6a99b" strokeWidth=".9" strokeLinecap="round" opacity=".7" />
     </svg>
   );
 }
