@@ -165,6 +165,88 @@
 
 .deck-actions { top: 3.5%; right: 3%; }
 
+.deck-board.is-walls { cursor: grab; }
+.deck-board.is-walls.is-grabbing { cursor: grabbing; }
+
+.deck-board.is-walls .deck-tile.is-dragging {
+    transition: none;
+    filter: drop-shadow(0 8px 6px rgba(10, 30, 28, 0.45));
+}
+
+.deck-ghost {
+    position: absolute;
+    z-index: 1;
+    aspect-ratio: 3 / 4;
+    border: 2px dashed rgba(255, 255, 255, 0.85);
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.deck-ghost.is-rival {
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.35);
+    background: none;
+}
+
+.deck-ghost.is-filled { opacity: 0; }
+
+.deck-ghost.is-next {
+    z-index: 2;
+    border-style: solid;
+    border-color: var(--gold);
+    background: color-mix(in oklab, var(--gold) 38%, transparent);
+    animation: deck-pulse 1s ease-in-out infinite alternate;
+}
+
+.deck-ghost.is-next.is-hot {
+    background: color-mix(in oklab, var(--gold) 80%, transparent);
+    animation: none;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.8);
+}
+
+@keyframes deck-pulse {
+    from { box-shadow: 0 0 0 0 color-mix(in oklab, var(--gold) 70%, transparent); }
+    to { box-shadow: 0 0 0 5px color-mix(in oklab, var(--gold) 0%, transparent); }
+}
+
+.deck-hint,
+.deck-tag {
+    position: absolute;
+    z-index: 3;
+    display: grid;
+    justify-items: center;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font: 700 11px/1.1 var(--font-display);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.deck-hint b {
+    font-size: 18px;
+    animation: deck-bob 0.8s ease-in-out infinite alternate;
+}
+
+.deck-tag {
+    padding: 2px 8px;
+    border-radius: 99px;
+    background: rgba(0, 0, 0, 0.28);
+    letter-spacing: 0.04em;
+    font-size: 10px;
+}
+
+.deck-tag.is-done { background: var(--sou-strong); }
+
+@keyframes deck-bob {
+    from { transform: translateY(-2px); }
+    to { transform: translateY(3px); }
+}
+
 .deck-meter {
     position: absolute;
     left: 4%;
@@ -524,6 +606,8 @@
     .sort-tile,
     .rack-group,
     .sort-win,
+    .deck-ghost,
+    .deck-hint b,
     .deck-tile {
         transition: none;
         animation: none;

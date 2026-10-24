@@ -2,23 +2,23 @@ import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 
 export const TILE_BACK = '../assets/tile-back-rincon.svg';
-const DECK_SIZE = 136;
-const SIDE_SIZE = 34;
+export const DECK_SIZE = 136;
+export const SIDE_SIZE = 34;
 
 // Everything is measured in "board widths": x runs 0–100 and y runs 0–BOARD_H, so physics stay square.
-const BOARD_H = 62.5;
-const TILE_W = 2.6;
-const TILE_H = TILE_W * (4 / 3);
-const STACK_RISE = 0.7;
+export const BOARD_H = 62.5;
+export const TILE_W = 2.6;
+export const TILE_H = TILE_W * (4 / 3);
+export const STACK_RISE = 0.7;
 const SWEEP_R = 11;
-const FELT = { x0: 12, x1: 88, y0: 7, y1: BOARD_H - 7 };
+export const FELT = { x0: 12, x1: 88, y0: 7, y1: BOARD_H - 7 };
 
-type Pose = { x: number; y: number; rot: number; z: number };
+export type Pose = { x: number; y: number; rot: number; z: number };
 
-export type DeckStatus = { progress: number; done: boolean; built: number };
+export type DeckStatus = { progress: number; done: boolean };
 
-const rand = (min: number, max: number) => min + Math.random() * (max - min);
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+export const rand = (min: number, max: number) => min + Math.random() * (max - min);
+export const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 /** A loose layer of tiles over the middle of the felt, every one face down at its own angle. */
 const heap = (spreadX: number, spreadY: number): Pose[] =>
@@ -29,12 +29,12 @@ const heap = (spreadX: number, spreadY: number): Pose[] =>
     z: index,
   }));
 
-/** The four walls form a pinwheel: each side runs 17 stacks and tucks against the next. */
-function wallSlot(index: number): Pose {
-  const side = Math.floor(index / SIDE_SIZE);
-  const within = index % SIDE_SIZE;
-  const stack = Math.floor(within / 2);
-  const level = within % 2;
+/** Tile positions survive from the shuffle step to the walls step. */
+const shared: { poses: Pose[] | null } = { poses: null };
+export const deckPoses = (spreadX: number, spreadY: number): Pose[] => (shared.poses ??= heap(spreadX, spreadY));
+
+/** The four walls form a pinwheel: each side runs 17 stacks and tucks against the next. Row 0 is the lower one. */
+export function wallSlot(side: number, stack: number, level: number): Pose {
   const run = 17 * TILE_W;
   const box = run + TILE_H;
   const x0 = (100 - box) / 2;
@@ -71,50 +71,39 @@ function Palm() {
   );
 }
 
-const SIDE_NAME = {
-  es: ['tu lado', 'derecha', 'enfrente', 'izquierda'],
-  en: ['your side', 'right', 'across', 'left'],
-  pt: ['seu lado', 'direita', 'em frente', 'esquerda'],
-};
-
 /**
- * The whole deck face down. In "shuffle" mode the pointer is a hand that sweeps the tiles around the felt;
- * in "walls" mode the tiles are slid into four walls of 34, one side at a time.
+ * The whole deck face down: the pointer is a pair of hands that sweep the tiles around the felt.
+ * Positions are kept in `deckPoses`, so the next step (building the walls) starts from this mix.
  */
-export function DeckBoard({ mode, language, onStatus }: { mode: 'shuffle' | 'walls'; language: TutorialLanguage; onStatus?: (status: DeckStatus) => void }) {
+export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; onStatus?: (status: DeckStatus) => void }) {
   const t = (es: string, en: string, pt: string) => ({ es, en, pt }[language]);
   const boardRef = useRef<HTMLDivElement>(null);
   const handRef = useRef<HTMLDivElement>(null);
   const hand2Ref = useRef<HTMLDivElement>(null);
   const tileRefs = useRef<Array<HTMLSpanElement | null>>([]);
-  const poses = useRef<Pose[]>(mode === 'shuffle' ? heap(26, 17) : heap(16, 10));
+  const poses = useRef<Pose[]>(deckPoses(26, 17));
   const last = useRef<{ x: number; y: number } | null>(null);
   const moved = useRef(0);
   const zTop = useRef(DECK_SIZE);
   const [progress, setProgress] = useState(0);
-  const [built, setBuilt] = useState(0);
 
   const place = useCallback((index: number) => {
     const el = tileRefs.current[index];
     if (!el) return;
-    const wall = mode === 'walls' && Math.floor(index / SIDE_SIZE) < built;
-    const pose = wall ? wallSlot(index) : poses.current[index];
+    const pose = poses.current[index];
     el.style.left = `${pose.x}%`;
     el.style.top = `${(pose.y / BOARD_H) * 100}%`;
     el.style.transform = `translate(-50%, -50%) rotate(${pose.rot}deg)`;
     el.style.zIndex = String(pose.z);
-    // the lower row of 17 goes down first, the upper row of 17 lands on top of it afterwards
-    const within = index % SIDE_SIZE;
-    el.style.transitionDelay = wall ? `${(within % 2) * 0.9 + Math.floor(within / 2) * 0.04}s` : '0s';
-  }, [built, mode]);
+  }, []);
 
   useEffect(() => {
     for (let index = 0; index < DECK_SIZE; index += 1) place(index);
   }, [place]);
 
   useEffect(() => {
-    onStatus?.({ progress, done: mode === 'shuffle' ? progress >= 1 : built >= 4, built });
-  }, [progress, built, mode, onStatus]);
+    onStatus?.({ progress, done: progress >= 1 });
+  }, [progress, onStatus]);
 
   const toUnits = (clientX: number, clientY: number) => {
     const rect = boardRef.current!.getBoundingClientRect();
@@ -185,7 +174,6 @@ export function DeckBoard({ mode, language, onStatus }: { mode: 'shuffle' | 'wal
 
   const onMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     moveHand(event.clientX, event.clientY);
-    if (mode !== 'shuffle') return;
     const point = toUnits(event.clientX, event.clientY);
     const before = last.current;
     last.current = point;
@@ -220,25 +208,21 @@ export function DeckBoard({ mode, language, onStatus }: { mode: 'shuffle' | 'wal
     wake();
   }, [wake]);
 
-  const buildNext = useCallback(() => setBuilt((count) => Math.min(4, count + 1)), []);
-  const buildAll = useCallback(() => setBuilt(4), []);
-  const reset = useCallback(() => setBuilt(0), []);
-
-  const done = mode === 'shuffle' ? progress >= 1 : built >= 4;
+  const done = progress >= 1;
   const tiles = useMemo(() => Array.from({ length: DECK_SIZE }, (_, index) => index), []);
 
   return (
     <div className="sort-stage deck-stage">
       <div
-        className={`sort-board deck-board is-${mode}${done ? ' is-sorted' : ''}`}
+        className={`sort-board deck-board is-shuffle${done ? ' is-sorted' : ''}`}
         ref={boardRef}
         onPointerMove={onMove}
         onPointerLeave={() => { last.current = null; pointer.current.down = false; showHands(false); }}
-        onPointerEnter={(event) => { if (mode === 'shuffle') { moveHand(event.clientX, event.clientY); showHands(true); } }}
+        onPointerEnter={(event) => { moveHand(event.clientX, event.clientY); showHands(true); }}
         onPointerUp={() => { pointer.current.down = false; }}
         onPointerDown={(event) => { pointer.current.down = true; last.current = toUnits(event.clientX, event.clientY); moveHand(event.clientX, event.clientY); }}
       >
-        <div className="deck-felt" aria-hidden="true"><span>{mode === 'shuffle' ? t('Las 136 fichas, boca abajo', 'All 136 tiles, face down', 'As 136 peças, viradas para baixo') : t('Cuatro muros de 34 fichas', 'Four walls of 34 tiles', 'Quatro muros de 34 peças')}</span></div>
+        <div className="deck-felt" aria-hidden="true"><span>{t('Las 136 fichas, boca abajo', 'All 136 tiles, face down', 'As 136 peças, viradas para baixo')}</span></div>
 
         {tiles.map((index) => (
           <span key={index} className="deck-tile" ref={(el) => { tileRefs.current[index] = el; }} style={{ width: `${TILE_W}%` }}>
@@ -246,7 +230,7 @@ export function DeckBoard({ mode, language, onStatus }: { mode: 'shuffle' | 'wal
           </span>
         ))}
 
-        {mode === 'shuffle' && (
+        {(
           <>
             <div className="deck-hand" ref={hand2Ref} aria-hidden="true" style={{ opacity: 0 }}><Palm /></div>
             <div className="deck-hand" ref={handRef} aria-hidden="true" style={{ opacity: 0 }}><Palm /></div>
@@ -254,38 +238,16 @@ export function DeckBoard({ mode, language, onStatus }: { mode: 'shuffle' | 'wal
         )}
 
         <div className="sort-actions deck-actions">
-          {mode === 'shuffle' ? (
-            <>
-              <span>{Math.round(progress * 100)}% {t('mezclado', 'shuffled', 'embaralhado')}</span>
-              <button type="button" className="sort-button" onClick={stir} >{t('Revolver', 'Stir', 'Mexer')}</button>
-            </>
-          ) : (
-            <>
-              <span>{built}/4 {t('muros', 'walls', 'muros')}</span>
-              {built < 4 && <button type="button" className="sort-button is-primary" onClick={buildNext}>{t(`Armar ${SIDE_NAME.es[built]}`, `Build ${SIDE_NAME.en[built]}`, `Montar ${SIDE_NAME.pt[built]}`)}</button>}
-              {built < 3 && <button type="button" className="sort-button" onClick={buildAll}>{t('Todos', 'All', 'Todos')}</button>}
-              {built > 0 && <button type="button" className="sort-button" onClick={reset}>{t('Deshacer', 'Reset', 'Desfazer')}</button>}
-            </>
-          )}
+          <span>{Math.round(progress * 100)}% {t('mezclado', 'shuffled', 'embaralhado')}</span>
+          <button type="button" className="sort-button" onClick={stir}>{t('Revolver', 'Stir', 'Mexer')}</button>
         </div>
 
-        {mode === 'shuffle' && (
-          <div className="deck-meter" aria-hidden="true"><i style={{ width: `${progress * 100}%` }} /></div>
-        )}
+        <div className="deck-meter" aria-hidden="true"><i style={{ width: `${progress * 100}%` }} /></div>
 
         {done && (
           <p className="sort-win" role="status">
-            {mode === 'shuffle' ? (
-              <>
-                <b>{t('¡Bien mezcladas!', 'Well shuffled!', 'Bem embaralhadas!')}</b>
-                <span>{t('Nadie sabe qué ficha está dónde. Sigue: armar los muros.', 'Nobody knows which tile is where. Next: build the walls.', 'Ninguém sabe qual peça está onde. Próximo: montar os muros.')}</span>
-              </>
-            ) : (
-              <>
-                <b>{t('136 fichas en cuatro muros', '136 tiles in four walls', '136 peças em quatro muros')}</b>
-                <span>{t('17 pilas × 2 de alto × 4 lados.', '17 stacks × 2 high × 4 sides.', '17 pilhas × 2 de altura × 4 lados.')}</span>
-              </>
-            )}
+            <b>{t('¡Bien mezcladas!', 'Well shuffled!', 'Bem embaralhadas!')}</b>
+            <span>{t('Nadie sabe qué ficha está dónde. Sigue: armar los muros.', 'Nobody knows which tile is where. Next: build the walls.', 'Ninguém sabe qual peça está onde. Próximo: montar os muros.')}</span>
           </p>
         )}
       </div>

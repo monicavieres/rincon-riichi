@@ -4,6 +4,7 @@ import { localize, type LocalizedText, type TutorialLanguage } from '../domain/t
 import { tutorialParts, tutorialStops, type TutorialStop } from '../domain/tutorialStage';
 import { RackStage } from './stages/RackStage';
 import { DeckBoard, TILE_BACK, type DeckStatus } from './stages/DeckBoard';
+import { WallBoard, type WallStatus } from './stages/WallBoard';
 import { SortBoard, tilePath, type SortStatus } from './stages/SortBoard';
 
 type Tab = 'summary' | 'observe' | 'practice';
@@ -28,9 +29,9 @@ const PRACTICE_COPY = {
     'Segure e varra o monte com o mouse ou o dedo até encher a barra. Sem mouse? «Mexer» dá um empurrão em todas as peças.',
   ),
   walls: L(
-    'Pulsa «Armar» cuatro veces, un lado cada vez, y cuenta: 17 pilas de dos fichas por lado. «Todos» arma los cuatro de golpe.',
-    'Press “Build” four times, one side each, and count: 17 stacks of two tiles per side. “All” builds the four at once.',
-    'Toque em «Montar» quatro vezes, um lado cada, e conte: 17 pilhas de duas peças por lado. «Todos» monta os quatro de uma vez.',
+    'Arrastra las fichas al recuadro punteado de abajo: primero las 17 de la fila inferior, luego las 17 de arriba. Tus rivales arman los suyos solos. ¿Sin arrastrar? «Colocar ficha →» las pone una a una y «Completar» termina tu muro.',
+    'Drag tiles into the dotted strip at the bottom: first the 17 of the lower row, then the 17 on top. Your rivals build theirs on their own. Not dragging? “Place tile →” sets them one by one and “Fill” finishes your wall.',
+    'Arraste as peças para o retângulo pontilhado de baixo: primeiro as 17 da fileira inferior, depois as 17 de cima. Seus rivais montam os deles sozinhos. Sem arrastar? «Colocar peça →» coloca uma a uma e «Completar» termina seu muro.',
   ),
   table: L(
     'Mira la zona resaltada y lee cada etiqueta. Usa ⤢ para ver la mesa completa y volver a ubicarte.',
@@ -62,7 +63,8 @@ const UI = {
     'Mesa de riichi em perspectiva, com as quatro paredes, as mãos, os descartes e o compass de ventos',
   ),
   shuffled: L('mezclado', 'shuffled', 'embaralhado'),
-  walls: L('muros armados', 'walls built', 'muros montados'),
+  yourWall: L('en tu muro', 'in your wall', 'no seu muro'),
+  rivalWalls: L('en los de tus rivales', 'in your rivals’ walls', 'nos dos seus rivais'),
   sortedIn: L('en tu mano', 'in your hand', 'na sua mão'),
   sorted: L('¡Mano ordenada!', 'Hand sorted!', 'Mão ordenada!'),
   go: L('Practicar', 'Practise', 'Praticar'),
@@ -117,7 +119,8 @@ export function TutorialWorkspace() {
   const [tab, setTab] = useState<Tab>('summary');
   const [overview, setOverview] = useState(false);
   const [sort, setSort] = useState<SortStatus>({ inRack: 0, total: 13, sorted: false });
-  const [deck, setDeck] = useState<DeckStatus>({ progress: 0, done: false, built: 0 });
+  const [deck, setDeck] = useState<DeckStatus>({ progress: 0, done: false });
+  const [wall, setWall] = useState<WallStatus>({ mine: 0, rivals: 0, done: false });
   const railRef = useRef<HTMLElement>(null);
   const t = (value: LocalizedText) => localize(value, language);
 
@@ -210,7 +213,8 @@ export function TutorialWorkspace() {
             <div aria-hidden="true"><i style={{ width: `${((index + 1) / tutorialStops.length) * 100}%` }} /></div>
           </div>
 
-          {spec.kind === 'deck' && <DeckBoard key={spec.mode} mode={spec.mode} language={language} onStatus={setDeck} />}
+          {spec.kind === 'deck' && spec.mode === 'shuffle' && <DeckBoard language={language} onStatus={setDeck} />}
+          {spec.kind === 'deck' && spec.mode === 'walls' && <WallBoard language={language} onStatus={setWall} />}
           {spec.kind === 'sort' && <SortBoard language={language} onStatus={setSort} />}
           {spec.kind === 'table' && (
             <TableStage focus={spec.focus} callouts={callouts} stepKey={`${stop.id}-${language}`} overview={overview} alt={t(UI.tableAlt)} />
@@ -253,10 +257,11 @@ export function TutorialWorkspace() {
             {tab === 'practice' && (
               <div className="explorer-practice">
                 <p>{t(practiceCopy)}</p>
-                {spec.kind === 'deck' && (
-                  <p className={`sort-readout${deck.done ? ' is-done' : ''}`}>
-                    <b>{spec.mode === 'shuffle' ? `${Math.round(deck.progress * 100)}%` : `${deck.built}/4`}</b> {t(spec.mode === 'shuffle' ? UI.shuffled : UI.walls)}
-                  </p>
+                {spec.kind === 'deck' && spec.mode === 'shuffle' && (
+                  <p className={`sort-readout${deck.done ? ' is-done' : ''}`}><b>{Math.round(deck.progress * 100)}%</b> {t(UI.shuffled)}</p>
+                )}
+                {spec.kind === 'deck' && spec.mode === 'walls' && (
+                  <p className={`sort-readout${wall.done ? ' is-done' : ''}`}><b>{wall.mine}/34</b> {t(UI.yourWall)} · <b>{wall.rivals}/102</b> {t(UI.rivalWalls)}</p>
                 )}
                 {spec.kind === 'sort' && (
                   <p className={`sort-readout${sort.sorted ? ' is-done' : ''}`}>
