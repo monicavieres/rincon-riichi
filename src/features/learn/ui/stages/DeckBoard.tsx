@@ -53,53 +53,51 @@ export function wallSlot(side: number, stack: number, level: number): Pose {
 }
 
 const RIVAL_START = [{ x: 96, y: 50 }, { x: 50, y: 4 }, { x: 4, y: 50 }];
-const RIVAL_TURN = [0, -90, 180];
+const RIVAL_TURN = [-90, 180, 90];
 /** The rivals stop shuffling after this long. */
 const RIVAL_MS = 3000;
 
 type Digit = { from: [number, number]; to: [number, number]; w: number };
 
-/** A soft anime-style hand lying flat, fingers pointing left and the forearm trailing to the right. */
+/** A slender, soft hand seen from the front, fingers pointing up and the forearm trailing below. */
 function Palm() {
   const skin = '#fde8dd';
   const shadow = '#f3c9bc';
   const line = '#dc9d8d';
   const digits: Digit[] = [
-    { from: [118, 92], to: [64, 108], w: 15 },
-    { from: [98, 79], to: [42, 87], w: 11.5 },
-    { from: [98, 67], to: [24, 64], w: 12.5 },
-    { from: [98, 55], to: [17, 43], w: 13 },
-    { from: [98, 43], to: [30, 22], w: 12.5 },
+    { from: [38, 106], to: [21, 78], w: 9.5 },
+    { from: [65.5, 92], to: [71.5, 50], w: 7.4 },
+    { from: [41, 86], to: [35.5, 32], w: 8.2 },
+    { from: [58, 86], to: [61.5, 30], w: 8.4 },
+    { from: [49.5, 84], to: [49, 18], w: 8.8 },
   ];
-  const palm = 'M86 42C100 31 140 31 158 41C166 54 166 76 154 90C140 99 104 99 90 91C80 80 78 56 86 42Z';
-  const forearm = 'M148 40C175 37 205 39 224 45C232 49 232 77 224 81C205 87 175 89 148 89Z';
+  const palm = 'M37 89C41 81 60 81 65 89C69 101 67 116 61 127C57 133 43 133 39 127C33 116 33 101 37 89Z';
+  const forearm = 'M40 124C39 142 37 168 39 190H61C63 168 61 142 60 124Z';
   return (
-    <svg viewBox="0 0 236 124" aria-hidden="true">
+    <svg viewBox="0 0 100 190" aria-hidden="true">
       <defs>
-        <linearGradient id="hand-palm" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#fff1e9" />
-          <stop offset="1" stopColor="#f6d2c5" />
+        <linearGradient id="hand-palm" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#fff3ec" />
+          <stop offset="1" stopColor="#f6d6ca" />
         </linearGradient>
       </defs>
-      {/* outline first, then the soft fill, so the line stays thin and even */}
       <g stroke={line} strokeLinecap="round" strokeLinejoin="round">
-        {digits.map((d) => <line key={`o-${d.to[0]}`} x1={d.from[0]} y1={d.from[1]} x2={d.to[0]} y2={d.to[1]} strokeWidth={d.w + 3} />)}
-        <path d={forearm} strokeWidth="3" fill={line} />
-        <path d={palm} strokeWidth="3" fill={line} />
+        {digits.map((d) => <line key={`o-${d.to[0]}`} x1={d.from[0]} y1={d.from[1]} x2={d.to[0]} y2={d.to[1]} strokeWidth={d.w + 2.4} />)}
+        <path d={forearm} strokeWidth="2.4" fill={line} />
+        <path d={palm} strokeWidth="2.4" fill={line} />
       </g>
       <g strokeLinecap="round" fill="none">
         {digits.map((d) => <line key={`f-${d.to[0]}`} x1={d.from[0]} y1={d.from[1]} x2={d.to[0]} y2={d.to[1]} stroke={skin} strokeWidth={d.w} />)}
-        {digits.map((d) => <line key={`h-${d.to[0]}`} x1={d.from[0] - 4} y1={d.from[1] - d.w * 0.22} x2={d.to[0] + 4} y2={d.to[1] - d.w * 0.22} stroke="#fff" strokeOpacity=".55" strokeWidth="2.6" />)}
+        {digits.map((d) => <line key={`h-${d.to[0]}`} x1={d.from[0] - d.w * 0.2} y1={d.from[1] - 4} x2={d.to[0] - d.w * 0.2} y2={d.to[1] + 4} stroke="#fff" strokeOpacity=".55" strokeWidth="1.8" />)}
       </g>
       <path d={forearm} fill="url(#hand-palm)" />
       <path d={palm} fill="url(#hand-palm)" />
-      <path d="M96 92C112 98 138 98 152 90C140 100 104 101 96 92Z" fill={shadow} opacity=".8" />
-      <g fill="none" stroke={shadow} strokeWidth="1.6" strokeLinecap="round">
-        <path d="M100 49L74 45M100 61L72 58M100 73L74 72" />
-        <path d="M130 52C138 60 138 74 128 84" opacity=".6" />
+      <g fill="none" stroke={shadow} strokeWidth="1.3" strokeLinecap="round">
+        <path d="M45 84L45 94M54 84L54 94M62 88L62 96" opacity=".8" />
+        <path d="M40 112C47 118 56 118 62 111" opacity=".6" />
       </g>
-      <g fill="#fff" opacity=".7">
-        {digits.slice(1).map((d) => <ellipse key={`n-${d.to[0]}`} cx={d.to[0] + 6} cy={d.to[1]} rx="4.6" ry="3" transform={`rotate(${(Math.atan2(d.to[1] - d.from[1], d.to[0] - d.from[0]) * 180) / Math.PI} ${d.to[0] + 6} ${d.to[1]})`} />)}
+      <g fill="#fff" opacity=".75">
+        {digits.slice(1).map((d) => <ellipse key={`n-${d.to[0]}`} cx={d.to[0] + (d.to[0] - d.from[0]) * 0.06} cy={d.to[1] + 6} rx="2.6" ry="4.2" transform={`rotate(${(Math.atan2(d.to[0] - d.from[0], d.from[1] - d.to[1]) * 180) / Math.PI} ${d.to[0]} ${d.to[1] + 6})`} />)}
       </g>
     </svg>
   );
@@ -178,7 +176,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
       if (at) {
         el.style.left = `${at.x}px`;
         el.style.top = `${at.y}px`;
-        el.style.transform = `translate(-22%, -50%) rotate(${RIVAL_TURN[hand]}deg) scale(${at.f})`;
+        el.style.transform = `translate(-50%, -22%) rotate(${RIVAL_TURN[hand]}deg) scale(${at.f})`;
       }
     });
     if (done) clock.active = false;
@@ -212,7 +210,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
     if (hand2 && pointer.current.inside) {
       lag.current.x += (pointer.current.x - 54 - lag.current.x) * 0.16;
       lag.current.y += (pointer.current.y + 18 - lag.current.y) * 0.16;
-      hand2.style.transform = `translate(${lag.current.x}px, ${lag.current.y}px) translate(-22%, -50%) scaleX(-1) rotate(${pointer.current.down ? 10 : 4}deg)`;
+      hand2.style.transform = `translate(${lag.current.x}px, ${lag.current.y}px) translate(-50%, -25%) scaleX(-1) rotate(${pointer.current.down ? 8 : 3}deg)`;
     }
     if (energy > 0.05 || pointer.current.inside || rivalClock.current.active) frame.current = requestAnimationFrame(step);
   }, [moveRivals]);
@@ -236,7 +234,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
     pointer.current.x = clientX - rect.left;
     pointer.current.y = clientY - rect.top;
     const hand = handRef.current;
-    if (hand) hand.style.transform = `translate(${pointer.current.x}px, ${pointer.current.y}px) translate(-22%, -50%) rotate(${pointer.current.down ? -14 : -6}deg) scale(${pointer.current.down ? 0.95 : 1})`;
+    if (hand) hand.style.transform = `translate(${pointer.current.x}px, ${pointer.current.y}px) translate(-50%, -25%) rotate(${pointer.current.down ? -8 : -3}deg) scale(${pointer.current.down ? 0.95 : 1})`;
   };
 
   const showHands = (visible: boolean) => {
