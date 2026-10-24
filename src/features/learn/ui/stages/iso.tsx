@@ -1,7 +1,7 @@
 import type { CSSProperties, PointerEvent as ReactPointerEvent, ReactNode, RefObject } from 'react';
 
 /** Lift of a tile above the felt, in tile thicknesses; a hair per stacking order keeps overlapping tiles from fighting. */
-export const TILE_THICK = 2.4;
+export const TILE_THICK = 3.2;
 
 export type Lifted = { h?: number; z: number };
 
@@ -86,6 +86,7 @@ export function IsoWorld({ planeRef, handlers, children }: {
   return (
     <div className="deck-world">
       <div className="deck-plane" ref={planeRef} {...handlers}>
+        <span className="iso-ground" />
         {[[3, 3], [90, 3], [3, 90], [90, 90]].map(([x, y]) => (
           <Box key={`${x}-${y}`} className="iso-leg" style={{ left: `${x}%`, top: `${y}%` }} />
         ))}

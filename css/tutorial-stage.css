@@ -178,40 +178,81 @@
 .bx-e { left: 100%; top: 0; width: var(--t); height: 100%; transform-origin: 0 0; transform: rotateY(-90deg); filter: brightness(0.9); }
 .bx-w { left: 0; top: 0; width: var(--t); height: 100%; transform-origin: 0 0; transform: rotateY(-90deg); filter: brightness(1); }
 
+.iso-ground {
+    position: absolute;
+    left: -4%;
+    top: -1%;
+    display: block;
+    width: 108%;
+    height: 106%;
+    border-radius: 5cqw;
+    background: rgba(70, 36, 12, 0.2);
+    filter: blur(1cqw);
+    transform: translateZ(calc(var(--u) * -16));
+}
+
 .iso-slab {
     --t: calc(var(--u) * 6);
-    --bx-side: #b8672a;
     left: -3%;
     top: -3%;
     width: 106%;
     height: 106%;
 }
 
+.iso-slab > .bx-f {
+    box-sizing: border-box;
+    border: 0.26cqw solid var(--tile-ink);
+    background: linear-gradient(var(--rail) 0 66%, color-mix(in oklab, var(--rail) 62%, black) 66%);
+}
+
 .iso-slab > .bx-top {
-    border-radius: 3cqw;
-    background: linear-gradient(145deg, #e58a3c, #c9702d);
-    box-shadow: inset 0 0 0 0.4cqw rgba(255, 255, 255, 0.28), inset 0 0 0 0.9cqw #9a4f1c;
+    box-sizing: border-box;
+    border: 0.32cqw solid var(--tile-ink);
+    border-radius: 2.4cqw;
+    background: var(--rail);
+    box-shadow:
+        inset 0 0 0 0.55cqw var(--rail-rim),
+        inset 0 0 0 0.85cqw var(--tile-ink),
+        inset 0 0 0 1.6cqw color-mix(in oklab, var(--rail) 78%, white);
 }
 
 .iso-felt {
     position: absolute;
-    inset: 4.6%;
+    inset: 4.8%;
     display: block;
-    border-radius: 1.6cqw;
-    background: radial-gradient(ellipse at 50% 42%, color-mix(in oklab, var(--table-felt) 80%, white) 0, var(--table-felt) 72%);
-    box-shadow: inset 0 0 0 0.3cqw color-mix(in oklab, var(--felt-strong) 55%, transparent), inset 0 0.5cqw 1.6cqw rgba(0, 0, 0, 0.3);
+    border: 0.28cqw solid var(--tile-ink);
+    border-radius: 1.2cqw;
+    background: radial-gradient(ellipse at 50% 40%, color-mix(in oklab, var(--table-felt) 88%, white) 0, var(--table-felt) 78%);
+}
+
+.iso-felt::after {
+    content: '';
+    position: absolute;
+    inset: 2.2%;
+    border: 0.18cqw dashed rgba(255, 255, 255, 0.28);
+    border-radius: 0.8cqw;
 }
 
 .iso-leg {
     --t: calc(var(--u) * 16);
-    --bx-side: #5b3318;
+    --bx-side: #3b1c0d;
     width: 8%;
     height: 8%;
     margin: 0;
     transform: translate3d(-50%, -50%, calc(var(--u) * -16));
 }
 
-.iso-leg > .bx-top { background: #6e3f1d; }
+.iso-leg > .bx-f {
+    box-sizing: border-box;
+    border: 0.22cqw solid var(--tile-ink);
+    background: color-mix(in oklab, var(--rail) 30%, #1a0b05);
+}
+
+.iso-leg > .bx-top {
+    box-sizing: border-box;
+    border: 0.22cqw solid var(--tile-ink);
+    background: color-mix(in oklab, var(--rail) 40%, #2a130a);
+}
 
 /* tiles: back colour, cream band and emblem follow the chosen site style, like the table on the home page */
 :root {
@@ -219,34 +260,36 @@
     --tile-cream: #fbf2df;
     --tile-emblem: url('../assets/rincon-mark.svg');
     --tile-ink: #3b2417;
+    --rail: #b2713c;
+    --rail-rim: #f2b42c;
     --compass-top: url('../assets/illustrations/consola-top-light.svg');
 }
-:root[data-theme="dark"] { --tile-ink: #1a0b22; --tile-back: #41134f; --tile-cream: #fff4fb; --tile-emblem: url('../assets/emblems/neon.svg'); --compass-top: url('../assets/illustrations/consola-top-dark.svg'); }
-:root[data-theme="cute"] { --tile-ink: #7a3a58; --tile-back: #ffb6d3; --tile-cream: #fff5fa; --tile-emblem: url('../assets/emblems/cute.svg'); --compass-top: url('../assets/illustrations/consola-top-cute.svg'); }
-:root[data-theme="samurai"] { --tile-ink: #1b2238; --tile-back: #2f4670; --tile-cream: #f7f0df; --tile-emblem: url('../assets/emblems/samurai.svg'); --compass-top: url('../assets/illustrations/consola-top-samurai.svg'); }
-:root[data-theme="cyberpunk"] { --tile-ink: #050a10; --tile-back: #12233a; --tile-cream: #f7ffff; --tile-emblem: url('../assets/emblems/cyberpunk.svg'); --compass-top: url('../assets/illustrations/consola-top-cyberpunk.svg'); }
-:root[data-theme="vaquero"] { --tile-ink: #3a2210; --tile-back: #bb7c40; --tile-cream: #fff6e5; --tile-emblem: url('../assets/emblems/vaquero.svg'); --compass-top: url('../assets/illustrations/consola-top-vaquero.svg'); }
-:root[data-theme="frutiger"] { --tile-ink: #1d5f86; --tile-back: #a6e8ff; --tile-cream: #ffffff; --tile-emblem: url('../assets/emblems/frutiger.svg'); --compass-top: url('../assets/illustrations/consola-top-frutiger.svg'); }
-:root[data-theme="fox"] { --tile-ink: #3a1d0c; --tile-back: #f08a30; --tile-cream: #fff6e8; --tile-emblem: url('../assets/emblems/fox.svg'); --compass-top: url('../assets/illustrations/consola-top-fox.svg'); }
+:root[data-theme="dark"] { --rail: #2a1538; --rail-rim: #ff2d95; --tile-ink: #1a0b22; --tile-back: #41134f; --tile-cream: #fff4fb; --tile-emblem: url('../assets/emblems/neon.svg'); --compass-top: url('../assets/illustrations/consola-top-dark.svg'); }
+:root[data-theme="cute"] { --rail: #f6bdd2; --rail-rim: #ffd1e6; --tile-ink: #7a3a58; --tile-back: #ffb6d3; --tile-cream: #fff5fa; --tile-emblem: url('../assets/emblems/cute.svg'); --compass-top: url('../assets/illustrations/consola-top-cute.svg'); }
+:root[data-theme="samurai"] { --rail: #3d2b22; --rail-rim: #c9a227; --tile-ink: #1b2238; --tile-back: #2f4670; --tile-cream: #f7f0df; --tile-emblem: url('../assets/emblems/samurai.svg'); --compass-top: url('../assets/illustrations/consola-top-samurai.svg'); }
+:root[data-theme="cyberpunk"] { --rail: #18212f; --rail-rim: #00f0ff; --tile-ink: #050a10; --tile-back: #12233a; --tile-cream: #f7ffff; --tile-emblem: url('../assets/emblems/cyberpunk.svg'); --compass-top: url('../assets/illustrations/consola-top-cyberpunk.svg'); }
+:root[data-theme="vaquero"] { --rail: #6a3f1f; --rail-rim: #e9c46a; --tile-ink: #3a2210; --tile-back: #bb7c40; --tile-cream: #fff6e5; --tile-emblem: url('../assets/emblems/vaquero.svg'); --compass-top: url('../assets/illustrations/consola-top-vaquero.svg'); }
+:root[data-theme="frutiger"] { --rail: #d6f2ff; --rail-rim: #ffffff; --tile-ink: #1d5f86; --tile-back: #a6e8ff; --tile-cream: #ffffff; --tile-emblem: url('../assets/emblems/frutiger.svg'); --compass-top: url('../assets/illustrations/consola-top-frutiger.svg'); }
+:root[data-theme="fox"] { --rail: #e8742a; --rail-rim: #ffd29a; --tile-ink: #3a1d0c; --tile-back: #f08a30; --tile-cream: #fff6e8; --tile-emblem: url('../assets/emblems/fox.svg'); --compass-top: url('../assets/illustrations/consola-top-fox.svg'); }
 
 .deck-tile {
-    --t: calc(var(--u) * 2.4);
+    --t: calc(var(--u) * 3.2);
     aspect-ratio: 3 / 4;
     will-change: transform, left, top;
 }
 
 .deck-tile > .bx-f {
     box-sizing: border-box;
-    border: 0.16cqw solid var(--tile-ink);
-    background: linear-gradient(var(--tile-back) 0 32%, var(--tile-cream) 32% 68%, var(--tile-back) 68%);
+    border: 0.2cqw solid var(--tile-ink);
+    background: linear-gradient(var(--tile-back) 0 30%, var(--tile-cream) 30% 70%, var(--tile-back) 70%);
 }
 
 .tile-top {
     box-sizing: border-box;
-    border: 0.18cqw solid var(--tile-ink);
-    border-radius: 0.35cqw;
-    background: var(--tile-emblem) center / 62% no-repeat, var(--tile-back);
-    box-shadow: inset 0 0 0 0.14cqw rgba(255, 255, 255, 0.28);
+    border: 0.24cqw solid var(--tile-ink);
+    border-radius: 0.4cqw;
+    background: var(--tile-emblem) center / 66% no-repeat, var(--tile-back);
+    box-shadow: inset 0 0 0 0.16cqw rgba(255, 255, 255, 0.3);
 }
 
 .deck-board.is-walls .deck-tile,
