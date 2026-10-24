@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
-import { BOARD_H, TILE_BACK, TILE_W, clamp, wallSlot } from './DeckBoard';
-import { Box, IsoWorld, TileBox, billboard, tileTransform, unitsOf } from './iso';
+import { clamp, wallSlot } from './DeckBoard';
+import { FELT_Z, IsoCanvas, TILE_T, mix, picture, shade, type IsoHandle, type Painter } from './iso3d';
 
 const ROW = 17;
 const CENTER = { x: 50, y: 50 };
@@ -13,6 +13,7 @@ const PLATE_TRAY = { x: 89, y: 10 };
 const PLATE_W = 8;
 const PLATE_H = 5.8;
 const SNAP = 9;
+const SURFACE = FELT_Z + TILE_T;
 
 export type TableTopStatus = { compass: boolean; plate: boolean; rolled: number | null; dealerRoll: number | null; done: boolean };
 
@@ -38,10 +39,10 @@ const SIDE_LABEL = {
 
 /** Winds around the table once the compass is down: you are East and the dealer, then counter-clockwise. */
 const WIND_TAGS = [
-  { wind: 'E', glyph: '東', index: 0, x: 50, y: 93 },
-  { wind: 'S', glyph: '南', index: 1, x: 93, y: 50 },
-  { wind: 'W', glyph: '西', index: 2, x: 50, y: 7 },
-  { wind: 'N', glyph: '北', index: 3, x: 7, y: 50 },
+  { glyph: '東', index: 0, x: 50, y: 96 },
+  { glyph: '南', index: 1, x: 96, y: 50 },
+  { glyph: '西', index: 2, x: 50, y: 4 },
+  { glyph: '北', index: 3, x: 4, y: 50 },
 ];
 const WIND_NAME = {
   es: ['Este · tú, el dealer', 'Sur · a tu derecha', 'Oeste · enfrente', 'Norte · a tu izquierda'],
@@ -49,57 +50,20 @@ const WIND_NAME = {
   pt: ['Leste · você, o dealer', 'Sul · à sua direita', 'Oeste · em frente', 'Norte · à sua esquerda'],
 };
 
-const PIPS: Record<number, number[]> = {
-  1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8],
-};
-
-/** Cube orientation that brings each value to the top face. Faces: top 1, bottom 6, south 2, north 5, east 3, west 4. */
-const FACE_UP: Record<number, string> = {
-  0: '', 1: '', 2: 'rotateX(90deg)', 3: 'rotateY(-90deg)', 4: 'rotateY(90deg)', 5: 'rotateX(-90deg)', 6: 'rotateX(180deg)',
-};
-const FACES: Array<[string, number, string]> = [
-  ['top', 1, 'translateZ(calc(var(--s) / 2))'],
-  ['bottom', 6, 'rotateX(180deg) translateZ(calc(var(--s) / 2))'],
-  ['south', 2, 'rotateX(-90deg) translateZ(calc(var(--s) / 2))'],
-  ['north', 5, 'rotateX(90deg) translateZ(calc(var(--s) / 2))'],
-  ['east', 3, 'rotateY(90deg) translateZ(calc(var(--s) / 2))'],
-  ['west', 4, 'rotateY(-90deg) translateZ(calc(var(--s) / 2))'],
-];
-
-/** A die lying on the felt as a real cube; `rolling` tumbles it, otherwise it settles on `value`. */
-function Die3D({ value, rolling, yaw, size = 7 }: { value: number; rolling: boolean; yaw: number; size?: number }) {
-  const style = { ['--s' as string]: `calc(var(--u) * ${size})`, transform: `translateZ(calc(var(--s) / 2)) rotateZ(${yaw}deg)` } as CSSProperties;
-  return (
-    <span className={`die3d${rolling ? ' is-rolling' : ''}`} style={style} aria-hidden="true">
-      <span className="die3d-in" style={rolling ? undefined : { transform: FACE_UP[value] }}>
-        {FACES.map(([name, face, transform]) => (
-          <span key={name} className={`die3d-face is-${name}${face === 1 ? ' is-one' : ''}`} style={{ transform }}>
-            {Array.from({ length: 9 }, (_, cell) => <i key={cell} className={value > 0 && PIPS[face].includes(cell) ? 'is-pip' : ''} />)}
-          </span>
-        ))}
-      </span>
-    </span>
-  );
-}
-
 type Drag = { item: 'compass' | 'plate'; dx: number; dy: number };
-
-const at = (point: { x: number; y: number }, lift = 0): CSSProperties => ({
-  left: `${point.x}%`,
-  top: `${(point.y / BOARD_H) * 100}%`,
-  transform: `translate3d(-50%, -50%, calc(var(--u) * ${lift}))`,
-});
+type Spot = { x: number; y: number };
 
 /**
- * The four finished walls on an isometric table. "dealer": each player rolls a die; "compass": the player drags the
- * compass to the centre and the round-wind plate to the edge; "dice": two dice open the wall.
+ * The four finished walls on the table. "dealer": each player rolls a die; "compass": the player drags the compass to
+ * the centre and the round-wind plate to the edge; "dice": two dice open the wall.
  */
 export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | 'compass' | 'dice'; language: TutorialLanguage; onStatus?: (status: TableTopStatus) => void }) {
   const t = (es: string, en: string, pt: string) => ({ es, en, pt }[language]);
-  const planeRef = useRef<HTMLDivElement>(null);
+  const scene = useRef<IsoHandle>(null);
   const drag = useRef<Drag | null>(null);
-  const [compassAt, setCompassAt] = useState(mode === 'compass' ? COMPASS_TRAY : CENTER);
-  const [plateAt, setPlateAt] = useState(mode === 'compass' ? PLATE_TRAY : PLATE_TARGET);
+  const [compassAt, setCompassAt] = useState<Spot>(mode === 'compass' ? COMPASS_TRAY : CENTER);
+  const [plateAt, setPlateAt] = useState<Spot>(mode === 'compass' ? PLATE_TRAY : PLATE_TARGET);
+  const shown = useRef({ compass: { ...(mode === 'compass' ? COMPASS_TRAY : CENTER) }, plate: { ...(mode === 'compass' ? PLATE_TRAY : PLATE_TARGET) } });
   const [compassOn, setCompassOn] = useState(mode !== 'compass');
   const [plateOn, setPlateOn] = useState(mode !== 'compass');
   const [grabbing, setGrabbing] = useState<Drag['item'] | null>(null);
@@ -111,11 +75,13 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
   const timers = useRef<number[]>([]);
   const [seatFaces, setSeatFaces] = useState<number[]>([0, 0, 0, 0]);
   const [seatRolling, setSeatRolling] = useState<boolean[]>([false, false, false, false]);
+  const spinStart = useRef(0);
 
   const clearTimers = () => { timers.current.forEach((id) => { window.clearInterval(id); window.clearTimeout(id); }); timers.current = []; };
 
   const rollSeat = (seat: number, delay: number) => {
     const start = window.setTimeout(() => {
+      spinStart.current = performance.now();
       setSeatRolling((now) => now.map((value, index) => (index === seat ? true : value)));
       const stop = window.setTimeout(() => {
         setSeatFaces((now) => now.map((value, index) => (index === seat ? SEAT_ROLLS[seat] : value)));
@@ -145,12 +111,19 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
   useEffect(() => { onStatus?.({ compass: compassOn, plate: plateOn, rolled, dealerRoll, done }); }, [compassOn, plateOn, rolled, dealerRoll, done, onStatus]);
   useEffect(() => clearTimers, []);
 
-  const near = (a: { x: number; y: number }, b: { x: number; y: number }) => Math.hypot(a.x - b.x, a.y - b.y);
+  const near = (a: Spot, b: Spot) => Math.hypot(a.x - b.x, a.y - b.y);
+  const at = (event: ReactPointerEvent<HTMLCanvasElement>) => scene.current!.unproject(event, SURFACE);
 
-  const onDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (mode !== 'compass') return;
-    const point = unitsOf(event);
-    if (!point) return;
+  const onDown = (event: ReactPointerEvent<HTMLCanvasElement>) => {
+    const point = at(event);
+    if (mode === 'dealer') {
+      if (rivalsDone && !seatRolling[0] && dealerRoll === null && near(point, SEAT_AT[0]) < 7) rollSeat(0, 0);
+      return;
+    }
+    if (mode === 'dice') {
+      if (near(point, { x: CENTER.x, y: CENTER.y + 24 }) < 10) roll();
+      return;
+    }
     let item: Drag['item'] | null = null;
     if (!compassOn && near(point, compassAt) < COMPASS / 2) item = 'compass';
     else if (!plateOn && near(point, plateAt) < PLATE_W * 0.7) item = 'plate';
@@ -161,11 +134,11 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     setGrabbing(item);
   };
 
-  const onMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+  const onMove = (event: ReactPointerEvent<HTMLCanvasElement>) => {
     const current = drag.current;
-    const point = unitsOf(event);
-    if (!current || !point) return;
-    const next = { x: clamp(point.x + current.dx, 4, 96), y: clamp(point.y + current.dy, 4, BOARD_H - 4) };
+    if (!current) return;
+    const point = at(event);
+    const next = { x: clamp(point.x + current.dx, 4, 96), y: clamp(point.y + current.dy, 4, 96) };
     if (current.item === 'compass') setCompassAt(next); else setPlateAt(next);
     setHot(near(next, current.item === 'compass' ? CENTER : PLATE_TARGET) < SNAP ? current.item : null);
   };
@@ -189,6 +162,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
   const roll = () => {
     if (rolling) return;
     clearTimers();
+    spinStart.current = performance.now();
     setRolling(true);
     setRolled(null);
     setCounted(0);
@@ -220,104 +194,125 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     })()
     : null;
 
-  const tiles = Array.from({ length: 136 }, (_, index) => {
-    const side = Math.floor(index / 34);
-    const k = index % 34;
-    const stack = k % ROW;
-    const pose = wallSlot(side, stack, k < ROW ? 0 : 1);
-    const counting = openSide === side && stack >= ROW - counted;
-    return { index, pose, counting, open: openSide === side };
-  });
-
   const header = mode === 'dealer' ? t('Cada jugador lanza un dado', 'Each player rolls one die', 'Cada jogador lança um dado') : mode === 'compass' ? t('Los cuatro muros ya están armados', 'The four walls are built', 'Os quatro muros estão montados') : t('Los dados deciden dónde se abre', 'The dice decide where it opens', 'Os dados decidem onde abre');
+
+  const draw = (g: Painter) => {
+    const { palette: p, ctx } = g;
+    // the four finished walls
+    for (let index = 0; index < 136; index += 1) {
+      const side = Math.floor(index / 34);
+      const k = index % 34;
+      const stack = k % ROW;
+      const pose = wallSlot(side, stack, k < ROW ? 0 : 1);
+      g.tile(pose.x, pose.y, pose.rot, FELT_Z + (pose.h ?? 0) * TILE_T, { counting: openSide === side && stack >= ROW - counted });
+    }
+
+    // goals while the player is placing pieces
+    if (mode === 'compass') {
+      if (!compassOn) g.ghost(CENTER.x, CENTER.y, 0, FELT_Z, { next: true, hot: hot === 'compass', w: COMPASS + 2, l: COMPASS + 2 });
+      if (!plateOn) g.ghost(PLATE_TARGET.x, PLATE_TARGET.y, 0, FELT_Z, { next: true, hot: hot === 'plate', w: PLATE_W + 2, l: PLATE_H + 2 });
+    }
+
+    // compass and plate ease toward where they belong
+    let moving = false;
+    (['compass', 'plate'] as const).forEach((item) => {
+      const goal = item === 'compass' ? compassAt : plateAt;
+      const cur = shown.current[item];
+      const ease = grabbing === item ? 1 : 0.22;
+      cur.x += (goal.x - cur.x) * ease;
+      cur.y += (goal.y - cur.y) * ease;
+      if (Math.abs(goal.x - cur.x) + Math.abs(goal.y - cur.y) > 0.05) moving = true;
+    });
+    if (moving) g.needsFrame = true;
+
+    if (mode !== 'dealer') {
+      const c = shown.current.compass;
+      const lift = grabbing === 'compass' ? 3 : 0;
+      g.add(c.y * 100 + 50, () => {
+        const box = g.box(c.x, c.y, FELT_Z + lift, COMPASS, COMPASS, 3, 0);
+        box.sides.forEach((face) => g.poly(face.q, shade(mix(p.back, '#000000', 0.55), 0.9 + 0.3 * (face.n[0] === 0 ? 0 : 0.2)), p.ink, g.lw * 1.3));
+        g.poly(box.top, p.back, p.ink, g.lw * 1.5);
+        const art = picture(p.compass);
+        if (art) g.onQuad(box.top, () => ctx.drawImage(art, -0.08, -0.08, 1.16, 1.16));
+      });
+      const pl = shown.current.plate;
+      const plLift = grabbing === 'plate' ? 3 : 0;
+      g.add(pl.y * 100 + 60, () => {
+        const box = g.box(pl.x, pl.y, FELT_Z + plLift, PLATE_W, PLATE_H, 2, 0);
+        box.sides.forEach((face) => g.poly(face.q, shade('#e8742a', 0.78), p.ink, g.lw * 1.2));
+        g.poly(box.top, '#f08a30', p.ink, g.lw * 1.4);
+        g.onQuad(box.top, () => {
+          ctx.save();
+          ctx.scale(1 / PLATE_W, 1 / PLATE_H);
+          ctx.fillStyle = '#fff6e5';
+          ctx.font = `700 ${PLATE_H * 0.78}px 'Noto Serif JP', 'Hiragino Mincho ProN', serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('東', PLATE_W / 2, PLATE_H / 2 + 0.2);
+          ctx.restore();
+        });
+      });
+    }
+
+    // dice
+    const spin = (now: number) => (now - spinStart.current) / 60;
+    if (mode === 'dealer') {
+      SEAT_AT.forEach((seat, index) => {
+        g.die(seat.x, seat.y, FELT_Z, 6.5, { up: seatFaces[index], yaw: (index - 1.5) * 24, spin: seatRolling[index] ? spin(g.now) : undefined });
+      });
+    }
+    if (mode === 'dice') {
+      const spinning = rolling ? spin(g.now) : undefined;
+      g.die(CENTER.x - 6, CENTER.y + 24, FELT_Z, 6.5, { up: faces[0], yaw: -14, spin: spinning });
+      g.die(CENTER.x + 6, CENTER.y + 24, FELT_Z, 6.5, { up: faces[1], yaw: 18, spin: spinning === undefined ? undefined : spinning + 7 });
+      if (cut) {
+        g.add(cut.y * 100 + 90, () => {
+          const bar = g.box(cut.x, cut.y, FELT_Z + TILE_T * 2, 0.9, 7.5, 1.4, cut.rot);
+          bar.sides.forEach((face) => g.poly(face.q, shade(p.gold, 0.8), p.ink, g.lw));
+          g.poly(bar.top, p.gold, p.ink, g.lw * 1.3);
+        });
+      }
+    }
+    g.flush();
+
+    // labels, always facing the viewer
+    if (mode !== 'dealer' && compassOn) {
+      WIND_TAGS.forEach((tag) => {
+        const pos = g.project(tag.x, tag.y, FELT_Z + 3);
+        g.pill(pos.x, pos.y, `${tag.glyph}  ${WIND_NAME[language][tag.index]}`, { bg: '#fff1c4', fg: p.ink, border: p.ink, size: 11 });
+      });
+    }
+    if (mode === 'dealer') {
+      SEAT_AT.forEach((seat, index) => {
+        const pos = g.project(seat.x, seat.y + 6, FELT_Z + 2);
+        const value = seatFaces[index];
+        g.pill(pos.x, pos.y + 8, `${SEAT_NAME[language][index]}${value > 0 && !seatRolling[index] ? ` · ${value}` : ''}${dealerRoll !== null && index === 0 ? ` · ${t('¡Dealer!', 'Dealer!', 'Dealer!')}` : ''}`, {
+          bg: dealerRoll !== null && index === 0 ? p.gold : 'rgba(10,20,20,0.62)', fg: dealerRoll !== null && index === 0 ? p.ink : '#fff', size: 10,
+        });
+      });
+    }
+    if (mode === 'compass') {
+      if (!compassOn) {
+        const pos = g.project(COMPASS_TRAY.x + 6, COMPASS_TRAY.y - 15, FELT_Z + 6);
+        g.pill(pos.x, pos.y, `${t('El compass', 'The compass', 'O compass')} → ${t('al centro', 'to the centre', 'ao centro')}`);
+      }
+      if (!plateOn) {
+        const pos = g.project(PLATE_TRAY.x - 4, PLATE_TRAY.y + 9, FELT_Z + 4);
+        g.pill(pos.x, pos.y, t('Viento de ronda', 'Round wind', 'Vento da rodada'));
+      } else if (compassOn) {
+        // nothing more to place
+      }
+      if (compassOn && !plateOn) {
+        const pos = g.project(PLATE_TARGET.x - 8, PLATE_TARGET.y - 9, FELT_Z + 4);
+        g.pill(pos.x, pos.y, `${t('A la derecha del dealer', 'Right of the dealer', 'À direita do dealer')} ↓`);
+      }
+    }
+  };
 
   return (
     <div className="sort-stage deck-stage">
       <div className={`sort-board deck-board is-table is-${mode}${grabbing ? ' is-grabbing' : ''}${done ? ' is-sorted' : ''}`}>
-        <IsoWorld planeRef={planeRef} handlers={{ onPointerDown: onDown, onPointerMove: onMove, onPointerUp: onUp, onPointerCancel: onUp }}>
-          {tiles.map(({ index, pose, counting, open }) => (
-            <TileBox
-              key={index}
-              className={`is-static${counting ? ' is-counting' : ''}${open ? ' is-open-side' : ''}`}
-              style={{ width: `${TILE_W}%`, left: `${pose.x}%`, top: `${(pose.y / BOARD_H) * 100}%`, transform: tileTransform(pose) }}
-            />
-          ))}
-
-          {mode === 'compass' && (
-            <>
-              {!compassOn && <i className={`table-target is-compass${hot === 'compass' ? ' is-hot' : ''}`} style={{ ...at(CENTER, 0.05), width: `${COMPASS + 2}%` }} />}
-              {!plateOn && <i className={`table-target is-plate${hot === 'plate' ? ' is-hot' : ''}`} style={{ ...at(PLATE_TARGET, 0.05), width: `${PLATE_W + 2}%`, aspectRatio: `${PLATE_W + 2} / ${PLATE_H + 2}` }} />}
-              {!compassOn && <span className="deck-hint" style={{ left: `${COMPASS_TRAY.x}%`, top: `${COMPASS_TRAY.y - 13}%`, transform: billboard('-50%, -50%', 6) }}>{t('El compass', 'The compass', 'O compass')} → {t('al centro', 'to the centre', 'ao centro')}</span>}
-              {!plateOn && <span className="deck-hint" style={{ left: `${PLATE_TRAY.x - 10}%`, top: `${PLATE_TRAY.y + 8}%`, transform: billboard('-50%, -50%', 4) }}>{t('Viento de ronda', 'Round wind', 'Vento da rodada')}</span>}
-              {compassOn && !plateOn && <span className="deck-hint" style={{ left: `${PLATE_TARGET.x - 6}%`, top: `${PLATE_TARGET.y - 9}%`, transform: billboard('-50%, -50%', 4) }}>{t('A la derecha del dealer', 'Right of the dealer', 'À direita do dealer')} ↓</span>}
-            </>
-          )}
-
-          {mode !== 'dealer' && (
-            <>
-              <Box
-                className={`table-compass${grabbing === 'compass' ? ' is-dragging' : ''}`}
-                style={{ ...at(compassAt, grabbing === 'compass' ? 3 : 0), width: `${COMPASS}%`, aspectRatio: '1' }}
-              >
-                <span className="compass-face" />
-              </Box>
-              <Box
-                className={`table-plate${grabbing === 'plate' ? ' is-dragging' : ''}`}
-                style={{ ...at(plateAt, grabbing === 'plate' ? 3 : 0), width: `${PLATE_W}%`, aspectRatio: `${PLATE_W} / ${PLATE_H}` }}
-              >
-                <b>東</b>
-              </Box>
-            </>
-          )}
-
-          {mode !== 'dealer' && compassOn && WIND_TAGS.map((tag) => (
-            <span key={tag.wind} className="deck-wind" style={{ left: `${tag.x}%`, top: `${tag.y}%`, transform: billboard('-50%, -50%', 3) }}>
-              <b>{tag.glyph}</b> {WIND_NAME[language][tag.index]}
-            </span>
-          ))}
-
-          {mode === 'dealer' && SEAT_AT.map((point, seat) => {
-            const value = seatFaces[seat];
-            const winner = dealerRoll !== null && seat === 0;
-            const rollMine = () => { if (rivalsDone && !seatRolling[0] && dealerRoll === null) rollSeat(0, 0); };
-            return (
-              <span key={seat} className={`table-seat${winner ? ' is-winner' : ''}${seat === 0 && rivalsDone && dealerRoll === null ? ' is-ready' : ''}`} style={{ left: `${point.x}%`, top: `${point.y}%` }}>
-                <span
-                  className="table-seat-die"
-                  role={seat === 0 ? 'button' : undefined}
-                  tabIndex={seat === 0 ? 0 : undefined}
-                  aria-label={seat === 0 ? t('Lanzar mi dado', 'Roll my die', 'Lançar meu dado') : undefined}
-                  onClick={seat === 0 ? rollMine : undefined}
-                  onKeyDown={seat === 0 ? press(rollMine) : undefined}
-                >
-                  <Die3D value={value} rolling={seatRolling[seat]} yaw={(seat - 1.5) * 24} size={6} />
-                </span>
-                <span className="table-seat-label" style={{ transform: billboard('-50%, 0', 2) }}>
-                  {SEAT_NAME[language][seat]}{value > 0 && !seatRolling[seat] ? ` · ${value}` : ''}
-                  {winner && <b>{t('¡Dealer!', 'Dealer!', 'Dealer!')}</b>}
-                </span>
-              </span>
-            );
-          })}
-
-          {mode === 'dice' && (
-            <>
-              <span
-                className="table-dice"
-                role="button"
-                tabIndex={0}
-                aria-label={t('Lanzar los dados', 'Roll the dice', 'Lançar os dados')}
-                onClick={roll}
-                onKeyDown={press(roll)}
-                style={{ left: `${CENTER.x}%`, top: `${CENTER.y + 24}%` }}
-              >
-                <span className="table-dice-one" style={{ left: '-5%' }}><Die3D value={faces[0]} rolling={rolling} yaw={-14} size={6} /></span>
-                <span className="table-dice-one" style={{ left: '5%' }}><Die3D value={faces[1]} rolling={rolling} yaw={18} size={6} /></span>
-              </span>
-              {cut && <i className="table-cut" style={{ left: `${cut.x}%`, top: `${cut.y}%`, height: '8%', transform: `translate3d(-50%, -50%, calc(var(--u) * 4)) rotate(${cut.rot}deg)` }} />}
-            </>
-          )}
-        </IsoWorld>
+        <IsoCanvas ref={scene} draw={draw} handlers={{ onPointerDown: onDown, onPointerMove: onMove, onPointerUp: onUp, onPointerCancel: onUp }} />
 
         <p className="deck-caption">{header}</p>
 
@@ -337,7 +332,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
           ) : (
             <>
               {rolled !== null && <span>{faces[0]} + {faces[1]} = {rolled}</span>}
-              <button type="button" className="sort-button is-primary" onClick={roll} disabled={rolling}>{rolled === null ? t('Lanzar dados', 'Roll dice', 'Lançar dados') : t('Lanzar otra vez', 'Roll again', 'Lançar de novo')}</button>
+              <button type="button" className="sort-button is-primary" onClick={roll} onKeyDown={press(roll)} disabled={rolling}>{rolled === null ? t('Lanzar dados', 'Roll dice', 'Lançar dados') : t('Lanzar otra vez', 'Roll again', 'Lançar de novo')}</button>
             </>
           )}
         </div>

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
-import { IsoWorld, TileBox, billboard, tileTransform, unitsOf } from './iso';
+import { FELT_Z, IsoCanvas, TILE_T, type IsoHandle, type Painter } from './iso3d';
 
 export const TILE_BACK = '../assets/tile-back-rincon.svg';
 export const DECK_SIZE = 136;
@@ -57,39 +57,45 @@ const RIVAL_TURN = [-90, 180, 90];
 /** The rivals stop shuffling after this long. */
 const RIVAL_MS = 3000;
 
-/** An open hand seen from above, pointing up, with a cuff in the style's colour. */
+/** A slender open hand seen from above, pointing up, with a thin cuff in the style's colour. */
 function Palm() {
-  const skin = '#f4d0ae';
-  const shade = '#e4ad82';
-  const shapes = (
-    <>
-      <rect x="36" y="13" width="16" height="56" rx="8" transform="rotate(-7 44 69)" />
-      <rect x="53" y="6" width="16" height="62" rx="8" transform="rotate(-1.5 61 68)" />
-      <rect x="70" y="11" width="16" height="57" rx="8" transform="rotate(4 78 68)" />
-      <rect x="86" y="27" width="14" height="43" rx="7" transform="rotate(11 93 70)" />
-      <rect x="8" y="64" width="16" height="48" rx="8" transform="rotate(-48 16 90)" />
-      <path d="M32 78C28 64 32 52 42 50h46c10 2 14 14 10 28l-5 28c-2 8-10 12-26 12s-24-4-26-12Z" />
-    </>
-  );
+  const fingers = [
+    'M33 62C31 44 31 28 34 16c1-5 7-5 8 0 2 12 3 28 3 46Z',
+    'M46 60C45 40 45 22 48 8c1-5 7-5 8 0 2 14 2 34 2 52Z',
+    'M59 62c0-18 1-34 4-47 1-5 7-5 8 0 2 13 1 31 0 49Z',
+    'M72 68c1-14 4-26 7-34 1-4 7-3 7 2 0 12-3 26-6 40Z',
+    'M33 86C25 76 18 68 12 59c-3-5 2-9 6-5 8 7 15 15 22 23Z',
+  ];
+  const palm = 'M32 62h40c8 8 12 22 8 38-2 10-8 16-18 18H48c-10-2-15-8-16-18-2-10-2-24 0-38Z';
+  const skin = 'url(#hand-skin)';
   return (
-    <svg viewBox="0 0 116 160" aria-hidden="true">
-      <g fill="none" stroke="var(--tile-ink)" strokeWidth="8" strokeLinejoin="round">{shapes}</g>
-      <g fill={skin} stroke="none">{shapes}</g>
-      <g fill={shade} opacity=".55">
-        <path d="M34 92c14 8 42 8 60 0l-3 16c-2 8-10 12-26 12s-24-4-26-12Z" />
+    <svg viewBox="0 0 100 150" aria-hidden="true">
+      <defs>
+        <linearGradient id="hand-skin" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#f8dcc3" />
+          <stop offset="1" stopColor="#ecc09d" />
+        </linearGradient>
+      </defs>
+      <g fill="none" stroke="var(--tile-ink)" strokeWidth="4.2" strokeLinejoin="round">
+        {fingers.map((d) => <path key={d} d={d} />)}
+        <path d={palm} />
       </g>
-      <g fill="none" stroke="#c98f66" strokeWidth="1.8" strokeLinecap="round" opacity=".7">
-        <path d="M42 56v12M61 50v14M78 54v12M44 78q16 8 38 0" />
+      <g fill={skin} stroke="none">
+        {fingers.map((d) => <path key={d} d={d} />)}
+        <path d={palm} />
       </g>
-      <g fill="#fbe4d0" stroke="var(--tile-ink)" strokeWidth="1.6">
-        <ellipse cx="42.500" cy="22" rx="5" ry="6.500" transform="rotate(-7 42 22)" />
-        <ellipse cx="60.500" cy="15" rx="5" ry="6.500" />
-        <ellipse cx="78.500" cy="20" rx="5" ry="6.500" transform="rotate(4 78 20)" />
-        <ellipse cx="94.500" cy="35" rx="4.500" ry="6" transform="rotate(11 94 35)" />
+      <g fill="none" stroke="#c99472" strokeWidth="1" strokeLinecap="round" opacity=".6">
+        <path d="M38 64v6M52 62v7M65 64v6M40 86q12 6 28 0M44 100q8 3 18 0" />
       </g>
-      <g stroke="var(--tile-ink)" strokeWidth="4" strokeLinejoin="round">
-        <rect x="30" y="116" width="68" height="36" rx="8" fill="var(--tile-back)" />
-        <rect x="30" y="128" width="68" height="7" fill="var(--tile-cream)" />
+      <g fill="#fdeee0" stroke="var(--tile-ink)" strokeWidth="1">
+        <path d="M35 17c1-4 5-4 6 0l1 6c-3 2-6 2-8 0Z" />
+        <path d="M49 9c1-4 5-4 6 0l1 6c-3 2-6 2-8 0Z" />
+        <path d="M64 16c1-4 5-4 6 0l1 6c-3 2-6 2-8 0Z" />
+        <path d="M80 35c1-3 4-3 5 0l0 6c-2 2-5 1-6 0Z" />
+      </g>
+      <g stroke="var(--tile-ink)" strokeWidth="2.4" strokeLinejoin="round">
+        <rect x="40" y="116" width="32" height="30" rx="5" fill="var(--tile-back)" />
+        <rect x="40" y="126" width="32" height="5" fill="var(--tile-cream)" />
       </g>
     </svg>
   );
@@ -102,28 +108,15 @@ function Palm() {
 export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; onStatus?: (status: DeckStatus) => void }) {
   const t = (es: string, en: string, pt: string) => ({ es, en, pt }[language]);
   const boardRef = useRef<HTMLDivElement>(null);
-  const planeRef = useRef<HTMLDivElement>(null);
   const handRef = useRef<HTMLDivElement>(null);
   const hand2Ref = useRef<HTMLDivElement>(null);
-  const tileRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const poses = useRef<Pose[]>(deckPoses(34, 34));
   const last = useRef<{ x: number; y: number } | null>(null);
   const moved = useRef(0);
   const zTop = useRef(DECK_SIZE);
   const [progress, setProgress] = useState(0);
 
-  const place = useCallback((index: number) => {
-    const el = tileRefs.current[index];
-    if (!el) return;
-    const pose = poses.current[index];
-    el.style.left = `${pose.x}%`;
-    el.style.top = `${(pose.y / BOARD_H) * 100}%`;
-    el.style.transform = tileTransform(pose);
-  }, []);
-
-  useEffect(() => {
-    for (let index = 0; index < DECK_SIZE; index += 1) place(index);
-  }, [place]);
+  const scene = useRef<IsoHandle>(null);
 
   useEffect(() => {
     onStatus?.({ progress, done: progress >= 1 });
@@ -177,9 +170,12 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
       rivalAt.current[hand] = target;
       const fade = done ? 0 : Math.min(1, elapsed / 300);
       el.style.opacity = String(fade);
-      el.style.left = `${target.x}%`;
-      el.style.top = `${target.y}%`;
-      el.style.transform = `${billboard('-50%, -78%', 8)} rotate(${RIVAL_TURN[hand]}deg)${hand === 1 ? ' scaleX(-1)' : ''}`;
+      const at = scene.current?.project(target.x, target.y, FELT_Z + TILE_T + 6);
+      if (at) {
+        el.style.left = `${at.x}px`;
+        el.style.top = `${at.y}px`;
+        el.style.transform = `translate(-50%, -78%) rotate(${RIVAL_TURN[hand]}deg) scale(${at.f})${hand === 1 ? ' scaleX(-1)' : ''}`;
+      }
     });
     if (done) clock.active = false;
   }, [sweep]);
@@ -201,8 +197,8 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
       if (pose.y < FELT.y0 || pose.y > FELT.y1) { pose.y = clamp(pose.y, FELT.y0, FELT.y1); v[index * 3 + 1] = -vy * 0.4; } else v[index * 3 + 1] = vy * 0.9;
       v[index * 3 + 2] = vr * 0.9;
       energy += Math.hypot(vx, vy);
-      place(index);
     });
+    scene.current?.invalidate();
     if (energy > 0) {
       moved.current += energy;
       setProgress(Math.min(1, moved.current / 2700));
@@ -215,7 +211,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
       hand2.style.transform = `translate(${lag.current.x}px, ${lag.current.y}px) translate(-50%, -50%) scaleX(-1) rotate(${pointer.current.down ? 8 : -6}deg)`;
     }
     if (energy > 0.05 || pointer.current.inside || rivalClock.current.active) frame.current = requestAnimationFrame(step);
-  }, [place, moveRivals]);
+  }, [moveRivals]);
 
   const wake = useCallback(() => {
     if (!frame.current) frame.current = requestAnimationFrame(step);
@@ -248,8 +244,8 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
     }
   };
 
-  const onSweep = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const point = unitsOf(event);
+  const onSweep = (event: ReactPointerEvent<HTMLCanvasElement>) => {
+    const point = scene.current!.unproject(event, FELT_Z + TILE_T);
     const before = last.current;
     last.current = point;
     if (!before || event.buttons === 0) return;
@@ -257,10 +253,16 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
     wake();
   };
 
-  const onSweepDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const point = unitsOf(event);
-    if (point) last.current = point;
+  const onSweepDown = (event: ReactPointerEvent<HTMLCanvasElement>) => {
+    last.current = scene.current!.unproject(event, FELT_Z + TILE_T);
   };
+
+  const draw = useCallback((g: Painter) => {
+    poses.current.forEach((pose) => {
+      g.tile(pose.x, pose.y, pose.rot, FELT_Z + (pose.h ?? 0) * TILE_T, { order: pose.y * 100 + (pose.z % 1000) * 0.01 });
+    });
+    g.flush();
+  }, []);
 
   // Keyboard- and tap-friendly alternative to sweeping: one shove across the whole felt.
   const stir = useCallback(() => {
@@ -274,7 +276,6 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
   }, [wake]);
 
   const done = progress >= 1;
-  const tiles = useMemo(() => Array.from({ length: DECK_SIZE }, (_, index) => index), []);
 
   return (
     <div className="sort-stage deck-stage">
@@ -287,14 +288,10 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
         onPointerUp={() => { pointer.current.down = false; }}
         onPointerDown={(event) => { pointer.current.down = true; moveHand(event.clientX, event.clientY); }}
       >
-        <IsoWorld planeRef={planeRef} handlers={{ onPointerMove: onSweep, onPointerDown: onSweepDown }}>
-          {RIVAL_START.map((_, hand) => (
-            <span key={`rival-${hand}`} className="deck-rival-hand" ref={(el) => { rivalHands.current[hand] = el; }} style={{ opacity: 0 }}><Palm /></span>
-          ))}
-          {tiles.map((index) => (
-            <TileBox key={index} refCb={(el) => { tileRefs.current[index] = el; }} style={{ width: `${TILE_W}%` }} />
-          ))}
-        </IsoWorld>
+        <IsoCanvas ref={scene} draw={draw} handlers={{ onPointerMove: onSweep, onPointerDown: onSweepDown }} />
+        {RIVAL_START.map((_, hand) => (
+          <span key={`rival-${hand}`} className="deck-rival-hand" ref={(el) => { rivalHands.current[hand] = el; }} style={{ opacity: 0 }}><Palm /></span>
+        ))}
 
         {(
           <>

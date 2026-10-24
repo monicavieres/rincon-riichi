@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
-import { BOARD_H, DECK_SIZE, FELT, SIDE_SIZE, TILE_H, TILE_W, clamp, deckPoses, wallSlot, type Pose } from './DeckBoard';
-import { IsoWorld, TILE_THICK, TileBox, billboard, tileTransform, unitsOf } from './iso';
+import { DECK_SIZE, FELT, SIDE_SIZE, TILE_H, TILE_W, clamp, deckPoses, wallSlot, type Pose } from './DeckBoard';
+import { FELT_Z, IsoCanvas, TILE_T, type IsoHandle, type Painter } from './iso3d';
 
 const ROW = 17;
 const SNAP = 9;
@@ -12,6 +12,7 @@ const BOT_TICK = 320;
 const EDGE_Y = 91;
 const ROW_GAP = TILE_H * 1.15;
 const ROT = [0, -90, 180, 90];
+const SURFACE = FELT_Z + TILE_T;
 
 /** 0 filling row A · 1 filling row B · 2 both rows done, ready to stack · 3 stacked at the edge · 4 slid into place. */
 type Stage = 0 | 1 | 2 | 3 | 4;
@@ -43,6 +44,14 @@ function edgePose(side: number, k: number, stacked: boolean): Pose {
 const poseOf = (side: number, k: number, stage: Stage): Pose => (stage >= 4 ? wallSlot(side, k % ROW, k < ROW ? 0 : 1) : edgePose(side, k, stage >= 3));
 
 type Pull = { kind: 'stack' | 'slide'; startY: number; dy: number };
+type Shown = { x: number; y: number; rot: number; h: number };
+
+const turn = (from: number, to: number) => {
+  let d = (to - from) % 360;
+  if (d > 180) d -= 360;
+  if (d < -180) d += 360;
+  return d;
+};
 
 /**
  * The shuffled tiles stay where the last step left them. The player lines up 17 tiles along their own edge, then 17
@@ -51,9 +60,9 @@ type Pull = { kind: 'stack' | 'slide'; startY: number; dy: number };
  */
 export function WallBoard({ language, onStatus }: { language: TutorialLanguage; onStatus?: (status: WallStatus) => void }) {
   const t = (es: string, en: string, pt: string) => ({ es, en, pt }[language]);
-  const planeRef = useRef<HTMLDivElement>(null);
-  const tileRefs = useRef<Array<HTMLSpanElement | null>>([]);
+  const scene = useRef<IsoHandle>(null);
   const poses = useRef<Pose[]>(deckPoses(34, 34).map((pose) => ({ ...pose })));
+  const shown = useRef<Shown[]>(poses.current.map((pose) => ({ x: pose.x, y: pose.y, rot: pose.rot, h: 0 })));
   const slotOf = useRef<Array<{ side: number; k: number } | null>>(Array(DECK_SIZE).fill(null));
   const counts = useRef([0, 0, 0, 0]);
   const stages = useRef<Stage[]>([0, 0, 0, 0]);
@@ -67,33 +76,27 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
   const [runKey, setRunKey] = useState(0);
 
   const rerender = () => setVersion((value) => value + 1);
+  const repaint = () => scene.current?.invalidate();
 
-  const place = useCallback((index: number) => {
-    const el = tileRefs.current[index];
-    if (!el) return;
+  /** The pose a tile is heading to right now. */
+  const targetOf = (index: number): Pose => {
     const slot = slotOf.current[index];
     let pose = slot ? poseOf(slot.side, slot.k, stages.current[slot.side]) : poses.current[index];
     const moving = pull.current;
     if (slot && slot.side === 0 && moving) {
-      if (moving.kind === 'slide') pose = { ...pose, y: pose.y + moving.dy, h: (pose.h ?? 0) + 0.6 };
+      if (moving.kind === 'slide') pose = { ...pose, y: pose.y + moving.dy, h: (pose.h ?? 0) + 0.5 };
       else if (slot.k >= ROW) pose = { ...pose, y: pose.y + moving.dy, h: 1.4 };
     }
-    el.style.left = `${pose.x}%`;
-    el.style.top = `${(pose.y / BOARD_H) * 100}%`;
-    el.style.transform = tileTransform(pose);
-  }, []);
-
-  const placeAll = useCallback(() => {
-    for (let index = 0; index < DECK_SIZE; index += 1) place(index);
-  }, [place]);
+    return pose;
+  };
 
   const free = () => poses.current.map((_, index) => index).filter((index) => !slotOf.current[index] && dragging.current?.index !== index);
 
   const setStage = useCallback((side: number, stage: Stage) => {
     stages.current[side] = stage;
-    placeAll();
+    repaint();
     rerender();
-  }, [placeAll]);
+  }, []);
 
   const later = (ms: number, action: () => void) => { timers.current.push(window.setTimeout(action, ms)); };
 
@@ -112,11 +115,9 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
     if (side === 0) {
       stages.current[0] = count >= SIDE_SIZE ? 2 : count >= ROW ? 1 : 0;
     } else if (count >= SIDE_SIZE) finishRival(side);
-    place(index);
+    repaint();
     rerender();
-  }, [place, finishRival]);
-
-  useEffect(() => { placeAll(); }, [placeAll, runKey]);
+  }, [finishRival]);
 
   // The rivals pick a loose tile each and line it up, every few moments, starting one after another.
   useEffect(() => {
@@ -140,9 +141,10 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
   useEffect(() => { onStatus?.({ mine, rivals, done }); }, [mine, rivals, done, onStatus]);
 
   const nextMine = () => (counts.current[0] < SIDE_SIZE ? edgePose(0, counts.current[0], false) : null);
+  const at = (event: ReactPointerEvent<HTMLCanvasElement>) => scene.current!.unproject(event, SURFACE);
 
-  const onDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const point = unitsOf(event);
+  const onDown = (event: ReactPointerEvent<HTMLCanvasElement>) => {
+    const point = at(event);
     const stage = stages.current[0];
     if (stage <= 1) {
       let best = -1;
@@ -160,10 +162,9 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
       const pose = poses.current[best];
       dragging.current = { index: best, dx: pose.x - point.x, dy: pose.y - point.y };
       pose.z = ++zTop.current;
-      pose.h = 1.6;
-      tileRefs.current[best]?.classList.add('is-dragging');
+      pose.h = 1.4;
       setGrabbing(true);
-      place(best);
+      repaint();
       return;
     }
     const backRowY = EDGE_Y - ROW_GAP;
@@ -179,25 +180,26 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
     }
   };
 
-  const onMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const point = unitsOf(event);
+  const onMove = (event: ReactPointerEvent<HTMLCanvasElement>) => {
     const drag = dragging.current;
+    const moving = pull.current;
+    if (!drag && !moving) return;
+    const point = at(event);
     if (drag) {
       const pose = poses.current[drag.index];
       pose.x = clamp(point.x + drag.dx, 4, 96);
-      pose.y = clamp(point.y + drag.dy, 4, BOARD_H - 4);
+      pose.y = clamp(point.y + drag.dy, 4, 96);
       pose.rot *= 0.9;
-      place(drag.index);
       const target = nextMine();
       setHot(!!target && Math.hypot(pose.x - target.x, pose.y - target.y) < SNAP);
+      repaint();
       return;
     }
-    const moving = pull.current;
     if (!moving) return;
     const travel = moving.kind === 'stack' ? ROW_GAP : EDGE_Y - wallSlot(0, 0, 0).y;
     const raw = point.y - moving.startY;
     moving.dy = moving.kind === 'stack' ? clamp(raw, -1, travel + 1) : clamp(raw, -travel - 1, 1);
-    placeAll();
+    repaint();
   };
 
   const onUp = () => {
@@ -206,7 +208,6 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
     setGrabbing(false);
     setHot(false);
     if (drag) {
-      tileRefs.current[drag.index]?.classList.remove('is-dragging');
       const pose = poses.current[drag.index];
       pose.h = 0;
       const target = nextMine();
@@ -215,7 +216,7 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
         pose.x = clamp(pose.x, FELT.x0, FELT.x1);
         pose.y = clamp(pose.y, FELT.y0, FELT.y1);
         pose.z = ++zTop.current;
-        place(drag.index);
+        repaint();
       }
       return;
     }
@@ -224,8 +225,7 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
     if (!moving) return;
     const travel = moving.kind === 'stack' ? ROW_GAP : EDGE_Y - wallSlot(0, 0, 0).y;
     if (Math.abs(moving.dy) > travel * 0.55) setStage(0, moving.kind === 'stack' ? 3 : 4);
-    else { placeAll(); }
-    setGrabbing(false);
+    else repaint();
   };
 
   // Click alternatives to dragging.
@@ -252,13 +252,13 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
     stages.current = [0, 0, 0, 0];
     pull.current = null;
     setRunKey((key) => key + 1);
+    repaint();
   };
 
   const stage = stages.current[0];
   const target = nextMine();
   const row = stage === 1 ? 1 : 0;
   const rowFilled = counts.current[0] % ROW;
-  const slotStyle = (pose: Pose) => ({ left: `${pose.x}%`, top: `${(pose.y / BOARD_H) * 100}%`, width: `${TILE_W}%`, transform: `translate3d(-50%, -50%, calc(var(--u) * ${(pose.h ?? 0) * TILE_THICK + 0.05})) rotate(${pose.rot}deg)` });
 
   const hint = stage === 0
     ? { text: t('Alinea 17 fichas en tu borde', 'Line up 17 tiles along your edge', 'Alinhe 17 peças na sua borda'), arrow: '↓' }
@@ -270,39 +270,54 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
           ? { text: t('Arrastra el muro hasta el marco punteado', 'Drag the wall to the dotted frame', 'Arraste o muro até o quadro pontilhado'), arrow: '↑' }
           : null;
 
+  const draw = (g: Painter) => {
+    // slots first, flat on the felt
+    if (stages.current[0] <= 1) {
+      for (let stack = 0; stack < ROW; stack += 1) {
+        const slot = edgePose(0, row * ROW + stack, false);
+        g.ghost(slot.x, slot.y, slot.rot, FELT_Z, { filled: stack < rowFilled, next: stack === rowFilled && !!target, hot });
+      }
+    }
+    if (stages.current[0] === 3) {
+      for (let stack = 0; stack < ROW; stack += 1) {
+        const slot = wallSlot(0, stack, 0);
+        g.ghost(slot.x, slot.y, slot.rot, FELT_Z, { next: true });
+      }
+    }
+    // tiles ease toward where they belong
+    let moving = false;
+    shown.current.forEach((cur, index) => {
+      const goal = targetOf(index);
+      const grabbed = dragging.current?.index === index;
+      const ease = grabbed ? 1 : 0.2;
+      const gh = goal.h ?? 0;
+      cur.x += (goal.x - cur.x) * ease;
+      cur.y += (goal.y - cur.y) * ease;
+      cur.rot += turn(cur.rot, goal.rot) * ease;
+      cur.h += (gh - cur.h) * ease;
+      if (Math.abs(goal.x - cur.x) + Math.abs(goal.y - cur.y) + Math.abs(turn(cur.rot, goal.rot)) * 0.05 + Math.abs(gh - cur.h) > 0.05) moving = true;
+      else { cur.x = goal.x; cur.y = goal.y; cur.rot = goal.rot; cur.h = gh; }
+      g.tile(cur.x, cur.y, cur.rot, FELT_Z + cur.h * TILE_T, { order: cur.y * 100 + cur.h * TILE_T + (goal.z % 1000) * 0.001 });
+    });
+    if (moving) g.needsFrame = true;
+    g.flush();
+
+    if (hint) {
+      const p = g.project(50, 68, FELT_Z + 6);
+      g.pill(p.x, p.y, `${hint.text} ${hint.arrow}`, { bg: 'rgba(10,20,20,0.72)' });
+    }
+    [1, 2, 3].forEach((side) => {
+      const slot = wallSlot(side, 8, 0);
+      const out = side === 2 ? { dx: 0, dy: -10 } : side === 1 ? { dx: 12, dy: 0 } : { dx: -12, dy: 0 };
+      const p = g.project(slot.x + out.dx, slot.y + out.dy, FELT_Z + 4);
+      g.pill(p.x, p.y, `${RIVAL_NAME[language][side - 1]} · ${counts.current[side]}/${SIDE_SIZE}`, { bg: stages.current[side] === 4 ? 'rgba(34,140,90,0.85)' : 'rgba(10,20,20,0.6)', size: 10 });
+    });
+  };
+
   return (
     <div className="sort-stage deck-stage">
       <div className={`sort-board deck-board is-walls${grabbing ? ' is-grabbing' : ''}${done ? ' is-sorted' : ''}`}>
-        <IsoWorld planeRef={planeRef} handlers={{ onPointerDown: onDown, onPointerMove: onMove, onPointerUp: onUp, onPointerCancel: onUp }}>
-          {/* the strip the player is filling at their own edge */}
-          {stage <= 1 && Array.from({ length: ROW }, (_, stack) => {
-            const state = stack < rowFilled ? ' is-filled' : stack === rowFilled && target ? ` is-next${hot ? ' is-hot' : ''}` : '';
-            return <i key={`me-${stack}-${row}`} className={`deck-ghost is-mine${state}`} style={slotStyle(edgePose(0, row * ROW + stack, false))} />;
-          })}
-          {/* where the finished wall will go */}
-          {stage === 3 && Array.from({ length: ROW }, (_, stack) => (
-            <i key={`goal-${stack}`} className="deck-ghost is-mine is-next" style={slotStyle(wallSlot(0, stack, 0))} />
-          ))}
-
-          {hint && (
-            <span className="deck-hint" style={{ left: '50%', top: '68%', transform: billboard('-50%, -50%', 7) }}>
-              {hint.text} <b aria-hidden="true">{hint.arrow}</b>
-            </span>
-          )}
-          {[1, 2, 3].map((side) => {
-            const pose = wallSlot(side, 8, 0);
-            const out = side === 2 ? { dx: 0, dy: -10 } : side === 1 ? { dx: 12, dy: 0 } : { dx: -12, dy: 0 };
-            return (
-              <span key={side} className={`deck-tag${stages.current[side] === 4 ? ' is-done' : ''}`} style={{ left: `${pose.x + out.dx}%`, top: `${pose.y + out.dy}%`, transform: billboard('-50%, -50%', 5) }}>
-                {RIVAL_NAME[language][side - 1]} · {counts.current[side]}/{SIDE_SIZE}
-              </span>
-            );
-          })}
-
-          {Array.from({ length: DECK_SIZE }, (_, index) => (
-            <TileBox key={index} refCb={(el) => { tileRefs.current[index] = el; }} style={{ width: `${TILE_W}%` }} />
-          ))}
-        </IsoWorld>
+        <IsoCanvas ref={scene} draw={draw} handlers={{ onPointerDown: onDown, onPointerMove: onMove, onPointerUp: onUp, onPointerCancel: onUp }} />
 
         <div className="sort-actions deck-actions">
           <span>{t('Tú', 'You', 'Você')} {mine}/{SIDE_SIZE}</span>
