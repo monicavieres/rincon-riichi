@@ -68,7 +68,7 @@ export function picture(path: string): HTMLCanvasElement | null {
     images.set(path, img);
   }
   if (!img.complete || img.naturalWidth === 0) return null;
-  const size = path.includes('illustrations') ? 768 : 256;
+  const size = path.includes('illustrations') ? 1024 : path.includes('tiles-') ? 640 : 384;
   const bitmap = document.createElement('canvas');
   bitmap.width = size;
   bitmap.height = size;
@@ -232,13 +232,16 @@ export class Painter {
   }
 
   /** One tile lying face down: back colour and emblem on top, banded edges. */
-  tile(x: number, y: number, rot: number, z0: number, opts: { counting?: boolean; w?: number; l?: number; t?: number; order?: number; flip?: number; face?: CanvasImageSource | null } = {}) {
+  tile(x: number, y: number, rot: number, z0: number, opts: { counting?: boolean; w?: number; l?: number; t?: number; order?: number; flip?: number; face?: CanvasImageSource | null; gold?: boolean } = {}) {
     const { palette: p } = this;
     const w = opts.w ?? 3.6;
     const l = opts.l ?? 4.8;
     const t = opts.t ?? TILE_T;
     const back = opts.counting ? '#e6b422' : p.back;
     const cream = opts.counting ? '#fff1b8' : p.cream;
+    // gold keeps the tile's own top and emblem and only warms its edges, so nothing flashes when it turns over
+    const sideBack = opts.gold ? '#e6b422' : back;
+    const sideCream = opts.gold ? '#fff1b8' : cream;
     // turning a tile over: it squeezes along its width, lifts, and lands face up
     const flip = opts.flip ?? 0;
     const squeeze = flip > 0 ? Math.max(0.06, Math.abs(Math.cos(flip * Math.PI))) : 1;
@@ -247,9 +250,9 @@ export class Painter {
     this.add(opts.order ?? y * 100 + z0 + lift, () => {
       const g = this.box(x, y, z0 + lift, w * squeeze, l, t, rot);
       g.sides.forEach((face) => {
-        this.bandedFace(face, [[0, 0.3, back], [0.3, 0.7, cream], [0.7, 1, back]], lit(face.n), p.ink);
+        this.bandedFace(face, [[0, 0.3, sideBack], [0.3, 0.7, sideCream], [0.7, 1, sideBack]], lit(face.n), p.ink);
       });
-      this.poly(g.top, faceUp ? '#fffdf6' : back, p.ink);
+      this.poly(g.top, faceUp ? '#fffdf6' : back, opts.gold ? p.gold : p.ink, opts.gold ? this.lw * 2 : this.lw);
       if (faceUp && opts.face) {
         this.textured(opts.face, x, y, w * squeeze, l, rot, z0 + lift + t, 6);
       } else {

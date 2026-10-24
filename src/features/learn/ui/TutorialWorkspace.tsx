@@ -4,6 +4,7 @@ import { localize, type LocalizedText, type TutorialLanguage } from '../domain/t
 import { stepSubtitles, tutorialParts, tutorialStops, type TutorialStop } from '../domain/tutorialStage';
 import { RackStage } from './stages/RackStage';
 import { DeckBoard, TILE_BACK, type DeckStatus } from './stages/DeckBoard';
+import { DealBoard, type DealStatus } from './stages/DealBoard';
 import { TableTopBoard, type TableTopStatus } from './stages/TableTopBoard';
 import { WallBoard, type WallStatus } from './stages/WallBoard';
 import { SortBoard, tilePath, type SortStatus } from './stages/SortBoard';
@@ -49,6 +50,11 @@ const PRACTICE_COPY = {
     'Press “Roll dice”, see which wall lights up and count the stacks from its right end. Repeat as often as you like.',
     'Toque em «Lançar dados», veja qual muro acende e conte as pilhas a partir da extremidade direita. Pode repetir quantas vezes quiser.',
   ),
+  deal: L(
+    'Mira el orden: dealer, Sur, Oeste y Norte, de 4 en 4 fichas. Cuenta cuántas lleva cada mano en su etiqueta y pulsa «Repetir» para verlo otra vez.',
+    'Watch the order: dealer, South, West, North, 4 tiles at a time. Check each hand’s count on its label and press “Replay” to see it again.',
+    'Observe a ordem: dealer, Sul, Oeste e Norte, de 4 em 4 peças. Confira a contagem de cada mão na etiqueta e toque em «Repetir» para rever.',
+  ),
   table: L(
     'Mira la zona resaltada y lee cada etiqueta. Usa ⤢ para ver la mesa completa y volver a ubicarte.',
     'Look at the highlighted zone and read each label. Use ⤢ to see the whole table and get your bearings.',
@@ -79,6 +85,7 @@ const UI = {
     'Mesa de riichi em perspectiva, com as quatro paredes, as mãos, os descartes e o compass de ventos',
   ),
   shuffled: L('mezclado', 'shuffled', 'embaralhado'),
+  dealDone: L('Todos con 13 fichas; el dealer con 14', 'Everyone has 13 tiles; the dealer 14', 'Todos com 13 peças; o dealer com 14'),
   dealerIs: L('· ¡eres el dealer!', '· you are the dealer!', '· você é o dealer!'),
   dealerWait: L('Esperando los dados…', 'Waiting for the dice…', 'Aguardando os dados…'),
   piecesPlaced: L('piezas colocadas', 'pieces placed', 'peças colocadas'),
@@ -104,7 +111,7 @@ const chevron = (
 type Piece = [number, number, number?];
 
 /** A small picture of what a step is about, drawn with the site's current style (tile back, emblem, felt, compass). */
-function SceneThumb({ mode }: { mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' }) {
+function SceneThumb({ mode }: { mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' }) {
   const tile = (key: string, [x, y, rot = 0]: Piece, extra = '') => (
     <i key={key} className={`th-tile${extra}`} style={{ left: x, top: y, transform: `rotate(${rot}deg)` }} />
   );
@@ -129,6 +136,14 @@ function SceneThumb({ mode }: { mode: 'shuffle' | 'walls' | 'dealer' | 'compass'
           {die('d2', [46, 19, 12], 3)}
           {die('d3', [12, 19, -12], 4)}
           {die('d4', [29, 32, 6], 6, ' is-win')}
+        </>
+      )}
+      {mode === 'deal' && (
+        <>
+          {wallRow(4, 6, 6, 'w')}
+          {[0, 1, 2, 3, 4].map((i) => tile(`h${i}`, [14 + i * 8.5, 40]))}
+          {tile('hr', [58, 20, 90])}{tile('hr2', [58, 30, 90])}
+          {tile('hl', [4, 20, 90])}{tile('hl2', [4, 30, 90])}
         </>
       )}
       {mode === 'compass' && <i className="th-compass" />}
@@ -185,6 +200,7 @@ export function TutorialWorkspace() {
   const [sort, setSort] = useState<SortStatus>({ inRack: 0, total: 13, sorted: false });
   const [deck, setDeck] = useState<DeckStatus>({ progress: 0, done: false });
   const [top, setTop] = useState<TableTopStatus>({ compass: false, plate: false, rolled: null, dealerRoll: null, done: false });
+  const [dealt, setDealt] = useState<DealStatus>({ done: false, step: -1 });
   const [wall, setWall] = useState<WallStatus>({ mine: 0, rivals: 0, done: false });
   const railRef = useRef<HTMLElement>(null);
   const t = (value: LocalizedText) => localize(value, language);
@@ -279,6 +295,7 @@ export function TutorialWorkspace() {
           </div>
 
           {spec.kind === 'deck' && spec.mode === 'shuffle' && <DeckBoard language={language} onStatus={setDeck} />}
+          {spec.kind === 'deck' && spec.mode === 'deal' && <DealBoard key={language} language={language} onStatus={setDealt} />}
           {spec.kind === 'deck' && spec.mode === 'walls' && <WallBoard language={language} onStatus={setWall} />}
           {spec.kind === 'deck' && (spec.mode === 'dealer' || spec.mode === 'compass' || spec.mode === 'dice') && <TableTopBoard key={spec.mode} mode={spec.mode} language={language} onStatus={setTop} />}
           {spec.kind === 'sort' && <SortBoard language={language} onStatus={setSort} />}
@@ -325,6 +342,9 @@ export function TutorialWorkspace() {
                 <p>{t(practiceCopy)}</p>
                 {spec.kind === 'deck' && spec.mode === 'shuffle' && (
                   <p className={`sort-readout${deck.done ? ' is-done' : ''}`}><b>{Math.round(deck.progress * 100)}%</b> {t(UI.shuffled)}</p>
+                )}
+                {spec.kind === 'deck' && spec.mode === 'deal' && (
+                  <p className={`sort-readout${dealt.done ? ' is-done' : ''}`}>{dealt.done ? t(UI.dealDone) : `${Math.max(0, dealt.step + 1)}/17`}</p>
                 )}
                 {spec.kind === 'deck' && spec.mode === 'dealer' && (
                   <p className={`sort-readout${top.done ? ' is-done' : ''}`}>{top.dealerRoll ? <><b>{top.dealerRoll}</b> {t(UI.dealerIs)}</> : t(UI.dealerWait)}</p>

@@ -9,7 +9,7 @@ export type LocalCallout = Omit<TableCallout, 'label'> & { label: LocalizedText 
 
 export type StageSpec =
   | { kind: 'sort' }
-  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' }
+  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' }
   | { kind: 'table'; focus: TableFocus; callouts: LocalCallout[] }
   | { kind: 'rack'; rows: RackRow[]; footer?: LocalizedText };
 
@@ -36,6 +36,7 @@ export const stepSubtitles: Record<string, LocalizedText> = {
   dealer: L('El dado más alto reparte', 'Highest die deals first', 'O maior dado distribui'),
   compass: L('Tú eres Este, el dealer', 'You are East, the dealer', 'Você é Leste, o dealer'),
   dice: L('Dónde se abre el muro', 'Where the wall opens', 'Onde o muro abre'),
+  'deal-draw': L('4 fichas cada vez, 13 + 1', '4 tiles at a time, 13 + 1', '4 peças por vez, 13 + 1'),
   'what-is-mahjong': L('Zonas y jugadores', 'Zones and players', 'Zonas e jogadores'),
   objective: L('4 grupos y 1 pareja', '4 sets and 1 pair', '4 grupos e 1 par'),
   table: L('17 pilas por lado', '17 stacks per side', '17 pilhas por lado'),
@@ -271,6 +272,26 @@ export const tutorialStops: TutorialStop[] = [
     remember: L('El azar de los dados decide por dónde se abre, no quién gana.', 'The dice decide where the wall opens, not who wins.', 'Os dados decidem por onde se abre, não quem vence.'),
     stage: { kind: 'deck', mode: 'dice' },
     practice: { href: '../aprender/tiles.html', label: L('Conocer las fichas', 'Meet the tiles', 'Conhecer as peças') },
+  },
+  {
+    id: 'deal-draw',
+    part: 'discover',
+    short: L('Repartir', 'The deal', 'Distribuir'),
+    eyebrow: L('Empieza el juego', 'The game begins', 'O jogo começa'),
+    title: L('Cada jugador toma sus fichas del muro', 'Each player takes their tiles from the wall', 'Cada jogador pega as suas peças do muro'),
+    body: L(
+      'Con el muro abierto, empezando por el dealer y en sentido antihorario, cada jugador toma 4 fichas del muro vivo. Se hace tres veces: 12 fichas cada uno. Luego cada uno toma una más, hasta 13, y el dealer toma una última: su primera robada.',
+      'With the wall open, starting with the dealer and going counter-clockwise, each player takes 4 tiles from the live wall. This happens three times: 12 tiles each. Then each takes one more, making 13, and the dealer takes a last one: the first draw.',
+      'Com o muro aberto, começando pelo dealer e no sentido anti-horário, cada jogador pega 4 peças do muro vivo. Isso se repete três vezes: 12 peças cada. Depois cada um pega mais uma, chegando a 13, e o dealer pega uma última: a primeira compra.',
+    ),
+    bullets: [
+      L('Las fichas salen de la izquierda del corte, de dos en dos pilas.', 'Tiles come from the left of the cut, two stacks at a time.', 'As peças saem da esquerda do corte, de duas em duas pilhas.'),
+      L('Todos acaban con 13 fichas; el dealer tiene 14 y descarta primero.', 'Everyone ends with 13 tiles; the dealer has 14 and discards first.', 'Todos ficam com 13 peças; o dealer tem 14 e descarta primeiro.'),
+      L('Las 14 fichas del muro muerto no se tocan.', 'The 14 dead-wall tiles stay untouched.', 'As 14 peças do muro morto não são tocadas.'),
+    ],
+    remember: L('13 fichas para esperar, 14 para decidir qué descartar.', '13 tiles to wait with, 14 to decide what to discard.', '13 peças para esperar, 14 para decidir o que descartar.'),
+    stage: { kind: 'deck', mode: 'deal' },
+    practice: { href: '../aprender/eficiencia.html', label: L('Aprender eficiencia', 'Learn efficiency', 'Aprender eficiência') },
   },
   {
     id: 'what-is-mahjong', part: 'discover', short: L('La mesa', 'The table', 'A mesa'), ...text('what-is-mahjong'),

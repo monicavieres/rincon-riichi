@@ -72,8 +72,9 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
   const [rolling, setRolling] = useState(false);
   const [rolled, setRolled] = useState<number | null>(null);
   const [counted, setCounted] = useState(0);
-  const [phase, setPhase] = useState<'idle' | 'compass' | 'wall' | 'split' | 'dora' | 'done'>('idle');
+  const [phase, setPhase] = useState<'idle' | 'compass' | 'wall' | 'dead' | 'split' | 'dora' | 'done'>('idle');
   const [doraCount, setDoraCount] = useState(0);
+  const [deadCount, setDeadCount] = useState(0);
   const flipStart = useRef(0);
   const splitStart = useRef(0);
   const viewNow = useRef({ u: 50, v: 50, zoom: 1 });
@@ -174,6 +175,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     setCounted(0);
     setPhase('idle');
     setDoraCount(0);
+    setDeadCount(0);
     flipStart.current = 0;
     const later = (ms: number, action: () => void) => { timers.current.push(window.setTimeout(action, ms)); };
     later(1100, () => {
@@ -194,27 +196,38 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
           setCounted(n);
           if (n >= total) {
             window.clearInterval(count);
-            // 3) open the wall: the dead wall slides apart
+            // 3) count seven stacks on from the break: that is where the dead wall ends
             later(1000, () => {
-              splitStart.current = performance.now();
-              setPhase('split');
-              // 4) count three stacks into the dead wall and turn the dora indicator face up
-              later(2000, () => {
-                setPhase('dora');
-                let c = 0;
-                const tally = window.setInterval(() => {
-                  c += 1;
-                  setDoraCount(c);
-                  if (c >= 3) {
-                    window.clearInterval(tally);
-                    later(700, () => {
-                      flipStart.current = performance.now();
-                      later(1500, () => setPhase('done'));
-                    });
-                  }
-                }, 700);
-                timers.current.push(tally);
-              });
+              setPhase('dead');
+              let d = 0;
+              const seven = window.setInterval(() => {
+                d += 1;
+                setDeadCount(d);
+                if (d < 7) return;
+                window.clearInterval(seven);
+                // 4) cut at both ends and slide the dead wall apart
+                later(1100, () => {
+                  splitStart.current = performance.now();
+                  setPhase('split');
+                  // 5) count three stacks into the dead wall and turn the dora indicator face up
+                  later(2300, () => {
+                    setPhase('dora');
+                    let c = 0;
+                    const tally = window.setInterval(() => {
+                      c += 1;
+                      setDoraCount(c);
+                      if (c < 3) return;
+                      window.clearInterval(tally);
+                      later(800, () => {
+                        flipStart.current = performance.now();
+                        later(1600, () => setPhase('done'));
+                      });
+                    }, 700);
+                    timers.current.push(tally);
+                  });
+                });
+              }, 380);
+              timers.current.push(seven);
             });
           }
         }, 330);
@@ -238,14 +251,14 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
 
   const header = mode === 'dealer' ? t('Cada jugador lanza un dado', 'Each player rolls one die', 'Cada jogador lança um dado') : mode === 'compass' ? t('Los cuatro muros ya están armados', 'The four walls are built', 'Os quatro muros estão montados') : t('Los dados deciden dónde se abre', 'The dice decide where it opens', 'Os dados decidem onde abre');
 
-  /** The 7 stacks (14 tiles) to the right of the break: the counted stacks, running on into the next player's wall. */
+  /** Stacks are numbered around the loop starting at the opened wall's left end, so the dead wall can run on into the next wall. */
+  const base = openSide ?? 0;
+  const gAt = (G: number) => ({ side: (base + Math.floor(G / ROW)) % 4, stack: ((G % ROW) + ROW) % ROW });
+  const firstDead = rolled === null ? 0 : ROW - rolled; // first stack right of the break
   const dead = new Set<string>();
-  if (openSide !== null && rolled !== null) {
-    for (let idx = ROW - rolled; idx <= ROW - rolled + 6; idx += 1) {
-      dead.add(idx <= ROW - 1 ? `${openSide}:${idx}` : `${(openSide + 1) % 4}:${idx - ROW}`);
-    }
-  }
+  if (rolled !== null) for (let G = firstDead; G <= firstDead + 6; G += 1) { const at = gAt(G); dead.add(`${at.side}:${at.stack}`); }
   const OUT = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+  const ALONG = [[1, 0], [0, -1], [-1, 0], [0, 1]];
   const deadMid = (() => {
     if (openSide === null || rolled === null) return { x: 50, y: 50 };
     const list = [...dead].map((key) => key.split(':').map(Number)).map(([sd, st]) => wallSlot(sd, st, 0));
@@ -253,8 +266,14 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     return { x: list.reduce((a, q) => a + q.x, 0) / list.length + out[0] * 3.4, y: list.reduce((a, q) => a + q.y, 0) / list.length + out[1] * 3.4 };
   })();
   // the dora indicator: the third stack from the break, its top tile turned face up
-  const doraStack = rolled === null ? -1 : ROW - rolled + 2;
-  const doraKey = openSide === null ? '' : doraStack <= ROW - 1 ? `${openSide}:${doraStack}` : `${(openSide + 1) % 4}:${doraStack - ROW}`;
+  const doraAt = gAt(firstDead + 2);
+  const doraKey = openSide === null ? '' : `${doraAt.side}:${doraAt.stack}`;
+  // the second cut, seven stacks on from the first
+  const cut2 = rolled === null ? null : (() => {
+    const a = gAt(firstDead + 6), b = gAt(firstDead + 7);
+    const pa = wallSlot(a.side, a.stack, 0), pb = wallSlot(b.side, b.stack, 0);
+    return { x: (pa.x + pb.x) / 2, y: (pa.y + pb.y) / 2, rot: pa.rot };
+  })();
 
   const draw = (g: Painter) => {
     const { palette: p, ctx } = g;
@@ -263,8 +282,9 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     const wallMid = openSide !== null ? wallSlot(openSide, 8, 0) : { x: 50, y: 50 };
     const target = phase === 'compass' ? { u: 50, v: 50, zoom: 2.1 }
       : phase === 'wall' ? { u: wallMid.x, v: wallMid.y, zoom: 2 }
-        : phase === 'split' ? { u: wallMid.x, v: wallMid.y, zoom: 1.7 }
-          : phase === 'dora' ? { u: deadMid.x, v: deadMid.y, zoom: 2.6 }
+        : phase === 'dead' ? { u: deadMid.x - OUT[openSide ?? 0][0] * 3.4, v: deadMid.y - OUT[openSide ?? 0][1] * 3.4, zoom: 1.9 }
+        : phase === 'split' ? { u: deadMid.x, v: deadMid.y, zoom: 1.5 }
+          : phase === 'dora' ? { u: deadMid.x, v: deadMid.y, zoom: 2.2 }
             : { u: 50, v: 50, zoom: 1 };
     const v = viewNow.current;
     const dt = Math.min(200, g.now - lastFrame.current);
@@ -288,13 +308,28 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
       const k = index % 34;
       const stack = k % ROW;
       const pose = wallSlot(side, stack, k < ROW ? 0 : 1);
+      const G = ((side - base + 4) % 4) * ROW + stack;
       const isDead = dead.has(`${side}:${stack}`);
-      const counting = phase === 'wall' ? openSide === side && stack >= ROW - counted : splitT > 0 && isDead;
-      const shift = isDead ? eased * 3.4 : 0;
+      let gold = false;
+      if (phase === 'wall') gold = openSide === side && stack >= ROW - counted;
+      else if (phase === 'dead') gold = G >= firstDead && G < firstDead + deadCount;
+      else gold = splitT > 0 && isDead;
+      // opening: the dead wall slides outward and the live wall eases away from both cuts
+      let dx = 0;
+      let dy = 0;
+      if (rolled !== null && eased > 0) {
+        if (isDead) { dx += OUT[side][0] * eased * 3.4; dy += OUT[side][1] * eased * 3.4; }
+        else {
+          const dist = G < firstDead ? firstDead - 1 - G : G - (firstDead + 7);
+          const pull = Math.max(0, 1 - dist / 5) * eased * 1.8 * (G < firstDead ? -1 : 1);
+          dx += ALONG[side][0] * pull;
+          dy += ALONG[side][1] * pull;
+        }
+      }
       const isDora = k >= ROW && `${side}:${stack}` === doraKey;
-      const flip = isDora && flipStart.current > 0 ? Math.min(1, (g.now - flipStart.current) / 1100) : 0;
+      const flip = isDora && flipStart.current > 0 ? Math.min(1, (g.now - flipStart.current) / 1300) : 0;
       if (isDora && flip > 0 && flip < 1) g.needsFrame = true;
-      g.tile(pose.x + OUT[side][0] * shift, pose.y + OUT[side][1] * shift, pose.rot, FELT_Z + (pose.h ?? 0) * TILE_T + (isDead ? eased * 0.8 : 0), { counting: counting && !(isDora && flip > 0.5), flip, face: isDora ? picture(`${p.faces}/4p.svg`) : null });
+      g.tile(pose.x + dx, pose.y + dy, pose.rot, FELT_Z + (pose.h ?? 0) * TILE_T + (isDead ? eased * 0.8 : 0), { gold, flip, face: isDora ? picture(`${p.faces}/4p.svg`) : null });
     }
 
     // goals while the player is placing pieces
@@ -355,13 +390,15 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
       const spinning = rolling ? spin(g.now) : undefined;
       g.die(CENTER.x - 6, CENTER.y + 24, FELT_Z, 6.5, { up: faces[0], yaw: -14, spin: spinning });
       g.die(CENTER.x + 6, CENTER.y + 24, FELT_Z, 6.5, { up: faces[1], yaw: 18, spin: spinning === undefined ? undefined : spinning + 7 });
-      if (cut && phase !== 'idle' && phase !== 'compass') {
-        g.add(cut.y * 100 + 90, () => {
-          const bar = g.box(cut.x, cut.y, FELT_Z + TILE_T * 2, 0.9, 7.5, 1.4, cut.rot);
+      const bars = [phase !== 'idle' && phase !== 'compass' ? cut : null, ['dead', 'split', 'dora', 'done'].includes(phase) && (phase !== 'dead' || deadCount >= 7) ? cut2 : null];
+      bars.forEach((bar0, bi) => {
+        if (!bar0) return;
+        g.add(bar0.y * 100 + 90 + bi, () => {
+          const bar = g.box(bar0.x, bar0.y, FELT_Z + TILE_T * 2, 0.9, 7.5, 1.4, bar0.rot);
           bar.sides.forEach((face) => g.poly(face.q, shade(p.gold, 0.8), p.ink, g.lw));
           g.poly(bar.top, p.gold, p.ink, g.lw * 1.3);
         });
-      }
+      });
     }
     g.flush();
 
@@ -391,14 +428,23 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
       }
     }
 
+    // dead-wall phase: count seven stacks on from the break
+    if (mode === 'dice' && openSide !== null && rolled !== null && phase === 'dead') {
+      for (let i = 1; i <= deadCount; i += 1) {
+        const at = gAt(firstDead + i - 1);
+        const pose = wallSlot(at.side, at.stack, 0);
+        const pos = g.project(pose.x, pose.y, FELT_Z + TILE_T * 2 + 3);
+        g.pill(pos.x, pos.y, String(i), { bg: 'rgba(230,180,34,0.96)', fg: p.ink, size: 11 });
+      }
+      g.pill(g.W / 2, 24, t('7 pilas: el muro muerto', '7 stacks: the dead wall', '7 pilhas: o muro morto'), { bg: p.gold, fg: p.ink, size: 14 });
+    }
+
     // dora phase: count three stacks in from the break
     if (mode === 'dice' && openSide !== null && rolled !== null && phase === 'dora') {
       const out = OUT[openSide];
       for (let i = 1; i <= doraCount; i += 1) {
-        const idx = ROW - rolled + (i - 1);
-        const sd = idx <= ROW - 1 ? openSide : (openSide + 1) % 4;
-        const st = idx <= ROW - 1 ? idx : idx - ROW;
-        const pose = wallSlot(sd, st, 0);
+        const at = gAt(firstDead + i - 1);
+        const pose = wallSlot(at.side, at.stack, 0);
         const pos = g.project(pose.x + out[0] * 3.4, pose.y + out[1] * 3.4, FELT_Z + TILE_T * 2 + 3);
         g.pill(pos.x, pos.y, String(i), { bg: 'rgba(230,180,34,0.96)', fg: p.ink, size: 12 });
       }
