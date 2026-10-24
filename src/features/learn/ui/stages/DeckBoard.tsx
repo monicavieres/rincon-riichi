@@ -53,77 +53,54 @@ export function wallSlot(side: number, stack: number, level: number): Pose {
 }
 
 const RIVAL_START = [{ x: 96, y: 50 }, { x: 50, y: 4 }, { x: 4, y: 50 }];
-const RIVAL_TURN = [-90, 180, 90];
+const RIVAL_TURN = [0, -90, 180];
 /** The rivals stop shuffling after this long. */
 const RIVAL_MS = 3000;
 
-/** A tapered finger from (cx, baseY) up to tipY, as an outline path. */
-const finger = (cx: number, baseY: number, tipY: number, w: number, lean = 0) => {
-  const tip = w * 0.34;
-  const mid = baseY + (tipY - baseY) * 0.45;
-  const mid2 = tipY + (baseY - tipY) * 0.22;
-  const left = cx - w / 2;
-  const right = cx + w / 2;
-  return `M${left} ${baseY}C${left} ${mid} ${cx - tip + lean} ${mid2} ${cx - tip + lean} ${tipY + tip}A${tip} ${tip} 0 0 1 ${cx + tip + lean} ${tipY + tip}C${cx + tip + lean} ${mid2} ${right} ${mid} ${right} ${baseY}Z`;
-};
+type Digit = { from: [number, number]; to: [number, number]; w: number };
 
-/** An almond nail sitting on a fingertip. */
-const nail = (cx: number, tipY: number, w: number, lean = 0, length = 13) => {
-  const a = w * 0.33;
-  const x = cx + lean;
-  return `M${x - a} ${tipY + length}C${x - a} ${tipY + 4} ${x - a * 0.55} ${tipY + 0.8} ${x} ${tipY + 0.8}C${x + a * 0.55} ${tipY + 0.8} ${x + a} ${tipY + 4} ${x + a} ${tipY + length}Q${x} ${tipY + length + 2.6} ${x - a} ${tipY + length}Z`;
-};
-
-/** A woman's open hand seen from above, pointing up: long fingers, almond nails, a thin ring and a soft cuff. */
+/** A soft anime-style hand lying flat, fingers pointing left and the forearm trailing to the right. */
 function Palm() {
-  const outline = '#a06f5a';
-  const digits: Array<{ cx: number; tip: number; w: number; lean: number }> = [
-    { cx: 37.4, tip: 24, w: 8.8, lean: -1.2 },
-    { cx: 46.8, tip: 12, w: 9, lean: -0.3 },
-    { cx: 56.2, tip: 20, w: 8.8, lean: 0.6 },
-    { cx: 64.6, tip: 38, w: 7.6, lean: 1.8 },
+  const skin = '#fde8dd';
+  const shadow = '#f3c9bc';
+  const line = '#dc9d8d';
+  const digits: Digit[] = [
+    { from: [118, 92], to: [64, 108], w: 15 },
+    { from: [98, 79], to: [42, 87], w: 11.5 },
+    { from: [98, 67], to: [24, 64], w: 12.5 },
+    { from: [98, 55], to: [17, 43], w: 13 },
+    { from: [98, 43], to: [30, 22], w: 12.5 },
   ];
-  const palm = 'M33.500 86C32 100 34 112 39 123C42 129 43 136 43 152H57C57 136 58 129 61 123C66 112 68 100 66.500 86Z';
+  const palm = 'M86 42C100 31 140 31 158 41C166 54 166 76 154 90C140 99 104 99 90 91C80 80 78 56 86 42Z';
+  const forearm = 'M148 40C175 37 205 39 224 45C232 49 232 77 224 81C205 87 175 89 148 89Z';
   return (
-    <svg viewBox="0 0 100 180" aria-hidden="true">
+    <svg viewBox="0 0 236 124" aria-hidden="true">
       <defs>
-        <linearGradient id="hand-skin" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#fbe5d3" />
-          <stop offset="1" stopColor="#f0c4a6" />
-        </linearGradient>
-        <linearGradient id="hand-nail" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#fff4f1" />
-          <stop offset="1" stopColor="#f6d3d0" />
+        <linearGradient id="hand-palm" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fff1e9" />
+          <stop offset="1" stopColor="#f6d2c5" />
         </linearGradient>
       </defs>
-      {/* wrist and thumb behind the palm */}
-            <g transform="translate(36 112) rotate(-52)">
-        <path d={finger(0, 0, -50, 10.4)} fill="url(#hand-skin)" stroke={outline} strokeWidth="1.5" strokeLinejoin="round" />
-        <path d={nail(0, -50, 10.4, 0, 12)} fill="url(#hand-nail)" stroke="#e6aeb0" strokeWidth="0.8" />
+      {/* outline first, then the soft fill, so the line stays thin and even */}
+      <g stroke={line} strokeLinecap="round" strokeLinejoin="round">
+        {digits.map((d) => <line key={`o-${d.to[0]}`} x1={d.from[0]} y1={d.from[1]} x2={d.to[0]} y2={d.to[1]} strokeWidth={d.w + 3} />)}
+        <path d={forearm} strokeWidth="3" fill={line} />
+        <path d={palm} strokeWidth="3" fill={line} />
       </g>
-      {digits.map((d) => (
-        <path key={d.cx} d={finger(d.cx, 94, d.tip, d.w, d.lean)} fill="url(#hand-skin)" stroke={outline} strokeWidth="1.5" strokeLinejoin="round" />
-      ))}
-      <path d={palm} fill="url(#hand-skin)" stroke={outline} strokeWidth="1.5" strokeLinejoin="round" />
-      {digits.map((d) => (
-        <g key={`n-${d.cx}`}>
-          <path d={nail(d.cx, d.tip, d.w, d.lean)} fill="url(#hand-nail)" stroke="#e6aeb0" strokeWidth="0.8" />
-          <path d={nail(d.cx - d.w * 0.12, d.tip + 1.6, d.w * 0.4, d.lean, 5)} fill="#fff" opacity=".7" />
-        </g>
-      ))}
-      <g fill="none" stroke="#d9a98a" strokeWidth="0.9" strokeLinecap="round" opacity=".7">
-        <path d="M35 88q3 2 6 0M44 88q3 2 6 0M53 88q3 2 6 0M61.500 88q3 2 6 0M37 104q12 7 26 0M43 116q7 3 14 0" />
+      <g strokeLinecap="round" fill="none">
+        {digits.map((d) => <line key={`f-${d.to[0]}`} x1={d.from[0]} y1={d.from[1]} x2={d.to[0]} y2={d.to[1]} stroke={skin} strokeWidth={d.w} />)}
+        {digits.map((d) => <line key={`h-${d.to[0]}`} x1={d.from[0] - 4} y1={d.from[1] - d.w * 0.22} x2={d.to[0] + 4} y2={d.to[1] - d.w * 0.22} stroke="#fff" strokeOpacity=".55" strokeWidth="2.6" />)}
       </g>
-      <ellipse cx="56.200" cy="62" rx="4.800" ry="1.800" fill="none" stroke="#d6a93c" strokeWidth="1.500" />
-      {/* soft cuff in the style's colours */}
-      <g stroke={outline} strokeWidth="1.3" strokeLinejoin="round">
-        <rect x="28" y="150" width="44" height="28" rx="9" fill="var(--tile-cream)" />
-        <rect x="28" y="158" width="44" height="4.500" fill="var(--tile-back)" />
+      <path d={forearm} fill="url(#hand-palm)" />
+      <path d={palm} fill="url(#hand-palm)" />
+      <path d="M96 92C112 98 138 98 152 90C140 100 104 101 96 92Z" fill={shadow} opacity=".8" />
+      <g fill="none" stroke={shadow} strokeWidth="1.6" strokeLinecap="round">
+        <path d="M100 49L74 45M100 61L72 58M100 73L74 72" />
+        <path d="M130 52C138 60 138 74 128 84" opacity=".6" />
       </g>
-      <g fill="var(--tile-cream)" stroke={outline} strokeWidth="1.1">
-        {[33, 40, 47, 54, 61, 67].map((x) => <circle key={x} cx={x} cy="151" r="4.200" />)}
+      <g fill="#fff" opacity=".7">
+        {digits.slice(1).map((d) => <ellipse key={`n-${d.to[0]}`} cx={d.to[0] + 6} cy={d.to[1]} rx="4.6" ry="3" transform={`rotate(${(Math.atan2(d.to[1] - d.from[1], d.to[0] - d.from[0]) * 180) / Math.PI} ${d.to[0] + 6} ${d.to[1]})`} />)}
       </g>
-      <rect x="31" y="152" width="38" height="5" fill="var(--tile-cream)" />
     </svg>
   );
 }
@@ -156,7 +133,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
   const lag = useRef({ x: 0, y: 0 });
 
   /** A hand passing over the felt at `point`, moving (dx, dy) since the last frame, pushes the tiles around it. */
-  const sweep = useCallback((point: { x: number; y: number }, dx: number, dy: number) => {
+  const sweep = useCallback((point: { x: number; y: number }, dx: number, dy: number, gain = 1) => {
     const speed = Math.hypot(dx, dy);
     if (speed < 0.03) return;
     const v = vel.current;
@@ -166,9 +143,9 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
       const dist = Math.hypot(ox, oy);
       if (dist > SWEEP_R) return;
       const falloff = (1 - dist / SWEEP_R) ** 1.3;
-      v[index * 3] += (dx * 0.55 + (ox / (dist || 1)) * speed * 0.22 + rand(-0.06, 0.06)) * falloff;
-      v[index * 3 + 1] += (dy * 0.55 + (oy / (dist || 1)) * speed * 0.22 + rand(-0.06, 0.06)) * falloff;
-      v[index * 3 + 2] += (rand(-3, 3) + dx * 1.2) * falloff;
+      v[index * 3] += (dx * 0.55 + (ox / (dist || 1)) * speed * 0.22 + rand(-0.06, 0.06)) * falloff * gain;
+      v[index * 3 + 1] += (dy * 0.55 + (oy / (dist || 1)) * speed * 0.22 + rand(-0.06, 0.06)) * falloff * gain;
+      v[index * 3 + 2] += (rand(-3, 3) + dx * 1.2) * falloff * gain;
       pose.z = ++zTop.current;
     });
   }, []);
@@ -193,7 +170,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
       const ease = Math.min(1, elapsed / 700);
       const target = { x: start.x + (path.x - start.x) * ease, y: start.y + (path.y - start.y) * ease };
       const from = rivalAt.current[hand];
-      if (!done) sweep(target, target.x - from.x, target.y - from.y);
+      if (!done) sweep(target, target.x - from.x, target.y - from.y, 0.4);
       rivalAt.current[hand] = target;
       const fade = done ? 0 : Math.min(1, elapsed / 300);
       el.style.opacity = String(fade);
@@ -201,7 +178,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
       if (at) {
         el.style.left = `${at.x}px`;
         el.style.top = `${at.y}px`;
-        el.style.transform = `translate(-50%, -78%) rotate(${RIVAL_TURN[hand]}deg) scale(${at.f})${hand === 1 ? ' scaleX(-1)' : ''}`;
+        el.style.transform = `translate(-22%, -50%) rotate(${RIVAL_TURN[hand]}deg) scale(${at.f})`;
       }
     });
     if (done) clock.active = false;
@@ -227,7 +204,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
     });
     scene.current?.invalidate();
     if (energy > 0) {
-      moved.current += energy;
+      moved.current += rivalClock.current.active ? energy * 0.2 : energy;
       setProgress(Math.min(1, moved.current / 2700));
     }
     // the second hand trails the first, so the pair feels like two palms mixing
@@ -235,7 +212,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
     if (hand2 && pointer.current.inside) {
       lag.current.x += (pointer.current.x - 54 - lag.current.x) * 0.16;
       lag.current.y += (pointer.current.y + 18 - lag.current.y) * 0.16;
-      hand2.style.transform = `translate(${lag.current.x}px, ${lag.current.y}px) translate(-50%, -50%) scaleX(-1) rotate(${pointer.current.down ? 8 : -6}deg)`;
+      hand2.style.transform = `translate(${lag.current.x}px, ${lag.current.y}px) translate(-22%, -50%) scaleX(-1) rotate(${pointer.current.down ? 10 : 4}deg)`;
     }
     if (energy > 0.05 || pointer.current.inside || rivalClock.current.active) frame.current = requestAnimationFrame(step);
   }, [moveRivals]);
@@ -259,7 +236,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
     pointer.current.x = clientX - rect.left;
     pointer.current.y = clientY - rect.top;
     const hand = handRef.current;
-    if (hand) hand.style.transform = `translate(${pointer.current.x}px, ${pointer.current.y}px) translate(-50%, -50%) rotate(${pointer.current.down ? -10 : 4}deg) scale(${pointer.current.down ? 0.94 : 1})`;
+    if (hand) hand.style.transform = `translate(${pointer.current.x}px, ${pointer.current.y}px) translate(-22%, -50%) rotate(${pointer.current.down ? -14 : -6}deg) scale(${pointer.current.down ? 0.95 : 1})`;
   };
 
   const showHands = (visible: boolean) => {
