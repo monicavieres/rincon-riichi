@@ -42,7 +42,7 @@ const turn = (from: number, to: number) => {
 /** Where a player's n-th tile lands: a tidy row along their own edge, the last one set slightly apart. */
 function handSlot(player: number, n: number, extra: boolean) {
   const gap = extra ? 2.2 : 0;
-  const spacing = player % 2 === 1 ? 6.3 : 4.5;
+  const spacing = 3.7; // tiles touch, like the walls: only their backs show
   const base = { x: 50 + (n - 6) * spacing + gap, y: HAND_EDGE };
   const p = around(base, player);
   return { x: p.x, y: p.y, rot: ROT[player] };
