@@ -18,7 +18,7 @@ const CAM_PERSP = 1.7;
 export const FELT_Z = 6;
 export const TILE_T = 3.2;
 
-export type Palette = { back: string; cream: string; ink: string; rail: string; rim: string; felt: string; gold: string; emblem: string; compass: string };
+export type Palette = { faces: string; back: string; cream: string; ink: string; rail: string; rim: string; felt: string; gold: string; emblem: string; compass: string };
 export type Pt = { x: number; y: number };
 type Cam = Pt & { f: number; X: number; Y: number; Z: number };
 
@@ -43,6 +43,11 @@ export const mix = (a: string, b: string, t: number) => {
 const THEME_EMBLEM: Record<string, string> = {
   light: 'assets/rincon-mark.svg', dark: 'assets/emblems/neon.svg', cute: 'assets/emblems/cute.svg', samurai: 'assets/emblems/samurai.svg',
   cyberpunk: 'assets/emblems/cyberpunk.svg', vaquero: 'assets/emblems/vaquero.svg', frutiger: 'assets/emblems/frutiger.svg', fox: 'assets/emblems/fox.svg',
+};
+
+const FACE_DIR: Record<string, string> = {
+  light: 'assets/tiles-fluffystuff-composite', dark: 'assets/tiles-neon', cute: 'assets/tiles-cute', samurai: 'assets/tiles-samurai',
+  cyberpunk: 'assets/tiles-cyberpunk', vaquero: 'assets/tiles-vaquero', frutiger: 'assets/tiles-frutiger', fox: 'assets/tiles-fox',
 };
 
 const assetBase = () => (/\/(aprender|practicar|recursos)\//.test(window.location.pathname) ? '../' : '');
@@ -80,6 +85,7 @@ const cssVar = (name: string, fallback: string) => {
 function readPalette(): Palette {
   const theme = document.documentElement.getAttribute('data-theme') || 'light';
   return {
+    faces: FACE_DIR[theme] ?? FACE_DIR.light,
     back: cssVar('--tile-back', '#f3c63d'),
     cream: cssVar('--tile-cream', '#fbf2df'),
     ink: cssVar('--tile-ink', '#3b2417'),
@@ -226,35 +232,43 @@ export class Painter {
   }
 
   /** One tile lying face down: back colour and emblem on top, banded edges. */
-  tile(x: number, y: number, rot: number, z0: number, opts: { counting?: boolean; w?: number; l?: number; t?: number; order?: number } = {}) {
+  tile(x: number, y: number, rot: number, z0: number, opts: { counting?: boolean; w?: number; l?: number; t?: number; order?: number; flip?: number; face?: CanvasImageSource | null } = {}) {
     const { palette: p } = this;
     const w = opts.w ?? 3.6;
     const l = opts.l ?? 4.8;
     const t = opts.t ?? TILE_T;
     const back = opts.counting ? '#e6b422' : p.back;
     const cream = opts.counting ? '#fff1b8' : p.cream;
-    this.add(opts.order ?? y * 100 + z0, () => {
-      const g = this.box(x, y, z0, w, l, t, rot);
+    // turning a tile over: it squeezes along its width, lifts, and lands face up
+    const flip = opts.flip ?? 0;
+    const squeeze = flip > 0 ? Math.max(0.06, Math.abs(Math.cos(flip * Math.PI))) : 1;
+    const lift = flip > 0 ? Math.sin(flip * Math.PI) * 5 : 0;
+    const faceUp = flip >= 0.5 && !!opts.face;
+    this.add(opts.order ?? y * 100 + z0 + lift, () => {
+      const g = this.box(x, y, z0 + lift, w * squeeze, l, t, rot);
       g.sides.forEach((face) => {
         this.bandedFace(face, [[0, 0.3, back], [0.3, 0.7, cream], [0.7, 1, back]], lit(face.n), p.ink);
       });
-      this.poly(g.top, back, p.ink);
-      const emblem = picture(p.emblem);
-      if (emblem && !opts.counting) {
+      this.poly(g.top, faceUp ? '#fffdf6' : back, p.ink);
+      if (faceUp && opts.face) {
+        this.textured(opts.face, x, y, w * squeeze, l, rot, z0 + lift + t, 6);
+      } else {
+        const emblem = picture(p.emblem);
+        if (emblem && !opts.counting) {
+          this.onQuad(g.top, () => {
+            const s = 0.64;
+            this.ctx.drawImage(emblem, 0.5 - s / 2, 0.5 - (s * w) / l / 2, s, (s * w) / l);
+          });
+        }
         this.onQuad(g.top, () => {
-          const s = 0.64;
-          this.ctx.drawImage(emblem, 0.5 - s / 2, 0.5 - (s * w) / l / 2, s, (s * w) / l);
+          const { ctx } = this;
+          ctx.strokeStyle = 'rgba(255,255,255,0.32)';
+          ctx.lineWidth = 0.04;
+          ctx.strokeRect(0.1, 0.08, 0.8, 0.84);
         });
       }
-      this.onQuad(g.top, () => {
-        const { ctx } = this;
-        ctx.strokeStyle = 'rgba(255,255,255,0.32)';
-        ctx.lineWidth = 0.04;
-        ctx.strokeRect(0.1, 0.08, 0.8, 0.84);
-      });
     });
   }
-
 
   /** A die lying on the felt. `up` is the value on top (0 = blank); `spin` tumbles it instead. */
   die(x: number, y: number, z0: number, size: number, opts: { up: number; yaw: number; spin?: number; order?: number }) {

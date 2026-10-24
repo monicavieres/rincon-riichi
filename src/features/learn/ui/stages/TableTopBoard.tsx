@@ -72,7 +72,9 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
   const [rolling, setRolling] = useState(false);
   const [rolled, setRolled] = useState<number | null>(null);
   const [counted, setCounted] = useState(0);
-  const [phase, setPhase] = useState<'idle' | 'compass' | 'wall' | 'split' | 'done'>('idle');
+  const [phase, setPhase] = useState<'idle' | 'compass' | 'wall' | 'split' | 'dora' | 'done'>('idle');
+  const [doraCount, setDoraCount] = useState(0);
+  const flipStart = useRef(0);
   const splitStart = useRef(0);
   const viewNow = useRef({ u: 50, v: 50, zoom: 1 });
   const lastFrame = useRef(0);
@@ -171,6 +173,8 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     setRolled(null);
     setCounted(0);
     setPhase('idle');
+    setDoraCount(0);
+    flipStart.current = 0;
     const later = (ms: number, action: () => void) => { timers.current.push(window.setTimeout(action, ms)); };
     later(1100, () => {
       const a = 1 + Math.floor(Math.random() * 6);
@@ -194,7 +198,23 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
             later(1000, () => {
               splitStart.current = performance.now();
               setPhase('split');
-              later(2300, () => setPhase('done'));
+              // 4) count three stacks into the dead wall and turn the dora indicator face up
+              later(2000, () => {
+                setPhase('dora');
+                let c = 0;
+                const tally = window.setInterval(() => {
+                  c += 1;
+                  setDoraCount(c);
+                  if (c >= 3) {
+                    window.clearInterval(tally);
+                    later(700, () => {
+                      flipStart.current = performance.now();
+                      later(1500, () => setPhase('done'));
+                    });
+                  }
+                }, 700);
+                timers.current.push(tally);
+              });
             });
           }
         }, 330);
@@ -226,6 +246,15 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     }
   }
   const OUT = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+  const deadMid = (() => {
+    if (openSide === null || rolled === null) return { x: 50, y: 50 };
+    const list = [...dead].map((key) => key.split(':').map(Number)).map(([sd, st]) => wallSlot(sd, st, 0));
+    const out = OUT[openSide];
+    return { x: list.reduce((a, q) => a + q.x, 0) / list.length + out[0] * 3.4, y: list.reduce((a, q) => a + q.y, 0) / list.length + out[1] * 3.4 };
+  })();
+  // the dora indicator: the third stack from the break, its top tile turned face up
+  const doraStack = rolled === null ? -1 : ROW - rolled + 2;
+  const doraKey = openSide === null ? '' : doraStack <= ROW - 1 ? `${openSide}:${doraStack}` : `${(openSide + 1) % 4}:${doraStack - ROW}`;
 
   const draw = (g: Painter) => {
     const { palette: p, ctx } = g;
@@ -235,7 +264,8 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     const target = phase === 'compass' ? { u: 50, v: 50, zoom: 2.1 }
       : phase === 'wall' ? { u: wallMid.x, v: wallMid.y, zoom: 2 }
         : phase === 'split' ? { u: wallMid.x, v: wallMid.y, zoom: 1.7 }
-          : { u: 50, v: 50, zoom: 1 };
+          : phase === 'dora' ? { u: deadMid.x, v: deadMid.y, zoom: 2.6 }
+            : { u: 50, v: 50, zoom: 1 };
     const v = viewNow.current;
     const dt = Math.min(200, g.now - lastFrame.current);
     lastFrame.current = g.now;
@@ -261,7 +291,10 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
       const isDead = dead.has(`${side}:${stack}`);
       const counting = phase === 'wall' ? openSide === side && stack >= ROW - counted : splitT > 0 && isDead;
       const shift = isDead ? eased * 3.4 : 0;
-      g.tile(pose.x + OUT[side][0] * shift, pose.y + OUT[side][1] * shift, pose.rot, FELT_Z + (pose.h ?? 0) * TILE_T + (isDead ? eased * 0.8 : 0), { counting });
+      const isDora = k >= ROW && `${side}:${stack}` === doraKey;
+      const flip = isDora && flipStart.current > 0 ? Math.min(1, (g.now - flipStart.current) / 1100) : 0;
+      if (isDora && flip > 0 && flip < 1) g.needsFrame = true;
+      g.tile(pose.x + OUT[side][0] * shift, pose.y + OUT[side][1] * shift, pose.rot, FELT_Z + (pose.h ?? 0) * TILE_T + (isDead ? eased * 0.8 : 0), { counting: counting && !(isDora && flip > 0.5), flip, face: isDora ? picture(`${p.faces}/4p.svg`) : null });
     }
 
     // goals while the player is placing pieces
@@ -358,6 +391,20 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
       }
     }
 
+    // dora phase: count three stacks in from the break
+    if (mode === 'dice' && openSide !== null && rolled !== null && phase === 'dora') {
+      const out = OUT[openSide];
+      for (let i = 1; i <= doraCount; i += 1) {
+        const idx = ROW - rolled + (i - 1);
+        const sd = idx <= ROW - 1 ? openSide : (openSide + 1) % 4;
+        const st = idx <= ROW - 1 ? idx : idx - ROW;
+        const pose = wallSlot(sd, st, 0);
+        const pos = g.project(pose.x + out[0] * 3.4, pose.y + out[1] * 3.4, FELT_Z + TILE_T * 2 + 3);
+        g.pill(pos.x, pos.y, String(i), { bg: 'rgba(230,180,34,0.96)', fg: p.ink, size: 12 });
+      }
+      if (flipStart.current > 0) g.pill(g.W / 2, 24, t('Indicador de dora', 'Dora indicator', 'Indicador de dora'), { bg: p.gold, fg: p.ink, size: 14 });
+    }
+
     // after opening: name the dead wall and show where drawing starts
     if (mode === 'dice' && openSide !== null && rolled !== null && eased > 0.6) {
       const deadList = [...dead].map((key) => key.split(':').map(Number));
@@ -443,7 +490,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
         {mode === 'dice' && rolled !== null && openSide !== null && phase === 'done' && (
           <p className="sort-win is-top" role="status">
             <b>{t(`Suma ${rolled}: se abre el muro de ${SIDE_LABEL.es[openSide]}`, `Total ${rolled}: the wall of ${SIDE_LABEL.en[openSide]} opens`, `Soma ${rolled}: abre o muro de ${SIDE_LABEL.pt[openSide]}`)}</b>
-            <span>{t(`Se cuentan ${rolled} pilas desde la derecha y ahí se abre: 7 pilas a la derecha del corte son el muro muerto.`, `Count ${rolled} stacks from the right and open there: 7 stacks right of the cut are the dead wall.`, `Contam-se ${rolled} pilhas a partir da direita e abre-se ali: 7 pilhas à direita do corte são o muro morto.`)}</span>
+            <span>{t(`Se cuentan ${rolled} pilas desde la derecha y ahí se abre. Las 7 pilas a la derecha del corte son el muro muerto; en su 3ª pila se voltea la ficha de arriba: el indicador de dora.`, `Count ${rolled} stacks from the right and open there. The 7 stacks right of the cut are the dead wall; on its 3rd stack the top tile is flipped: the dora indicator.`, `Contam-se ${rolled} pilhas a partir da direita e abre-se ali. As 7 pilhas à direita do corte são o muro morto; na 3ª pilha vira-se a peça de cima: o indicador de dora.`)}</span>
           </p>
         )}
         {mode === 'compass' && done && (
