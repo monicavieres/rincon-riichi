@@ -27,13 +27,15 @@ function useDataTheme() {
  */
 /** Where each dab of paint sits on the palette (percent of its box) and how it is tilted. */
 const DAB_AT: Array<[number, number, number]> = [
-  [20, 43, -6], [31, 22, 5], [50, 14, -4], [69, 17, 6], [84, 32, -5], [87, 57, 7], [68, 77, -6], [50, 50, 4],
+  [19.5, 42, -6], [30.5, 24, 5], [50, 19, -4], [69.5, 24, 6], [80.5, 42, -5], [80, 62.5, 7], [59, 71, -6], [47, 47, 4],
 ];
 
 export function ThemePicker({ assetBase }: { assetBase: string }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const current = themeById(useDataTheme());
+  const [hover, setHover] = useState<string | null>(null);
+  const shown = hover ? themeById(hover) : current;
 
   useEffect(() => {
     if (!open) return;
@@ -79,23 +81,26 @@ export function ThemePicker({ assetBase }: { assetBase: string }) {
             <defs>
               <linearGradient id="paint-wood" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#f0d29c" /><stop offset="1" stopColor="#d9b073" /></linearGradient>
             </defs>
-            <path d="M58 122C22 74 66 14 160 12c92-2 148 48 146 108-2 54-52 82-90 78-30-3-40 18-66 26C106 238 50 214 58 122Z" />
-            <ellipse cx="98" cy="170" rx="17" ry="14" className="paint-hole" />
+            <path d="M160 14C70 14 18 62 18 124c0 64 52 102 112 102 30 0 40-20 60-26 20-6 42 4 66-4 34-12 48-46 48-84C304 56 242 14 160 14Z" />
+            <ellipse cx="92" cy="170" rx="17" ry="14" className="paint-hole" />
           </svg>
           {themes.map((theme, index) => (
             <label
               className="paint-dab"
               key={theme.id}
               title={`${theme.name} · ${theme.mood}`}
-              style={{ left: `${DAB_AT[index][0]}%`, top: `${DAB_AT[index][1]}%`, ['--c1' as string]: theme.swatches[1], ['--c2' as string]: theme.swatches[2], ['--c3' as string]: theme.swatches[0], ['--tilt' as string]: `${DAB_AT[index][2]}deg` }}
+              onMouseEnter={() => setHover(theme.id)}
+              onMouseLeave={() => setHover(null)}
+              onFocus={() => setHover(theme.id)}
+              onBlur={() => setHover(null)}
+              style={{ left: `${DAB_AT[index][0]}%`, top: `${DAB_AT[index][1]}%`, ['--c1' as string]: theme.swatches[1], ['--tilt' as string]: `${DAB_AT[index][2]}deg` }}
             >
               <input type="radio" name="theme" value={theme.id} aria-label={`Estilo ${theme.name}`} onChange={() => setOpen(false)} />
               <i aria-hidden="true"><img src={`${assetBase}assets/${theme.emblem}`} alt="" draggable={false} /></i>
-              <small>{theme.name}</small>
             </label>
           ))}
         </div>
-        <p className="paint-caption"><b>{current.name}</b> · {current.mood}</p>
+        <p className="paint-caption"><b>{shown.name}</b> · {shown.mood}</p>
       </div>
     </div>
   );
