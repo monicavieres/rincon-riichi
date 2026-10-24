@@ -9,7 +9,7 @@ const GRAB = TILE_W * 1.6;
 const BOT_DELAY = [1400, 1900, 2400];
 const BOT_TICK = 320;
 /** Walls are built at the table edge (row A, then row B just inside it), stacked, then slid in to the square. */
-const EDGE_Y = 91;
+const EDGE_Y = 95.4;
 const ROW_GAP = TILE_H * 1.15;
 const ROT = [0, -90, 180, 90];
 const SURFACE = FELT_Z + TILE_T;
