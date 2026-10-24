@@ -30,9 +30,9 @@ const PRACTICE_COPY = {
     'Segure e varra o monte com o mouse ou o dedo até encher a barra. Sem mouse? «Mexer» dá um empurrão em todas as peças.',
   ),
   walls: L(
-    'Arrastra las fichas al recuadro punteado de abajo: primero las 17 de la fila inferior, luego las 17 de arriba. Tus rivales arman los suyos solos. ¿Sin arrastrar? «Colocar ficha →» las pone una a una y «Completar» termina tu muro.',
-    'Drag tiles into the dotted strip at the bottom: first the 17 of the lower row, then the 17 on top. Your rivals build theirs on their own. Not dragging? “Place tile →” sets them one by one and “Fill” finishes your wall.',
-    'Arraste as peças para o retângulo pontilhado de baixo: primeiro as 17 da fileira inferior, depois as 17 de cima. Seus rivais montam os deles sozinhos. Sem arrastar? «Colocar peça →» coloca uma a uma e «Completar» termina seu muro.',
+    '1. Arrastra 17 fichas a los huecos de tu borde. 2. Otras 17 en la fila de atrás. 3. Arrastra la fila de atrás sobre la de adelante. 4. Arrastra el muro hasta el marco punteado. Tus rivales lo hacen solos. ¿Sin arrastrar? Usa los botones.',
+    '1. Drag 17 tiles into the slots on your edge. 2. 17 more in the back row. 3. Drag the back row onto the front row. 4. Drag the wall to the dotted frame. Your rivals do it on their own. Not dragging? Use the buttons.',
+    '1. Arraste 17 peças para os encaixes da sua borda. 2. Mais 17 na fileira de trás. 3. Arraste a fileira de trás sobre a da frente. 4. Arraste o muro até o quadro pontilhado. Seus rivais fazem sozinhos. Sem arrastar? Use os botões.',
   ),
   dealer: L(
     'Espera a que lancen tus tres rivales y luego pulsa «Lanzar mi dado» (o toca tu dado). El número más alto es el dealer.',

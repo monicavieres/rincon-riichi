@@ -171,9 +171,9 @@ export const tutorialStops: TutorialStop[] = [
     eyebrow: L('Siguiente paso', 'Next step', 'Próximo passo'),
     title: L('Arma los cuatro muros', 'Build the four walls', 'Monte os quatro muros'),
     body: L(
-      'Con las fichas mezcladas, cada jugador arma un muro frente a sí: 17 pilas de dos fichas, 34 en total. Tú armas el de abajo arrastrando las fichas; tus rivales arman los suyos solos. Los cuatro juntos forman el cuadrado de la mesa.',
-      'With the tiles mixed, each player builds a wall in front of them: 17 stacks of two tiles, 34 in all. You build the bottom one by dragging tiles; your rivals build theirs on their own. Together the four form the square of the table.',
-      'Com as peças misturadas, cada jogador monta um muro à sua frente: 17 pilhas de duas peças, 34 no total. Você monta o de baixo arrastando as peças; seus rivais montam os deles sozinhos. Os quatro juntos formam o quadrado da mesa.',
+      'Con las fichas mezcladas, cada jugador arma un muro frente a sí: 17 pilas de dos fichas, 34 en total. Cada uno arma el suyo en su borde: alinea 17 fichas, otras 17 en una segunda fila, sube una fila sobre la otra y desliza el muro hasta su sitio. Tú lo haces arrastrando; tus rivales arman los suyos solos. Los cuatro juntos forman el cuadrado de la mesa.',
+      'With the tiles mixed, each player builds a wall in front of them: 17 stacks of two tiles, 34 in all. Each builds theirs at their own edge: line up 17 tiles, 17 more in a second row, lift one row onto the other and slide the wall into place. You do it by dragging; your rivals build theirs on their own. Together the four form the square of the table.',
+      'Com as peças misturadas, cada jogador monta um muro à sua frente: 17 pilhas de duas peças, 34 no total. Cada um monta o seu na própria borda: alinhe 17 peças, mais 17 numa segunda fileira, suba uma fileira sobre a outra e deslize o muro até o lugar. Você faz isso arrastando; seus rivais montam os deles sozinhos. Os quatro juntos formam o quadrado da mesa.',
     ),
     bullets: [
       L('Cada lado: 17 pilas × 2 fichas = 34 fichas.', 'Each side: 17 stacks × 2 tiles = 34 tiles.', 'Cada lado: 17 pilhas × 2 peças = 34 peças.'),
