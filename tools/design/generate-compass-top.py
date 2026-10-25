@@ -51,10 +51,6 @@ def build(name, t):
     out.append(f'<path d="{cross}" fill="{t["cpurple"]}" stroke="{ink}" stroke-width="7" stroke-linejoin="round"/>')
     for x, y, w, h in ((235, 116, 230, 48), (235, 536, 230, 48), (116, 235, 48, 230), (536, 235, 48, 230)):
         out.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="10" fill="{t["cpurple"]}" stroke="{ink}" stroke-width="5"/>')
-    # the riichi stick lies in East's slot (the player's)
-    out.append(f'<rect x="240" y="594" width="220" height="32" rx="9" fill="#2f6fd0" stroke="{ink}" stroke-width="4"/>')
-    for i in range(5):
-        out.append(f'<circle cx="{280 + i * 35}" cy="610" r="5" fill="#fff"/>')
     # centre: the style's emblem, or the rose on the paper style
     if t.get('back_emblem'):
         out.append(f'<g transform="translate(274 274) scale(2.375)">{emblem(t["back_emblem"])}</g>')

@@ -390,6 +390,70 @@ export class Painter {
     }
   }
 
+
+  /**
+   * A tile tipping up from lying face down (phi 0) to standing on its edge (phi 90), the way a hand is stood up:
+   * its face ends up toward the player whose edge is local +y, its back toward the middle of the table.
+   */
+  standTile(x: number, y: number, rot: number, phi: number, opts: { face?: CanvasImageSource | null; order?: number } = {}) {
+    const { palette: p } = this;
+    const w = 3.6;
+    const l = 4.8;
+    const t = 3.2;
+    const sRatio = phi / 90;
+    const cf = Math.cos((phi * Math.PI) / 180);
+    const sf = Math.sin((phi * Math.PI) / 180);
+    const pivotY = (1 - sRatio) * (-l / 2) + sRatio * (t / 2);
+    const yaw = (rot * Math.PI) / 180;
+    const co = Math.cos(yaw);
+    const si = Math.sin(yaw);
+    const vertex = (lx: number, ly: number, lz: number) => {
+      const yy = pivotY + ly * cf - lz * sf;
+      const zz = ly * sf + lz * cf;
+      return this.cam(x + lx * co - yy * si, y + lx * si + yy * co, FELT_Z + zz);
+    };
+    const normal = (nx: number, ny: number, nz: number): [number, number, number] => {
+      const yy = ny * cf - nz * sf;
+      const zz = ny * sf + nz * cf;
+      return [nx * co - yy * si, nx * si + yy * co, zz];
+    };
+    const hw = w / 2;
+    type FaceDef = { name: string; n: [number, number, number]; pts: Array<[number, number, number]> };
+    const faces: FaceDef[] = [
+      { name: 'front', n: [0, 0, -1], pts: [[-hw, l, 0], [hw, l, 0], [hw, 0, 0], [-hw, 0, 0]] },
+      { name: 'back', n: [0, 0, 1], pts: [[hw, l, t], [-hw, l, t], [-hw, 0, t], [hw, 0, t]] },
+      { name: 'left', n: [-1, 0, 0], pts: [[-hw, 0, 0], [-hw, l, 0], [-hw, l, t], [-hw, 0, t]] },
+      { name: 'right', n: [1, 0, 0], pts: [[hw, l, 0], [hw, 0, 0], [hw, 0, t], [hw, l, t]] },
+      { name: 'far', n: [0, 1, 0], pts: [[-hw, l, 0], [hw, l, 0], [hw, l, t], [-hw, l, t]] },
+      { name: 'near', n: [0, -1, 0], pts: [[hw, 0, 0], [-hw, 0, 0], [-hw, 0, t], [hw, 0, t]] },
+    ];
+    const zTop = Math.max(0, l * sf + t * cf);
+    this.add(opts.order ?? y * 100 + zTop, () => {
+      const drawn = faces.map((f) => {
+        const quad = f.pts.map(([lx, ly, lz]) => vertex(lx, ly, lz));
+        const centre = f.pts.reduce((acc, q) => [acc[0] + q[0] / 4, acc[1] + q[1] / 4, acc[2] + q[2] / 4], [0, 0, 0]);
+        const mid = vertex(centre[0], centre[1], centre[2]);
+        const nw = normal(f.n[0], f.n[1], f.n[2]);
+        const nc: [number, number, number] = [nw[0], nw[1] * this.cs - nw[2] * this.sn, nw[1] * this.sn + nw[2] * this.cs];
+        const visible = nc[0] * -mid.X + nc[1] * -mid.Y + nc[2] * (this.P - mid.Z) > 0;
+        return { f, quad, mid, nw, visible };
+      }).filter((d) => d.visible).sort((a, b) => a.mid.Z - b.mid.Z);
+      drawn.forEach(({ f, quad, nw }) => {
+        const k = lit(nw);
+        if (f.name === 'front') {
+          this.poly(quad, shade('#fffdf6', k), p.ink);
+          if (opts.face) this.onQuad(quad, () => this.ctx.drawImage(opts.face!, 0, 0, 1, 1));
+        } else if (f.name === 'back') {
+          this.poly(quad, shade(p.back, k), p.ink);
+          const emblem = picture(p.emblem);
+          if (emblem) this.onQuad(quad, () => { const sz = 0.64; this.ctx.drawImage(emblem, 0.5 - sz / 2, 0.5 - (sz * w) / l / 2, sz, (sz * w) / l); });
+        } else {
+          this.poly(quad, shade(p.cream, k), p.ink);
+        }
+      });
+    });
+  }
+
   /** A flat slot on the felt, outlined where a tile will go. */
   ghost(x: number, y: number, rot: number, z0: number, opts: { next?: boolean; hot?: boolean; filled?: boolean; faint?: boolean; w?: number; l?: number } = {}) {
     if (opts.filled) return;

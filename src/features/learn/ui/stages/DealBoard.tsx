@@ -181,18 +181,20 @@ export function DealBoard({ language, onStatus }: { language: TutorialLanguage; 
       const raw = Math.max(0, Math.min(1, (now - flight.start) / 700));
       const e = raw < 0.5 ? 2 * raw * raw : 1 - Math.pow(-2 * raw + 2, 2) / 2;
       if (raw < 1) moving = true;
-      // your own tiles turn face up once the deal is over
-      let flip = 0;
-      let faceImage: CanvasImageSource | null = null;
-      if (raw >= 1 && flight.player === 0 && revealStart.current > 0) {
-        const q = Math.max(0, Math.min(1, (now - revealStart.current - flight.slot * 110) / 850));
-        flip = q < 0.5 ? 4 * q * q * q : 1 - Math.pow(-2 * q + 2, 3) / 2;
-        if (q > 0 && q < 1) moving = true;
-        if (q > 0) faceImage = picture(`${p.faces}/${DEALT_HAND[flight.slot]}.svg`);
-      }
       const fromX = home.x + dx;
       const fromY = home.y + dy;
-      g.tile(fromX + (goal.x - fromX) * e, fromY + (goal.y - fromY) * e, home.rot + turn(home.rot, goal.rot) * e, FELT_Z + level * TILE_T * (1 - e) + Math.sin(Math.PI * raw) * 6, { order: raw < 1 ? 1e5 + index : undefined, flip, arc: 5, face: faceImage });
+      if (raw >= 1 && revealStart.current > 0) {
+        // the hand is stood up, tile after tile: faces toward its owner, backs toward the middle
+        const q = Math.max(0, Math.min(1, (now - revealStart.current - flight.slot * 110) / 800));
+        const lift = q < 0.5 ? 4 * q * q * q : 1 - Math.pow(-2 * q + 2, 3) / 2;
+        if (q > 0 && q < 1) moving = true;
+        if (q > 0) {
+          const face = flight.player === 0 ? picture(`${p.faces}/${DEALT_HAND[flight.slot]}.svg`) : null;
+          g.standTile(goal.x, goal.y, goal.rot, lift * 90, { face });
+          continue;
+        }
+      }
+      g.tile(fromX + (goal.x - fromX) * e, fromY + (goal.y - fromY) * e, home.rot + turn(home.rot, goal.rot) * e, FELT_Z + level * TILE_T * (1 - e) + Math.sin(Math.PI * raw) * 6, { order: raw < 1 ? 1e5 + index : undefined });
     }
     if (moving) g.needsFrame = true;
     g.flush();

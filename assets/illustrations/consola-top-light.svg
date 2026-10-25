@@ -17,12 +17,6 @@
 <rect x="235" y="536" width="230" height="48" rx="10" fill="#4d3eb8" stroke="#23203f" stroke-width="5"/>
 <rect x="116" y="235" width="48" height="230" rx="10" fill="#4d3eb8" stroke="#23203f" stroke-width="5"/>
 <rect x="536" y="235" width="48" height="230" rx="10" fill="#4d3eb8" stroke="#23203f" stroke-width="5"/>
-<rect x="240" y="594" width="220" height="32" rx="9" fill="#2f6fd0" stroke="#23203f" stroke-width="4"/>
-<circle cx="280" cy="610" r="5" fill="#fff"/>
-<circle cx="315" cy="610" r="5" fill="#fff"/>
-<circle cx="350" cy="610" r="5" fill="#fff"/>
-<circle cx="385" cy="610" r="5" fill="#fff"/>
-<circle cx="420" cy="610" r="5" fill="#fff"/>
 <circle cx="350" cy="350" r="82" fill="none" stroke="#eee9ff" stroke-width="4"/>
 <circle cx="350" cy="350" r="62" fill="none" stroke="#eee9ff" stroke-width="3"/>
 <path d="M350 263L368 330L437 312L387 360L437 408L368 390L350 457L332 390L263 408L313 360L263 312L332 330L350 263Z" fill="#f7f2ff" stroke="#23203f" stroke-width="3"/>
