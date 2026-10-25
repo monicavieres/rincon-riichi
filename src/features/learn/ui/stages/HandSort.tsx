@@ -180,7 +180,7 @@ export function HandSort({ language, onStatus }: { language: TutorialLanguage; o
       while (to + 1 < rack.length && suitOf(rack[to + 1].code) === suit) to += 1;
       const mid = (shown.current.get(rack[from].id)!.x + shown.current.get(rack[to].id)!.x) / 2;
       const pos = g.project(mid, HAND_Y, FELT_Z + 8);
-      g.pill(pos.x, pos.y, SUIT_PILL[suit].name[language], { bg: SUIT_PILL[suit].bg, fg: SUIT_PILL[suit].fg, size: 11, border: SUIT_PILL[suit].fg });
+      g.pill(pos.x, pos.y + 7, SUIT_PILL[suit].name[language], { bg: SUIT_PILL[suit].bg, fg: SUIT_PILL[suit].fg, size: 11, border: SUIT_PILL[suit].fg });
       from = to + 1;
     }
     g.pill(g.W / 2, 24, sorted ? t('¡Mano agrupada!', 'Hand grouped!', 'Mão agrupada!') : t('Arrastra las fichas para agrupar tu mano', 'Drag tiles to group your hand', 'Arraste as peças para agrupar sua mão'), { bg: sorted ? '#cdeedd' : p.gold, fg: sorted ? '#14683f' : p.ink, size: 14 });
