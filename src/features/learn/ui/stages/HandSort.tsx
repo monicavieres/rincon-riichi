@@ -40,9 +40,7 @@ export function paintDealtTable(g: Painter, assignments: ReturnType<typeof dealA
   const { palette: p, ctx } = g;
   const COMPASS = 24;
   g.add(50 * 100 + 50, () => {
-    const box = g.box(50, 50, FELT_Z, COMPASS, COMPASS, 3, 0);
-    box.sides.forEach((face) => g.poly(face.q, shade(mix(p.back, '#000000', 0.55), 0.9 + 0.3 * (face.n[0] === 0 ? 0 : 0.2)), p.ink, g.lw * 1.3));
-    g.poly(box.top, p.back, p.ink, g.lw * 1.5);
+    g.slab(50, 50, COMPASS, COMPASS, 3.6, FELT_Z, FELT_Z + 3, mix(p.back, '#000000', 0.55), p.back);
     const art = picture(p.compass);
     if (art) g.textured(art, 50, 50, COMPASS * 1.16, COMPASS * 1.16, 0, FELT_Z + 3);
   });

@@ -516,6 +516,17 @@ export class Painter {
     return pts;
   }
 
+  /** A block with rounded corners: stacked outlines, so the sides curve with the corners. */
+  slab(cx: number, cy: number, w: number, l: number, r: number, z0: number, z1: number, body: string, top: string) {
+    const { palette: p } = this;
+    const slices = 6;
+    const edge = (i: number) => this.plane(cx - w / 2, cy - l / 2, cx + w / 2, cy + l / 2, r, z0 + ((z1 - z0) * i) / slices);
+    this.ctx.lineJoin = 'round';
+    for (let i = 0; i <= slices; i += 1) this.poly(edge(i), null, p.ink, this.lw * 2.2);
+    for (let i = 0; i < slices; i += 1) this.poly(edge(i), shade(body, 0.85 + 0.15 * (i / slices)));
+    this.poly(edge(slices), top, p.ink, this.lw * 1.5);
+  }
+
   /** The table: soft shadow, legs, wooden slab with a gold rail line, felt top. */
   table() {
     const { palette: p, ctx } = this;

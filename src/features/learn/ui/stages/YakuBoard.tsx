@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { tilePath } from './SortBoard';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { dealAssignments } from './DealBoard';
-import { HAND_VIEW, HAND_Y, TAG_LOOK, WIDTH, byKey, handX, pondPos, sleep, tagsOf, type Piece } from './DrawBoard';
+import { HAND_VIEW, WIDE_VIEW, HAND_Y, TAG_LOOK, WIDTH, byKey, handX, pondPos, sleep, tagsOf, type Piece } from './DrawBoard';
 import { paintDealtTable } from './HandSort';
 import { FELT_Z, IsoCanvas, picture, type IsoHandle, type Painter } from './iso3d';
 
@@ -40,12 +40,35 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
   const [stick, setStick] = useState(false);
   const [busy, setBusy] = useState(false);
   const [shout, setShout] = useState(false);
+  const [focus, setFocus] = useState<'hand' | 'wide' | 'compass' | 'plate'>('hand');
+  const [windTags, setWindTags] = useState<'none' | 'seats' | 'plate'>('none');
   const [note, setNote] = useState<{ title: string; body: string } | null>(null);
   const shown = useRef<Map<number, number>>(new Map());
   const motion = useRef<{ kind: 'tile' | 'stick'; from: { x: number; y: number }; to: { x: number; y: number }; start: number; dur: number } | null>(null);
   const alive = useRef(0);
   const viewNow = useRef({ u: 50, v: 90, zoom: 2.3 });
   const lastFrame = useRef(0);
+
+  const tour = async () => {
+    const run = ++alive.current;
+    const live = () => alive.current === run;
+    const wait = async (ms: number) => { await sleep(ms); return live(); };
+    const said = (title: string, body: string) => setNote({ title, body });
+    setFocus('wide');
+    said(t('Yakuhai: ¿cuál es tu viento y cuál el de la ronda?', 'Yakuhai: which is your wind and which is the round’s?', 'Yakuhai: qual é o seu vento e qual o da rodada?'), t('Un trío de dragones siempre da yaku. Los vientos solo cuentan si son el viento de la ronda o el tuyo. Veamos dónde se ven en la mesa.', 'A triplet of dragons always gives a yaku. Winds only count if they are the round wind or yours. Let us see where they show on the table.', 'Um trio de dragões sempre dá yaku. Os ventos só contam se forem o vento da rodada ou o seu. Vamos ver onde aparecem na mesa.'));
+    if (!(await wait(4800))) return;
+    setFocus('compass');
+    setWindTags('seats');
+    said(t('Este es tu viento', 'This is your wind', 'Este é o seu vento'), t('En el compass, el viento que queda frente a ti es tu viento de asiento. Eres el dealer, así que eres Este (東). Los demás, en orden, son Sur, Oeste y Norte. Tu viento cambia si cambia el dealer.', 'On the compass, the wind facing you is your seat wind. You are the dealer, so you are East (東). The others, in order, are South, West and North. Your wind changes when the dealer changes.', 'No compass, o vento voltado para você é o seu vento de assento. Você é o dealer, então é Leste (東). Os outros, em ordem, são Sul, Oeste e Norte. Seu vento muda quando o dealer muda.'));
+    if (!(await wait(8000))) return;
+    setFocus('plate');
+    setWindTags('plate');
+    said(t('Este es el viento de la ronda', 'This is the round wind', 'Este é o vento da rodada'), t('La placa en el borde de la mesa marca el viento de la ronda: ahora Este (東). Es el mismo para los cuatro y solo cambia cuando la partida avanza a la ronda del Sur.', 'The plate at the edge of the table marks the round wind: now East (東). It is the same for all four and only changes when the game moves on to the South round.', 'A placa na borda da mesa marca o vento da rodada: agora Leste (東). É o mesmo para os quatro e só muda quando a partida avança para a rodada do Sul.'));
+    if (!(await wait(8000))) return;
+    setFocus('hand');
+    setWindTags('none');
+    said(t('Un trío de Este vale doble', 'An East triplet counts double', 'Um trio de Leste vale dobrado'), t('Eres Este y la ronda es Este: un trío de Este (東) te da 2 yaku. Un trío de Sur, Oeste o Norte no da ninguno.', 'You are East and the round is East: a triplet of East (東) gives you 2 yaku. A triplet of South, West or North gives none.', 'Você é Leste e a rodada é Leste: um trio de Leste (東) dá 2 yaku. Um trio de Sul, Oeste ou Norte não dá nenhum.'));
+  };
 
   const show = useCallback((next: Mode, which: Sub) => {
     alive.current += 1;
@@ -57,6 +80,15 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
     setShout(false);
     setSideways(false);
     setStick(false);
+    setFocus('hand');
+    setWindTags('none');
+    if (next === 'yakuhai') {
+      setHand(piecesOf(SETS.wind, 300));
+      setExtra(null);
+      setPond([]);
+      void tour();
+      return;
+    }
     if (next === 'riichi') {
       setHand(piecesOf(SETS.riichi, 100));
       const drawn = { id: 199, code: RIICHI_THROW };
@@ -99,7 +131,7 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
     await sleep(2200);
     if (!live()) return;
     setNote({ title: t('2 · Pones el palito', '2 · You place the stick', '2 · Você coloca o palito'), body: t('Pones un palito de 1000 puntos sobre el compass, frente a ti: es la apuesta del riichi.', 'You place a 1000-point stick on the compass in front of you: it is the riichi bet.', 'Você coloca um palito de 1000 pontos sobre o compass à sua frente: é a aposta do riichi.') });
-    motion.current = { kind: 'stick', from: { x: 50, y: 88 }, to: { x: 50, y: 57.2 }, start: performance.now(), dur: 900 };
+    motion.current = { kind: 'stick', from: { x: 50, y: 88 }, to: { x: 50, y: 60.6 }, start: performance.now(), dur: 900 };
     await sleep(950);
     if (!live()) return;
     setStick(true);
@@ -120,10 +152,11 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
     const dt = Math.min(200, g.now - lastFrame.current);
     lastFrame.current = g.now;
     const ease = 1 - Math.exp(-dt / 420);
-    cam.u += (HAND_VIEW.u - cam.u) * ease;
-    cam.v += (HAND_VIEW.v - cam.v) * ease;
-    cam.zoom += (HAND_VIEW.zoom - cam.zoom) * ease;
-    if (Math.abs(HAND_VIEW.zoom - cam.zoom) + Math.abs(HAND_VIEW.v - cam.v) * 0.02 > 0.01) g.needsFrame = true;
+    const target = focus === 'hand' ? HAND_VIEW : focus === 'wide' ? WIDE_VIEW : focus === 'compass' ? { u: 50, v: 52, zoom: 2.7 } : { u: 82, v: 84, zoom: 3 };
+    cam.u += (target.u - cam.u) * ease;
+    cam.v += (target.v - cam.v) * ease;
+    cam.zoom += (target.zoom - cam.zoom) * ease;
+    if (Math.abs(target.zoom - cam.zoom) + Math.abs(target.v - cam.v) * 0.02 + Math.abs(target.u - cam.u) * 0.02 > 0.01) g.needsFrame = true;
     g.view = { ...cam };
     g.table();
     const { palette: p } = g;
@@ -139,7 +172,7 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
       const at = pondPos(0, slot);
       g.tile(at.x, at.y, at.rot, FELT_Z, { flip: 1, face: face(code) });
     });
-    if (stick) drawStick(g, 50, 57.2, 3);
+    if (stick) drawStick(g, 50, 60.6, 2.5);
 
     const m = motion.current;
     if (m) {
@@ -149,7 +182,7 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
       const y = m.from.y + (m.to.y - m.from.y) * e;
       const hop = Math.sin(k * Math.PI) * 7;
       if (m.kind === 'tile') g.tile(x, y, 90 * e, FELT_Z + 1, { flip: 1, face: face(RIICHI_THROW), hop, order: 9e4 });
-      else drawStick(g, x, y, 3 + hop);
+      else drawStick(g, x, y, 2.5 + hop);
       if (k < 1) g.needsFrame = true;
     }
 
@@ -168,7 +201,7 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
     g.flush();
 
     const at = (piece: Piece) => shown.current.get(piece.id);
-    tagsOf(hand).forEach((tag) => {
+    if (mode === 'riichi') tagsOf(hand).forEach((tag) => {
       const a = at(hand[tag.from]);
       const b = at(hand[tag.to]);
       if (a === undefined || b === undefined) return;
@@ -176,6 +209,18 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
       const pos = g.project((a + b) / 2, HAND_Y, FELT_Z + 8);
       g.pill(pos.x, pos.y + 7, look.name[language], { bg: look.bg, fg: look.fg, size: 11, border: look.fg });
     });
+    if (windTags === 'seats') {
+      const seats = [{ x: 50, y: 58.6, name: t('Tu viento: Este 東', 'Your wind: East 東', 'Seu vento: Leste 東'), me: true }, { x: 60.6, y: 50, name: t('Sur 南', 'South 南', 'Sul 南'), me: false }, { x: 50, y: 41.4, name: t('Oeste 西', 'West 西', 'Oeste 西'), me: false }, { x: 39.4, y: 50, name: t('Norte 北', 'North 北', 'Norte 北'), me: false }];
+      seats.forEach((seat) => {
+        const pos = g.project(seat.x, seat.y, FELT_Z + 7);
+        g.pill(pos.x, pos.y, seat.name, { bg: seat.me ? p.gold : '#ffffffdd', fg: p.ink, size: seat.me ? 14 : 10, border: p.ink });
+      });
+      g.needsFrame = true;
+    }
+    if (windTags === 'plate') {
+      const pos = g.project(89, 79.5, FELT_Z + 2);
+      g.pill(pos.x, pos.y, t('Viento de la ronda: Este 東', 'Round wind: East 東', 'Vento da rodada: Leste 東'), { bg: p.gold, fg: p.ink, size: 14, border: p.ink });
+    }
     if (mode === 'riichi' && extra) {
       const x = at(extra);
       if (x !== undefined) {
@@ -207,11 +252,11 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
   return (
     <div className="sort-stage deck-stage">
       {slot && createPortal(controls, slot)}
-      {mode === 'riichi' ? (
+      {mode === 'riichi' || mode === 'yakuhai' ? (
         <div className="sort-board deck-board is-table is-hand is-draw is-yaku">
           <IsoCanvas ref={scene} draw={draw} />
           <div className="sort-actions deck-actions">
-            <button type="button" className="sort-button" onClick={() => show('riichi', 'yes')}>↻ {t('Reiniciar animación', 'Restart animation', 'Reiniciar animação')}</button>
+            <button type="button" className="sort-button" onClick={() => show(mode, 'yes')}>↻ {t('Reiniciar animación', 'Restart animation', 'Reiniciar animação')}</button>
           </div>
           {shout && (
             <div className="win-shout" role="status">
@@ -225,7 +270,7 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
           </p>
         </div>
       ) : (
-        <div className="sort-board deck-board yaku-static">{mode === 'tanyao' ? <TanyaoCard t={t} /> : <YakuhaiCard t={t} />}</div>
+        <div className="sort-board deck-board yaku-static"><TanyaoCard t={t} /></div>
       )}
     </div>
   );
@@ -253,44 +298,11 @@ function TanyaoCard({ t }: { t: (es: string, en: string, pt: string) => string }
   );
 }
 
-/** Yakuhai as one picture: dragons, round wind and your own wind. */
-function YakuhaiCard({ t }: { t: (es: string, en: string, pt: string) => string }) {
-  return (
-    <div className="yk-card">
-      <h3>{t('Yakuhai · fichas que dan yaku', 'Yakuhai · tiles that give yaku', 'Yakuhai · peças que dão yaku')}</h3>
-      <p className="yk-lead">{t('Un trío (o cuarteto) de estas fichas da yaku:', 'A triplet (or quad) of these tiles gives yaku:', 'Um trio (ou quarteto) destas peças dá yaku:')}</p>
-      <div className="yk-cols">
-        <div className="yk-box">
-          <b>{t('Dragones', 'Dragons', 'Dragões')}</b>
-          <div className="yk-row">{['5z', '6z', '7z'].map((code) => <Tile key={code} code={code} tone="ok" />)}</div>
-          <span>{t('Siempre', 'Always', 'Sempre')}</span>
-        </div>
-        <div className="yk-box">
-          <b>{t('Viento de la ronda', 'Round wind', 'Vento da rodada')}</b>
-          <div className="yk-row"><Tile code="1z" tone="ok" />{['2z', '3z', '4z'].map((code) => <Tile key={code} code={code} tone="no" />)}</div>
-          <span>{t('Ahora: Este (東)', 'Now: East (東)', 'Agora: Leste (東)')}</span>
-        </div>
-        <div className="yk-box">
-          <b>{t('Tu viento', 'Your wind', 'Seu vento')}</b>
-          <div className="yk-row"><Tile code="1z" tone="ok" />{['2z', '3z', '4z'].map((code) => <Tile key={code} code={code} tone="no" />)}</div>
-          <span>{t('Eres Este (dealer)', 'You are East (dealer)', 'Você é Leste (dealer)')}</span>
-        </div>
-      </div>
-      <p className="yk-sub">{t('Ejemplos: trío de dragón y trío de Este (vale doble: ronda y asiento)', 'Examples: a dragon triplet and an East triplet (counts double: round and seat)', 'Exemplos: trio de dragão e trio de Leste (vale dobrado: rodada e assento)')}</p>
-      <div className="yk-cols is-examples">
-        <div className="yk-row">{['6z', '6z', '6z'].map((code, i) => <Tile key={i} code={code} />)}<span className="yk-note">{t('1 yaku', '1 yaku', '1 yaku')}</span></div>
-        <div className="yk-row">{['1z', '1z', '1z'].map((code, i) => <Tile key={i} code={code} />)}<span className="yk-note">{t('2 yaku (ronda + tu viento)', '2 yaku (round + your wind)', '2 yaku (rodada + seu vento)')}</span></div>
-      </div>
-      <p className="yk-lead">{t('Un viento que no es el de la ronda ni el tuyo no cuenta.', 'A wind that is neither the round wind nor yours does not count.', 'Um vento que não é o da rodada nem o seu não conta.')}</p>
-    </div>
-  );
-}
-
-/** The 1000-point riichi stick lying on the felt. */
+/** The 1000-point riichi stick, lying in the compass slot. */
 function drawStick(g: Painter, x: number, y: number, lift: number) {
   const { palette: p } = g;
   g.add(y * 100 + 70, () => {
-    const box = g.box(x, y, FELT_Z + lift, 13, 1.5, 1.2, 0);
+    const box = g.box(x, y, FELT_Z + lift, 9.6, 1.4, 1.1, 0);
     box.sides.forEach((face) => g.poly(face.q, '#e9e2d0', p.ink, g.lw));
     g.poly(box.top, '#fbf7ec', p.ink, g.lw * 1.2);
     g.onQuad(box.top, () => {
