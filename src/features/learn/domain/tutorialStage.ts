@@ -9,7 +9,7 @@ export type LocalCallout = Omit<TableCallout, 'label'> & { label: LocalizedText 
 
 export type StageSpec =
   | { kind: 'sort' }
-  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' | 'win' | 'yaku' | 'calls' | 'furiten' | 'points' | 'rounds' | 'finish' }
+  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' | 'win' | 'yaku' | 'calls' | 'furiten' | 'points' | 'rounds' }
   | { kind: 'table'; focus: TableFocus; callouts: LocalCallout[] }
   | { kind: 'rack'; rows: RackRow[]; footer?: LocalizedText };
 
@@ -480,18 +480,15 @@ export const tutorialStops: TutorialStop[] = [
   {
     id: 'finish', part: 'win', short: L('Y ahora…', 'And now…', 'E agora…'),
     eyebrow: L('Sigue aprendiendo', 'Keep learning', 'Continue aprendendo'),
-    title: L('Ya conoces una partida completa', 'You now know a whole game', 'Você já conhece uma partida completa'),
+    title: L('¡Ahora a practicar o aprender!', 'Now go practise or learn!', 'Agora é praticar ou aprender!'),
     body: L(
-      'Viste cómo se **prepara** la mesa, cómo se **juega** una mano, cómo se **gana**, cómo se **cuentan** los puntos y cómo sigue la partida.\n- **Practicar**: entrena un concepto con ejercicios.\n- **Aprender**: repasa o profundiza en un tema.\nLos botones te llevan directo.',
-      'You saw how the table is **set up**, how a hand is **played**, how it is **won**, how points are **counted** and how the game goes on.\n- **Practise**: train a concept with exercises.\n- **Learn**: review or go deeper into a topic.\nThe buttons take you straight there.',
-      'Você viu como a mesa é **preparada**, como uma mão é **jogada**, como se **ganha**, como os pontos são **contados** e como o jogo segue.\n- **Praticar**: treine um conceito com exercícios.\n- **Aprender**: revise ou aprofunde um tema.\nOs botões levam direto.',
+      'Ya conoces una partida completa. **Practica** lo que viste con ejercicios, o **aprende** más a fondo cada tema.',
+      'You now know a whole game. **Practise** what you saw with exercises, or **learn** each topic in more depth.',
+      'Você já conhece uma partida completa. **Pratique** o que viu com exercícios, ou **aprenda** cada tema mais a fundo.',
     ),
-    bullets: [
-      L('Practicar: fichas, esperas, furiten, yaku, han, fu y puntaje.', 'Practise: tiles, waits, furiten, yaku, han, fu and scoring.', 'Praticar: peças, esperas, furiten, yaku, han, fu e pontuação.'),
-      L('Aprender: fichas, eficiencia, esperas, reglas, defensa, dora, puntajes y yaku.', 'Learn: tiles, efficiency, waits, rules, defence, dora, scores and yaku.', 'Aprender: peças, eficiência, esperas, regras, defesa, dora, pontuação e yaku.'),
-    ],
+    bullets: [],
     remember: L('', '', ''),
-    stage: { kind: 'deck', mode: 'finish' },
-    practice: { href: '../practicar/que-ficha-es.html', label: L('Empezar a practicar', 'Start practising', 'Começar a praticar') },
+    stage: { kind: 'table', focus: { boxes: [], zoom: 1 }, callouts: [] },
+    practice: { href: '../index.html#practicar', label: L('Ir a practicar', 'Go to practice', 'Ir a praticar') },
   },
 ];
