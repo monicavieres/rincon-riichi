@@ -23,9 +23,9 @@ const TABS: Array<{ id: Tab; label: LocalizedText }> = [
 
 const PRACTICE_COPY = {
   draw: L(
-    'Mira el robo que aparece a la derecha de tu mano. Si forma un grupo o mejora una pareja, pulsa «Quedármela»; si no encaja con nada, «Botarla». Si te equivocas, la escena te explica por qué.',
-    'Look at the draw that appears to the right of your hand. If it makes a set or improves a pair, press “Keep it”; if it fits nothing, “Throw it”. If you get it wrong, the scene tells you why.',
-    'Veja a compra que aparece à direita da sua mão. Se forma um grupo ou melhora um par, toque em «Ficar com ela»; se não encaixa em nada, «Descartar». Se errar, a cena explica por quê.',
+    'Primero bota la ficha que sobra: tócala o arrástrala hacia arriba. Luego robas una ficha y botas otra, siempre la que no ayuda. Si tocas una que sí sirve, la escena te dice «¡Ojo, esa no!» y te explica por qué.',
+    'First throw the spare tile: tap it or drag it up. Then you draw a tile and throw another, always the one that does not help. If you pick one that does help, the scene says “Careful, not that one!” and tells you why.',
+    'Primeiro descarte a peça que sobra: toque nela ou arraste para cima. Depois você compra uma peça e descarta outra, sempre a que não ajuda. Se escolher uma que serve, a cena diz «Atenção, essa não!» e explica por quê.',
   ),
   sort: L(
     'Arrastra una ficha a otro lugar de tu mano y junta cada palo y los honores. No importa el orden de los grupos: lo que cuenta es verlos de un vistazo. ¿Quieres el orden sugerido? «Ordenar» lo pone por ti.',
