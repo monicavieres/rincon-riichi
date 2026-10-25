@@ -172,7 +172,7 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
       const at = pondPos(0, slot);
       g.tile(at.x, at.y, at.rot, FELT_Z, { flip: 1, face: face(code) });
     });
-    if (stick) drawStick(g, 50, 60.6, 2.5);
+    if (stick) drawStick(g, 50, 60.6, 1.4);
 
     const m = motion.current;
     if (m) {
@@ -182,7 +182,7 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
       const y = m.from.y + (m.to.y - m.from.y) * e;
       const hop = Math.sin(k * Math.PI) * 7;
       if (m.kind === 'tile') g.tile(x, y, 90 * e, FELT_Z + 1, { flip: 1, face: face(RIICHI_THROW), hop, order: 9e4 });
-      else drawStick(g, x, y, 2.5 + hop);
+      else drawStick(g, x, y, 1.4 + hop);
       if (k < 1) g.needsFrame = true;
     }
 

@@ -445,9 +445,9 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
       const c = shown.current.compass;
       const lift = grabbing === 'compass' ? 3 : 0;
       g.add(c.y * 100 + 50, () => {
-        g.slab(c.x, c.y, COMPASS, COMPASS, 3.6, FELT_Z + lift, FELT_Z + lift + 3, mix(p.back, '#000000', 0.55), p.back);
+        g.slab(c.x, c.y, COMPASS, COMPASS, 3.6, FELT_Z + lift, FELT_Z + lift + 1.6, mix(p.back, '#000000', 0.16), p.back);
         const art = picture(p.compass);
-        if (art) g.textured(art, c.x, c.y, COMPASS * 1.16, COMPASS * 1.16, 0, FELT_Z + lift + 3);
+        if (art) g.textured(art, c.x, c.y, COMPASS * 1.16, COMPASS * 1.16, 0, FELT_Z + lift + 1.6);
       });
       const pl = shown.current.plate;
       const plLift = grabbing === 'plate' ? 3 : 0;
