@@ -299,7 +299,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
 
     // camera: zoom to the compass, then to the chosen wall, then back out
     const wallMid = openSide !== null ? wallSlot(openSide, 8, 0) : { x: 50, y: 50 };
-    const target = mode === 'dealer' ? { u: 50, v: 54, zoom: 1.6 } : phase === 'compass' ? { u: 50, v: 50, zoom: 2.1 }
+    const target = mode === 'dealer' ? { u: 50, v: 56, zoom: 1.22 } : phase === 'compass' ? { u: 50, v: 50, zoom: 2.1 }
       : phase === 'wall' ? { u: wallMid.x, v: wallMid.y, zoom: 2 }
         : phase === 'dead' ? { u: deadMid.x - OUT[openSide ?? 0][0] * 3.4, v: deadMid.y - OUT[openSide ?? 0][1] * 3.4, zoom: 1.9 }
         : phase === 'split' ? { u: deadMid.x, v: deadMid.y, zoom: 1.5 }
