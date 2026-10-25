@@ -190,7 +190,7 @@ export function DealBoard({ language, onStatus }: { language: TutorialLanguage; 
         if (q > 0 && q < 1) moving = true;
         if (q > 0) {
           const face = flight.player === 0 ? picture(`${p.faces}/${DEALT_HAND[flight.slot]}.svg`) : null;
-          g.standTile(goal.x, goal.y, goal.rot, lift * 90, { face, joined: lift > 0.8 });
+          g.standTile(goal.x, goal.y, goal.rot, lift * 90, { face, joined: lift > 0.8, capLeft: flight.slot === 0 || flight.extra, capRight: flight.slot === 12 || flight.extra });
           continue;
         }
       }

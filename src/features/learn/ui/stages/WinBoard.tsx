@@ -39,6 +39,9 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
   const [hot, setHot] = useState<{ player: number; slot: number } | null>(null);
   const [tags, setTags] = useState(true);
   const [callout, setCallout] = useState<string | null>(null);
+  const [reveal, setReveal] = useState(false);
+  const [winnerId, setWinnerId] = useState<number | null>(null);
+  const revealT = useRef(0);
   const [note, setNote] = useState<{ title: string; body: string } | null>(null);
   const flights = useRef<Fly[]>([]);
   const shown = useRef<Map<number, { x: number; lift: number }>>(new Map());
@@ -66,6 +69,9 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
     setRivalHold([false, false, false]);
     setHot(null);
     setCallout(null);
+    setReveal(false);
+    setWinnerId(null);
+    revealT.current = 0;
     setNote(null);
   }, []);
 
@@ -157,11 +163,9 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
       setCallout('TSUMO');
       said(t('Declaras «Tsumo»', 'You declare “Tsumo”', 'Você declara «Tsumo»'), t('La ficha completa tu mano. No la metes en silencio entre las demás: la dejas aparte y dices «Tsumo».', 'The tile completes your hand. You do not slip it in among the others: you leave it apart and say “Tsumo”.', 'A peça completa sua mão. Você não a coloca em silêncio entre as outras: deixa de lado e diz «Tsumo».'));
       if (!(await wait(4500))) return;
-      setCallout(null);
-      setHand((now) => [...now, winner].sort(byKey));
-      setExtra(null);
+      setReveal(true);
       setFinished(true);
-      said(t('Muestras tu mano', 'You show your hand', 'Você mostra a mão'), t('Abres la mano para que todos la vean: 4 grupos y 1 pareja, con una ficha que robaste tú. Eso es tsumo: la ronda termina y pagan los tres rivales.', 'You open your hand for all to see: 4 sets and 1 pair, with a tile you drew yourself. That is tsumo: the round ends and all three rivals pay.', 'Você abre a mão para todos verem: 4 grupos e 1 par, com uma peça que você mesmo comprou. Isso é tsumo: a rodada termina e os três rivais pagam.'));
+      said(t('Muestras tu mano', 'You show your hand', 'Você mostra a mão'), t('Botas tus fichas sobre la mesa para que todos las vean: 4 grupos y 1 pareja. La ficha robada queda aparte, para que se note que fue tu robo. Eso es tsumo: la ronda termina y pagan los tres rivales.', 'You lay your tiles down for all to see: 4 sets and 1 pair. The drawn tile stays apart so it is clear it was your draw. That is tsumo: the round ends and all three rivals pay.', 'Você abaixa suas peças para todos verem: 4 grupos e 1 par. A peça comprada fica separada para se notar que foi sua compra. Isso é tsumo: a rodada termina e os três rivais pagam.'));
       if (!(await wait(7000))) return;
       said(t('Hay otra forma de ganar', 'There is another way to win', 'Há outra forma de ganhar'), t('No siempre la robas tú. Veamos qué pasa cuando la ficha que necesitas la bota otro jugador.', 'You do not always draw it yourself. Let us see what happens when another player throws the tile you need.', 'Nem sempre é você que compra. Vamos ver o que acontece quando outro jogador descarta a peça que você precisa.'));
       if (!(await wait(4000))) return;
@@ -193,11 +197,12 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
     setCallout('RON');
     said(t('Declaras «Ron»', 'You declare “Ron”', 'Você declara «Ron»'), t('La ficha del rival completa tu mano. No la mezclas con las tuyas: la dejas aparte y dices «Ron».', 'The rival’s tile completes your hand. You do not mix it with yours: you leave it apart and say “Ron”.', 'A peça do rival completa sua mão. Você não a mistura com as suas: deixa de lado e diz «Ron».'));
     if (!(await wait(4500))) return;
-    setCallout(null);
     setHand((now) => [...now, piece].sort(byKey));
     setExtra(null);
+    setWinnerId(piece.id);
+    setReveal(true);
     setFinished(true);
-    said(t('Muestras tu mano', 'You show your hand', 'Você mostra a mão'), t('Abres la mano para que todos la vean: 4 grupos y 1 pareja, con la ficha que botó otro jugador. Eso es ron: la ronda termina y paga solo quien la botó.', 'You open your hand for all to see: 4 sets and 1 pair, with the tile another player threw. That is ron: the round ends and only the one who threw it pays.', 'Você abre a mão para todos verem: 4 grupos e 1 par, com a peça que outro jogador descartou. Isso é ron: a rodada termina e só quem descartou paga.'));
+    said(t('Muestras tu mano', 'You show your hand', 'Você mostra a mão'), t('Botas tus fichas sobre la mesa para que todos las vean: 4 grupos y 1 pareja, con la ficha que botó otro jugador destacada. Eso es ron: la ronda termina y paga solo quien la botó.', 'You lay your tiles down for all to see: 4 sets and 1 pair, with the tile another player threw highlighted. That is ron: the round ends and only the one who threw it pays.', 'Você abaixa suas peças para todos verem: 4 grupos e 1 par, com a peça que outro jogador descartou destacada. Isso é ron: a rodada termina e só quem descartou paga.'));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lay, fly, language]);
 
@@ -237,7 +242,7 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
     rivalHold.forEach((holding, i) => {
       if (!holding) return;
       const slot = handSlot(i + 1, 13, true);
-      g.standTile(slot.x, slot.y, slot.rot, 90, { joined: true });
+      g.standTile(slot.x, slot.y, slot.rot, 90, { joined: true, capLeft: true, capRight: true });
     });
     const clock = performance.now();
     flights.current.forEach((f) => {
@@ -250,12 +255,15 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
 
     let moving = false;
     const slide = 1 - Math.exp(-dt / 150);
+    revealT.current += ((reveal ? 1 : 0) - revealT.current) * (1 - Math.exp(-dt / 260));
+    if (Math.abs((reveal ? 1 : 0) - revealT.current) > 0.01) g.needsFrame = true;
+    const phi = 90 + 90 * revealT.current;
     const place = (piece: Piece, goalX: number) => {
       const st = shown.current.get(piece.id) ?? { x: goalX, lift: 0 };
       st.x += (goalX - st.x) * slide;
       if (Math.abs(goalX - st.x) > 0.03) moving = true;
       shown.current.set(piece.id, st);
-      g.standTile(st.x, HAND_Y, 0, 90, { face: face(piece.code), joined: true, order: HAND_Y * 100 + 50 });
+      g.standTile(st.x, HAND_Y, 0, phi, { face: face(piece.code), joined: reveal ? false : true, order: HAND_Y * 100 + 50 });
     };
     hand.forEach((piece, i) => place(piece, handX(i, total) - (extra ? WIDTH * 0.95 : 0)));
     if (extra) place(extra, handX(hand.length - 1, total) - WIDTH * 0.95 + WIDTH * 1.9);
@@ -263,26 +271,28 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
     g.flush();
 
     if (tags && view === 'hand') {
-      tagsOf(hand).forEach((tag) => {
-        const a = shown.current.get(hand[tag.from].id);
-        const b = shown.current.get(hand[tag.to].id);
+      const full = extra && reveal ? [...hand, extra].sort(byKey) : hand;
+      tagsOf(full).forEach((tag) => {
+        const a = shown.current.get(full[tag.from].id);
+        const b = shown.current.get(full[tag.to].id);
         if (!a || !b) return;
         const look = TAG_LOOK[tag.kind];
         const pos = g.project((a.x + b.x) / 2, HAND_Y, FELT_Z + 8);
         g.pill(pos.x, pos.y + 7, look.name[language], { bg: look.bg, fg: look.fg, size: 11, border: look.fg });
       });
     }
+    const spot = extra ?? hand.find((piece) => piece.id === winnerId);
+    if (reveal && spot) {
+      const st = shown.current.get(spot.id);
+      if (st) {
+        const pos = g.project(st.x, HAND_Y, FELT_Z + 14);
+        g.pill(pos.x, pos.y - 4, extra ? t('Tu robo', 'Your draw', 'Sua compra') : t('Ficha del rival', 'Rival’s tile', 'Peça do rival'), { bg: p.gold, fg: p.ink, size: 12, border: p.ink });
+      }
+    }
     if (mark !== null) {
       const at = wallPos(mark);
       const pos = g.project(at.x, at.y, FELT_Z + 9);
       g.pill(pos.x, pos.y, t('Robas de aquí', 'You draw from here', 'Você compra daqui'), { bg: p.gold, fg: p.ink, size: 12, border: p.ink });
-    }
-    if (callout && extra) {
-      const st = shown.current.get(extra.id);
-      if (st) {
-        const pos = g.project(st.x, HAND_Y, FELT_Z + 12);
-        g.pill(pos.x, pos.y - 6, `${callout}!`, { bg: p.gold, fg: p.ink, size: 16, border: p.ink });
-      }
     }
     if (hot) {
       const at = pondPos(hot.player, hot.slot);
@@ -300,6 +310,12 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
           <button type="button" className={`sort-button${part === 'tsumo' ? ' is-primary' : ''}`} onClick={() => { void script('tsumo'); }}>{t('Ver tsumo', 'Watch tsumo', 'Ver tsumo')}</button>
           <button type="button" className={`sort-button${part === 'ron' ? ' is-primary' : ''}`} onClick={() => { void script('ron'); }}>{t('Ver ron', 'Watch ron', 'Ver ron')}</button>
         </div>
+        {callout && (
+          <div className={`win-shout${reveal ? ' is-final' : ''}`} key={callout} role="status">
+            <span className="win-cat" aria-hidden="true">🐱</span>
+            <b>{callout}!</b>
+          </div>
+        )}
         <p className={`sort-win is-top${finished ? '' : ' is-note'}`} role="status">
           <b>{note?.title ?? ''}</b>
           <span>{note?.body ?? ''}</span>

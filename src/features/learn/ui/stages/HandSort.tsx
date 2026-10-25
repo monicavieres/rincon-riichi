@@ -76,7 +76,7 @@ export function paintDealtTable(g: Painter, assignments: ReturnType<typeof dealA
       if (held) {
         if (held.player === 0) continue;
         const slot = handSlot(held.player, held.slot, held.extra);
-        g.standTile(slot.x, slot.y, slot.rot, 90, { joined: true });
+        g.standTile(slot.x, slot.y, slot.rot, 90, { joined: true, capLeft: held.extra || held.slot === 0, capRight: held.extra || held.slot === 12 });
         continue;
       }
       const home = wallSlot(side, stack, level);

@@ -403,7 +403,7 @@ export class Painter {
    * A tile tipping up from lying face down (phi 0) to standing on its edge (phi 90), the way a hand is stood up:
    * its face ends up toward the player whose edge is local +y, its back toward the middle of the table.
    */
-  standTile(x: number, y: number, rot: number, phi: number, opts: { face?: CanvasImageSource | null; order?: number; joined?: boolean; lift?: number } = {}) {
+  standTile(x: number, y: number, rot: number, phi: number, opts: { face?: CanvasImageSource | null; order?: number; joined?: boolean; lift?: number; capLeft?: boolean; capRight?: boolean } = {}) {
     const { palette: p } = this;
     const w = 3.6;
     const l = 4.8;
@@ -445,7 +445,7 @@ export class Painter {
         const nc: [number, number, number] = [nw[0], nw[1] * this.cs - nw[2] * this.sn, nw[1] * this.sn + nw[2] * this.cs];
         const visible = nc[0] * -mid.X + nc[1] * -mid.Y + nc[2] * (this.P - mid.Z) > 0;
         return { f, quad, mid, nw, visible };
-      }).filter((d) => d.visible && !(opts.joined && (d.f.name === 'left' || d.f.name === 'right'))).sort((a, b) => a.mid.Z - b.mid.Z);
+      }).filter((d) => d.visible && !(opts.joined && ((d.f.name === 'left' && !opts.capLeft) || (d.f.name === 'right' && !opts.capRight)))).sort((a, b) => a.mid.Z - b.mid.Z);
       drawn.forEach(({ f, quad, nw }) => {
         const k = lit(nw);
         if (f.name === 'front') {

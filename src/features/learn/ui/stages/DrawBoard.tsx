@@ -318,7 +318,7 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
     rivalHold.forEach((holding, i) => {
       if (!holding) return;
       const slot = handSlot(i + 1, 13, true);
-      g.standTile(slot.x, slot.y, slot.rot, 90, { joined: true });
+      g.standTile(slot.x, slot.y, slot.rot, 90, { joined: true, capLeft: true, capRight: true });
     });
     const clock = performance.now();
     flights.current.forEach((f) => {
