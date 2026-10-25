@@ -71,6 +71,14 @@ export const TAG_LOOK = {
   spare: { bg: '#fbd0cf', fg: '#8a1f2a', name: { es: 'Sobra', en: 'Spare', pt: 'Sobra' } },
 } as const;
 
+const HONOR = {
+  es: ['Este (東)', 'Sur (南)', 'Oeste (西)', 'Norte (北)', 'Hatsu (發)', 'Chun (中)', 'Haku (白)'],
+  en: ['East (東)', 'South (南)', 'West (西)', 'North (北)', 'Hatsu (發)', 'Chun (中)', 'Haku (白)'],
+  pt: ['Leste (東)', 'Sul (南)', 'Oeste (西)', 'Norte (北)', 'Hatsu (發)', 'Chun (中)', 'Haku (白)'],
+};
+/** A tile as people say it: "8 souzu", "Chun (中)". */
+export const tileName = (code: string, language: TutorialLanguage) => (code[1] === 'z' ? HONOR[language][Number(code[0]) - 1] : `${code[0]} ${{ m: 'manzu', p: 'pinzu', s: 'souzu' }[code[1] as 'm' | 'p' | 's']}`);
+
 export const handX = (index: number, count: number) => 50 + (index - (count - 1) / 2) * WIDTH;
 
 /**
@@ -160,10 +168,10 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
       setDrawn({ id: 100 + round, code });
       if (code === '6z') {
         setPhase('merge');
-        setNote({ title: t('Robaste la 6z', 'You drew the 6z', 'Você comprou o 6z'), body: t('Ya tenías dos 6z: con esta forman un grupo de tres.', 'You already held two 6z: with this one they make a set of three.', 'Você já tinha dois 6z: com este formam um grupo de três.') });
+        setNote({ title: t('Robaste el Chun (中)', 'You drew the Chun (中)', 'Você comprou o Chun (中)'), body: t('Ya tenías dos Chun (中): con esta forman un grupo de tres.', 'You already held two Chun (中): with this one they make a set of three.', 'Você já tinha dois Chun (中): com este formam um grupo de três.') });
       } else {
         setPhase('choose');
-        setNote({ title: t(`Robaste la ${code}`, `You drew the ${code}`, `Você comprou o ${code}`), body: t('Ahora tienes 14 fichas: bota una. Toca o arrastra hacia arriba la que no ayuda a tu mano.', 'Now you hold 14 tiles: throw one. Tap or drag up the one that does not help your hand.', 'Agora você tem 14 peças: descarte uma. Toque ou arraste para cima a que não ajuda sua mão.') });
+        setNote({ title: t(`Robaste: ${tileName(code, language)}`, `You drew: ${tileName(code, language)}`, `Você comprou: ${tileName(code, language)}`), body: t('Ahora tienes 14 fichas: bota una. Toca o arrastra hacia arriba la que no ayuda a tu mano.', 'Now you hold 14 tiles: throw one. Tap or drag up the one that does not help your hand.', 'Agora você tem 14 peças: descarte uma. Toque ou arraste para cima a que não ajuda sua mão.') });
       }
     };
     void go();
@@ -178,7 +186,7 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
       setHand((now) => [...now, drawn].sort(byKey));
       setDrawn(null);
       setPhase('won');
-      setNote({ title: t('¡Mano completa!', 'Complete hand!', 'Mão completa!'), body: t('Tres grupos, el grupo de 6z y la pareja: 4 grupos y 1 pareja. Ese es el objetivo; cuando un robo no sirve, botas una ficha y sigues hasta lograrlo.', 'Three sets, the 6z set and the pair: 4 sets and 1 pair. That is the goal; when a draw does not help, you throw one tile and go on until you get there.', 'Três grupos, o grupo de 6z e o par: 4 grupos e 1 par. Esse é o objetivo; quando a compra não ajuda, descarta uma peça e segue até conseguir.') });
+      setNote({ title: t('¡Mano completa!', 'Complete hand!', 'Mão completa!'), body: t('Tres grupos, el grupo de Chun (中) y la pareja: 4 grupos y 1 pareja. Ese es el objetivo; cuando un robo no sirve, botas una ficha y sigues hasta lograrlo.', 'Three sets, the Chun (中) set and the pair: 4 sets and 1 pair. That is the goal; when a draw does not help, you throw one tile and go on until you get there.', 'Três grupos, o grupo de Chun (中) e o par: 4 grupos e 1 par. Esse é o objetivo; quando a compra não ajuda, descarta uma peça e segue até conseguir.') });
     }, 2300);
     return () => window.clearTimeout(timer);
   }, [phase, drawn]);
@@ -194,12 +202,12 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
       if (piece.id === drawn?.id) setDrawn(null);
       else setHand((now) => now.filter((other) => other.id !== piece.id));
       setNote({ title: t('¡Sí, esa!', 'Yes, that one!', 'Isso, essa!'), body: phase === 'start'
-        ? t('La 9p no se junta con nada: sale a tu río (tu zona de descartes). Quedas con 13 fichas.', 'The 9p joins nothing: it goes to your pond (your discard area). You are left with 13 tiles.', 'O 9p não se junta a nada: vai para o seu rio (sua área de descartes). Você fica com 13 peças.')
+        ? t('El 9 pinzu no se junta con nada: sale a tu río (tu zona de descartes). Quedas con 13 fichas.', 'The 9 pinzu joins nothing: it goes to your pond (your discard area). You are left with 13 tiles.', 'O 9 pinzu não se junta a nada: vai para o seu rio (sua área de descartes). Você fica com 13 peças.')
         : t('No ayudaba a la mano, así que sale. Quedas con 13 y robas otra.', 'It did not help the hand, so it goes. You are back to 13 and draw again.', 'Não ajudava a mão, então sai. Você volta a 13 e compra outra.') });
       if (phase === 'start') { setRound(0); setPhase('rivals'); return; }
       if (round + 1 >= DRAWS.length) {
         setPhase('won');
-        setNote({ title: t('Dos turnos listos', 'Two turns done', 'Dois turnos prontos'), body: t('Así se juega: robas, miras si te sirve y botas la que no. Tu mano espera una 1z o una 6z para completarse. ¿Cómo se gana con ella? Lo vemos en el siguiente paso.', 'That is how it plays: draw, see if it helps, throw the one that does not. Your hand waits for a 1z or a 6z to complete. How do you win with it? We see that in the next step.', 'É assim que se joga: compra, vê se serve e descarta a que não. Sua mão espera um 1z ou um 6z para completar. Como se ganha com ela? Vemos no próximo passo.') });
+        setNote({ title: t('Dos turnos listos', 'Two turns done', 'Dois turnos prontos'), body: t('Así se juega: robas, miras si te sirve y botas la que no. Tu mano espera un Este (東) o un Chun (中) para completarse. ¿Cómo se gana con ella? Lo vemos en el siguiente paso.', 'That is how it plays: draw, see if it helps, throw the one that does not. Your hand waits for an East (東) or a Chun (中) to complete. How do you win with it? We see that in the next step.', 'É assim que se joga: compra, vê se serve e descarta a que não. Sua mão espera um Leste (東) ou um Chun (中) para completar. Como se ganha com ela? Vemos no próximo passo.') });
         return;
       }
       setRound((now) => now + 1);

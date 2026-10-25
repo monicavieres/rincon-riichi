@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { ROT, dealAssignments, drawOrder, handSlot } from './DealBoard';
-import { DEALT, HAND_VIEW, HAND_Y, WIDE_VIEW, WIDTH, byKey, handX, pondPos, sleep, startHand, tagsOf, TAG_LOOK, wallPos, type Fly, type Piece } from './DrawBoard';
+import { DEALT, HAND_VIEW, HAND_Y, WIDE_VIEW, WIDTH, byKey, handX, pondPos, sleep, startHand, tileName, tagsOf, TAG_LOOK, wallPos, type Fly, type Piece } from './DrawBoard';
 import { paintDealtTable } from './HandSort';
 import { FELT_Z, IsoCanvas, picture, type IsoHandle, type Painter } from './iso3d';
 
@@ -116,10 +116,10 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
     setView('hand');
     setTags(true);
     if (which === 'tsumo') {
-      said(t('Mitad de la partida', 'Midway through the game', 'Metade da partida'), t('Ya se jugaron varios turnos: cada jugador tiene su río de descartes. Mira tu mano: tres grupos, dos parejas… y te falta una sola ficha, la 1z o la 6z.', 'Several turns are already played: every player has a river of discards. Look at your hand: three sets, two pairs… and you are one tile short, the 1z or the 6z.', 'Vários turnos já foram jogados: cada jogador tem seu rio de descartes. Veja sua mão: três grupos, dois pares… e falta uma só peça, o 1z ou o 6z.'));
+      said(t('Mitad de la partida', 'Midway through the game', 'Metade da partida'), t('Ya se jugaron varios turnos: cada jugador tiene su río de descartes. Mira tu mano: tres grupos, dos parejas… y te falta una sola ficha, el Este (東) o el Chun (中).', 'Several turns are already played: every player has a river of discards. Look at your hand: three sets, two pairs… and you are one tile short, the East (東) or the Chun (中).', 'Vários turnos já foram jogados: cada jogador tem seu rio de descartes. Veja sua mão: três grupos, dois pares… e falta uma só peça, o Leste (東) ou o Chun (中).'));
       if (!(await wait(5500))) return;
     } else {
-      said(t('Rebobinamos', 'Rewind', 'Voltamos atrás'), t('Misma mano y misma espera (1z o 6z), pero otra partida: otros descartes y otro final.', 'Same hand and same wait (1z or 6z), but another game: other discards and another ending.', 'Mesma mão e mesma espera (1z ou 6z), mas outra partida: outros descartes e outro final.'));
+      said(t('Rebobinamos', 'Rewind', 'Voltamos atrás'), t('Misma mano y misma espera (Este (東) o Chun (中)), pero otra partida: otros descartes y otro final.', 'Same hand and same wait (East (東) or Chun (中)), but another game: other discards and another ending.', 'Mesma mão e mesma espera (Leste (東) ou Chun (中)), mas outra partida: outros descartes e outro final.'));
       if (!(await wait(4000))) return;
     }
     setView('wide');
@@ -133,7 +133,7 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
     const useless = which === 'tsumo' ? '8s' : '9m';
     const first = await myDraw(useless);
     if (!first) return;
-    said(t(`Robaste la ${useless}`, `You drew the ${useless}`, `Você comprou o ${useless}`), t('No forma grupo con nada de tu mano: no sirve. La botas y sigues esperando.', 'It makes no set with your hand: it does not help. You throw it and keep waiting.', 'Não forma grupo com nada da sua mão: não serve. Você descarta e continua esperando.'));
+    said(t(`Robaste: ${tileName(useless, language)}`, `You drew: ${tileName(useless, language)}`, `Você comprou: ${tileName(useless, language)}`), t('No forma grupo con nada de tu mano: no sirve. La botas y sigues esperando.', 'It makes no set with your hand: it does not help. You throw it and keep waiting.', 'Não forma grupo com nada da sua mão: não serve. Você descarta e continua esperando.'));
     if (!(await wait(2600))) return;
     fly({ key: 'toss', code: useless, from: { x: handX(12, 14) - WIDTH * 0.95 + WIDTH * 1.9, y: HAND_Y, z: FELT_Z + 1, rot: 0 }, to: pondPos(0, mine.length), dur: 650, faceUp: true });
     setExtra(null);
@@ -150,7 +150,7 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
       const winner = await myDraw(WINNER);
       if (!winner) return;
       setTags(true);
-      said(t('¡Robaste la 6z!', 'You drew the 6z!', 'Você comprou o 6z!'), t('Mira tus grupos: 1-2-3 manzu, 4-5-6 pinzu, 3-4-5 souzu y la pareja de 1z. Tenías dos 6z y te faltaba una tercera: justo la que acabas de robar.', 'Look at your sets: 1-2-3 manzu, 4-5-6 pinzu, 3-4-5 souzu and the pair of 1z. You held two 6z and needed a third: exactly the one you just drew.', 'Veja seus grupos: 1-2-3 manzu, 4-5-6 pinzu, 3-4-5 souzu e o par de 1z. Você tinha dois 6z e faltava um terceiro: justo o que acabou de comprar.'));
+      said(t('¡Robaste el Chun (中)!', 'You drew the Chun (中)!', 'Você comprou o Chun (中)!'), t('Mira tus grupos: 1-2-3 manzu, 4-5-6 pinzu, 3-4-5 souzu y la pareja de Este (東). Tenías dos Chun (中) y te faltaba una tercera: justo la que acabas de robar.', 'Look at your sets: 1-2-3 manzu, 4-5-6 pinzu, 3-4-5 souzu and the pair of East (東). You held two Chun (中) and needed a third: exactly the one you just drew.', 'Veja seus grupos: 1-2-3 manzu, 4-5-6 pinzu, 3-4-5 souzu e o par de Leste (東). Você tinha dois Chun (中) e faltava um terceiro: justo o que acabou de comprar.'));
       if (!(await wait(5500))) return;
       setHand((now) => [...now, winner].sort(byKey));
       setExtra(null);
@@ -170,7 +170,7 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
     said(t('Juega el jugador de tu izquierda', 'The player on your left plays', 'Joga o jogador à sua esquerda'), t('Roba su ficha y va a descartar…', 'Draws a tile and is about to throw…', 'Compra sua peça e vai descartar…'));
     if (!(await rivalTurn(2, WINNER))) return;
     setHot({ player: 3, slot: rivals[2].length - 1 });
-    said(t('¡Esa es tu ficha!', 'That is your tile!', 'Essa é a sua peça!'), t('No la robaste tú: la botó otro jugador. Pero es la 6z que completa tu grupo, y las reglas te dejan ganar con ella.', 'You did not draw it: another player threw it. But it is the 6z that completes your set, and the rules let you win on it.', 'Você não comprou: outro jogador descartou. Mas é o 6z que completa seu grupo, e as regras deixam você ganhar com ele.'));
+    said(t('¡Esa es tu ficha!', 'That is your tile!', 'Essa é a sua peça!'), t('No la robaste tú: la botó otro jugador. Pero es el Chun (中) que completa tu grupo, y las reglas te dejan ganar con ella.', 'You did not draw it: another player threw it. But it is the Chun (中) that completes your set, and the rules let you win on it.', 'Você não comprou: outro jogador descartou. Mas é o Chun (中) que completa seu grupo, e as regras deixam você ganhar com ele.'));
     if (!(await wait(5000))) return;
     said(t('Dices «Ron»', 'You call “Ron”', 'Você diz «Ron»'), t('Reclamas la ficha del rival y la pones en tu mano antes de que siga el juego.', 'You claim the rival’s tile and place it in your hand before the game goes on.', 'Você reivindica a peça do rival e coloca na sua mão antes do jogo continuar.'));
     const at = pondPos(3, rivals[2].length - 1);
