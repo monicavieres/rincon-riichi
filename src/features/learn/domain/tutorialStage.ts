@@ -9,7 +9,7 @@ export type LocalCallout = Omit<TableCallout, 'label'> & { label: LocalizedText 
 
 export type StageSpec =
   | { kind: 'sort' }
-  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' | 'win' | 'yaku' | 'calls' | 'furiten' | 'points' | 'rounds' }
+  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' | 'win' | 'yaku' | 'calls' | 'furiten' | 'points' | 'rounds' | 'finish' }
   | { kind: 'table'; focus: TableFocus; callouts: LocalCallout[] }
   | { kind: 'rack'; rows: RackRow[]; footer?: LocalizedText };
 
@@ -442,121 +442,6 @@ export const tutorialStops: TutorialStop[] = [
     practice: { href: '../practicar/furiten.html', label: L('Practicar furiten', 'Practise furiten', 'Praticar furiten') },
   },
   {
-    id: 'what-is-mahjong', part: 'discover', short: L('La mesa', 'The table', 'A mesa'), ...text('what-is-mahjong'),
-    stage: { kind: 'table', focus: zone('mesa'), callouts: tableCallouts.mesa },
-    practice: { href: '../aprender/tiles.html', label: L('Conocer las fichas', 'Meet the tiles', 'Conhecer as peças') },
-  },
-  {
-    id: 'objective', part: 'discover', short: L('Objetivo', 'Goal', 'Objetivo'), ...text('objective'),
-    stage: { kind: 'rack', rows: handRows.objective, footer: L('4 grupos + 1 pareja + al menos un yaku', '4 sets + 1 pair + at least one yaku', '4 grupos + 1 par + pelo menos um yaku') },
-    practice: { href: '../practicar/yaku.html', label: L('Practicar yaku', 'Practise yaku', 'Praticar yaku') },
-  },
-  {
-    id: 'table', part: 'discover', short: L('El muro', 'The wall', 'O muro'), ...text('table'),
-    stage: {
-      kind: 'table',
-      focus: zone('muro'),
-      callouts: [
-        ...relabel('muro', [L('17 pilas por lado', '17 stacks per side', '17 pilhas por lado'), L('2 fichas de alto', '2 tiles high', '2 peças de altura')]),
-        { label: L('17 × 2 × 4 lados = 136', '17 × 2 × 4 sides = 136', '17 × 2 × 4 lados = 136'), at: [116, 470, FELT + 30], dx: 50, dy: 44 },
-      ],
-    },
-    practice: { href: '../aprender/tiles.html', label: L('Repasar las fichas', 'Review the tiles', 'Revisar as peças') },
-  },
-  {
-    id: 'deal', part: 'discover', short: L('Reparto', 'The deal', 'Distribuição'), ...text('deal'),
-    stage: { kind: 'rack', rows: handRows.deal, footer: L('Tu mano normalmente espera con 13', 'Your hand normally waits with 13', 'Sua mão normalmente espera com 13') },
-    practice: { href: '../aprender/eficiencia.html', label: L('Aprender eficiencia', 'Learn efficiency', 'Aprender eficiência') },
-  },
-  {
-    id: 'dead-wall', part: 'discover', short: L('Muro muerto', 'Dead wall', 'Muro morto'), ...text('dead-wall'),
-    stage: {
-      kind: 'table',
-      focus: zone('muro-muerto'),
-      callouts: relabel('muro-muerto', [
-        L('Indicador de dora, boca arriba', 'Dora indicator, face up', 'Indicador de dora, virado para cima'),
-        L('Corte del muro', 'Wall break', 'Corte do muro'),
-        L('7 pilas: 14 fichas apartadas', '7 stacks: 14 tiles set apart', '7 pilhas: 14 peças separadas'),
-      ]),
-    },
-    practice: { href: '../aprender/dora.html', label: L('Aprender dora', 'Learn dora', 'Aprender dora') },
-  },
-  {
-    id: 'what-happens', part: 'discover', short: L('Una partida', 'A game', 'Uma partida'), ...text('what-happens'),
-    stage: {
-      kind: 'table',
-      focus: zone('ronda'),
-      callouts: [
-        { label: L('Ronda Este: Este 1 a 4', 'East round: East 1 to 4', 'Rodada Leste: Leste 1 a 4'), at: [534, 560, FELT + 3], dx: -90, dy: -50 },
-        { label: L('En la ronda Sur se da vuelta a 南', 'In the South round it flips to 南', 'Na rodada Sul vira para 南'), at: [568, 568, FELT + 3], dx: -60, dy: 56 },
-      ],
-    },
-    practice: { href: '../aprender/reglas.html', label: L('Ver reglas especiales', 'See special rules', 'Ver regras especiais') },
-  },
-  {
-    id: 'turn', part: 'play', short: L('Tu turno', 'Your turn', 'Seu turno'), ...text('turn'),
-    stage: {
-      kind: 'table',
-      focus: zone('turno'),
-      callouts: relabel('turno', [
-        L('1 · Robas: 13 pasan a 14', '1 · You draw: 13 become 14', '1 · Você compra: 13 viram 14'),
-        L('2 · Descartas una: 14 vuelven a 13', '2 · You discard one: 14 back to 13', '2 · Você descarta uma: 14 voltam a 13'),
-      ]),
-    },
-    practice: { href: '../aprender/eficiencia.html', label: L('Practicar eficiencia', 'Practise efficiency', 'Praticar eficiência') },
-  },
-  {
-    id: 'structure', part: 'play', short: L('Grupos', 'Sets', 'Grupos'), ...text('structure'),
-    stage: { kind: 'rack', rows: handRows.structure },
-    practice: { href: '../practicar/waits.html', label: L('Practicar esperas', 'Practise waits', 'Praticar esperas') },
-  },
-  {
-    id: 'open-closed', part: 'play', short: L('Abrir o no', 'Open or closed', 'Abrir ou não'), ...text('open-closed'),
-    stage: { kind: 'rack', rows: handRows['open-closed'] },
-    practice: { href: '../aprender/yaku-reference.html', label: L('Guía de yaku', 'Yaku guide', 'Guia de yaku') },
-  },
-  {
-    id: 'tenpai', part: 'play', short: L('Tenpai', 'Tenpai', 'Tenpai'), ...text('tenpai'),
-    stage: { kind: 'rack', rows: handRows.tenpai },
-    practice: { href: '../practicar/espera-fichas.html', label: L('Practicar esperas', 'Practise waits', 'Praticar esperas') },
-  },
-  {
-    id: 'riichi', part: 'play', short: L('Riichi', 'Riichi', 'Riichi'), ...text('riichi'),
-    stage: {
-      kind: 'table',
-      focus: zone('riichi'),
-      callouts: relabel('riichi', [
-        L('Ficha girada: aquí declaraste', 'Sideways tile: you declared here', 'Peça virada: você declarou aqui'),
-        L('Palito de 1000 en tu ranura del compass', '1000-point stick in your compass slot', 'Bastão de 1000 no seu slot do compass'),
-      ]),
-    },
-    practice: { href: '../aprender/defensa.html', label: L('Aprender defensa', 'Learn defence', 'Aprender defesa') },
-  },
-  {
-    id: 'dora', part: 'win', short: L('Dora', 'Dora', 'Dora'), ...text('dora'),
-    stage: {
-      kind: 'table',
-      focus: zone('muro-muerto'),
-      callouts: [
-        { label: L('Indicador: 4 de círculos', 'Indicator: 4 of circles', 'Indicador: 4 de círculos'), at: [497, 326, FELT + 30], dx: 70, dy: -54 },
-        { label: L('La dora es el siguiente: 5 de círculos', 'The dora is the next: 5 of circles', 'A dora é a seguinte: 5 de círculos'), at: [470, 246, FELT + 30], dx: -30, dy: -96 },
-      ],
-    },
-    practice: { href: '../aprender/dora.html', label: L('Aprender dora', 'Learn dora', 'Aprender dora') },
-  },
-  {
-    id: 'kan', part: 'win', short: L('Kan', 'Kan', 'Kan'), ...text('kan'),
-    stage: {
-      kind: 'table',
-      focus: zone('muro-muerto'),
-      callouts: [
-        { label: L('Tras un kan robas de aquí', 'After a kan you draw from here', 'Depois de um kan você compra daqui'), at: [470, 246, FELT + 30], dx: -30, dy: -96 },
-        { label: L('Se voltea un nuevo indicador', 'A new indicator is flipped', 'Um novo indicador é virado'), at: [497, 326, FELT + 30], dx: 70, dy: -54 },
-      ],
-    },
-    practice: { href: '../aprender/dora.html', label: L('Aprender dora', 'Learn dora', 'Aprender dora') },
-  },
-  {
     id: 'points', part: 'win', short: L('Puntaje', 'Scoring', 'Pontuação'),
     eyebrow: L('Al terminar la mano', 'When the hand ends', 'Ao fim da mão'),
     title: L('Puntaje: cuentas y pagas con palitos', 'Scoring: count and pay with sticks', 'Pontuação: conte e pague com palitos'),
@@ -593,8 +478,20 @@ export const tutorialStops: TutorialStop[] = [
     practice: { href: '../aprender/reglas.html', label: L('Ver reglas', 'See rules', 'Ver regras') },
   },
   {
-    id: 'finish', part: 'win', short: L('Final', 'Finish', 'Final'), ...text('finish'),
-    stage: { kind: 'table', focus: zone('mesa'), callouts: [] },
-    practice: { href: '../practicar/yaku.html', label: L('Practicar yaku', 'Practise yaku', 'Praticar yaku') },
+    id: 'finish', part: 'win', short: L('Y ahora…', 'And now…', 'E agora…'),
+    eyebrow: L('Sigue aprendiendo', 'Keep learning', 'Continue aprendendo'),
+    title: L('Ya conoces una partida completa', 'You now know a whole game', 'Você já conhece uma partida completa'),
+    body: L(
+      'Viste cómo se **prepara** la mesa, cómo se **juega** una mano, cómo se **gana**, cómo se **cuentan** los puntos y cómo sigue la partida.\n- **Practicar**: entrena un concepto con ejercicios.\n- **Aprender**: repasa o profundiza en un tema.\nLos botones te llevan directo.',
+      'You saw how the table is **set up**, how a hand is **played**, how it is **won**, how points are **counted** and how the game goes on.\n- **Practise**: train a concept with exercises.\n- **Learn**: review or go deeper into a topic.\nThe buttons take you straight there.',
+      'Você viu como a mesa é **preparada**, como uma mão é **jogada**, como se **ganha**, como os pontos são **contados** e como o jogo segue.\n- **Praticar**: treine um conceito com exercícios.\n- **Aprender**: revise ou aprofunde um tema.\nOs botões levam direto.',
+    ),
+    bullets: [
+      L('Practicar: fichas, esperas, furiten, yaku, han, fu y puntaje.', 'Practise: tiles, waits, furiten, yaku, han, fu and scoring.', 'Praticar: peças, esperas, furiten, yaku, han, fu e pontuação.'),
+      L('Aprender: fichas, eficiencia, esperas, reglas, defensa, dora, puntajes y yaku.', 'Learn: tiles, efficiency, waits, rules, defence, dora, scores and yaku.', 'Aprender: peças, eficiência, esperas, regras, defesa, dora, pontuação e yaku.'),
+    ],
+    remember: L('', '', ''),
+    stage: { kind: 'deck', mode: 'finish' },
+    practice: { href: '../practicar/que-ficha-es.html', label: L('Empezar a practicar', 'Start practising', 'Começar a praticar') },
   },
 ];

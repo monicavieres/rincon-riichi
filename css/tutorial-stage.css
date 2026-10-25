@@ -1238,3 +1238,34 @@ a.sort-button {
 .rd-hand.is-south { background: #8fd3ff; }
 .rd-score { min-width: 11cqw; }
 .rd-score.is-top { border-color: #ffd36e; background: rgba(255, 211, 110, 0.25); }
+
+/* last step: practice and learn links */
+.fin-board {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2cqw;
+    align-content: start;
+    padding: 2.4cqw;
+    overflow: auto;
+    background: radial-gradient(circle at 50% 30%, #2f8a6f, #1b5a49);
+}
+
+.fin-col { display: grid; gap: 1cqw; align-content: start; }
+.fin-col h3 { margin: 0; color: #fff; font: 800 clamp(14px, 2.2cqw, 22px) / 1 var(--font-display); letter-spacing: 0.06em; text-transform: uppercase; }
+.fin-grid { display: grid; gap: 0.7cqw; }
+.fin-link {
+    display: grid;
+    gap: 2px;
+    padding: 0.8cqw 1.2cqw;
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    background: var(--card);
+    color: var(--ink);
+    text-decoration: none;
+    box-shadow: 0 3px 0 var(--ink);
+}
+.fin-link:hover { transform: translateY(-1px); background: var(--gold-soft, #ffe9a8); }
+.fin-link b { font: 700 clamp(11px, 1.7cqw, 15px) / 1.15 var(--font-display); }
+.fin-link span { font: 500 clamp(9px, 1.35cqw, 12px) / 1.2 var(--font-sans); color: var(--muted); }
+
+@media (max-width: 640px) { .fin-board { grid-template-columns: 1fr; } }

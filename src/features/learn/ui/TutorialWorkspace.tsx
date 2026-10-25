@@ -12,6 +12,7 @@ import { CallsBoard } from './stages/CallsBoard';
 import { FuritenBoard } from './stages/FuritenBoard';
 import { PointsBoard } from './stages/PointsBoard';
 import { RoundsBoard } from './stages/RoundsBoard';
+import { FinishBoard } from './stages/FinishBoard';
 import { DealBoard, type DealStatus } from './stages/DealBoard';
 import { TableTopBoard, type TableTopStatus } from './stages/TableTopBoard';
 import { WallBoard, type WallStatus } from './stages/WallBoard';
@@ -47,6 +48,11 @@ const TABS: Array<{ id: Tab; label: LocalizedText }> = [
 ];
 
 const PRACTICE_COPY = {
+  finish: L(
+    'Elige un ejercicio para practicar o una página para repasar. Los botones te llevan directo, sin abrir otra pestaña.',
+    'Pick an exercise to practise or a page to review. The buttons take you straight there, without opening another tab.',
+    'Escolha um exercício para praticar ou uma página para revisar. Os botões levam direto, sem abrir outra aba.',
+  ),
   rounds: L(
     'Elige un caso y mira qué pasa con el compass, los vientos de asiento y la placa de la ronda. «Tipos de partida» muestra tonpuusen, hanchan y cómo se decide quién gana.',
     'Pick a case and watch what happens to the compass, the seat winds and the round plate. “Game types” shows tonpuusen, hanchan and how the winner is decided.',
@@ -249,7 +255,7 @@ function TileThumb({ codes, scattered = false }: { codes: string[]; scattered?: 
 function thumbFor(stop: TutorialStop) {
   const spec = stop.stage;
   if (spec.kind === 'table') return <ZoneThumb focus={spec.focus} />;
-  if (spec.kind === 'deck') return spec.mode === 'rounds' ? <TileThumb codes={['1z', '2z', '3z', '4z']} /> : spec.mode === 'points' ? <TileThumb codes={['1p', '1p', '1p']} /> : spec.mode === 'furiten' ? <TileThumb codes={['4p', '7p']} /> : spec.mode === 'calls' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'yaku' ? <TileThumb codes={['2m', '3m', '4m']} /> : spec.mode === 'win' ? <TileThumb codes={['6z', '6z', '6z']} /> : spec.mode === 'draw' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'hand' ? <TileThumb codes={['4p', '1m', '6z']} scattered /> : <SceneThumb mode={spec.mode} />;
+  if (spec.kind === 'deck') return spec.mode === 'finish' ? <TileThumb codes={['9m', '9p', '9s']} /> : spec.mode === 'rounds' ? <TileThumb codes={['1z', '2z', '3z', '4z']} /> : spec.mode === 'points' ? <TileThumb codes={['1p', '1p', '1p']} /> : spec.mode === 'furiten' ? <TileThumb codes={['4p', '7p']} /> : spec.mode === 'calls' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'yaku' ? <TileThumb codes={['2m', '3m', '4m']} /> : spec.mode === 'win' ? <TileThumb codes={['6z', '6z', '6z']} /> : spec.mode === 'draw' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'hand' ? <TileThumb codes={['4p', '1m', '6z']} scattered /> : <SceneThumb mode={spec.mode} />;
   if (spec.kind === 'sort') return <TileThumb codes={['4p', '1m', '6z']} scattered />;
   return <TileThumb codes={spec.rows[0].groups[0].tiles} />;
 }
@@ -357,6 +363,7 @@ export function TutorialWorkspace() {
           </div>
 
           {spec.kind === 'deck' && spec.mode === 'shuffle' && <DeckBoard language={language} onStatus={setDeck} />}
+          {spec.kind === 'deck' && spec.mode === 'finish' && <FinishBoard language={language} />}
           {spec.kind === 'deck' && spec.mode === 'rounds' && <RoundsBoard key={language} language={language} />}
           {spec.kind === 'deck' && spec.mode === 'points' && <PointsBoard key={language} language={language} />}
           {spec.kind === 'deck' && spec.mode === 'furiten' && <FuritenBoard key={language} language={language} />}
