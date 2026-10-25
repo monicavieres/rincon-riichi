@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { tilePath } from './SortBoard';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { dealAssignments } from './DealBoard';
 import { HAND_VIEW, HAND_Y, TAG_LOOK, WIDTH, byKey, handX, pondPos, sleep, tagsOf, type Piece } from './DrawBoard';
@@ -62,20 +64,12 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
     }
     setExtra(null);
     setPond([]);
-    if (next === 'tanyao') {
-      setHand(piecesOf(which === 'no' ? SETS.notTanyao : SETS.tanyao, 0));
-      setNote(which === 'no'
-        ? { title: t('Con puntas u honores, no', 'With terminals or honors, no', 'Com pontas ou honras, não'), body: t('Un 1, un 9 o un honor (vientos y dragones) rompe el tanyao. Mira las fichas marcadas: sobran.', 'A 1, a 9 or an honor (winds and dragons) breaks tanyao. Look at the marked tiles: they spoil it.', 'Um 1, um 9 ou uma honra (ventos e dragões) quebra o tanyao. Veja as peças marcadas: elas estragam.') }
-        : { title: t('Tanyao · todas simples', 'Tanyao · all simples', 'Tanyao · todas simples'), body: t('Toda la mano son fichas del 2 al 8: sin 1, sin 9 y sin honores. Es el yaku más fácil de ver: si no tienes puntas, ya lo tienes.', 'The whole hand is tiles from 2 to 8: no 1s, no 9s and no honors. It is the easiest yaku to spot: with no terminals, you already have it.', 'A mão toda são peças de 2 a 8: sem 1, sem 9 e sem honras. É o yaku mais fácil de ver: sem pontas, você já tem.') });
-    } else {
-      setHand(piecesOf(which === 'wind' ? SETS.wind : SETS.dragon, 0));
-      setNote(which === 'wind'
-        ? { title: t('Yakuhai · viento de la ronda o tuyo', 'Yakuhai · round wind or your wind', 'Yakuhai · vento da rodada ou seu'), body: t('Un trío del viento de la ronda (Este ahora) o de tu propio viento da yaku. Eres Este y la ronda es Este: este trío vale doble. Un viento que no es ninguno de los dos no cuenta.', 'A triplet of the round wind (East now) or of your own wind gives a yaku. You are East and the round is East: this triplet counts double. A wind that is neither does not count.', 'Um trio do vento da rodada (Leste agora) ou do seu vento dá yaku. Você é Leste e a rodada é Leste: este trio vale dobrado. Um vento que não é nenhum dos dois não conta.') }
-        : { title: t('Yakuhai · dragones', 'Yakuhai · dragons', 'Yakuhai · dragões'), body: t('Un trío (o cuarteto) de cualquier dragón —blanco, verde o rojo— siempre da yaku, sin importar la ronda ni tu asiento.', 'A triplet (or quad) of any dragon —white, green or red— always gives a yaku, whatever the round or your seat.', 'Um trio (ou quarteto) de qualquer dragão —branco, verde ou vermelho— sempre dá yaku, seja qual for a rodada ou seu assento.') });
-    }
+    setNote(null);
   }, [language]);
 
   useEffect(() => { show('tanyao', 'yes'); return () => { alive.current += 1; }; }, [show]);
+  const [slot, setSlot] = useState<HTMLElement | null>(null);
+  useEffect(() => { setSlot(document.getElementById('yaku-controls')); }, []);
 
   const declare = async () => {
     if (busy || !extra) return;
@@ -94,8 +88,8 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
     motion.current = null;
     await sleep(2200);
     if (!live()) return;
-    setNote({ title: t('2 · Pones el palito', '2 · You place the stick', '2 · Você coloca o palito'), body: t('Pones un palito de 1000 puntos al frente: es la apuesta del riichi.', 'You place a 1000-point stick in front of you: it is the riichi bet.', 'Você coloca um palito de 1000 pontos à sua frente: é a aposta do riichi.') });
-    motion.current = { kind: 'stick', from: { x: 50, y: 90 }, to: { x: 50, y: 73.2 }, start: performance.now(), dur: 900 };
+    setNote({ title: t('2 · Pones el palito', '2 · You place the stick', '2 · Você coloca o palito'), body: t('Pones un palito de 1000 puntos sobre el compass, frente a ti: es la apuesta del riichi.', 'You place a 1000-point stick on the compass in front of you: it is the riichi bet.', 'Você coloca um palito de 1000 pontos sobre o compass à sua frente: é a aposta do riichi.') });
+    motion.current = { kind: 'stick', from: { x: 50, y: 88 }, to: { x: 50, y: 57.2 }, start: performance.now(), dur: 900 };
     await sleep(950);
     if (!live()) return;
     setStick(true);
@@ -135,7 +129,7 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
       const at = pondPos(0, slot);
       g.tile(at.x, at.y, at.rot, FELT_Z, { flip: 1, face: face(code) });
     });
-    if (stick) drawStick(g, 50, 73.2, 0);
+    if (stick) drawStick(g, 50, 57.2, 3);
 
     const m = motion.current;
     if (m) {
@@ -145,7 +139,7 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
       const y = m.from.y + (m.to.y - m.from.y) * e;
       const hop = Math.sin(k * Math.PI) * 7;
       if (m.kind === 'tile') g.tile(x, y, 90 * e, FELT_Z + 1, { flip: 1, face: face(RIICHI_THROW), hop, order: 9e4 });
-      else drawStick(g, x, y, hop);
+      else drawStick(g, x, y, 3 + hop);
       if (k < 1) g.needsFrame = true;
     }
 
@@ -164,24 +158,14 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
     g.flush();
 
     const at = (piece: Piece) => shown.current.get(piece.id);
-    if (mode === 'tanyao' && sub === 'no') {
-      hand.forEach((piece) => {
-        const x = at(piece);
-        if (x === undefined || isSimple(piece.code)) return;
-        const pos = g.project(x, HAND_Y, FELT_Z + 8);
-        g.pill(pos.x, pos.y + 7, t('No simple', 'Not simple', 'Não simples'), { bg: TAG_LOOK.spare.bg, fg: TAG_LOOK.spare.fg, size: 10, border: TAG_LOOK.spare.fg });
-      });
-    } else {
-      tagsOf(hand).forEach((tag) => {
-        const a = at(hand[tag.from]);
-        const b = at(hand[tag.to]);
-        if (a === undefined || b === undefined) return;
-        const isYaku = mode === 'yakuhai' && tag.kind === 'group' && (hand[tag.from].code === '6z' || hand[tag.from].code === '1z');
-        const look = isYaku ? { bg: p.gold, fg: p.ink, name: { es: 'Yakuhai', en: 'Yakuhai', pt: 'Yakuhai' } } : mode === 'riichi' && tag.kind === 'spare' ? { bg: p.gold, fg: p.ink, name: { es: 'Espera', en: 'Wait', pt: 'Espera' } } : TAG_LOOK[tag.kind];
-        const pos = g.project((a + b) / 2, HAND_Y, FELT_Z + 8);
-        g.pill(pos.x, pos.y + 7, look.name[language], { bg: look.bg, fg: look.fg, size: 11, border: look.fg });
-      });
-    }
+    tagsOf(hand).forEach((tag) => {
+      const a = at(hand[tag.from]);
+      const b = at(hand[tag.to]);
+      if (a === undefined || b === undefined) return;
+      const look = tag.kind === 'spare' ? { bg: p.gold, fg: p.ink, name: { es: 'Espera', en: 'Wait', pt: 'Espera' } } : TAG_LOOK[tag.kind];
+      const pos = g.project((a + b) / 2, HAND_Y, FELT_Z + 8);
+      g.pill(pos.x, pos.y + 7, look.name[language], { bg: look.bg, fg: look.fg, size: 11, border: look.fg });
+    });
     if (mode === 'riichi' && extra) {
       const x = at(extra);
       if (x !== undefined) {
@@ -196,44 +180,102 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
     { id: 'riichi', sub: 'yes', label: t('Riichi', 'Riichi', 'Riichi') },
     { id: 'yakuhai', sub: 'dragon', label: t('Yakuhai', 'Yakuhai', 'Yakuhai') },
   ];
-  const subs: Array<{ id: Sub; label: string }> = mode === 'tanyao'
-    ? [{ id: 'yes', label: t('Sí es tanyao', 'It is tanyao', 'É tanyao') }, { id: 'no', label: t('No lo es', 'It is not', 'Não é') }]
-    : mode === 'yakuhai'
-      ? [{ id: 'dragon', label: t('Dragones', 'Dragons', 'Dragões') }, { id: 'wind', label: t('Vientos', 'Winds', 'Ventos') }]
-      : [];
+  const subs: Array<{ id: Sub; label: string }> = [];
+  const controls = (
+    <div className="yaku-controls-inner">
+      <div className="yaku-tabs" role="tablist">
+        {modes.map((item) => <button key={item.id} type="button" role="tab" aria-selected={mode === item.id} className={`sort-button${mode === item.id ? ' is-primary' : ''}`} onClick={() => show(item.id, item.sub)}>{item.label}</button>)}
+      </div>
+      {subs.length > 0 && (
+        <div className="yaku-tabs">
+          {subs.map((item) => <button key={item.id} type="button" className={`sort-button${sub === item.id ? ' is-on' : ''}`} onClick={() => show(mode, item.id)}>{item.label}</button>)}
+        </div>
+      )}
+      {mode === 'riichi' && (
+        <button type="button" className="sort-button is-primary" onClick={() => { if (stick) show('riichi', 'yes'); else void declare(); }} disabled={busy}>
+          {stick ? t('Ver otra vez', 'Watch again', 'Ver de novo') : t('Ver cómo se declara', 'See how it is declared', 'Ver como se declara')}
+        </button>
+      )}
+    </div>
+  );
   return (
     <div className="sort-stage deck-stage">
-      <div className="sort-board deck-board is-table is-hand is-draw is-yaku">
-        <IsoCanvas ref={scene} draw={draw} />
-        <div className="sort-actions deck-actions yaku-actions">
-          <div className="yaku-tabs" role="tablist">
-            {modes.map((item) => <button key={item.id} type="button" role="tab" aria-selected={mode === item.id} className={`sort-button${mode === item.id ? ' is-primary' : ''}`} onClick={() => show(item.id, item.sub)}>{item.label}</button>)}
-          </div>
-          {subs.length > 0 && (
-            <div className="yaku-tabs">
-              {subs.map((item) => <button key={item.id} type="button" className={`sort-button${sub === item.id ? ' is-on' : ''}`} onClick={() => show(mode, item.id)}>{item.label}</button>)}
-            </div>
-          )}
-          {mode === 'riichi' && (
-            <button type="button" className="sort-button is-primary" onClick={() => { if (stick) show('riichi', 'yes'); else void declare(); }} disabled={busy}>
-              {stick ? t('Repetir', 'Again', 'Repetir') : t('Declarar riichi', 'Declare riichi', 'Declarar riichi')}
-            </button>
-          )}
+      {slot && createPortal(controls, slot)}
+      {mode === 'riichi' ? (
+        <div className="sort-board deck-board is-table is-hand is-draw is-yaku">
+          <IsoCanvas ref={scene} draw={draw} />
+          <p className="sort-win is-top is-note" role="status">
+            <b>{note?.title}</b>
+            <span>{note?.body}</span>
+          </p>
         </div>
-        <p className="sort-win is-top is-note" role="status">
-          <b>{note?.title}</b>
-          <span>{note?.body}</span>
-        </p>
+      ) : (
+        <div className="sort-board deck-board yaku-static">{mode === 'tanyao' ? <TanyaoCard t={t} /> : <YakuhaiCard t={t} />}</div>
+      )}
+    </div>
+  );
+}
+
+const Tile = ({ code, tone }: { code: string; tone?: 'ok' | 'no' }) => <img className={`yk-tile${tone ? ` is-${tone}` : ''}`} src={tilePath(code)} alt={code} draggable={false} />;
+const range = (suit: string, from = 1, to = 9) => Array.from({ length: to - from + 1 }, (_, i) => `${from + i}${suit}`);
+
+/** Tanyao as one picture: the tiles that count, the ones that spoil it, and an example hand. */
+function TanyaoCard({ t }: { t: (es: string, en: string, pt: string) => string }) {
+  return (
+    <div className="yk-card">
+      <h3>{t('Tanyao · todas simples', 'Tanyao · all simples', 'Tanyao · todas simples')}</h3>
+      <p className="yk-lead">{t('Toda tu mano debe ser fichas del 2 al 8. Si hay un 1, un 9 o un honor, no es tanyao.', 'Your whole hand must be tiles from 2 to 8. With a 1, a 9 or an honor it is not tanyao.', 'Toda a sua mão deve ser peças de 2 a 8. Com um 1, um 9 ou uma honra não é tanyao.')}</p>
+      <div className="yk-rows">
+        {['m', 'p', 's'].map((suit) => (
+          <div key={suit} className="yk-row">{range(suit).map((code) => <Tile key={code} code={code} tone={isSimple(code) ? 'ok' : 'no'} />)}</div>
+        ))}
+        <div className="yk-row">{range('z', 1, 7).map((code) => <Tile key={code} code={code} tone="no" />)}<span className="yk-note">{t('Honores: no cuentan', 'Honors: do not count', 'Honras: não contam')}</span></div>
       </div>
+      <div className="yk-legend"><span className="is-ok">{t('✔ Simples (2 a 8)', '✔ Simples (2 to 8)', '✔ Simples (2 a 8)')}</span><span className="is-no">{t('✘ Puntas (1, 9) y honores', '✘ Terminals (1, 9) and honors', '✘ Pontas (1, 9) e honras')}</span></div>
+      <p className="yk-sub">{t('Ejemplo de mano tanyao', 'Example tanyao hand', 'Exemplo de mão tanyao')}</p>
+      <div className="yk-row is-hand">{SETS.tanyao.map((code, i) => <Tile key={i} code={code} />)}</div>
+    </div>
+  );
+}
+
+/** Yakuhai as one picture: dragons, round wind and your own wind. */
+function YakuhaiCard({ t }: { t: (es: string, en: string, pt: string) => string }) {
+  return (
+    <div className="yk-card">
+      <h3>{t('Yakuhai · fichas que dan yaku', 'Yakuhai · tiles that give yaku', 'Yakuhai · peças que dão yaku')}</h3>
+      <p className="yk-lead">{t('Un trío (o cuarteto) de estas fichas da yaku:', 'A triplet (or quad) of these tiles gives yaku:', 'Um trio (ou quarteto) destas peças dá yaku:')}</p>
+      <div className="yk-cols">
+        <div className="yk-box">
+          <b>{t('Dragones', 'Dragons', 'Dragões')}</b>
+          <div className="yk-row">{['5z', '6z', '7z'].map((code) => <Tile key={code} code={code} tone="ok" />)}</div>
+          <span>{t('Siempre', 'Always', 'Sempre')}</span>
+        </div>
+        <div className="yk-box">
+          <b>{t('Viento de la ronda', 'Round wind', 'Vento da rodada')}</b>
+          <div className="yk-row"><Tile code="1z" tone="ok" />{['2z', '3z', '4z'].map((code) => <Tile key={code} code={code} tone="no" />)}</div>
+          <span>{t('Ahora: Este (東)', 'Now: East (東)', 'Agora: Leste (東)')}</span>
+        </div>
+        <div className="yk-box">
+          <b>{t('Tu viento', 'Your wind', 'Seu vento')}</b>
+          <div className="yk-row"><Tile code="1z" tone="ok" />{['2z', '3z', '4z'].map((code) => <Tile key={code} code={code} tone="no" />)}</div>
+          <span>{t('Eres Este (dealer)', 'You are East (dealer)', 'Você é Leste (dealer)')}</span>
+        </div>
+      </div>
+      <p className="yk-sub">{t('Ejemplos: trío de dragón y trío de Este (vale doble: ronda y asiento)', 'Examples: a dragon triplet and an East triplet (counts double: round and seat)', 'Exemplos: trio de dragão e trio de Leste (vale dobrado: rodada e assento)')}</p>
+      <div className="yk-cols is-examples">
+        <div className="yk-row">{['6z', '6z', '6z'].map((code, i) => <Tile key={i} code={code} />)}<span className="yk-note">{t('1 yaku', '1 yaku', '1 yaku')}</span></div>
+        <div className="yk-row">{['1z', '1z', '1z'].map((code, i) => <Tile key={i} code={code} />)}<span className="yk-note">{t('2 yaku (ronda + tu viento)', '2 yaku (round + your wind)', '2 yaku (rodada + seu vento)')}</span></div>
+      </div>
+      <p className="yk-lead">{t('Un viento que no es el de la ronda ni el tuyo no cuenta.', 'A wind that is neither the round wind nor yours does not count.', 'Um vento que não é o da rodada nem o seu não conta.')}</p>
     </div>
   );
 }
 
 /** The 1000-point riichi stick lying on the felt. */
-function drawStick(g: Painter, x: number, y: number, hop: number) {
+function drawStick(g: Painter, x: number, y: number, lift: number) {
   const { palette: p } = g;
   g.add(y * 100 + 70, () => {
-    const box = g.box(x, y, FELT_Z + hop, 13, 1.5, 1.2, 0);
+    const box = g.box(x, y, FELT_Z + lift, 13, 1.5, 1.2, 0);
     box.sides.forEach((face) => g.poly(face.q, '#e9e2d0', p.ink, g.lw));
     g.poly(box.top, '#fbf7ec', p.ink, g.lw * 1.2);
     g.onQuad(box.top, () => {

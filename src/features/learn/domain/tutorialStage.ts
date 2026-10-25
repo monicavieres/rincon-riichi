@@ -9,7 +9,7 @@ export type LocalCallout = Omit<TableCallout, 'label'> & { label: LocalizedText 
 
 export type StageSpec =
   | { kind: 'sort' }
-  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' | 'win' | 'yaku' }
+  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' | 'win' | 'yaku' | 'calls' }
   | { kind: 'table'; focus: TableFocus; callouts: LocalCallout[] }
   | { kind: 'rack'; rows: RackRow[]; footer?: LocalizedText };
 
@@ -387,6 +387,24 @@ export const tutorialStops: TutorialStop[] = [
     practice: { href: '../practicar/calc.html', label: L('Practicar el puntaje', 'Practise scoring', 'Praticar a pontuação') },
   },
   {
+    id: 'calls', part: 'discover', short: L('Llamadas', 'Calls', 'Chamadas'),
+    eyebrow: L('Fichas ajenas', 'Other players’ tiles', 'Peças alheias'),
+    title: L('Llamadas: chii, pon y kan', 'Calls: chii, pon and kan', 'Chamadas: chii, pon e kan'),
+    body: L(
+      'En mahjong puedes armar tu mano con el **muro**, pero también puedes **tomar el descarte de un rival** si cumple ciertas condiciones. Eso se llama **llamada**:\n- **Chii**: solo la ficha del jugador a tu **izquierda**, para formar una **secuencia**.\n- **Pon**: la ficha de **cualquier** jugador, para formar un **trío**.\n- **Kan**: la cuarta ficha de un **cuarteto** (y robas una de reemplazo).\nLa ficha tomada va **girada hacia quien la botó**, el **turno salta** a ti, y tu mano deja de ser **cerrada** y pasa a ser **abierta**.',
+      'In mahjong you can build your hand from the **wall**, but you can also **take a rival’s discard** if certain conditions are met. That is called a **call**:\n- **Chii**: only the tile from the player on your **left**, to make a **sequence**.\n- **Pon**: the tile from **any** player, to make a **triplet**.\n- **Kan**: the fourth tile of a **quad** (and you draw a replacement).\nThe taken tile lies **turned toward whoever threw it**, the **turn jumps** to you, and your hand stops being **closed** and becomes **open**.',
+      'No mahjong você pode montar a mão com o **muro**, mas também pode **pegar o descarte de um rival** se certas condições forem cumpridas. Isso se chama **chamada**:\n- **Chii**: só a peça do jogador à sua **esquerda**, para formar uma **sequência**.\n- **Pon**: a peça de **qualquer** jogador, para formar um **trio**.\n- **Kan**: a quarta peça de um **quarteto** (e você compra uma de reposição).\nA peça pega fica **girada para quem descartou**, a **vez pula** para você, e sua mão deixa de ser **fechada** e passa a ser **aberta**.',
+    ),
+    bullets: [
+      L('La ficha tomada se coloca girada hacia el lado del jugador que la botó: izquierda, centro o derecha.', 'The taken tile is placed turned toward the player who threw it: left, middle or right.', 'A peça pega é colocada girada para o lado do jogador que descartou: esquerda, meio ou direita.'),
+      L('El turno salta: los jugadores entre quien botó y tú pierden su turno (en chii no hay salto).', 'The turn jumps: players between the thrower and you lose their turn (no jump with chii).', 'A vez pula: os jogadores entre quem descartou e você perdem a vez (no chii não há salto).'),
+      L('Mano abierta: no puedes declarar riichi y algunos yaku valen menos.', 'Open hand: you cannot declare riichi and some yaku are worth less.', 'Mão aberta: você não pode declarar riichi e alguns yaku valem menos.'),
+    ],
+    remember: L('Llamar = tomar un descarte ajeno: más rápido, pero tu mano queda abierta.', 'Calling = taking another’s discard: faster, but your hand turns open.', 'Chamar = pegar um descarte alheio: mais rápido, mas sua mão fica aberta.'),
+    stage: { kind: 'deck', mode: 'calls' },
+    practice: { href: '../aprender/reglas.html', label: L('Ver reglas especiales', 'See special rules', 'Ver regras especiais') },
+  },
+  {
     id: 'yaku', part: 'discover', short: L('Yaku', 'Yaku', 'Yaku'),
     eyebrow: L('Condición de victoria', 'Winning condition', 'Condição de vitória'),
     title: L('Yaku: tu condición para ganar', 'Yaku: your condition to win', 'Yaku: sua condição para ganhar'),
@@ -472,11 +490,6 @@ export const tutorialStops: TutorialStop[] = [
     id: 'structure', part: 'play', short: L('Grupos', 'Sets', 'Grupos'), ...text('structure'),
     stage: { kind: 'rack', rows: handRows.structure },
     practice: { href: '../practicar/waits.html', label: L('Practicar esperas', 'Practise waits', 'Praticar esperas') },
-  },
-  {
-    id: 'calls', part: 'play', short: L('Llamadas', 'Calls', 'Chamadas'), ...text('calls'),
-    stage: { kind: 'rack', rows: handRows.calls },
-    practice: { href: '../aprender/reglas.html', label: L('Ver reglas especiales', 'See special rules', 'Ver regras especiais') },
   },
   {
     id: 'open-closed', part: 'play', short: L('Abrir o no', 'Open or closed', 'Abrir ou não'), ...text('open-closed'),

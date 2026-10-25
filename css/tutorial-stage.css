@@ -1156,3 +1156,37 @@ a.sort-button { text-decoration: none; }
 
 .yaku-actions { flex-wrap: wrap; gap: 6px; max-width: 96%; }
 .yaku-tabs { display: flex; gap: 6px; }
+
+/* yaku step: buttons live in the side panel, static pictures fill the stage */
+.yaku-controls { display: grid; gap: var(--space-2); margin-top: var(--space-4); }
+.yaku-controls-inner { display: grid; gap: var(--space-2); }
+.yaku-controls .yaku-tabs { flex-wrap: wrap; }
+
+.yaku-static {
+    display: grid;
+    place-items: center;
+    padding: 4% 3%;
+    background: radial-gradient(circle at 50% 40%, #2f8a6f, #1b5a49);
+    overflow: hidden;
+}
+
+.yk-card { display: grid; gap: 1.4cqw; width: 100%; color: #fff; text-align: center; }
+.yk-card h3 { margin: 0; font: 800 clamp(16px, 2.6cqw, 26px) / 1.1 var(--font-display); }
+.yk-lead { margin: 0; font: 500 clamp(11px, 1.7cqw, 15px) / 1.35 var(--font-sans); }
+.yk-sub { margin: 0.4cqw 0 0; font: 700 clamp(11px, 1.6cqw, 14px) / 1.2 var(--font-sans); letter-spacing: 0.04em; text-transform: uppercase; }
+.yk-rows { display: grid; gap: 0.7cqw; justify-items: center; }
+.yk-row { display: flex; align-items: center; justify-content: center; gap: 0.35cqw; }
+.yk-row.is-hand { flex-wrap: wrap; }
+.yk-tile { width: clamp(22px, 5.4cqw, 46px); height: auto; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35)); }
+.yk-row.is-hand .yk-tile { width: clamp(20px, 4.4cqw, 38px); }
+.yk-tile.is-ok { outline: 3px solid #5fd48a; outline-offset: -2px; border-radius: 6px; }
+.yk-tile.is-no { opacity: 0.4; filter: grayscale(1); }
+.yk-note { margin-left: 1cqw; font: 600 clamp(10px, 1.5cqw, 13px) / 1.2 var(--font-sans); }
+.yk-legend { display: flex; justify-content: center; gap: 2cqw; font: 700 clamp(10px, 1.5cqw, 13px) / 1 var(--font-sans); }
+.yk-legend .is-ok { color: #8ef0b3; }
+.yk-legend .is-no { color: #ffb4b4; }
+.yk-cols { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.6cqw; }
+.yk-cols.is-examples { gap: 3cqw; }
+.yk-box { display: grid; gap: 0.6cqw; justify-items: center; padding: 1.2cqw 1.6cqw; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 14px; background: rgba(255, 255, 255, 0.08); }
+.yk-box b { font: 700 clamp(11px, 1.7cqw, 15px) / 1 var(--font-display); }
+.yk-box span { font: 600 clamp(10px, 1.5cqw, 13px) / 1.2 var(--font-sans); color: #ffe9a8; }
