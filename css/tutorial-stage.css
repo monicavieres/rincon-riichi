@@ -1298,3 +1298,5 @@ a.sort-button {
 .machi-felt { grid-template-columns: 100%; overflow: hidden; }
 .machi-block, .machi-row { width: 100%; }
 .machi-row img { width: clamp(26px, 5cqw, 52px); }
+
+.machi-row.is-small img { width: clamp(20px, 3.8cqw, 40px); }
