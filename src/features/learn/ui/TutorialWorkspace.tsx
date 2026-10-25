@@ -14,6 +14,8 @@ import { SortBoard, tilePath, type SortStatus } from './stages/SortBoard';
 
 type Tab = 'summary' | 'observe' | 'practice';
 
+/** **word** marks a highlighted term. */
+const rich = (text: string) => text.split('**').map((part, i) => (i % 2 ? <mark key={i} className="term-mark">{part}</mark> : part));
 const L = (es: string, en: string, pt: string): LocalizedText => ({ es, en, pt });
 
 const TABS: Array<{ id: Tab; label: LocalizedText }> = [
@@ -351,8 +353,8 @@ export function TutorialWorkspace() {
           <div className="explorer-inspector-copy">
             <p className="panel-label">{t(stop.eyebrow)}</p>
             <h2>{t(stop.title)}</h2>
-            {tab === 'summary' && <p>{t(stop.body)}</p>}
-            {tab === 'observe' && <ul>{stop.bullets.map((bullet, bulletIndex) => <li key={bulletIndex}>{t(bullet)}</li>)}</ul>}
+            {tab === 'summary' && <p>{rich(t(stop.body))}</p>}
+            {tab === 'observe' && <ul>{stop.bullets.map((bullet, bulletIndex) => <li key={bulletIndex}>{rich(t(bullet))}</li>)}</ul>}
             {tab === 'practice' && (
               <div className="explorer-practice">
                 <p>{t(practiceCopy)}</p>
