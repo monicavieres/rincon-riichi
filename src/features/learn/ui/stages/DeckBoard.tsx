@@ -57,51 +57,39 @@ const RIVAL_TURN = [-90, 180, 90];
 /** The rivals stop shuffling after this long. */
 const RIVAL_MS = 3000;
 
-/** A cat's paw pressing down, toes up, with a striped leg trailing below. The stripes follow the chosen style. */
+/** A round, chubby cat paw pressing down: four toes, pink beans, no arm. */
 function Palm() {
   const ink = 'var(--tile-ink)';
-  const fur = '#fff4e6';
-  const toes: Array<[number, number, number]> = [[21, 56, 12], [40, 38, 13], [60, 38, 13], [79, 56, 12]];
-  const pawBody = 'M14 70C12 52 26 44 50 44C74 44 88 52 86 70C86 94 70 110 50 110C30 110 14 94 14 70Z';
-  const leg = 'M33 104C30 126 30 148 34 168H66C70 148 70 126 67 104Z';
+  const toes: Array<[number, number, number]> = [[19, 44, 15], [38, 23, 16.5], [62, 23, 16.5], [81, 44, 15]];
+  const body = 'M50 38C74 38 90 52 90 68C90 86 72 98 50 98C28 98 10 86 10 68C10 52 26 38 50 38Z';
   return (
-    <svg viewBox="0 0 100 170" aria-hidden="true">
+    <svg viewBox="0 0 100 106" aria-hidden="true">
       <defs>
-        <radialGradient id="paw-fur" cx=".4" cy=".3" r=".9">
+        <radialGradient id="paw-fur" cx=".38" cy=".28" r=".95">
           <stop offset="0" stopColor="#ffffff" />
-          <stop offset="1" stopColor="#fbe7d2" />
+          <stop offset="1" stopColor="#fde9d6" />
         </radialGradient>
       </defs>
-      {/* outline layer: one firm line around the whole silhouette */}
-      <g fill={ink} stroke={ink} strokeWidth="5" strokeLinejoin="round">
-        <path d={leg} />
-        <path d={pawBody} />
+      <g fill={ink} stroke={ink} strokeWidth="5.5" strokeLinejoin="round">
+        <path d={body} />
         {toes.map(([cx, cy, r]) => <circle key={`o-${cx}`} cx={cx} cy={cy} r={r} />)}
       </g>
-      {/* soft fur */}
       <g fill="url(#paw-fur)">
-        <path d={leg} />
-        <path d={pawBody} />
+        <path d={body} />
         {toes.map(([cx, cy, r]) => <circle key={`f-${cx}`} cx={cx} cy={cy} r={r} />)}
       </g>
-      {/* tabby stripes on the leg */}
-      <g fill="none" stroke="var(--tile-back)" strokeWidth="6" strokeLinecap="round" opacity=".9">
-        <path d="M35 126q15 6 30 0" />
-        <path d="M34 142q16 6 32 0" />
-        <path d="M34 157q16 6 32 0" />
-      </g>
-      {/* toe lines */}
-      <g fill="none" stroke="#e6c3a5" strokeWidth="1.6" strokeLinecap="round">
-        <path d="M31 50q3 8 1 17M50 46v18M69 50q-3 8 -1 17" opacity=".8" />
+      {/* soft fur marks between the toes */}
+      <g fill="none" stroke="#ecc9ab" strokeWidth="1.8" strokeLinecap="round" opacity=".85">
+        <path d="M28 40q2 7 0 14M50 34v16M72 40q-2 7 0 14" />
       </g>
       {/* pink pads */}
-      <g fill="#f5a1b3" stroke="#d9728a" strokeWidth="1.6">
-        <path d="M50 76C38 76 30 86 32 94C34 101 42 102 50 98C58 102 66 101 68 94C70 86 62 76 50 76Z" />
-        {toes.map(([cx, cy]) => <ellipse key={`p-${cx}`} cx={cx} cy={cy + 3} rx="6.5" ry="7.5" />)}
+      <g fill="#f6a3b6" stroke="#dc7690" strokeWidth="1.8">
+        <path d="M50 62C38 62 28 70 30 80C32 90 42 90 50 86C58 90 68 90 70 80C72 70 62 62 50 62Z" />
+        {toes.map(([cx, cy]) => <ellipse key={`p-${cx}`} cx={cx} cy={cy + 1.5} rx="7.4" ry="8.2" />)}
       </g>
-      <g fill="#fff" opacity=".6">
-        <ellipse cx="45" cy="84" rx="4" ry="2.4" />
-        {toes.map(([cx, cy]) => <ellipse key={`h-${cx}`} cx={cx - 2} cy={cy - 1} rx="2" ry="2.6" />)}
+      <g fill="#fff" opacity=".65">
+        <ellipse cx="44" cy="69" rx="4.6" ry="2.6" />
+        {toes.map(([cx, cy]) => <ellipse key={`h-${cx}`} cx={cx - 2.2} cy={cy - 2} rx="2.4" ry="3" />)}
       </g>
     </svg>
   );
@@ -180,7 +168,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
       if (at) {
         el.style.left = `${at.x}px`;
         el.style.top = `${at.y}px`;
-        el.style.transform = `translate(-50%, -22%) rotate(${RIVAL_TURN[hand]}deg) scale(${at.f})`;
+        el.style.transform = `translate(-50%, -50%) rotate(${RIVAL_TURN[hand]}deg) scale(${at.f})`;
       }
     });
     if (done) clock.active = false;
@@ -214,7 +202,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
     if (hand2 && pointer.current.inside) {
       lag.current.x += (pointer.current.x - 54 - lag.current.x) * 0.16;
       lag.current.y += (pointer.current.y + 18 - lag.current.y) * 0.16;
-      hand2.style.transform = `translate(${lag.current.x}px, ${lag.current.y}px) translate(-50%, -25%) scaleX(-1) rotate(${pointer.current.down ? 8 : 3}deg)`;
+      hand2.style.transform = `translate(${lag.current.x}px, ${lag.current.y}px) translate(-50%, -50%) scaleX(-1) rotate(${pointer.current.down ? 8 : 3}deg)`;
     }
     if (energy > 0.05 || pointer.current.inside || rivalClock.current.active) frame.current = requestAnimationFrame(step);
   }, [moveRivals]);
@@ -238,7 +226,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
     pointer.current.x = clientX - rect.left;
     pointer.current.y = clientY - rect.top;
     const hand = handRef.current;
-    if (hand) hand.style.transform = `translate(${pointer.current.x}px, ${pointer.current.y}px) translate(-50%, -25%) rotate(${pointer.current.down ? -8 : -3}deg) scale(${pointer.current.down ? 0.95 : 1})`;
+    if (hand) hand.style.transform = `translate(${pointer.current.x}px, ${pointer.current.y}px) translate(-50%, -50%) rotate(${pointer.current.down ? -8 : -3}deg) scale(${pointer.current.down ? 0.95 : 1})`;
   };
 
   const showHands = (visible: boolean) => {
