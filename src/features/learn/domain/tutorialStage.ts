@@ -9,7 +9,7 @@ export type LocalCallout = Omit<TableCallout, 'label'> & { label: LocalizedText 
 
 export type StageSpec =
   | { kind: 'sort' }
-  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' | 'win' }
+  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' | 'win' | 'yaku' }
   | { kind: 'table'; focus: TableFocus; callouts: LocalCallout[] }
   | { kind: 'rack'; rows: RackRow[]; footer?: LocalizedText };
 
@@ -398,10 +398,10 @@ export const tutorialStops: TutorialStop[] = [
     bullets: [
       L('**Tanyao** (todas simples): toda la mano son fichas del 2 al 8, sin 1, 9 ni honores.', '**Tanyao** (all simples): the whole hand is tiles from 2 to 8, no 1s, 9s or honors.', '**Tanyao** (todas simples): a mão toda são peças de 2 a 8, sem 1, 9 nem honras.'),
       L('**Riichi**: con la mano cerrada y a una ficha de ganar, declaras riichi y esperas tu ficha.', '**Riichi**: with a closed hand one tile from winning, you declare riichi and wait for your tile.', '**Riichi**: com a mão fechada e a uma peça de ganhar, você declara riichi e espera sua peça.'),
-      L('**Yakuhai**: un trío (o cuarteto) de dragones, del viento de la ronda o de tu propio viento.', '**Yakuhai**: a triplet (or quad) of dragons, of the round wind or of your own wind.', '**Yakuhai**: um trio (ou quarteto) de dragões, do vento da rodada ou do seu próprio vento.'),
+      L('**Yakuhai**: un trío (o cuarteto) de dragones, del **viento de la ronda** o de tu **propio viento**.', '**Yakuhai**: a triplet (or quad) of dragons, of the round wind or of your own wind.', '**Yakuhai**: um trio (ou quarteto) de dragões, do vento da rodada ou do seu próprio vento.'),
     ],
     remember: L('Sin yaku no hay victoria: antes de declarar, revisa que tu mano tenga al menos uno.', 'No yaku, no win: before declaring, check your hand has at least one.', 'Sem yaku não há vitória: antes de declarar, confira que sua mão tenha pelo menos um.'),
-    stage: { kind: 'rack', rows: handRows.yaku, footer: L('4 grupos + 1 pareja + al menos un yaku', '4 sets + 1 pair + at least one yaku', '4 grupos + 1 par + pelo menos um yaku') },
+    stage: { kind: 'deck', mode: 'yaku' },
     practice: { href: '../practicar/yaku.html', label: L('Practicar yaku', 'Practise yaku', 'Praticar yaku') },
   },
   {

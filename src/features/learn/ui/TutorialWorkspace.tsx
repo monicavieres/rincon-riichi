@@ -7,6 +7,7 @@ import { DeckBoard, TILE_BACK, type DeckStatus } from './stages/DeckBoard';
 import { HandSort } from './stages/HandSort';
 import { DrawBoard } from './stages/DrawBoard';
 import { WinBoard } from './stages/WinBoard';
+import { YakuBoard } from './stages/YakuBoard';
 import { DealBoard, type DealStatus } from './stages/DealBoard';
 import { TableTopBoard, type TableTopStatus } from './stages/TableTopBoard';
 import { WallBoard, type WallStatus } from './stages/WallBoard';
@@ -42,6 +43,11 @@ const TABS: Array<{ id: Tab; label: LocalizedText }> = [
 ];
 
 const PRACTICE_COPY = {
+  yaku: L(
+    'Cambia entre Tanyao, Riichi y Yakuhai. En tanyao prueba «No lo es» para ver qué fichas lo rompen; en riichi pulsa «Declarar riichi» para ver la ficha girada y el palito; en yakuhai compara dragones y vientos.',
+    'Switch between Tanyao, Riichi and Yakuhai. In tanyao try “It is not” to see which tiles spoil it; in riichi press “Declare riichi” to see the sideways tile and the stick; in yakuhai compare dragons and winds.',
+    'Alterne entre Tanyao, Riichi e Yakuhai. No tanyao experimente «Não é» para ver quais peças o quebram; no riichi toque em «Declarar riichi» para ver a peça deitada e o palito; no yakuhai compare dragões e ventos.',
+  ),
   win: L(
     'Mira la simulación: primero ganas por tsumo (robas tú la ficha) y después por ron (la bota otro jugador). Con «Ver tsumo» y «Ver ron» repites la que quieras.',
     'Watch the simulation: first you win by tsumo (you draw the tile) and then by ron (another player throws it). “Watch tsumo” and “Watch ron” replay whichever you like.',
@@ -219,7 +225,7 @@ function TileThumb({ codes, scattered = false }: { codes: string[]; scattered?: 
 function thumbFor(stop: TutorialStop) {
   const spec = stop.stage;
   if (spec.kind === 'table') return <ZoneThumb focus={spec.focus} />;
-  if (spec.kind === 'deck') return spec.mode === 'win' ? <TileThumb codes={['6z', '6z', '6z']} /> : spec.mode === 'draw' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'hand' ? <TileThumb codes={['4p', '1m', '6z']} scattered /> : <SceneThumb mode={spec.mode} />;
+  if (spec.kind === 'deck') return spec.mode === 'yaku' ? <TileThumb codes={['2m', '3m', '4m']} /> : spec.mode === 'win' ? <TileThumb codes={['6z', '6z', '6z']} /> : spec.mode === 'draw' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'hand' ? <TileThumb codes={['4p', '1m', '6z']} scattered /> : <SceneThumb mode={spec.mode} />;
   if (spec.kind === 'sort') return <TileThumb codes={['4p', '1m', '6z']} scattered />;
   return <TileThumb codes={spec.rows[0].groups[0].tiles} />;
 }
@@ -327,6 +333,7 @@ export function TutorialWorkspace() {
           </div>
 
           {spec.kind === 'deck' && spec.mode === 'shuffle' && <DeckBoard language={language} onStatus={setDeck} />}
+          {spec.kind === 'deck' && spec.mode === 'yaku' && <YakuBoard key={language} language={language} />}
           {spec.kind === 'deck' && spec.mode === 'win' && <WinBoard key={language} language={language} />}
           {spec.kind === 'deck' && spec.mode === 'draw' && <DrawBoard key={language} language={language} />}
           {spec.kind === 'deck' && spec.mode === 'hand' && <HandSort key={language} language={language} onStatus={setSort} />}

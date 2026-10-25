@@ -1153,3 +1153,6 @@ a.sort-button { text-decoration: none; }
     from { opacity: 0; transform: translateX(-50%) scale(0.3) rotate(-6deg); }
     to { opacity: 1; transform: translateX(-50%) scale(1) rotate(0); }
 }
+
+.yaku-actions { flex-wrap: wrap; gap: 6px; max-width: 96%; }
+.yaku-tabs { display: flex; gap: 6px; }
