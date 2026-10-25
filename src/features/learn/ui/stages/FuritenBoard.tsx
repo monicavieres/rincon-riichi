@@ -224,7 +224,8 @@ export function FuritenBoard({ language }: { language: TutorialLanguage }) {
 
   const controls = (
     <div className="yaku-controls-inner">
-      <button type="button" className="sort-button is-primary" onClick={() => { void play(); }}>{t('Ver otra vez', 'Watch again', 'Ver de novo')}</button>
+      <button type="button" className="sort-button" onClick={() => { void play(); }}>↻ {t('Ver otra vez', 'Watch again', 'Ver de novo')}</button>
+      <a className="sort-button is-primary" href="../practicar/furiten.html" target="_blank" rel="noopener">{t('Saber más sobre furiten ↗', 'Learn more about furiten ↗', 'Saber mais sobre furiten ↗')}</a>
     </div>
   );
   return (
