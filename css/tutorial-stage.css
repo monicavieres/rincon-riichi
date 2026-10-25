@@ -1066,3 +1066,5 @@ a.sort-button { text-decoration: none; }
     -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 22%);
     mask-image: linear-gradient(to bottom, transparent 0, #000 22%);
 }
+
+.sort-win.is-note { border-color: var(--ink); color: var(--ink); }

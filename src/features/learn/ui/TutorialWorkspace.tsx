@@ -5,6 +5,7 @@ import { stepSubtitles, tutorialParts, tutorialStops, type TutorialStop } from '
 import { RackStage } from './stages/RackStage';
 import { DeckBoard, TILE_BACK, type DeckStatus } from './stages/DeckBoard';
 import { HandSort } from './stages/HandSort';
+import { DrawBoard } from './stages/DrawBoard';
 import { DealBoard, type DealStatus } from './stages/DealBoard';
 import { TableTopBoard, type TableTopStatus } from './stages/TableTopBoard';
 import { WallBoard, type WallStatus } from './stages/WallBoard';
@@ -21,6 +22,11 @@ const TABS: Array<{ id: Tab; label: LocalizedText }> = [
 ];
 
 const PRACTICE_COPY = {
+  draw: L(
+    'Mira el robo que aparece a la derecha de tu mano. Si forma un grupo o mejora una pareja, pulsa «Quedármela»; si no encaja con nada, «Botarla». Si te equivocas, la escena te explica por qué.',
+    'Look at the draw that appears to the right of your hand. If it makes a set or improves a pair, press “Keep it”; if it fits nothing, “Throw it”. If you get it wrong, the scene tells you why.',
+    'Veja a compra que aparece à direita da sua mão. Se forma um grupo ou melhora um par, toque em «Ficar com ela»; se não encaixa em nada, «Descartar». Se errar, a cena explica por quê.',
+  ),
   sort: L(
     'Arrastra una ficha a otro lugar de tu mano y junta cada palo y los honores. No importa el orden de los grupos: lo que cuenta es verlos de un vistazo. ¿Quieres el orden sugerido? «Ordenar» lo pone por ti.',
     'Drag a tile to another spot in your hand and gather each suit and the honors. The order of the groups does not matter: what counts is seeing them at a glance. Want the suggested order? “Sort” sets it for you.',
@@ -188,7 +194,7 @@ function TileThumb({ codes, scattered = false }: { codes: string[]; scattered?: 
 function thumbFor(stop: TutorialStop) {
   const spec = stop.stage;
   if (spec.kind === 'table') return <ZoneThumb focus={spec.focus} />;
-  if (spec.kind === 'deck') return spec.mode === 'hand' ? <TileThumb codes={['4p', '1m', '6z']} scattered /> : <SceneThumb mode={spec.mode} />;
+  if (spec.kind === 'deck') return spec.mode === 'draw' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'hand' ? <TileThumb codes={['4p', '1m', '6z']} scattered /> : <SceneThumb mode={spec.mode} />;
   if (spec.kind === 'sort') return <TileThumb codes={['4p', '1m', '6z']} scattered />;
   return <TileThumb codes={spec.rows[0].groups[0].tiles} />;
 }
@@ -296,6 +302,7 @@ export function TutorialWorkspace() {
           </div>
 
           {spec.kind === 'deck' && spec.mode === 'shuffle' && <DeckBoard language={language} onStatus={setDeck} />}
+          {spec.kind === 'deck' && spec.mode === 'draw' && <DrawBoard key={language} language={language} />}
           {spec.kind === 'deck' && spec.mode === 'hand' && <HandSort key={language} language={language} onStatus={setSort} />}
           {spec.kind === 'deck' && spec.mode === 'deal' && <DealBoard key={language} language={language} onStatus={setDealt} />}
           {spec.kind === 'deck' && spec.mode === 'walls' && <WallBoard language={language} onStatus={setWall} />}

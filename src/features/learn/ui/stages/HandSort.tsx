@@ -35,6 +35,44 @@ const SUIT_PILL: Record<SuitId, { bg: string; fg: string; name: { es: string; en
   honor: { bg: '#fff0b8', fg: '#7a5a00', name: { es: 'Honores', en: 'Honors', pt: 'Honras' } },
 };
 
+/** Walls, dead wall, dora and the rivals' hands as the deal left them. */
+export function paintDealtTable(g: Painter, assignments: ReturnType<typeof dealAssignments>) {
+  const { palette: p } = g;
+    const doraAt = gAt(FIRST_DEAD + 2);
+    const dead = new Set<string>();
+    for (let G = FIRST_DEAD; G <= FIRST_DEAD + 6; G += 1) { const a = gAt(G); dead.add(`${a.side}:${a.stack}`); }
+
+    // the table as the deal left it
+    for (let index = 0; index < 136; index += 1) {
+      const side = Math.floor(index / 34);
+      const k = index % 34;
+      const stack = k % ROW;
+      const level = k < ROW ? 0 : 1;
+      const held = assignments.get(index);
+      if (held) {
+        if (held.player === 0) continue;
+        const slot = handSlot(held.player, held.slot, held.extra);
+        g.standTile(slot.x, slot.y, slot.rot, 90, { joined: true });
+        continue;
+      }
+      const home = wallSlot(side, stack, level);
+      const G = ((side - OPENED_SIDE + 4) % 4) * ROW + stack;
+      const isDead = dead.has(`${side}:${stack}`);
+      let dx = 0;
+      let dy = 0;
+      if (isDead) { dx = OUT[side][0] * 3.4; dy = OUT[side][1] * 3.4; }
+      else {
+        const dist = G < FIRST_DEAD ? FIRST_DEAD - 1 - G : G - (FIRST_DEAD + 7);
+        const pull = Math.max(0, 1 - dist / 5) * 1.8 * (G < FIRST_DEAD ? -1 : 1);
+        dx = ALONG[side][0] * pull;
+        dy = ALONG[side][1] * pull;
+      }
+      const isDora = level === 1 && side === doraAt.side && stack === doraAt.stack;
+      g.tile(home.x + dx, home.y + dy, home.rot, FELT_Z + level * TILE_T + (isDead ? 0.8 : 0), { gold: isDead, flip: isDora ? 1 : 0, face: isDora ? picture(`${p.faces}/4p.svg`) : null });
+    }
+
+}
+
 const slotX = (n: number) => 50 + (n - 6.5) * WIDTH;
 const initial = (): Piece[] => DEALT_HAND.map((code, id) => ({ id, code }));
 
@@ -113,39 +151,7 @@ export function HandSort({ language, onStatus }: { language: TutorialLanguage; o
     g.view = { ...cam };
     g.table();
     const { palette: p } = g;
-
-    const doraAt = gAt(FIRST_DEAD + 2);
-    const dead = new Set<string>();
-    for (let G = FIRST_DEAD; G <= FIRST_DEAD + 6; G += 1) { const a = gAt(G); dead.add(`${a.side}:${a.stack}`); }
-
-    // the table as the deal left it
-    for (let index = 0; index < 136; index += 1) {
-      const side = Math.floor(index / 34);
-      const k = index % 34;
-      const stack = k % ROW;
-      const level = k < ROW ? 0 : 1;
-      const held = assignments.current.get(index);
-      if (held) {
-        if (held.player === 0) continue;
-        const slot = handSlot(held.player, held.slot, held.extra);
-        g.standTile(slot.x, slot.y, slot.rot, 90, { joined: true });
-        continue;
-      }
-      const home = wallSlot(side, stack, level);
-      const G = ((side - OPENED_SIDE + 4) % 4) * ROW + stack;
-      const isDead = dead.has(`${side}:${stack}`);
-      let dx = 0;
-      let dy = 0;
-      if (isDead) { dx = OUT[side][0] * 3.4; dy = OUT[side][1] * 3.4; }
-      else {
-        const dist = G < FIRST_DEAD ? FIRST_DEAD - 1 - G : G - (FIRST_DEAD + 7);
-        const pull = Math.max(0, 1 - dist / 5) * 1.8 * (G < FIRST_DEAD ? -1 : 1);
-        dx = ALONG[side][0] * pull;
-        dy = ALONG[side][1] * pull;
-      }
-      const isDora = level === 1 && side === doraAt.side && stack === doraAt.stack;
-      g.tile(home.x + dx, home.y + dy, home.rot, FELT_Z + level * TILE_T + (isDead ? 0.8 : 0), { gold: isDead, flip: isDora ? 1 : 0, face: isDora ? picture(`${p.faces}/4p.svg`) : null });
-    }
+    paintDealtTable(g, assignments.current);
 
     // your hand: standing, faces toward you, tiles slide to make room for the one being moved
     const current = drag.current;

@@ -9,7 +9,7 @@ export type LocalCallout = Omit<TableCallout, 'label'> & { label: LocalizedText 
 
 export type StageSpec =
   | { kind: 'sort' }
-  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' }
+  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' }
   | { kind: 'table'; focus: TableFocus; callouts: LocalCallout[] }
   | { kind: 'rack'; rows: RackRow[]; footer?: LocalizedText };
 
@@ -41,6 +41,7 @@ export const stepSubtitles: Record<string, LocalizedText> = {
   objective: L('4 grupos y 1 pareja', '4 sets and 1 pair', '4 grupos e 1 par'),
   table: L('17 pilas por lado', '17 stacks per side', '17 pilhas por lado'),
   deal: L('13 fichas cada uno', '13 tiles each', '13 peças para cada'),
+  draw: L('Quédate con lo que sirve', 'Keep what helps', 'Fique com o que serve'),
   sort: L('Agrupa por palo y honores', 'Group by suit and honors', 'Agrupe por naipe e honras'),
   'dead-wall': L('14 fichas apartadas', '14 tiles set apart', '14 peças separadas'),
   'what-happens': L('Rondas Este y Sur', 'East and South rounds', 'Rodadas Leste e Sul'),
@@ -312,6 +313,26 @@ export const tutorialStops: TutorialStop[] = [
     remember: L('Ordenar no cambia el juego: solo te ayuda a ver tus grupos. Hazlo a tu manera.', 'Sorting does not change the game: it just helps you see your groups. Do it your way.', 'Ordenar não muda o jogo: só ajuda a ver seus grupos. Faça do seu jeito.'),
     stage: { kind: 'deck', mode: 'hand' },
     practice: { href: '../practicar/que-ficha-es.html', label: L('Practicar nombres de fichas', 'Practise tile names', 'Praticar nomes de peças') },
+  },
+  {
+    id: 'draw',
+    part: 'discover',
+    short: L('El robo', 'The draw', 'A compra'),
+    eyebrow: L('Tu turno', 'Your turn', 'Seu turno'),
+    title: L('Roba, decide y avanza', 'Draw, decide and move on', 'Compre, decida e avance'),
+    body: L(
+      'Con la mano ordenada se ve qué tienes: grupos hechos, parejas y fichas sueltas. Tu objetivo es juntar 4 grupos y 1 pareja. En cada turno robas una ficha del muro: si te ayuda a formar un grupo o una pareja, te la quedas; si no, la botas a tu río (tu zona de descartes) y sigues. Repites turno tras turno hasta completar la mano con el último robo.',
+      'With the hand sorted you can see what you have: finished sets, pairs and loose tiles. Your goal is to gather 4 sets and 1 pair. Each turn you draw one tile from the wall: if it helps build a set or a pair, you keep it; if not, you throw it into your pond (your discard area) and go on. You repeat turn after turn until the last draw completes the hand.',
+      'Com a mão ordenada você vê o que tem: grupos prontos, pares e peças soltas. Sua meta é juntar 4 grupos e 1 par. A cada turno você compra uma peça do muro: se ajuda a formar um grupo ou par, fica com ela; se não, descarta no seu rio (sua área de descartes) e segue. Repete turno após turno até completar a mão com a última compra.',
+    ),
+    bullets: [
+      L('Un grupo son tres fichas: una escalera del mismo palo (4-5-6) o tres iguales.', 'A set is three tiles: a run of one suit (4-5-6) or three alike.', 'Um grupo são três peças: uma sequência do mesmo naipe (4-5-6) ou três iguais.'),
+      L('Una pareja son dos fichas iguales; una ficha suelta es candidata a botarse.', 'A pair is two identical tiles; a loose tile is a candidate to throw.', 'Um par são duas peças iguais; uma peça solta é candidata a descartar.'),
+      L('Cada turno: robas 1, quedas con 14 y botas 1 para volver a 13.', 'Each turn: draw 1, hold 14, throw 1 to go back to 13.', 'A cada turno: compra 1, fica com 14 e descarta 1 para voltar a 13.'),
+    ],
+    remember: L('Guarda lo que acerca a 4 grupos y 1 pareja; bota lo que no.', 'Keep what gets you closer to 4 sets and 1 pair; throw what does not.', 'Guarde o que aproxima de 4 grupos e 1 par; descarte o que não.'),
+    stage: { kind: 'deck', mode: 'draw' },
+    practice: { href: '../aprender/eficiencia.html', label: L('Aprender eficiencia', 'Learn efficiency', 'Aprender eficiência') },
   },
   {
     id: 'what-is-mahjong', part: 'discover', short: L('La mesa', 'The table', 'A mesa'), ...text('what-is-mahjong'),
