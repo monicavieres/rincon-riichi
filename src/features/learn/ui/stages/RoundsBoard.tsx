@@ -132,7 +132,7 @@ export function RoundsBoard({ language }: { language: TutorialLanguage }) {
     g.tilt = 38;
     g.cs = Math.cos((38 * Math.PI) / 180);
     g.sn = Math.sin((38 * Math.PI) / 180);
-    g.view = { u: 50, v: 52, zoom: 1.12 };
+    g.view = { u: 50, v: 53, zoom: 0.9 };
     g.table();
     const dt = Math.min(200, g.now - lastFrame.current);
     lastFrame.current = g.now;
