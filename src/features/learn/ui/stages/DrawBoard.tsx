@@ -21,8 +21,7 @@ type Fly = { key: string; code?: string; from: Pos; to: Pos; start: number; dur:
 /** What the three rivals throw, round after round (right, across, left). */
 const RIVAL_THROWS = [['2z', '7p', '4m'], ['3z', '9s', '1p'], ['5m', '8p', '2s']];
 const DEALT = 53; // tiles taken by the deal: 13 each plus the dealer's first draw
-const POND_SHIFT = -14;
-const HAND_VIEW = { u: 50, v: 86, zoom: 2.15 };
+const HAND_VIEW = { u: 50, v: 74, zoom: 1.55 };
 const WIDE_VIEW = { u: 50, v: 49, zoom: 0.86 };
 const sleep = (ms: number) => new Promise<void>((resolve) => { window.setTimeout(resolve, ms); });
 const WHO = [
@@ -38,7 +37,7 @@ const wallPos = (tile: number): Pos => {
   return { x: slot.x, y: slot.y, z: FELT_Z + (k < 17 ? 0 : 1) * TILE_T, rot: slot.rot };
 };
 const pondPos = (player: number, slot: number): Pos => {
-  const own = { x: 50 + ((slot % 6) - 2.5) * 3.9 + POND_SHIFT, y: 73.6 + Math.floor(slot / 6) * 5.4 };
+  const own = { x: 50 + ((slot % 6) - 2.5) * 3.7, y: 65 + Math.floor(slot / 6) * 4.9 };
   const at = around(own, player);
   return { x: at.x, y: at.y, z: FELT_Z, rot: ROT[player] };
 };
