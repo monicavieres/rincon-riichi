@@ -57,43 +57,60 @@ const RIVAL_TURN = [-90, 180, 90];
 /** The rivals stop shuffling after this long. */
 const RIVAL_MS = 3000;
 
+type PawLook = 'white' | 'orange' | 'grey' | 'black';
+
+/** Fur and pad colours per cat: yours is white; the rivals are an orange tabby, a grey cat and a black cat. */
+const PAW_LOOKS: Record<PawLook, { light: string; dark: string; line: string; pad: string; padLine: string; shine: number; stripes?: boolean }> = {
+  white: { light: '#ffffff', dark: '#fde9d6', line: '#ecc9ab', pad: '#f6a3b6', padLine: '#dc7690', shine: 0.65 },
+  orange: { light: '#ffcb8e', dark: '#ee9544', line: '#c9742a', pad: '#f9b0bd', padLine: '#d9708a', shine: 0.5, stripes: true },
+  grey: { light: '#e2e7ef', dark: '#a9b3c6', line: '#8794ab', pad: '#eaa9c8', padLine: '#c778a5', shine: 0.55 },
+  black: { light: '#62627a', dark: '#2d2d39', line: '#707086', pad: '#e88ca7', padLine: '#b45a77', shine: 0.3 },
+};
+
 /** A round, chubby cat paw pressing down: four toes, pink beans, no arm. */
-function Palm() {
+function Palm({ look = 'white' }: { look?: PawLook }) {
+  const c = PAW_LOOKS[look];
   const ink = 'var(--tile-ink)';
+  const gid = `paw-fur-${look}`;
   const toes: Array<[number, number, number]> = [[19, 44, 15], [38, 23, 16.5], [62, 23, 16.5], [81, 44, 15]];
   const body = 'M50 38C74 38 90 52 90 68C90 86 72 98 50 98C28 98 10 86 10 68C10 52 26 38 50 38Z';
   return (
     <svg viewBox="0 0 100 106" aria-hidden="true">
       <defs>
-        <radialGradient id="paw-fur" cx=".38" cy=".28" r=".95">
-          <stop offset="0" stopColor="#ffffff" />
-          <stop offset="1" stopColor="#fde9d6" />
+        <radialGradient id={gid} cx=".38" cy=".28" r=".95">
+          <stop offset="0" stopColor={c.light} />
+          <stop offset="1" stopColor={c.dark} />
         </radialGradient>
       </defs>
       <g fill={ink} stroke={ink} strokeWidth="5.5" strokeLinejoin="round">
         <path d={body} />
         {toes.map(([cx, cy, r]) => <circle key={`o-${cx}`} cx={cx} cy={cy} r={r} />)}
       </g>
-      <g fill="url(#paw-fur)">
+      <g fill={`url(#${gid})`}>
         <path d={body} />
         {toes.map(([cx, cy, r]) => <circle key={`f-${cx}`} cx={cx} cy={cy} r={r} />)}
       </g>
-      {/* soft fur marks between the toes */}
-      <g fill="none" stroke="#ecc9ab" strokeWidth="1.8" strokeLinecap="round" opacity=".85">
+      {c.stripes && (
+        <g fill="none" stroke={c.line} strokeWidth="2.6" strokeLinecap="round" opacity=".85">
+          {toes.map(([cx, cy, r]) => <path key={`s-${cx}`} d={`M${cx - 5} ${cy - r + 4}l2.600 5M${cx + 1} ${cy - r + 2.600}l0 5.400M${cx + 6} ${cy - r + 4.600}l-2 5`} />)}
+        </g>
+      )}
+      <g fill="none" stroke={c.line} strokeWidth="1.8" strokeLinecap="round" opacity=".85">
         <path d="M28 40q2 7 0 14M50 34v16M72 40q-2 7 0 14" />
       </g>
-      {/* pink pads */}
-      <g fill="#f6a3b6" stroke="#dc7690" strokeWidth="1.8">
+      <g fill={c.pad} stroke={c.padLine} strokeWidth="1.8">
         <path d="M50 62C38 62 28 70 30 80C32 90 42 90 50 86C58 90 68 90 70 80C72 70 62 62 50 62Z" />
         {toes.map(([cx, cy]) => <ellipse key={`p-${cx}`} cx={cx} cy={cy + 1.5} rx="7.4" ry="8.2" />)}
       </g>
-      <g fill="#fff" opacity=".65">
+      <g fill="#fff" opacity={c.shine}>
         <ellipse cx="44" cy="69" rx="4.6" ry="2.6" />
         {toes.map(([cx, cy]) => <ellipse key={`h-${cx}`} cx={cx - 2.2} cy={cy - 2} rx="2.4" ry="3" />)}
       </g>
     </svg>
   );
 }
+
+const RIVAL_LOOKS: PawLook[] = ['orange', 'grey', 'black'];
 
 /**
  * The whole deck face down: the pointer is a pair of hands that sweep the tiles around the felt.
@@ -285,7 +302,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
       >
         <IsoCanvas ref={scene} draw={draw} handlers={{ onPointerMove: onSweep, onPointerDown: onSweepDown }} />
         {RIVAL_START.map((_, hand) => (
-          <span key={`rival-${hand}`} className="deck-rival-hand" ref={(el) => { rivalHands.current[hand] = el; }} style={{ opacity: 0 }}><Palm /></span>
+          <span key={`rival-${hand}`} className="deck-rival-hand" ref={(el) => { rivalHands.current[hand] = el; }} style={{ opacity: 0 }}><Palm look={RIVAL_LOOKS[hand]} /></span>
         ))}
 
         {(
