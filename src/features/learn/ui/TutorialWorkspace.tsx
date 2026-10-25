@@ -439,10 +439,6 @@ export function TutorialWorkspace() {
             )}
           </div>
 
-          <div className="explorer-inspector-footer">
-            <span aria-hidden="true">雀</span>
-            <p><strong>{t(UI.remember)}:</strong> {t(stop.remember)}</p>
-          </div>
         </aside>
       </div>
 
