@@ -4,7 +4,7 @@ export type LearnDefinition = { kind: LearnKind; title: string; bodyClass: strin
 const byFile: Record<string, LearnDefinition> = {
   'tutorial.html': { kind: 'tutorial', title: 'Tutorial', bodyClass: 'ref-body', shellClass: 'ref-shell' },
   'tiles.html': { kind: 'tiles', title: 'Fichas', bodyClass: 'ref-body', shellClass: 'ref-shell' },
-  'machi.html': { kind: 'machi', title: 'Tipos de Espera', bodyClass: 'machi-body', shellClass: 'machi-shell' },
+  'machi.html': { kind: 'machi', title: 'Tipos de Espera', bodyClass: 'ref-body', shellClass: 'ref-shell' },
   'yaku-reference.html': { kind: 'yakuReference', title: 'Guía de Yakus', bodyClass: 'yakuref-body', shellClass: 'yakuref-shell' },
   'score.html': { kind: 'score', title: 'Puntajes', bodyClass: 'score-body', shellClass: 'score-shell' },
   'dora.html': { kind: 'reference', title: 'Dora', bodyClass: 'ref-body', shellClass: 'ref-shell' },

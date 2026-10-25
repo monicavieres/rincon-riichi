@@ -1279,3 +1279,22 @@ a.sort-button {
 @media (min-width: 981px) {
     .tutorial-lab .table-explorer-stage { aspect-ratio: 837 / 585; }
 }
+
+/* wait guide */
+.machi-felt { align-content: center; gap: 1.4cqw; text-align: center; color: #fff; }
+.machi-name { display: flex; align-items: baseline; justify-content: center; gap: 1.2cqw; }
+.machi-name b { font: 800 clamp(20px, 4cqw, 40px) / 1 var(--font-display); }
+.machi-name span { font: 600 clamp(14px, 2.6cqw, 26px) / 1 var(--font-sans); opacity: 0.9; }
+.machi-name em { padding: 2px 10px; border-radius: 99px; background: var(--gold, #f2b42c); color: var(--ink); font: 700 12px / 1.4 var(--font-sans); font-style: normal; text-transform: uppercase; }
+.machi-block { display: grid; gap: 0.6cqw; justify-items: center; }
+.machi-block small { font: 700 clamp(10px, 1.5cqw, 13px) / 1 var(--font-sans); letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.85; }
+.machi-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5cqw; max-width: 94%; }
+.machi-row img { width: clamp(30px, 6.4cqw, 62px); height: auto; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.35)); }
+.machi-row img.is-gold { filter: drop-shadow(0 0 6px #ffd36e) drop-shadow(0 3px 3px rgba(0, 0, 0, 0.35)) saturate(1.15); transform: translateY(-3px); outline: 3px solid var(--gold, #f2b42c); outline-offset: -2px; border-radius: 8px; }
+.machi-arrow { color: var(--gold, #f2b42c); font-size: clamp(14px, 2.4cqw, 22px); line-height: 1; }
+.machi-hint { margin: 0; font: 600 clamp(10px, 1.5cqw, 13px) / 1.2 var(--font-sans); opacity: 0.85; }
+.machi-kanji-inline { font: 600 0.7em / 1 var(--font-sans); opacity: 0.7; }
+
+.machi-felt { grid-template-columns: 100%; overflow: hidden; }
+.machi-block, .machi-row { width: 100%; }
+.machi-row img { width: clamp(26px, 5cqw, 52px); }

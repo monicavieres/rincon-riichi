@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { TILE_COPY, type TileLang } from '../domain/tilesCopy';
+import { initialLanguage, usePageChrome } from './usePageChrome';
 
 type Family = { id: string; tiles: string[] };
 const FAMILIES: Family[] = [
@@ -25,20 +26,13 @@ const chevron = (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg>
 );
 
-function initialLanguage(): TileLang {
-  const saved = localStorage.getItem('rincon-riichi-language');
-  return saved === 'en' || saved === 'pt' ? saved : 'es';
-}
-
-const themeNow = () => document.documentElement.getAttribute('data-theme') || 'light';
-
 /** The tile guide, laid out like the tutorial: a stage, an inspector and a rail with one stop per tile family. */
 export function TilesWorkspace() {
   const [language, setLanguage] = useState<TileLang>(initialLanguage);
   const [index, setIndex] = useState(0);
   const [picked, setPicked] = useState<string | null>(null);
   const [tab, setTab] = useState<'tile' | 'family'>('tile');
-  const [theme, setTheme] = useState(themeNow);
+  const theme = usePageChrome(language, setLanguage);
   const railRef = useRef<HTMLElement>(null);
   const copy = TILE_COPY[language];
   const ui = UI[language];
@@ -67,43 +61,6 @@ export function TilesWorkspace() {
     setIndex(Math.max(0, Math.min(FAMILIES.length - 1, next)));
     setPicked(null);
     setTab('tile');
-  }, []);
-
-  // page chrome that still lives outside React: language select, back label and theme picker
-  useEffect(() => {
-    const select = document.querySelector<HTMLSelectElement>('#languageSelect');
-    if (!select) return undefined;
-    select.value = language;
-    const back = document.querySelector<HTMLElement>('[data-i18n="back"]');
-    const languageLabel = document.querySelector<HTMLElement>('[data-i18n="language"]');
-    if (back) back.textContent = { es: '← Volver', en: '← Back', pt: '← Voltar' }[language];
-    if (languageLabel) languageLabel.textContent = { es: 'Idioma', en: 'Language', pt: 'Idioma' }[language];
-    const onChange = () => {
-      const next = select.value as TileLang;
-      if (next === 'es' || next === 'en' || next === 'pt') { localStorage.setItem('rincon-riichi-language', next); setLanguage(next); }
-    };
-    select.addEventListener('change', onChange);
-    return () => select.removeEventListener('change', onChange);
-  }, [language]);
-
-  useEffect(() => {
-    const radios = Array.from(document.querySelectorAll<HTMLInputElement>('input[name="theme"]'));
-    const stored = localStorage.getItem('theme');
-    const themes = Object.keys(FACE_DIR);
-    const initial = stored && themes.includes(stored) ? stored : 'light';
-    const apply = (next: string) => {
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      radios.forEach((radio) => { radio.checked = radio.value === next; });
-      setTheme(next);
-    };
-    const listeners = radios.map((radio) => {
-      const onChange = () => { if (radio.checked) apply(radio.value); };
-      radio.addEventListener('change', onChange);
-      return { radio, onChange };
-    });
-    apply(initial);
-    return () => listeners.forEach(({ radio, onChange }) => radio.removeEventListener('change', onChange));
   }, []);
 
   useEffect(() => {
