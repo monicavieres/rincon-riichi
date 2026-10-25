@@ -1242,3 +1242,40 @@ a.sort-button {
 /* last step: two big buttons back to the home sections */
 .finish-buttons { grid-template-columns: 1fr 1fr; }
 .finish-buttons a.sort-button { min-height: 3.2em; font-size: 1.05em; }
+
+/* tile guide: same stage / inspector / rail as the tutorial */
+.tiles-felt {
+    display: grid;
+    place-items: center;
+    padding: 3%;
+    border-radius: var(--radius-lg);
+    background: radial-gradient(circle at 50% 30%, var(--table-felt-soft, #2f8a6f), var(--table-felt, #1b5a49));
+    overflow: auto;
+}
+
+.tiles-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.6cqw; max-width: 94%; }
+.tiles-tile {
+    display: grid;
+    justify-items: center;
+    gap: 0.5cqw;
+    padding: 0.8cqw 0.8cqw 0.6cqw;
+    border: 2px solid transparent;
+    border-radius: 14px;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    font: 600 clamp(9px, 1.4cqw, 13px) / 1.1 var(--font-sans);
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+.tiles-tile img { width: clamp(38px, 9.4cqw, 86px); height: auto; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.35)); }
+.tiles-tile:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.1); }
+.tiles-tile.is-picked { border-color: var(--gold, #f2b42c); background: rgba(255, 255, 255, 0.16); transform: translateY(-4px); }
+.tiles-grid.is-honors .tiles-tile img, .tiles-grid.is-aka .tiles-tile img { width: clamp(44px, 11cqw, 100px); }
+.tiles-pick { display: flex; align-items: center; gap: var(--space-4); margin: var(--space-2) 0; }
+.tiles-pick img { width: 74px; height: auto; filter: drop-shadow(0 3px 3px rgba(40, 20, 20, 0.3)); }
+.tiles-pick h2 { margin: 0; }
+
+/* every step keeps the same stage height, so moving between cards never shifts the layout */
+@media (min-width: 981px) {
+    .tutorial-lab .table-explorer-stage { aspect-ratio: 837 / 585; }
+}
