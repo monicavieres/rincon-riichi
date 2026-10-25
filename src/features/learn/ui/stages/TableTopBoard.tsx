@@ -83,6 +83,9 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
   const [seatFaces, setSeatFaces] = useState<number[]>([0, 0, 0, 0]);
   const [seatRolling, setSeatRolling] = useState<boolean[]>([false, false, false, false]);
   const spinStart = useRef(0);
+  const dieMove = useRef({ from: { x: 50, y: 50 }, to: { x: 50, y: 50 }, start: 0 });
+  const [dieShow, setDieShow] = useState(1);
+  const [dieReady, setDieReady] = useState(false);
 
   const clearTimers = () => { timers.current.forEach((id) => { window.clearInterval(id); window.clearTimeout(id); }); timers.current = []; };
 
@@ -91,6 +94,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
       spinStart.current = performance.now();
       setSeatRolling((now) => now.map((value, index) => (index === seat ? true : value)));
       const stop = window.setTimeout(() => {
+        setDieShow(SEAT_ROLLS[seat]);
         setSeatFaces((now) => now.map((value, index) => (index === seat ? SEAT_ROLLS[seat] : value)));
         setSeatRolling((now) => now.map((value, index) => (index === seat ? false : value)));
       }, 900);
@@ -99,19 +103,34 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     timers.current.push(start);
   };
 
-  // the three rivals roll one after another when the lesson opens
+  /** One die travels around the table: it goes to each rival, rolls there, and finally comes to you. */
+  const runDie = (base: number) => {
+    const later = (ms: number, action: () => void) => timers.current.push(window.setTimeout(action, ms));
+    let at = base;
+    [1, 2, 3].forEach((seat) => {
+      later(at, () => { dieMove.current = { from: dieMove.current.to, to: SEAT_AT[seat], start: performance.now() }; scene.current?.invalidate(); });
+      rollSeat(seat, at + 800);
+      at += 800 + 900 + 700;
+    });
+    later(at, () => { dieMove.current = { from: dieMove.current.to, to: SEAT_AT[0], start: performance.now() }; scene.current?.invalidate(); });
+    later(at + 800, () => setDieReady(true));
+  };
+
   useEffect(() => {
     if (mode !== 'dealer') return;
-    [1, 2, 3].forEach((seat, order) => rollSeat(seat, 700 + order * 1100));
+    runDie(900);
   }, [mode]);
 
-  const rivalsDone = seatFaces[1] > 0 && seatFaces[2] > 0 && seatFaces[3] > 0 && !seatRolling.some(Boolean);
+  const rivalsDone = dieReady && seatFaces[1] > 0 && seatFaces[2] > 0 && seatFaces[3] > 0 && !seatRolling.some(Boolean);
   const dealerRoll = seatFaces[0] > 0 && !seatRolling[0] ? seatFaces[0] : null;
   const replay = () => {
     clearTimers();
     setSeatFaces([0, 0, 0, 0]);
     setSeatRolling([false, false, false, false]);
-    [1, 2, 3].forEach((seat, order) => rollSeat(seat, 500 + order * 1100));
+    setDieReady(false);
+    setDieShow(1);
+    dieMove.current = { from: { x: 50, y: 50 }, to: { x: 50, y: 50 }, start: 0 };
+    runDie(500);
   };
 
   const done = mode === 'dealer' ? dealerRoll !== null : mode === 'compass' ? compassOn && plateOn : phase === 'done';
@@ -280,7 +299,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
 
     // camera: zoom to the compass, then to the chosen wall, then back out
     const wallMid = openSide !== null ? wallSlot(openSide, 8, 0) : { x: 50, y: 50 };
-    const target = phase === 'compass' ? { u: 50, v: 50, zoom: 2.1 }
+    const target = mode === 'dealer' ? { u: 50, v: 54, zoom: 1.6 } : phase === 'compass' ? { u: 50, v: 50, zoom: 2.1 }
       : phase === 'wall' ? { u: wallMid.x, v: wallMid.y, zoom: 2 }
         : phase === 'dead' ? { u: deadMid.x - OUT[openSide ?? 0][0] * 3.4, v: deadMid.y - OUT[openSide ?? 0][1] * 3.4, zoom: 1.9 }
         : phase === 'split' ? { u: deadMid.x, v: deadMid.y, zoom: 1.5 }
@@ -454,9 +473,13 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     // dice
     const spin = (now: number) => (now - spinStart.current) / 60;
     if (mode === 'dealer') {
-      SEAT_AT.forEach((seat, index) => {
-        g.die(seat.x, seat.y, FELT_Z, 6.5, { up: seatFaces[index], yaw: (index - 1.5) * 24, spin: seatRolling[index] ? spin(g.now) : undefined });
-      });
+      // a single die, passed from player to player with a small hop
+      const mv = dieMove.current;
+      const q = mv.start === 0 ? 1 : Math.max(0, Math.min(1, (g.now - mv.start) / 800));
+      const ease = q < 0.5 ? 2 * q * q : 1 - Math.pow(-2 * q + 2, 2) / 2;
+      if (q < 1) g.needsFrame = true;
+      const spinningNow = seatRolling.some(Boolean);
+      g.die(mv.from.x + (mv.to.x - mv.from.x) * ease, mv.from.y + (mv.to.y - mv.from.y) * ease, FELT_Z + Math.sin(Math.PI * q) * 5, 4.4, { up: dieShow, yaw: 18, spin: spinningNow ? spin(g.now) : undefined, order: 7000 });
     }
     if (mode === 'dice') {
       const spinning = rolling ? spin(g.now) : undefined;
