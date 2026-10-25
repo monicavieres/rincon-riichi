@@ -504,23 +504,29 @@ export class Painter {
   }
 
   /** Rounded rectangle on the plane as projected points. */
-  plane(x0: number, y0: number, x1: number, y1: number, r: number, z: number, n = 6): Pt[] {
+  plane(x0: number, y0: number, x1: number, y1: number, r: number, z: number, n = 6, rot = 0): Pt[] {
     const pts: Pt[] = [];
+    const mx = (x0 + x1) / 2;
+    const my = (y0 + y1) / 2;
+    const co = Math.cos((rot * Math.PI) / 180);
+    const si = Math.sin((rot * Math.PI) / 180);
     const corners: Array<[number, number, number]> = [[x1 - r, y0 + r, -90], [x1 - r, y1 - r, 0], [x0 + r, y1 - r, 90], [x0 + r, y0 + r, 180]];
     corners.forEach(([cx, cy, a0]) => {
       for (let i = 0; i <= n; i += 1) {
         const a = ((a0 + (90 * i) / n) * Math.PI) / 180;
-        pts.push(this.project(cx + r * Math.cos(a), cy + r * Math.sin(a), z));
+        const px = cx + r * Math.cos(a) - mx;
+        const py = cy + r * Math.sin(a) - my;
+        pts.push(this.project(mx + px * co - py * si, my + px * si + py * co, z));
       }
     });
     return pts;
   }
 
   /** A block with rounded corners: stacked outlines, so the sides curve with the corners. */
-  slab(cx: number, cy: number, w: number, l: number, r: number, z0: number, z1: number, body: string, top: string) {
+  slab(cx: number, cy: number, w: number, l: number, r: number, z0: number, z1: number, body: string, top: string, rot = 0) {
     const { palette: p } = this;
     const slices = 6;
-    const edge = (i: number) => this.plane(cx - w / 2, cy - l / 2, cx + w / 2, cy + l / 2, r, z0 + ((z1 - z0) * i) / slices);
+    const edge = (i: number) => this.plane(cx - w / 2, cy - l / 2, cx + w / 2, cy + l / 2, r, z0 + ((z1 - z0) * i) / slices, 6, rot);
     this.ctx.lineJoin = 'round';
     for (let i = 0; i <= slices; i += 1) this.poly(edge(i), null, p.ink, this.lw * 2.2);
     for (let i = 0; i < slices; i += 1) this.poly(edge(i), shade(body, 0.85 + 0.15 * (i / slices)));

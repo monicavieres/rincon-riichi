@@ -2,10 +2,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { Palm, type PawLook } from './DeckBoard';
-import { around, dealAssignments } from './DealBoard';
+import { ROT, around, dealAssignments } from './DealBoard';
 import { WIDE_VIEW, sleep } from './DrawBoard';
 import { paintDealtTable } from './HandSort';
-import { FELT_Z, IsoCanvas, type IsoHandle, type Painter } from './iso3d';
+import { FELT_Z, IsoCanvas, shade, type IsoHandle, type Painter } from './iso3d';
 
 type Value = 10000 | 5000 | 1000 | 500 | 100;
 type Wallet = Record<Value, number>;
@@ -20,11 +20,13 @@ const SEAT_TURN = [0, -90, 180, 90];
 const LEN: Record<Value, number> = { 10000: 11, 5000: 10.4, 1000: 9.6, 500: 8.4, 100: 6.4 };
 
 const copy = (w: Wallet): Wallet => ({ ...w });
+/** Where a stick lies inside its owner's drawer (own frame: the drawer slides out of the table edge, below your side). */
 const trayAt = (player: number, value: Value, level: number): Pt & { z: number } => {
   const row = VALUES.indexOf(value);
-  const at = around({ x: 81, y: 69 + row * 2.6 }, player);
-  return { x: at.x, y: at.y, z: FELT_Z + level * 1.15 };
+  const at = around({ x: 81, y: 105.6 + row * 2.1 }, player);
+  return { x: at.x, y: at.y, z: 3.2 + level * 1.1 };
 };
+
 /** Where the sticks are left on the table: between the two players, towards the middle. */
 const spotBetween = (a: number, b: number): Pt => {
   const ta = around({ x: 81, y: 72 }, a);
@@ -50,6 +52,8 @@ export function PointsBoard({ language }: { language: TutorialLanguage }) {
   const flights = useRef<Flight[]>([]);
   const move = useRef<Move>(null);
   const pawEl = useRef<HTMLSpanElement>(null);
+  const drawers = useRef<Array<{ now: number; goal: number }>>([0, 1, 2, 3].map(() => ({ now: 0, goal: 0 })));
+  const lastFrame = useRef(0);
   const pawLook = useRef<PawLook>('white');
   const [look, setLook] = useState<PawLook>('white');
   const [slot, setSlot] = useState<HTMLElement | null>(null);
@@ -78,6 +82,7 @@ export function PointsBoard({ language }: { language: TutorialLanguage }) {
     const spot = spotBetween(winner, payer);
     flights.current = [];
     move.current = null;
+    drawers.current.forEach((d) => { d.now = 0; d.goal = 0; });
     setScenario(which);
     setWallets([copy(START), copy(START), copy(START), copy(START)]);
     setOnTable([]);
@@ -93,8 +98,11 @@ export function PointsBoard({ language }: { language: TutorialLanguage }) {
     const stack: Array<{ value: Value; i: number }> = [];
     VALUES.forEach((v) => { for (let i = 0; i < PRICE[v]; i += 1) stack.push({ value: v, i }); });
     const payerTray = trayAt(payer, 1000, 1);
-    pawTo(payer, around({ x: 50, y: 110 }, payer), { x: payerTray.x, y: payerTray.y }, 900);
-    if (!(await wait(950))) return;
+    drawers.current[payer].goal = 1;
+    scene.current?.invalidate();
+    if (!(await wait(1300))) return;
+    pawTo(payer, around({ x: 81, y: 118 }, payer), { x: payerTray.x, y: payerTray.y }, 700);
+    if (!(await wait(750))) return;
     setWallets((now) => now.map((w, k) => { if (k !== payer) return w; const n = copy(w); VALUES.forEach((v) => { n[v] -= PRICE[v]; }); return n; }));
     stack.forEach((s, n) => {
       const from = trayAt(payer, s.value, 1);
@@ -103,14 +111,17 @@ export function PointsBoard({ language }: { language: TutorialLanguage }) {
     pawTo(payer, { x: payerTray.x, y: payerTray.y }, spot, 1100);
     if (!(await wait(1200))) return;
     setOnTable(stack.map((s, n) => ({ value: s.value, at: { x: spot.x + ((n % 5) - 2) * 1.6, y: spot.y + Math.floor(n / 5) * 2.4 - 1.4 } })));
-    pawTo(payer, spot, around({ x: 50, y: 110 }, payer), 800);
-    if (!(await wait(2400))) return;
+    drawers.current[payer].goal = 0;
+    pawTo(payer, spot, around({ x: 50, y: 112 }, payer), 800);
+    if (!(await wait(2600))) return;
 
     // 2) the winner takes them
     setNote({ title: which === 'receive' ? t('Los tomas tú', 'You take them', 'Você pega') : t('Los toma tu rival', 'Your rival takes them', 'Seu rival pega'), body: t(`${which === 'receive' ? 'Tomas' : 'El ganador toma'} los palitos de la mesa y ${which === 'receive' ? 'los guardas' : 'los guarda'} con ${which === 'receive' ? 'tus puntos' : 'sus puntos'}. El marcador queda 3 900 puntos arriba para ${names[winner]}.`, `${which === 'receive' ? 'You take' : 'The winner takes'} the sticks from the table and ${which === 'receive' ? 'keep' : 'keeps'} them with ${which === 'receive' ? 'your' : 'their'} points. The score goes up 3,900 for ${names[winner]}.`, `${which === 'receive' ? 'Você pega' : 'O vencedor pega'} os palitos da mesa e ${which === 'receive' ? 'guarda' : 'guarda'} com ${which === 'receive' ? 'seus' : 'os seus'} pontos. O placar sobe 3.900 para ${names[winner]}.`) });
     const winTray = trayAt(winner, 1000, 1);
-    pawTo(winner, around({ x: 50, y: 110 }, winner), spot, 900);
-    if (!(await wait(950))) return;
+    drawers.current[winner].goal = 1;
+    scene.current?.invalidate();
+    pawTo(winner, around({ x: 50, y: 112 }, winner), spot, 1300);
+    if (!(await wait(1350))) return;
     setOnTable([]);
     stack.forEach((s, n) => {
       const to = trayAt(winner, s.value, 3 + (n % 3));
@@ -119,8 +130,9 @@ export function PointsBoard({ language }: { language: TutorialLanguage }) {
     pawTo(winner, spot, { x: winTray.x, y: winTray.y }, 1100);
     if (!(await wait(1200))) return;
     setWallets((now) => now.map((w, k) => { if (k !== winner) return w; const n = copy(w); VALUES.forEach((v) => { n[v] += PRICE[v]; }); return n; }));
-    pawTo(winner, { x: winTray.x, y: winTray.y }, around({ x: 50, y: 110 }, winner), 800);
-    if (!(await wait(1000))) return;
+    drawers.current[winner].goal = 0;
+    pawTo(winner, { x: winTray.x, y: winTray.y }, around({ x: 81, y: 118 }, winner), 800);
+    if (!(await wait(1500))) return;
     setNote({ title: t('Cuentas cuadradas', 'Accounts settled', 'Contas acertadas'), body: t('Así se salda cada mano: el ganador cuenta, el que paga deja los palitos y el ganador los toma. Después empieza la siguiente mano.', 'That is how every hand is settled: the winner counts, the payer leaves the sticks and the winner takes them. Then the next hand starts.', 'É assim que cada mão é acertada: o vencedor conta, quem paga deixa os palitos e o vencedor pega. Depois começa a próxima mão.') });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language, flyStick, pawTo]);
@@ -131,7 +143,7 @@ export function PointsBoard({ language }: { language: TutorialLanguage }) {
     g.tilt = 38;
     g.cs = Math.cos((38 * Math.PI) / 180);
     g.sn = Math.sin((38 * Math.PI) / 180);
-    g.view = { u: 50, v: 52, zoom: 1.12 };
+    g.view = { u: 50, v: 55, zoom: 0.95 };
     g.table();
     paintDealtTable(g, assignments.current, {});
     const { palette: p } = g;
@@ -151,15 +163,51 @@ export function PointsBoard({ language }: { language: TutorialLanguage }) {
       });
     };
 
-    // every player's tray
+    // every player's drawer: it slides out of the table edge with that player's sticks inside
+    const dt = Math.min(200, g.now - lastFrame.current);
+    lastFrame.current = g.now;
     wallets.forEach((w, player) => {
-      VALUES.forEach((v) => {
-        for (let i = 0; i < w[v]; i += 1) { const at = trayAt(player, v, i); stick(v, at.x, at.y, at.z); }
-      });
-      const label = around({ x: 81, y: 66 }, player);
-      const pos = g.project(label.x, label.y, FELT_Z + 3);
+      const d = drawers.current[player];
+      d.now += (d.goal - d.now) * (1 - Math.exp(-dt / 220));
+      if (Math.abs(d.goal - d.now) > 0.01) g.needsFrame = true;
+      const out = d.now;
+      const rot = -90 * player;
+      const place = (x: number, y: number) => around({ x, y }, player);
+      if (out > 0.03) {
+        const slide = out * 9;
+        const wood = p.rail;
+        g.add(Math.round(place(81, 108).y * 100) + 40, () => {
+          const floor = place(81, 103.6 + slide / 2 + 0.4);
+          const body = g.box(floor.x, floor.y, 1.2, 14, 0.2 + slide, 0.8, rot);
+          body.sides.forEach((face) => g.poly(face.q, shade(wood, 0.8), p.ink, g.lw));
+          g.poly(body.top, shade(wood, 1.05), p.ink, g.lw);
+          const frontAt = place(81, 103.6 + slide + 0.3);
+          const front = g.box(frontAt.x, frontAt.y, 1.2, 14.6, 0.8, 2.6, rot);
+          front.sides.forEach((face) => g.poly(face.q, shade(wood, 0.9), p.ink, g.lw));
+          g.poly(front.top, shade(wood, 1.1), p.ink, g.lw);
+          [-7, 7].forEach((dx) => {
+            const sideAt = place(81 + dx, 103.6 + slide / 2 + 0.4);
+            const wall = g.box(sideAt.x, sideAt.y, 1.2, 0.8, 0.2 + slide, 2.2, rot);
+            wall.sides.forEach((face) => g.poly(face.q, shade(wood, 0.85), p.ink, g.lw));
+            g.poly(wall.top, shade(wood, 1.05), p.ink, g.lw);
+          });
+        });
+        VALUES.forEach((v) => {
+          for (let i = 0; i < w[v]; i += 1) {
+            const at = trayAt(player, v, i);
+            const row = VALUES.indexOf(v);
+            const inY = 105.6 + row * 2.1 - 9 + slide;
+            const pos = place(81, inY + 9 - 9 * 0);
+            void pos;
+            const realAt = around({ x: 81, y: 105.6 + row * 2.1 - 9 + slide }, player);
+            stick(v, realAt.x, realAt.y, at.z);
+          }
+        });
+      }
+      const label = around({ x: 81, y: 106 + out * 8 }, player);
+      const pos = g.project(label.x, label.y, 1);
       const total = VALUES.reduce((sum, v) => sum + v * w[v], 0);
-      g.pill(pos.x, pos.y, `${['Tú', 'Derecha', 'Enfrente', 'Izquierda'][player]} · ${total.toLocaleString('es')}`, { bg: '#ffffffdd', fg: p.ink, size: 9, border: p.ink });
+      g.pill(pos.x, pos.y + 6, `${['Tú', 'Derecha', 'Enfrente', 'Izquierda'][player]} · ${total.toLocaleString('es')}`, { bg: '#ffffffdd', fg: p.ink, size: 9, border: p.ink });
     });
     onTable.forEach((s, n) => stick(s.value, s.at.x, s.at.y, FELT_Z + 0.5 + (n % 2) * 0.2));
     const clock = performance.now();
