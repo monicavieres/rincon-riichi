@@ -1035,3 +1035,5 @@
 .sort-guide small { font: 500 12px/1.2 var(--font-sans); opacity: 0.9; }
 
 .sort-board.is-sorted .sort-guide { display: none; }
+
+a.sort-button { text-decoration: none; }
