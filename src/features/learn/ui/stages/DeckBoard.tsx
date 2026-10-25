@@ -57,93 +57,52 @@ const RIVAL_TURN = [-90, 180, 90];
 /** The rivals stop shuffling after this long. */
 const RIVAL_MS = 3000;
 
-type Spot2 = [number, number];
-
-const fx = (n: number) => n.toFixed(1);
-
-/** Smooth curve through points (Catmull-Rom as cubic segments), continuing an existing path. */
-const through = (pts: Spot2[]) => {
-  let d = '';
-  for (let i = 0; i < pts.length - 1; i += 1) {
-    const p0 = pts[i - 1] ?? pts[i];
-    const p1 = pts[i];
-    const p2 = pts[i + 1];
-    const p3 = pts[i + 2] ?? p2;
-    d += `C${fx(p1[0] + (p2[0] - p0[0]) / 6)} ${fx(p1[1] + (p2[1] - p0[1]) / 6)} ${fx(p2[0] - (p3[0] - p1[0]) / 6)} ${fx(p2[1] - (p3[1] - p1[1]) / 6)} ${fx(p2[0])} ${fx(p2[1])}`;
-  }
-  return d;
-};
-
-/** A slender tapering limb along a centre line: outline path, plus the tip direction for the nail. */
-function limb(line: Spot2[], widths: number[]) {
-  const left: Spot2[] = [];
-  const right: Spot2[] = [];
-  line.forEach((p, i) => {
-    const a = line[i - 1] ?? p;
-    const b = line[i + 1] ?? p;
-    const len = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
-    const nx = -(b[1] - a[1]) / len;
-    const ny = (b[0] - a[0]) / len;
-    left.push([p[0] + (nx * widths[i]) / 2, p[1] + (ny * widths[i]) / 2]);
-    right.push([p[0] - (nx * widths[i]) / 2, p[1] - (ny * widths[i]) / 2]);
-  });
-  const r = widths[widths.length - 1] / 2;
-  const lastLeft = left[left.length - 1];
-  const lastRight = right[right.length - 1];
-  const rev = [...right].reverse();
-  return `M${fx(left[0][0])} ${fx(left[0][1])}${through(left)}A${fx(r)} ${fx(r)} 0 0 0 ${fx(lastRight[0])} ${fx(lastRight[1])}${through(rev)}Z`.replace(`A${fx(r)} ${fx(r)} 0 0 0 ${fx(lastRight[0])} ${fx(lastRight[1])}`, `Q${fx((lastLeft[0] + lastRight[0]) / 2 + (line[line.length - 1][0] - line[line.length - 2][0]) * 0.6)} ${fx((lastLeft[1] + lastRight[1]) / 2 + (line[line.length - 1][1] - line[line.length - 2][1]) * 0.6)} ${fx(lastRight[0])} ${fx(lastRight[1])}`);
-}
-
-type Digit = { line: Spot2[]; widths: number[] };
-
-/** A slender, delicate hand seen from the front, in the style of anime hand sheets: long jointed fingers, fine rose outline. */
+/** A cat's paw pressing down, toes up, with a striped leg trailing below. The stripes follow the chosen style. */
 function Palm() {
-  const ink = '#a2605f';
-  const digits: Digit[] = [
-    { line: [[40, 114], [30, 101], [21, 88], [14, 75]], widths: [11, 9.6, 8.4, 7] },
-    { line: [[72, 100], [78, 80], [83, 62], [86, 47]], widths: [7.6, 6.8, 6.1, 5.2] },
-    { line: [[64, 94], [67, 66], [69, 42], [70, 22]], widths: [9, 8, 7.1, 6.1] },
-    { line: [[46, 94], [42, 68], [39, 46], [37, 25]], widths: [9, 8.2, 7.4, 6.4] },
-    { line: [[55, 92], [54, 62], [54, 36], [54, 10]], widths: [9.4, 8.6, 7.7, 6.6] },
-  ];
-  const palm = 'M43 93C49 87 68 87 74 94C79 105 77 120 70 132C66 138 52 138 48 132C41 120 39 104 43 93Z';
-  const forearm = 'M47 130C46 150 42 178 40 200H71C69 178 66 150 65 130Z';
-  const at = (d: Digit, t: number): Spot2 => {
-    const i = Math.min(d.line.length - 2, Math.floor(t * (d.line.length - 1)));
-    const f = t * (d.line.length - 1) - i;
-    return [d.line[i][0] + (d.line[i + 1][0] - d.line[i][0]) * f, d.line[i][1] + (d.line[i + 1][1] - d.line[i][1]) * f];
-  };
+  const ink = 'var(--tile-ink)';
+  const fur = '#fff4e6';
+  const toes: Array<[number, number, number]> = [[21, 56, 12], [40, 38, 13], [60, 38, 13], [79, 56, 12]];
+  const pawBody = 'M14 70C12 52 26 44 50 44C74 44 88 52 86 70C86 94 70 110 50 110C30 110 14 94 14 70Z';
+  const leg = 'M33 104C30 126 30 148 34 168H66C70 148 70 126 67 104Z';
   return (
-    <svg viewBox="0 0 120 200" aria-hidden="true">
+    <svg viewBox="0 0 100 170" aria-hidden="true">
       <defs>
-        <linearGradient id="hand-skin" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#fff7f2" />
-          <stop offset="1" stopColor="#fbe3d5" />
-        </linearGradient>
+        <radialGradient id="paw-fur" cx=".4" cy=".3" r=".9">
+          <stop offset="0" stopColor="#ffffff" />
+          <stop offset="1" stopColor="#fbe7d2" />
+        </radialGradient>
       </defs>
-      <g stroke={ink} strokeWidth="1.1" strokeLinejoin="round" fill="url(#hand-skin)">
-        <path d={forearm} />
-        {digits.map((d) => <path key={d.line[0][0]} d={limb(d.line, d.widths)} />)}
-        <path d={palm} />
+      {/* outline layer: one firm line around the whole silhouette */}
+      <g fill={ink} stroke={ink} strokeWidth="5" strokeLinejoin="round">
+        <path d={leg} />
+        <path d={pawBody} />
+        {toes.map(([cx, cy, r]) => <circle key={`o-${cx}`} cx={cx} cy={cy} r={r} />)}
       </g>
-      {/* peach blush on the knuckles and joints */}
-      <g fill="#f6c3b3" opacity=".55">
-        {digits.slice(1).flatMap((d) => [0.12, 0.5].map((t) => {
-          const [x, y] = at(d, t);
-          return <ellipse key={`${d.line[0][0]}-${t}`} cx={x} cy={y} rx="3.2" ry="2.2" />;
-        }))}
-        <ellipse cx="58" cy="128" rx="9" ry="5" opacity=".6" />
+      {/* soft fur */}
+      <g fill="url(#paw-fur)">
+        <path d={leg} />
+        <path d={pawBody} />
+        {toes.map(([cx, cy, r]) => <circle key={`f-${cx}`} cx={cx} cy={cy} r={r} />)}
       </g>
-      {/* nails */}
-      <g fill="#fff9f6" stroke="#c98582" strokeWidth=".7">
-        {digits.map((d) => {
-          const tip = d.line[d.line.length - 1];
-          const prev = d.line[d.line.length - 2];
-          const angle = (Math.atan2(tip[0] - prev[0], prev[1] - tip[1]) * 180) / Math.PI;
-          return <rect key={`n-${d.line[0][0]}`} x={tip[0] - 2.3} y={tip[1] + 0.5} width="4.6" height="6.4" rx="2.1" transform={`rotate(${angle} ${tip[0]} ${tip[1] + 3})`} />;
-        })}
+      {/* tabby stripes on the leg */}
+      <g fill="none" stroke="var(--tile-back)" strokeWidth="6" strokeLinecap="round" opacity=".9">
+        <path d="M35 126q15 6 30 0" />
+        <path d="M34 142q16 6 32 0" />
+        <path d="M34 157q16 6 32 0" />
       </g>
-      <path d="M44 100C50 108 64 108 71 100" fill="none" stroke="#e6a99b" strokeWidth=".9" strokeLinecap="round" opacity=".7" />
+      {/* toe lines */}
+      <g fill="none" stroke="#e6c3a5" strokeWidth="1.6" strokeLinecap="round">
+        <path d="M31 50q3 8 1 17M50 46v18M69 50q-3 8 -1 17" opacity=".8" />
+      </g>
+      {/* pink pads */}
+      <g fill="#f5a1b3" stroke="#d9728a" strokeWidth="1.6">
+        <path d="M50 76C38 76 30 86 32 94C34 101 42 102 50 98C58 102 66 101 68 94C70 86 62 76 50 76Z" />
+        {toes.map(([cx, cy]) => <ellipse key={`p-${cx}`} cx={cx} cy={cy + 3} rx="6.5" ry="7.5" />)}
+      </g>
+      <g fill="#fff" opacity=".6">
+        <ellipse cx="45" cy="84" rx="4" ry="2.4" />
+        {toes.map(([cx, cy]) => <ellipse key={`h-${cx}`} cx={cx - 2} cy={cy - 1} rx="2" ry="2.6" />)}
+      </g>
     </svg>
   );
 }

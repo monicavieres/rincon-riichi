@@ -180,9 +180,9 @@ export const tutorialStops: TutorialStop[] = [
     eyebrow: L('Empieza aquí', 'Start here', 'Comece aqui'),
     title: L('Mezcla las 136 fichas boca abajo', 'Shuffle all 136 tiles face down', 'Embaralhe as 136 peças viradas para baixo'),
     body: L(
-      'Toda partida empieza igual: las 136 fichas se ponen boca abajo sobre la mesa y se revuelven con las manos. Arrastra sobre el montón como si las barrieras con la palma hasta que llegue al 100 %.',
-      'Every game starts the same way: all 136 tiles go face down on the table and are mixed with both hands. Drag across the heap as if sweeping it with your palm until it reaches 100%.',
-      'Toda partida começa igual: as 136 peças ficam viradas para baixo na mesa e são misturadas com as mãos. Arraste sobre o monte como se o varresse com a palma até chegar a 100%.',
+      'Toda partida empieza igual: las 136 fichas se ponen boca abajo sobre la mesa y se revuelven con las manos. Arrastra sobre el montón como si lo barrieras con una patita de gato hasta que llegue al 100 %.',
+      'Every game starts the same way: all 136 tiles go face down on the table and are mixed with both hands. Drag across the heap as if sweeping it with a cat’s paw until it reaches 100%.',
+      'Toda partida começa igual: as 136 peças ficam viradas para baixo na mesa e são misturadas com as mãos. Arraste sobre o monte como se o varresse com uma patinha de gato até chegar a 100%.',
     ),
     bullets: [
       L('Hay 136 fichas: tres palos de 1 a 9 con cuatro copias cada uno, más vientos y dragones.', 'There are 136 tiles: three suits from 1 to 9 with four copies each, plus winds and dragons.', 'São 136 peças: três naipes de 1 a 9 com quatro cópias cada, mais ventos e dragões.'),

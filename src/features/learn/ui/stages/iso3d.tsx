@@ -77,6 +77,13 @@ export function picture(path: string): HTMLCanvasElement | null {
   return bitmap;
 }
 
+/** The tile art files (96x128) hold the tile on a padded canvas; this is the face itself, so it can fill a whole tile face. */
+export function faceCrop(img: CanvasImageSource): [number, number, number, number] {
+  const w = (img as HTMLCanvasElement).width;
+  const h = (img as HTMLCanvasElement).height;
+  return [(11 / 96) * w, (8 / 128) * h, (74 / 96) * w, (103 / 128) * h];
+}
+
 const cssVar = (name: string, fallback: string) => {
   const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   return /^#/.test(value) ? value : fallback;
@@ -260,7 +267,7 @@ export class Painter {
       });
       this.poly(g.top, faceUp ? '#fffdf6' : back, opts.gold ? p.gold : p.ink, opts.gold ? this.lw * 2 : this.lw);
       if (faceUp && opts.face) {
-        this.textured(opts.face, x, y, w * squeeze, l, rot, z0 + lift + t, 6);
+        this.textured(opts.face, x, y, w * squeeze, l, rot, z0 + lift + t, 6, faceCrop(opts.face));
       } else {
         const emblem = picture(p.emblem);
         if (emblem && !opts.counting) {
@@ -342,7 +349,7 @@ export class Painter {
   }
 
   /** Paints a picture flat on the table, mapped piece by piece so the perspective stays true. */
-  textured(img: CanvasImageSource, x: number, y: number, w: number, l: number, rot: number, z: number, cells = 12) {
+  textured(img: CanvasImageSource, x: number, y: number, w: number, l: number, rot: number, z: number, cells = 12, crop?: [number, number, number, number]) {
     const { ctx } = this;
     const r = (rot * Math.PI) / 180;
     const co = Math.cos(r);
@@ -375,7 +382,8 @@ export class Painter {
       ctx.closePath();
       ctx.clip();
       ctx.transform(a, b, c, d, e, f);
-      ctx.drawImage(img, 0, 0, 1, 1);
+      if (crop) ctx.drawImage(img, crop[0], crop[1], crop[2], crop[3], 0, 0, 1, 1);
+      else ctx.drawImage(img, 0, 0, 1, 1);
       ctx.restore();
     };
     for (let j = 0; j < cells; j += 1) {
@@ -399,8 +407,8 @@ export class Painter {
     const { palette: p } = this;
     const w = 3.6;
     const l = 4.8;
-    const t = 3.2;
     const sRatio = phi / 90;
+    const t = 3.2 - 1.0 * sRatio; // standing, a tile is slimmer front to back than it is thick lying down
     const cf = Math.cos((phi * Math.PI) / 180);
     const sf = Math.sin((phi * Math.PI) / 180);
     const pivotY = (1 - sRatio) * (-l / 2) + sRatio * (t / 2);
@@ -442,7 +450,10 @@ export class Painter {
         const k = lit(nw);
         if (f.name === 'front') {
           this.poly(quad, shade('#fffdf6', k), p.ink);
-          if (opts.face) this.onQuad(quad, () => this.ctx.drawImage(opts.face!, 0, 0, 1, 1));
+          if (opts.face) {
+            const [cx0, cy0, cw, ch] = faceCrop(opts.face);
+            this.onQuad(quad, () => this.ctx.drawImage(opts.face!, cx0, cy0, cw, ch, 0, 0, 1, 1));
+          }
         } else if (f.name === 'back') {
           this.poly(quad, shade(p.back, k), p.ink);
           const emblem = picture(p.emblem);
