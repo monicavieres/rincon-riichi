@@ -10,6 +10,8 @@ import { WinBoard } from './stages/WinBoard';
 import { YakuBoard } from './stages/YakuBoard';
 import { CallsBoard } from './stages/CallsBoard';
 import { FuritenBoard } from './stages/FuritenBoard';
+import { PointsBoard } from './stages/PointsBoard';
+import { RoundsBoard } from './stages/RoundsBoard';
 import { DealBoard, type DealStatus } from './stages/DealBoard';
 import { TableTopBoard, type TableTopStatus } from './stages/TableTopBoard';
 import { WallBoard, type WallStatus } from './stages/WallBoard';
@@ -45,6 +47,16 @@ const TABS: Array<{ id: Tab; label: LocalizedText }> = [
 ];
 
 const PRACTICE_COPY = {
+  rounds: L(
+    'Elige un caso y mira qué pasa con el compass, los vientos de asiento y la placa de la ronda. «Tipos de partida» muestra tonpuusen, hanchan y cómo se decide quién gana.',
+    'Pick a case and watch what happens to the compass, the seat winds and the round plate. “Game types” shows tonpuusen, hanchan and how the winner is decided.',
+    'Escolha um caso e veja o que acontece com o compass, os ventos de assento e a placa da rodada. «Tipos de partida» mostra tonpuusen, hanchan e como se decide o vencedor.',
+  ),
+  points: L(
+    'Mira cómo se salda una mano: quien paga deja los palitos sobre la mesa y el ganador los toma. Cambia entre «Cobras» y «Pagas» para ver los dos lados.',
+    'Watch how a hand is settled: the payer leaves the sticks on the table and the winner takes them. Switch between “You collect” and “You pay” to see both sides.',
+    'Veja como uma mão é acertada: quem paga deixa os palitos sobre a mesa e o vencedor pega. Alterne entre «Você recebe» e «Você paga» para ver os dois lados.',
+  ),
   furiten: L(
     'Mira la animación: tu espera es 4p o 7p, pero ya botaste un 7p. Cuando un rival bota el 4p no puedes hacer ron; solo el tsumo sirve. «Ver otra vez» la repite.',
     'Watch the animation: your wait is 4p or 7p, but you already threw a 7p. When a rival throws the 4p you cannot call ron; only tsumo works. “Watch again” replays it.',
@@ -237,7 +249,7 @@ function TileThumb({ codes, scattered = false }: { codes: string[]; scattered?: 
 function thumbFor(stop: TutorialStop) {
   const spec = stop.stage;
   if (spec.kind === 'table') return <ZoneThumb focus={spec.focus} />;
-  if (spec.kind === 'deck') return spec.mode === 'furiten' ? <TileThumb codes={['4p', '7p']} /> : spec.mode === 'calls' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'yaku' ? <TileThumb codes={['2m', '3m', '4m']} /> : spec.mode === 'win' ? <TileThumb codes={['6z', '6z', '6z']} /> : spec.mode === 'draw' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'hand' ? <TileThumb codes={['4p', '1m', '6z']} scattered /> : <SceneThumb mode={spec.mode} />;
+  if (spec.kind === 'deck') return spec.mode === 'rounds' ? <TileThumb codes={['1z', '2z', '3z', '4z']} /> : spec.mode === 'points' ? <TileThumb codes={['1p', '1p', '1p']} /> : spec.mode === 'furiten' ? <TileThumb codes={['4p', '7p']} /> : spec.mode === 'calls' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'yaku' ? <TileThumb codes={['2m', '3m', '4m']} /> : spec.mode === 'win' ? <TileThumb codes={['6z', '6z', '6z']} /> : spec.mode === 'draw' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'hand' ? <TileThumb codes={['4p', '1m', '6z']} scattered /> : <SceneThumb mode={spec.mode} />;
   if (spec.kind === 'sort') return <TileThumb codes={['4p', '1m', '6z']} scattered />;
   return <TileThumb codes={spec.rows[0].groups[0].tiles} />;
 }
@@ -345,6 +357,8 @@ export function TutorialWorkspace() {
           </div>
 
           {spec.kind === 'deck' && spec.mode === 'shuffle' && <DeckBoard language={language} onStatus={setDeck} />}
+          {spec.kind === 'deck' && spec.mode === 'rounds' && <RoundsBoard key={language} language={language} />}
+          {spec.kind === 'deck' && spec.mode === 'points' && <PointsBoard key={language} language={language} />}
           {spec.kind === 'deck' && spec.mode === 'furiten' && <FuritenBoard key={language} language={language} />}
           {spec.kind === 'deck' && spec.mode === 'calls' && <CallsBoard key={language} language={language} />}
           {spec.kind === 'deck' && spec.mode === 'yaku' && <YakuBoard key={language} language={language} />}
@@ -395,6 +409,8 @@ export function TutorialWorkspace() {
             {stop.id === 'yaku' && <div id="yaku-controls" className="yaku-controls" />}
             {stop.id === 'calls' && <div id="calls-controls" className="yaku-controls" />}
             {stop.id === 'furiten' && <div id="furiten-controls" className="yaku-controls" />}
+            {stop.id === 'points' && <div id="points-controls" className="yaku-controls" />}
+            {stop.id === 'rounds' && <div id="rounds-controls" className="yaku-controls" />}
             {tab === 'observe' && <ul>{stop.bullets.map((bullet, bulletIndex) => <li key={bulletIndex}>{rich(t(bullet))}</li>)}</ul>}
             {tab === 'practice' && (
               <div className="explorer-practice">

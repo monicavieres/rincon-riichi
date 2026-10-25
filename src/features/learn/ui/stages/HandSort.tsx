@@ -36,16 +36,16 @@ const SUIT_PILL: Record<SuitId, { bg: string; fg: string; name: { es: string; en
 };
 
 /** Walls, dead wall, dora and the rivals' hands as the deal left them. */
-export function paintDealtTable(g: Painter, assignments: ReturnType<typeof dealAssignments>, extra: { taken?: Set<number>; mark?: number | null; kanDora?: boolean } = {}) {
+export function paintDealtTable(g: Painter, assignments: ReturnType<typeof dealAssignments>, extra: { taken?: Set<number>; mark?: number | null; kanDora?: boolean; compassRot?: number; plateChar?: string; plateSqueeze?: number } = {}) {
   const { palette: p, ctx } = g;
   const COMPASS = 24;
   g.add(50 * 100 + 50, () => {
     g.slab(50, 50, COMPASS, COMPASS, 3.6, FELT_Z, FELT_Z + 3, mix(p.back, '#000000', 0.55), p.back);
     const art = picture(p.compass);
-    if (art) g.textured(art, 50, 50, COMPASS * 1.16, COMPASS * 1.16, 0, FELT_Z + 3);
+    if (art) g.textured(art, 50, 50, COMPASS * 1.16, COMPASS * 1.16, extra.compassRot ?? 0, FELT_Z + 3);
   });
   g.add(90 * 100 + 60, () => {
-    const box = g.box(89, 90, FELT_Z, 8, 5.8, 2, 0);
+    const box = g.box(89, 90, FELT_Z, 8 * (extra.plateSqueeze ?? 1), 5.8, 2, 0);
     box.sides.forEach((face) => g.poly(face.q, shade('#e8742a', 0.78), p.ink, g.lw * 1.2));
     g.poly(box.top, '#f08a30', p.ink, g.lw * 1.4);
     g.onQuad(box.top, () => {
@@ -55,7 +55,7 @@ export function paintDealtTable(g: Painter, assignments: ReturnType<typeof dealA
       ctx.font = `700 ${5.8 * 0.78}px 'Noto Serif JP', 'Hiragino Mincho ProN', serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('東', 4, 2.9 + 0.2);
+      ctx.fillText(extra.plateChar ?? '東', 4, 2.9 + 0.2);
       ctx.restore();
     });
   });

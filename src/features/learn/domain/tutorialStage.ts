@@ -9,7 +9,7 @@ export type LocalCallout = Omit<TableCallout, 'label'> & { label: LocalizedText 
 
 export type StageSpec =
   | { kind: 'sort' }
-  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' | 'win' | 'yaku' | 'calls' | 'furiten' }
+  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' | 'win' | 'yaku' | 'calls' | 'furiten' | 'points' | 'rounds' }
   | { kind: 'table'; focus: TableFocus; callouts: LocalCallout[] }
   | { kind: 'rack'; rows: RackRow[]; footer?: LocalizedText };
 
@@ -51,6 +51,7 @@ export const stepSubtitles: Record<string, LocalizedText> = {
   'open-closed': L('Mano abierta o cerrada', 'Open or closed hand', 'Mão aberta ou fechada'),
   tenpai: L('A una ficha de ganar', 'One tile from winning', 'A uma peça de vencer'),
   riichi: L('Declara y apuesta 1000', 'Declare and bet 1000', 'Declare e aposte 1000'),
+  rounds: L('Dealer, compass y rondas', 'Dealer, compass and rounds', 'Dealer, compass e rodadas'),
   yaku: L('Tanyao, riichi y yakuhai', 'Tanyao, riichi and yakuhai', 'Tanyao, riichi e yakuhai'),
   'ron-tsumo': L('Dos formas de ganar', 'Two ways to win', 'Duas formas de vencer'),
   furiten: L('No ganes con tu descarte', 'No winning on your discard', 'Sem vencer no seu descarte'),
@@ -556,19 +557,40 @@ export const tutorialStops: TutorialStop[] = [
     practice: { href: '../aprender/dora.html', label: L('Aprender dora', 'Learn dora', 'Aprender dora') },
   },
   {
-    id: 'points', part: 'win', short: L('Puntos', 'Points', 'Pontos'), ...text('points'),
-    stage: {
-      kind: 'table',
-      focus: zone('puntos'),
-      callouts: relabel('puntos', [
-        L('1 × 10 000', '1 × 10,000', '1 × 10.000'),
-        L('2 × 5 000', '2 × 5,000', '2 × 5.000'),
-        L('9 × 1 000', '9 × 1,000', '9 × 1.000'),
-        L('1 × 500', '1 × 500', '1 × 500'),
-        L('4 × 100', '4 × 100', '4 × 100'),
-      ]),
-    },
+    id: 'points', part: 'win', short: L('Puntaje', 'Scoring', 'Pontuação'),
+    eyebrow: L('Al terminar la mano', 'When the hand ends', 'Ao fim da mão'),
+    title: L('Puntaje: cuentas y pagas con palitos', 'Scoring: count and pay with sticks', 'Pontuação: conte e pague com palitos'),
+    body: L(
+      'Al terminar la mano, el ganador **cuenta los puntos** (**yaku**, **dora** y **fu**; mira la sección de puntajes).\n- **Ganas**: el rival (ron) o los tres rivales (tsumo) te entregan **palitos**.\n- **Pierdes**: tú entregas los palitos al ganador.\n- Quien paga **deja los palitos sobre la mesa** y el ganador los **toma**.',
+      'When the hand ends, the winner **counts the points** (**yaku**, **dora** and **fu**; see the scoring section).\n- **You win**: the rival (ron) or all three rivals (tsumo) give you **sticks**.\n- **You lose**: you hand the sticks to the winner.\n- The payer **leaves the sticks on the table** and the winner **takes them**.',
+      'Ao fim da mão, o vencedor **conta os pontos** (**yaku**, **dora** e **fu**; veja a seção de pontuação).\n- **Você ganha**: o rival (ron) ou os três rivais (tsumo) entregam **palitos**.\n- **Você perde**: você entrega os palitos ao vencedor.\n- Quem paga **deixa os palitos sobre a mesa** e o vencedor **pega**.',
+    ),
+    bullets: [
+      L('Se cuenta con yaku, dora y fu.', 'Counted with yaku, dora and fu.', 'Conta-se com yaku, dora e fu.'),
+      L('Ron: paga quien botó la ficha. Tsumo: pagan los tres.', 'Ron: the one who threw the tile pays. Tsumo: all three pay.', 'Ron: paga quem descartou a peça. Tsumo: os três pagam.'),
+      L('Los palitos se dejan en la mesa y el otro los toma.', 'Sticks are left on the table and the other takes them.', 'Os palitos ficam na mesa e o outro pega.'),
+    ],
+    remember: L('Cuenta, deja los palitos y toma los tuyos.', 'Count, leave the sticks and take yours.', 'Conte, deixe os palitos e pegue os seus.'),
+    stage: { kind: 'deck', mode: 'points' },
     practice: { href: '../aprender/score.html', label: L('Tablas de puntaje', 'Score tables', 'Tabelas de pontuação') },
+  },
+  {
+    id: 'rounds', part: 'win', short: L('Las rondas', 'The rounds', 'As rodadas'),
+    eyebrow: L('Cómo sigue la partida', 'How the game goes on', 'Como o jogo segue'),
+    title: L('Dealer, compass y rondas', 'Dealer, compass and rounds', 'Dealer, compass e rodadas'),
+    body: L(
+      'Mano tras mano:\n- **Dealer gana**: sigue de dealer, los vientos **no cambian**.\n- **No gana**: el **compass gira** y cambian los **vientos de asiento**.\n- Vuelta completa: la ronda pasa a **Sur** (se voltea la placa).\n**Tonpuusen** (solo Este) o **hanchan** (Este y Sur); al final **gana quien tenga más puntos**.',
+      'Hand after hand:\n- **Dealer wins**: stays dealer, winds **do not change**.\n- **No win**: the **compass turns** and the **seat winds** change.\n- Full lap: the round becomes **South** (the plate is flipped).\n**Tonpuusen** (East only) or **hanchan** (East and South); at the end **the highest score wins**.',
+      'Mão após mão:\n- **Dealer ganha**: continua dealer, os ventos **não mudam**.\n- **Não ganha**: o **compass gira** e mudam os **ventos de assento**.\n- Volta completa: a rodada passa a **Sul** (a placa é virada).\n**Tonpuusen** (só Leste) ou **hanchan** (Leste e Sul); no fim **ganha quem tiver mais pontos**.',
+    ),
+    bullets: [
+      L('Dealer gana: sigue y nada cambia.', 'Dealer wins: stays and nothing changes.', 'Dealer ganha: continua e nada muda.'),
+      L('Dealer no gana: el compass gira y cambian los vientos.', 'Dealer does not win: the compass turns and the winds change.', 'Dealer não ganha: o compass gira e os ventos mudam.'),
+      L('Vuelta completa: la ronda pasa de Este a Sur.', 'Full lap: the round goes from East to South.', 'Volta completa: a rodada passa de Leste a Sul.'),
+    ],
+    remember: L('Gana quien tenga más puntos al final.', 'Highest score at the end wins.', 'Ganha quem tiver mais pontos no fim.'),
+    stage: { kind: 'deck', mode: 'rounds' },
+    practice: { href: '../aprender/reglas.html', label: L('Ver reglas', 'See rules', 'Ver regras') },
   },
   {
     id: 'finish', part: 'win', short: L('Final', 'Finish', 'Final'), ...text('finish'),

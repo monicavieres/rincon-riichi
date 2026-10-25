@@ -1227,3 +1227,14 @@ a.sort-button {
 .tutorial-lab .explorer-inspector-copy .body-list { gap: var(--space-2); margin: var(--space-2) 0; }
 .tutorial-lab .explorer-inspector-copy .body-list li { padding: var(--space-1) var(--space-3); }
 .tutorial-lab .explorer-inspector-copy > p:not(.panel-label) { margin: var(--space-2) 0; }
+
+.points-paw { width: 9%; z-index: 430; }
+
+.rd-box { max-width: 44cqw; }
+.rd-line { display: flex; align-items: center; gap: 0.35cqw; flex-wrap: wrap; justify-content: center; }
+.rd-line span { margin-left: 0.8cqw; color: #fff; }
+.rd-hand { display: block; width: 2.4cqw; height: 3.2cqw; border: 2px solid #fff; border-radius: 4px; }
+.rd-hand.is-east { background: #ffd36e; }
+.rd-hand.is-south { background: #8fd3ff; }
+.rd-score { min-width: 11cqw; }
+.rd-score.is-top { border-color: #ffd36e; background: rgba(255, 211, 110, 0.25); }

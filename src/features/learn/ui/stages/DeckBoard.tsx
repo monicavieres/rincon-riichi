@@ -61,7 +61,7 @@ const RIVAL_PAWS = [
 /** The rivals stop shuffling after this long. */
 const RIVAL_MS = 3000;
 
-type PawLook = 'white' | 'orange' | 'grey' | 'black';
+export type PawLook = 'white' | 'orange' | 'grey' | 'black';
 
 /** Fur and pad colours per cat: yours is white; the rivals are an orange tabby, a grey cat and a black cat. */
 const PAW_LOOKS: Record<PawLook, { light: string; dark: string; line: string; pad: string; padLine: string; shine: number; stripes?: boolean }> = {
@@ -72,7 +72,7 @@ const PAW_LOOKS: Record<PawLook, { light: string; dark: string; line: string; pa
 };
 
 /** A round, chubby cat paw pressing down: four toes, pink beans, no arm. */
-function Palm({ look = 'white' }: { look?: PawLook }) {
+export function Palm({ look = 'white' }: { look?: PawLook }) {
   const c = PAW_LOOKS[look];
   const ink = 'var(--tile-ink)';
   const gid = `paw-fur-${look}`;
