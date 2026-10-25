@@ -52,8 +52,12 @@ export function wallSlot(side: number, stack: number, level: number): Pose {
   return { x: x0 + TILE_H / 2, y: y0 + TILE_H + along, rot: 90, z, h };
 }
 
-const RIVAL_START = [{ x: 96, y: 50 }, { x: 50, y: 4 }, { x: 4, y: 50 }];
-const RIVAL_TURN = [-90, 180, 90];
+/** Every rival cat shuffles with two paws, entering side by side from its own edge. */
+const RIVAL_PAWS = [
+  { rival: 0, second: false, x: 96, y: 43, turn: -90 }, { rival: 0, second: true, x: 96, y: 57, turn: -90 },
+  { rival: 1, second: false, x: 43, y: 4, turn: 180 }, { rival: 1, second: true, x: 57, y: 4, turn: 180 },
+  { rival: 2, second: false, x: 4, y: 57, turn: 90 }, { rival: 2, second: true, x: 4, y: 43, turn: 90 },
+];
 /** The rivals stop shuffling after this long. */
 const RIVAL_MS = 3000;
 
@@ -159,7 +163,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
 
   // The three rivals shuffle too, each from their own side, for the first few seconds.
   const rivalHands = useRef<Array<HTMLSpanElement | null>>([]);
-  const rivalAt = useRef<Array<{ x: number; y: number }>>(RIVAL_START.map((start) => ({ ...start })));
+  const rivalAt = useRef<Array<{ x: number; y: number }>>(RIVAL_PAWS.map((paw) => ({ x: paw.x, y: paw.y })));
   const rivalClock = useRef<{ start: number; active: boolean }>({ start: 0, active: false });
 
   const moveRivals = useCallback((now: number) => {
@@ -167,13 +171,15 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
     if (!clock.active) return;
     const elapsed = now - clock.start;
     const done = elapsed > RIVAL_MS;
-    RIVAL_START.forEach((start, hand) => {
+    RIVAL_PAWS.forEach((paw, hand) => {
+      const start = { x: paw.x, y: paw.y };
       const el = rivalHands.current[hand];
       if (!el) return;
       const seconds = elapsed / 1000;
-      const phase = hand * 2.1;
+      const phase = paw.rival * 2.1 + (paw.second ? 1.7 : 0);
       const angle = seconds * 3.4 + phase;
-      const path = { x: 50 + 26 * Math.cos(angle), y: 50 + 22 * Math.sin(angle * 1.3 + phase) };
+      const reach = paw.second ? 21 : 26;
+      const path = { x: 50 + reach * Math.cos(angle), y: 50 + (reach - 4) * Math.sin(angle * 1.3 + phase) };
       const ease = Math.min(1, elapsed / 700);
       const target = { x: start.x + (path.x - start.x) * ease, y: start.y + (path.y - start.y) * ease };
       const from = rivalAt.current[hand];
@@ -185,7 +191,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
       if (at) {
         el.style.left = `${at.x}px`;
         el.style.top = `${at.y}px`;
-        el.style.transform = `translate(-50%, -50%) rotate(${RIVAL_TURN[hand]}deg) scale(${at.f})`;
+        el.style.transform = `translate(-50%, -50%) rotate(${paw.turn}deg) scale(${at.f})${paw.second ? ' scaleX(-1)' : ''}`;
       }
     });
     if (done) clock.active = false;
@@ -301,8 +307,8 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
         onPointerDown={(event) => { pointer.current.down = true; moveHand(event.clientX, event.clientY); }}
       >
         <IsoCanvas ref={scene} draw={draw} handlers={{ onPointerMove: onSweep, onPointerDown: onSweepDown }} />
-        {RIVAL_START.map((_, hand) => (
-          <span key={`rival-${hand}`} className="deck-rival-hand" ref={(el) => { rivalHands.current[hand] = el; }} style={{ opacity: 0 }}><Palm look={RIVAL_LOOKS[hand]} /></span>
+        {RIVAL_PAWS.map((paw, hand) => (
+          <span key={`rival-${hand}`} className="deck-rival-hand" ref={(el) => { rivalHands.current[hand] = el; }} style={{ opacity: 0 }}><Palm look={RIVAL_LOOKS[paw.rival]} /></span>
         ))}
 
         {(
