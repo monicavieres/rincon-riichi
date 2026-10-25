@@ -10,9 +10,9 @@ const FACE_DIR: Record<string, string> = {
 const FALLBACK_DIR = 'tiles-fluffystuff-composite';
 
 const UI = {
-  es: { title: 'Tipos de espera', wait: 'Espera', shape: 'Forma', hint: 'Las fichas doradas completan la mano', info: 'Qué es', data: 'Datos', sides: 'Lados', fu: 'Fu de la espera', tiles: 'Fichas ganadoras', rare: 'Rara', note: 'Se cuentan cuatro copias por ficha menos las que ya aparecen en la forma. En esperas complejas, el fu puede cambiar según la ficha ganadora.', quiz: 'Practicar: ¿qué espera es?', step: 'Espera', of: 'de', arrows: 'usa las flechas', back: 'Anterior', next: 'Siguiente', rail: 'Tipos de espera', sideOne: 'lado', sideMany: 'lados', tileWord: 'fichas', winning: 'espera' },
-  en: { title: 'Wait types', wait: 'Wait', shape: 'Shape', hint: 'Gold tiles complete the hand', info: 'What it is', data: 'Facts', sides: 'Sides', fu: 'Wait fu', tiles: 'Winning tiles', rare: 'Rare', note: 'Count four copies per tile minus those already shown in the shape. In complex waits, fu may change with the winning tile.', quiz: 'Practise: what wait is it?', step: 'Wait', of: 'of', arrows: 'use the arrows', back: 'Previous', next: 'Next', rail: 'Wait types', sideOne: 'side', sideMany: 'sides', tileWord: 'tiles', winning: 'wait' },
-  pt: { title: 'Tipos de espera', wait: 'Espera', shape: 'Forma', hint: 'As peças douradas completam a mão', info: 'O que é', data: 'Dados', sides: 'Lados', fu: 'Fu da espera', tiles: 'Peças vencedoras', rare: 'Rara', note: 'Conte quatro cópias por peça menos as que já aparecem na forma. Em esperas complexas, o fu pode mudar conforme a peça vencedora.', quiz: 'Praticar: que espera é?', step: 'Espera', of: 'de', arrows: 'use as setas', back: 'Anterior', next: 'Próxima', rail: 'Tipos de espera', sideOne: 'lado', sideMany: 'lados', tileWord: 'peças', winning: 'espera' },
+  es: { complete: 'Se completa con', waiting: 'Tu mano espera una ficha…', arrives: 'Llega la ficha ganadora…', done: '¡Completa el último grupo ({g}) y la mano está lista: 4 grupos y 1 pareja!', replay: 'Ver otra vez', title: 'Tipos de espera', wait: 'Espera', shape: 'Forma', hint: 'Las fichas doradas completan la mano', info: 'Qué es', data: 'Datos', sides: 'Lados', fu: 'Fu de la espera', tiles: 'Fichas ganadoras', rare: 'Rara', note: 'Se cuentan cuatro copias por ficha menos las que ya aparecen en la forma. En esperas complejas, el fu puede cambiar según la ficha ganadora.', quiz: 'Practicar: ¿qué espera es?', step: 'Espera', of: 'de', arrows: 'usa las flechas', back: 'Anterior', next: 'Siguiente', rail: 'Tipos de espera', sideOne: 'lado', sideMany: 'lados', tileWord: 'fichas', winning: 'espera' },
+  en: { complete: 'Completes with', waiting: 'Your hand waits for a tile…', arrives: 'The winning tile arrives…', done: 'It completes the last group ({g}) and the hand is done: 4 sets and 1 pair!', replay: 'Watch again', title: 'Wait types', wait: 'Wait', shape: 'Shape', hint: 'Gold tiles complete the hand', info: 'What it is', data: 'Facts', sides: 'Sides', fu: 'Wait fu', tiles: 'Winning tiles', rare: 'Rare', note: 'Count four copies per tile minus those already shown in the shape. In complex waits, fu may change with the winning tile.', quiz: 'Practise: what wait is it?', step: 'Wait', of: 'of', arrows: 'use the arrows', back: 'Previous', next: 'Next', rail: 'Wait types', sideOne: 'side', sideMany: 'sides', tileWord: 'tiles', winning: 'wait' },
+  pt: { complete: 'Completa com', waiting: 'Sua mão espera uma peça…', arrives: 'A peça vencedora chega…', done: 'Completa o último grupo ({g}) e a mão está pronta: 4 grupos e 1 par!', replay: 'Ver de novo', title: 'Tipos de espera', wait: 'Espera', shape: 'Forma', hint: 'As peças douradas completam a mão', info: 'O que é', data: 'Dados', sides: 'Lados', fu: 'Fu da espera', tiles: 'Peças vencedoras', rare: 'Rara', note: 'Conte quatro cópias por peça menos as que já aparecem na forma. Em esperas complexas, o fu pode mudar conforme a peça vencedora.', quiz: 'Praticar: que espera é?', step: 'Espera', of: 'de', arrows: 'use as setas', back: 'Anterior', next: 'Próxima', rail: 'Tipos de espera', sideOne: 'lado', sideMany: 'lados', tileWord: 'peças', winning: 'espera' },
 };
 
 const INTRO_HAND = ['2m', '3m', '4m', '4p', '5p', '6p', '7s', '8s', '9s', '1z', '1z', '5p', '6p'];
@@ -35,6 +35,66 @@ const INTRO = {
   },
 };
 
+type Meld = { kind: 'sequence' | 'triplet' | 'pair'; tiles: string[] };
+
+const SUITS = ['m', 'p', 's'];
+const num = (code: string) => Number(code[0]);
+const suit = (code: string) => code[1];
+
+/** Splits 14 tiles into four groups and a pair (first way found), or null. */
+function decompose(tiles: string[]): Meld[] | null {
+  const sorted = [...tiles].sort((a, b) => (SUITS.indexOf(suit(a)) < 0 ? 9 : SUITS.indexOf(suit(a))) - (SUITS.indexOf(suit(b)) < 0 ? 9 : SUITS.indexOf(suit(b))) || num(a) - num(b));
+  const take = (list: string[], code: string) => { const at = list.indexOf(code); if (at < 0) return false; list.splice(at, 1); return true; };
+  const solve = (rest: string[], hasPair: boolean): Meld[] | null => {
+    if (rest.length === 0) return hasPair ? [] : null;
+    const [first, ...others] = rest;
+    if (!hasPair && others.includes(first)) {
+      const next = [...others]; take(next, first);
+      const tail = solve(next, true);
+      if (tail) return [{ kind: 'pair', tiles: [first, first] }, ...tail];
+    }
+    if (others.filter((code) => code === first).length >= 2) {
+      const next = [...others]; take(next, first); take(next, first);
+      const tail = solve(next, hasPair);
+      if (tail) return [{ kind: 'triplet', tiles: [first, first, first] }, ...tail];
+    }
+    if (suit(first) !== 'z' && num(first) <= 7) {
+      const b = `${num(first) + 1}${suit(first)}`; const c = `${num(first) + 2}${suit(first)}`;
+      if (others.includes(b) && others.includes(c)) {
+        const next = [...others]; take(next, b); take(next, c);
+        const tail = solve(next, hasPair);
+        if (tail) return [{ kind: 'sequence', tiles: [first, b, c] }, ...tail];
+      }
+    }
+    return null;
+  };
+  return solve(sorted, false);
+}
+
+/** The rest of a hand around the wait shape: complete groups (and a pair) in suits the shape does not use. */
+function filler(pattern: string[]) {
+  const used = new Set(pattern.map(suit));
+  const free = SUITS.filter((entry) => !used.has(entry));
+  const pool = free.length ? free : ['z'];
+  const rest = 13 - pattern.length;
+  const out: string[] = [];
+  const starts = [1, 4, 7];
+  for (let i = 0; i < Math.floor(rest / 3); i += 1) {
+    const s = pool[i % pool.length];
+    const start = starts[Math.floor(i / pool.length) % 3];
+    if (s === 'z') out.push(`${1 + (i % 3)}z`, `${1 + (i % 3)}z`, `${1 + (i % 3)}z`);
+    else out.push(`${start}${s}`, `${start + 1}${s}`, `${start + 2}${s}`);
+  }
+  if (rest % 3 === 2) out.push('4z', '4z');
+  return out;
+}
+
+const MELD_NAME = {
+  es: { sequence: 'Secuencia', triplet: 'Trío', pair: 'Pareja' },
+  en: { sequence: 'Sequence', triplet: 'Triplet', pair: 'Pair' },
+  pt: { sequence: 'Sequência', triplet: 'Trio', pair: 'Par' },
+};
+
 const rich = (text: string) => text.split('**').map((part, i) => (i % 2 ? <strong key={i}>{part}</strong> : part));
 
 const chevron = (
@@ -48,11 +108,37 @@ export function MachiWorkspace() {
   const [tab, setTab] = useState<'info' | 'data'>('info');
   const theme = usePageChrome(language, setLanguage);
   const railRef = useRef<HTMLElement>(null);
+  const [phase, setPhase] = useState<'idle' | 'fly' | 'done'>('idle');
+  const [pick, setPick] = useState(0);
+  const [replay, setReplay] = useState(0);
   const ui = UI[language];
   const total = MACHI_WAITS.length + 1;
   const intro = index === 0;
   const wait = MACHI_WAITS[Math.max(0, index - 1)];
   const copy = INTRO[language];
+
+  // the winning tile arrives, one wait after another, and completes the last group
+  useEffect(() => {
+    if (intro) return undefined;
+    let alive = true;
+    const timers: number[] = [];
+    const later = (fn: () => void, ms: number) => { timers.push(window.setTimeout(() => { if (alive) fn(); }, ms)); };
+    const cycle = (k: number) => {
+      setPick(k);
+      setPhase('idle');
+      later(() => setPhase('fly'), 1300);
+      later(() => setPhase('done'), 2300);
+      later(() => cycle((k + 1) % wait.waits.length), 6800);
+    };
+    cycle(0);
+    return () => { alive = false; timers.forEach((id) => window.clearTimeout(id)); };
+  }, [index, intro, replay, wait.waits.length]);
+
+  const winner = wait.waits[Math.min(pick, wait.waits.length - 1)];
+  const finalHand = [...wait.pattern, ...filler(wait.pattern), winner];
+  const melds = decompose(finalHand);
+  // the group that holds the winning tile is the one it completes
+  const hotIndex = melds ? Math.max(0, melds.findIndex((meld) => meld.tiles.includes(winner) && !(meld.kind === 'pair' && melds.some((other) => other !== meld && other.kind === 'pair' && other.tiles.includes(winner))))) : -1;
 
   const face = (code: string) => `../assets/${FACE_DIR[theme] ?? FALLBACK_DIR}/${code}.svg`;
   const onFaceError = (event: { currentTarget: HTMLImageElement }, code: string) => {
@@ -116,22 +202,41 @@ export function MachiWorkspace() {
             </div>
           ) : (
             <div className="tiles-felt machi-felt" key={wait.romaji}>
-            <div className="machi-name"><b>{wait.romaji}</b><span>{wait.kanji}</span>{wait.rare && <em>{ui.rare}</em>}</div>
-            <div className="machi-block">
-              <small>{ui.shape}</small>
-              <div className="machi-row">
-                {wait.pattern.map((code, i) => <img key={`${code}-${i}`} src={face(code)} alt={code} draggable={false} onError={(event) => onFaceError(event, code)} />)}
+              <div className="machi-name"><b>{wait.romaji}</b><span>{wait.kanji}</span>{wait.rare && <em>{ui.rare}</em>}</div>
+              <div className="machi-pair">
+                <div className="machi-block">
+                  <small>{ui.shape}</small>
+                  <div className="machi-row is-small">
+                    {wait.pattern.map((code, i) => <img key={`${code}-${i}`} src={face(code)} alt={code} draggable={false} onError={(event) => onFaceError(event, code)} />)}
+                  </div>
+                </div>
+                <div className="machi-arrow is-side" aria-hidden="true">▶</div>
+                <div className="machi-block is-wait">
+                  <small>{ui.wait}</small>
+                  <div className="machi-row is-small">
+                    {wait.waits.map((code) => <img key={code} className={`is-gold${code === winner ? ' is-now' : ''}`} src={face(code)} alt={code} draggable={false} onError={(event) => onFaceError(event, code)} />)}
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="machi-arrow" aria-hidden="true">▼</div>
-            <div className="machi-block is-wait">
-              <small>{ui.wait}</small>
-              <div className="machi-row">
-                {wait.waits.map((code) => <img key={code} className="is-gold" src={face(code)} alt={code} draggable={false} onError={(event) => onFaceError(event, code)} />)}
+              <div className="machi-complete">
+                <small>{ui.complete}: <b>{winner}</b></small>
+                {melds ? (
+                  <div className="machi-hand">
+                    {melds.map((meld, mi) => (
+                      <div key={mi} className={`machi-meld is-${meld.kind}${phase === 'done' && mi === hotIndex ? ' is-hot' : ''}`}>
+                        {meld.tiles.map((code, ti) => {
+                          const isWinner = mi === hotIndex && ti === meld.tiles.lastIndexOf(winner);
+                          return <img key={ti} className={isWinner ? `machi-win is-${phase}` : undefined} src={face(code)} alt={code} draggable={false} onError={(event) => onFaceError(event, code)} />;
+                        })}
+                        {phase === 'done' && mi === hotIndex && <em>{MELD_NAME[language][meld.kind]}</em>}
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+                <p className="machi-caption">{phase === 'done' ? ui.done.replace('{g}', melds ? MELD_NAME[language][melds[Math.max(0, hotIndex)].kind].toLowerCase() : '') : phase === 'fly' ? ui.arrives : ui.waiting}</p>
               </div>
+              <button type="button" className="machi-replay" onClick={() => setReplay((n) => n + 1)}>↻ {ui.replay}</button>
             </div>
-            <p className="machi-hint">{ui.hint}</p>
-          </div>
           )}
 
           <div className="explorer-stage-controls" aria-label={ui.rail}>

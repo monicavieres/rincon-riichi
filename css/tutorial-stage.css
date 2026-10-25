@@ -1300,3 +1300,22 @@ a.sort-button {
 .machi-row img { width: clamp(26px, 5cqw, 52px); }
 
 .machi-row.is-small img { width: clamp(20px, 3.8cqw, 40px); }
+
+/* wait guide: the winning tile arrives and completes the last group */
+.machi-pair { display: flex; align-items: center; justify-content: center; gap: 2cqw; }
+.machi-arrow.is-side { align-self: center; }
+.machi-row img.is-gold.is-now { transform: translateY(-5px) scale(1.08); }
+.machi-complete { display: grid; gap: 0.7cqw; justify-items: center; width: 100%; padding-top: 1cqw; border-top: 2px dashed rgba(255, 255, 255, 0.3); }
+.machi-complete small { font: 700 clamp(10px, 1.5cqw, 13px) / 1 var(--font-sans); letter-spacing: 0.08em; text-transform: uppercase; }
+.machi-hand { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.9cqw; max-width: 98%; }
+.machi-meld { position: relative; display: flex; gap: 1px; padding: 0.5cqw 0.6cqw; border: 2px solid transparent; border-radius: 10px; transition: border-color 0.4s ease, background 0.4s ease, box-shadow 0.4s ease; }
+.machi-meld img { width: clamp(18px, 3.4cqw, 34px); height: auto; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.35)); }
+.machi-meld.is-hot { border-color: var(--gold, #f2b42c); background: rgba(255, 211, 110, 0.22); box-shadow: 0 0 14px rgba(255, 211, 110, 0.6); }
+.machi-meld em { position: absolute; left: 50%; bottom: -1.6em; transform: translateX(-50%); padding: 1px 8px; border-radius: 99px; background: var(--gold, #f2b42c); color: var(--ink); font: 700 clamp(9px, 1.3cqw, 12px) / 1.4 var(--font-sans); font-style: normal; white-space: nowrap; }
+.machi-win.is-idle { opacity: 0; transform: translateY(-46px) scale(0.8); }
+.machi-win.is-fly { animation: machi-drop 1s cubic-bezier(0.2, 0.9, 0.3, 1) both; }
+.machi-win.is-done { opacity: 1; filter: drop-shadow(0 0 6px #ffd36e); }
+@keyframes machi-drop { from { opacity: 0; transform: translateY(-70px) scale(0.8); } 60% { opacity: 1; transform: translateY(4px) scale(1.06); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.machi-caption { margin: 1.6em 0 0; min-height: 2.4em; max-width: 90%; font: 600 clamp(10px, 1.55cqw, 14px) / 1.3 var(--font-sans); }
+.machi-replay { position: absolute; top: 3%; right: 3%; padding: 4px 10px; border: 2px solid var(--ink); border-radius: 99px; background: var(--card); color: var(--ink); font: 700 12px / 1.2 var(--font-sans); cursor: pointer; }
+.tiles-felt.machi-felt { position: relative; }
