@@ -6,10 +6,10 @@ import { FELT_Z, IsoCanvas, TILE_T, picture, type IsoHandle, type Painter } from
 
 const ROW = 17;
 /** The example opens the dealer's own wall: dice total 9, so the dead wall is stacks 8–14 and drawing starts at stack 7. */
-const OPENED_SIDE = 0;
-const FIRST_DEAD = 8;
-const OUT = [[0, 1], [1, 0], [0, -1], [-1, 0]];
-const ALONG = [[1, 0], [0, -1], [-1, 0], [0, 1]];
+export const OPENED_SIDE = 0;
+export const FIRST_DEAD = 8;
+export const OUT = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+export const ALONG = [[1, 0], [0, -1], [-1, 0], [0, 1]];
 const HAND_EDGE = 94.4;
 const SEAT_NAME = {
   es: ['Tú · Este (dealer)', 'Sur', 'Oeste', 'Norte'],
@@ -22,18 +22,18 @@ export type DealStatus = { done: boolean; step: number };
 type Take = { player: number; tiles: number[]; caption: string; extra?: boolean };
 type Flight = { player: number; slot: number; start: number; extra: boolean };
 
-const gAt = (G: number) => ({ side: (OPENED_SIDE + Math.floor(G / ROW) + 4 * 8) % 4, stack: ((G % ROW) + ROW) % ROW });
+export const gAt = (G: number) => ({ side: (OPENED_SIDE + Math.floor(G / ROW) + 4 * 8) % 4, stack: ((G % ROW) + ROW) % ROW });
 /** Tile index of a wall tile: sides hold 34 each, lower row first. */
 const tileOf = (side: number, stack: number, level: number) => side * 34 + level * ROW + stack;
 
-const around = (point: { x: number; y: number }, side: number) => {
+export const around = (point: { x: number; y: number }, side: number) => {
   const a = (-90 * side * Math.PI) / 180;
   const dx = point.x - 50;
   const dy = point.y - 50;
   return { x: 50 + dx * Math.cos(a) - dy * Math.sin(a), y: 50 + dx * Math.sin(a) + dy * Math.cos(a) };
 };
-const ROT = [0, -90, 180, 90];
-const turn = (from: number, to: number) => {
+export const ROT = [0, -90, 180, 90];
+export const turn = (from: number, to: number) => {
   let d = (to - from) % 360;
   if (d > 180) d -= 360;
   if (d < -180) d += 360;
@@ -41,7 +41,7 @@ const turn = (from: number, to: number) => {
 };
 
 /** Where a player's n-th tile lands: a tidy row along their own edge, the last one set slightly apart. */
-function handSlot(player: number, n: number, extra: boolean) {
+export function handSlot(player: number, n: number, extra: boolean) {
   const gap = extra ? 2.2 : 0;
   const spacing = 3.6; // tiles touch, like the walls: only their backs show
   const base = { x: 50 + (n - 6) * spacing + gap, y: HAND_EDGE };
@@ -227,4 +227,23 @@ export function DealBoard({ language, onStatus }: { language: TutorialLanguage; 
       </div>
     </div>
   );
+}
+
+/** Which player holds each wall tile once the deal is over, and in which slot of their hand. */
+export function dealAssignments() {
+  const order = drawOrder();
+  let cursor = 0;
+  const map = new Map<number, { player: number; slot: number; extra: boolean }>();
+  const counts = [0, 0, 0, 0];
+  const take = (player: number, n: number, extra = false) => {
+    for (let i = 0; i < n; i += 1) {
+      map.set(order[cursor], { player, slot: counts[player], extra });
+      counts[player] += 1;
+      cursor += 1;
+    }
+  };
+  for (let round = 0; round < 3; round += 1) for (let player = 0; player < 4; player += 1) take(player, 4);
+  for (let player = 0; player < 4; player += 1) take(player, 1);
+  take(0, 1, true);
+  return map;
 }

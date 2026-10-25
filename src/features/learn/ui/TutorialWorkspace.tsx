@@ -4,6 +4,7 @@ import { localize, type LocalizedText, type TutorialLanguage } from '../domain/t
 import { stepSubtitles, tutorialParts, tutorialStops, type TutorialStop } from '../domain/tutorialStage';
 import { RackStage } from './stages/RackStage';
 import { DeckBoard, TILE_BACK, type DeckStatus } from './stages/DeckBoard';
+import { HandSort } from './stages/HandSort';
 import { DealBoard, type DealStatus } from './stages/DealBoard';
 import { TableTopBoard, type TableTopStatus } from './stages/TableTopBoard';
 import { WallBoard, type WallStatus } from './stages/WallBoard';
@@ -187,7 +188,7 @@ function TileThumb({ codes, scattered = false }: { codes: string[]; scattered?: 
 function thumbFor(stop: TutorialStop) {
   const spec = stop.stage;
   if (spec.kind === 'table') return <ZoneThumb focus={spec.focus} />;
-  if (spec.kind === 'deck') return <SceneThumb mode={spec.mode} />;
+  if (spec.kind === 'deck') return spec.mode === 'hand' ? <TileThumb codes={['4p', '1m', '6z']} scattered /> : <SceneThumb mode={spec.mode} />;
   if (spec.kind === 'sort') return <TileThumb codes={['4p', '1m', '6z']} scattered />;
   return <TileThumb codes={spec.rows[0].groups[0].tiles} />;
 }
@@ -281,7 +282,7 @@ export function TutorialWorkspace() {
     [spec, language],
   );
 
-  const practiceCopy = spec.kind === 'deck' ? PRACTICE_COPY[spec.mode as keyof typeof PRACTICE_COPY] : spec.kind === 'sort' ? PRACTICE_COPY.sort : spec.kind === 'table' ? PRACTICE_COPY.table : PRACTICE_COPY.rack;
+  const practiceCopy = spec.kind === 'deck' ? PRACTICE_COPY[(spec.mode === 'hand' ? 'sort' : spec.mode) as keyof typeof PRACTICE_COPY] : spec.kind === 'sort' ? PRACTICE_COPY.sort : spec.kind === 'table' ? PRACTICE_COPY.table : PRACTICE_COPY.rack;
   const canZoom = spec.kind === 'table' && spec.focus.zoom > 1;
 
   return (
@@ -295,6 +296,7 @@ export function TutorialWorkspace() {
           </div>
 
           {spec.kind === 'deck' && spec.mode === 'shuffle' && <DeckBoard language={language} onStatus={setDeck} />}
+          {spec.kind === 'deck' && spec.mode === 'hand' && <HandSort key={language} language={language} onStatus={setSort} />}
           {spec.kind === 'deck' && spec.mode === 'deal' && <DealBoard key={language} language={language} onStatus={setDealt} />}
           {spec.kind === 'deck' && spec.mode === 'walls' && <WallBoard language={language} onStatus={setWall} />}
           {spec.kind === 'deck' && (spec.mode === 'dealer' || spec.mode === 'compass' || spec.mode === 'dice') && <TableTopBoard key={spec.mode} mode={spec.mode} language={language} onStatus={setTop} />}
@@ -358,7 +360,7 @@ export function TutorialWorkspace() {
                 {spec.kind === 'deck' && spec.mode === 'walls' && (
                   <p className={`sort-readout${wall.done ? ' is-done' : ''}`}><b>{wall.mine}/34</b> {t(UI.yourWall)} · <b>{wall.rivals}/102</b> {t(UI.rivalWalls)}</p>
                 )}
-                {spec.kind === 'sort' && (
+                {(spec.kind === 'sort' || (spec.kind === 'deck' && spec.mode === 'hand')) && (
                   <p className={`sort-readout${sort.sorted ? ' is-done' : ''}`}>
                     <b>{sort.inRack}/{sort.total}</b> {t(UI.sortedIn)}{sort.sorted ? ` · ${t(UI.sorted)}` : ''}
                   </p>

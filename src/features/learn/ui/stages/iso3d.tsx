@@ -403,7 +403,7 @@ export class Painter {
    * A tile tipping up from lying face down (phi 0) to standing on its edge (phi 90), the way a hand is stood up:
    * its face ends up toward the player whose edge is local +y, its back toward the middle of the table.
    */
-  standTile(x: number, y: number, rot: number, phi: number, opts: { face?: CanvasImageSource | null; order?: number; joined?: boolean } = {}) {
+  standTile(x: number, y: number, rot: number, phi: number, opts: { face?: CanvasImageSource | null; order?: number; joined?: boolean; lift?: number } = {}) {
     const { palette: p } = this;
     const w = 3.6;
     const l = 4.8;
@@ -418,7 +418,7 @@ export class Painter {
     const vertex = (lx: number, ly: number, lz: number) => {
       const yy = pivotY + ly * cf - lz * sf;
       const zz = ly * sf + lz * cf;
-      return this.cam(x + lx * co - yy * si, y + lx * si + yy * co, FELT_Z + zz);
+      return this.cam(x + lx * co - yy * si, y + lx * si + yy * co, FELT_Z + zz + (opts.lift ?? 0));
     };
     const normal = (nx: number, ny: number, nz: number): [number, number, number] => {
       const yy = ny * cf - nz * sf;

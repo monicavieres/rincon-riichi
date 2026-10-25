@@ -9,7 +9,7 @@ export type LocalCallout = Omit<TableCallout, 'label'> & { label: LocalizedText 
 
 export type StageSpec =
   | { kind: 'sort' }
-  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' }
+  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' }
   | { kind: 'table'; focus: TableFocus; callouts: LocalCallout[] }
   | { kind: 'rack'; rows: RackRow[]; footer?: LocalizedText };
 
@@ -310,7 +310,7 @@ export const tutorialStops: TutorialStop[] = [
       L('Orden habitual: manzu, pinzu, souzu y honores, de menor a mayor.', 'Usual order: manzu, pinzu, souzu and honors, lowest to highest.', 'Ordem habitual: manzu, pinzu, souzu e honras, do menor ao maior.'),
     ],
     remember: L('Ordenar no cambia el juego: solo te ayuda a ver tus grupos. Hazlo a tu manera.', 'Sorting does not change the game: it just helps you see your groups. Do it your way.', 'Ordenar não muda o jogo: só ajuda a ver seus grupos. Faça do seu jeito.'),
-    stage: { kind: 'sort' },
+    stage: { kind: 'deck', mode: 'hand' },
     practice: { href: '../practicar/que-ficha-es.html', label: L('Practicar nombres de fichas', 'Practise tile names', 'Praticar nomes de peças') },
   },
   {
