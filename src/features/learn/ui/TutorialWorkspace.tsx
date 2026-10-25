@@ -24,9 +24,9 @@ const TABS: Array<{ id: Tab; label: LocalizedText }> = [
 
 const PRACTICE_COPY = {
   win: L(
-    'Pulsa «Tsumo» para ver cómo la robas tú del muro, o «Ron» para ver cómo la bota un rival y tú la reclamas con «¡Ron!». Prueba las dos.',
-    'Press “Tsumo” to see yourself draw it from the wall, or “Ron” to see a rival throw it and you claim it with “Ron!”. Try both.',
-    'Toque em «Tsumo» para ver você mesmo comprá-la do muro, ou em «Ron» para ver um rival descartá-la e você reivindicá-la com «Ron!». Experimente as duas.',
+    'Mira la simulación: primero ganas por tsumo (robas tú la ficha) y después por ron (la bota otro jugador). Con «Ver tsumo» y «Ver ron» repites la que quieras.',
+    'Watch the simulation: first you win by tsumo (you draw the tile) and then by ron (another player throws it). “Watch tsumo” and “Watch ron” replay whichever you like.',
+    'Veja a simulação: primeiro você ganha por tsumo (você compra a peça) e depois por ron (outro jogador descarta). «Ver tsumo» e «Ver ron» repetem a que quiser.',
   ),
   draw: L(
     'Primero bota la ficha que sobra: tócala o arrástrala hacia arriba. Luego robas una ficha y botas otra, siempre la que no ayuda. Si tocas una que sí sirve, la escena te dice «¡Ojo, esa no!» y te explica por qué.',

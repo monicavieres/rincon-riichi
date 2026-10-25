@@ -5,14 +5,21 @@ import { DEALT, HAND_VIEW, HAND_Y, WIDE_VIEW, WIDTH, byKey, handX, pondPos, slee
 import { paintDealtTable } from './HandSort';
 import { FELT_Z, IsoCanvas, picture, type IsoHandle, type Painter } from './iso3d';
 
-type How = 'tsumo' | 'ron';
-type Phase = 'idle' | 'playing' | 'offer' | 'won';
+type Part = 'tsumo' | 'ron';
 
 const WINNER = '6z';
+const START_TAKEN = 16; // four full rounds already played when the lesson drops in
 const waiting = (): Piece[] => startHand().filter((piece) => piece.code !== '9p');
 
+/** Rivers already on the table when each demonstration starts: yours, then right, across, left. */
+const RIVERS: Record<Part, { mine: string[]; rivals: string[][] }> = {
+  tsumo: { mine: ['4z', '9s', '2p', '7m'], rivals: [['2z', '7p', '4m', '3z'], ['9p', '1s', '5z', '8m'], ['3p', '7z', '2m', '9m']] },
+  ron: { mine: ['3z', '8p', '1m', '5s'], rivals: [['4z', '2s', '9m', '7p'], ['7z', '6p', '3m', '4s'], ['2z', '9s', '5m', '8p']] },
+};
+
 /**
- * Two ways to complete the same hand: tsumo (you draw the tile yourself) and ron (a rival throws it and you claim it).
+ * Two ways to complete the same hand, played as a narrated simulation: first tsumo (your own draw finishes it), then a
+ * second game where another player throws the tile you need: ron.
  */
 export function WinBoard({ language }: { language: TutorialLanguage }) {
   const t = (es: string, en: string, pt: string) => ({ es, en, pt }[language]);
@@ -21,13 +28,16 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
   const order = useRef(drawOrder());
   const [hand, setHand] = useState<Piece[]>(waiting);
   const [extra, setExtra] = useState<Piece | null>(null);
-  const [phase, setPhase] = useState<Phase>('idle');
-  const [how, setHow] = useState<How | null>(null);
+  const [part, setPart] = useState<Part>('tsumo');
+  const [finished, setFinished] = useState(false);
   const [view, setView] = useState<'hand' | 'wide'>('hand');
-  const [taken, setTaken] = useState<Set<number>>(new Set());
+  const [taken, setTaken] = useState<Set<number>>(() => new Set(order.current.slice(DEALT, DEALT + START_TAKEN)));
   const [mark, setMark] = useState<number | null>(null);
-  const [rivalPond, setRivalPond] = useState(false);
-  const [rivalHold, setRivalHold] = useState(false);
+  const [myPond, setMyPond] = useState<string[]>(RIVERS.tsumo.mine);
+  const [rivalPonds, setRivalPonds] = useState<string[][]>(RIVERS.tsumo.rivals);
+  const [rivalHold, setRivalHold] = useState<boolean[]>([false, false, false]);
+  const [hot, setHot] = useState<{ player: number; slot: number } | null>(null);
+  const [tags, setTags] = useState(true);
   const [note, setNote] = useState<{ title: string; body: string } | null>(null);
   const flights = useRef<Fly[]>([]);
   const shown = useRef<Map<number, { x: number; lift: number }>>(new Map());
@@ -41,99 +51,151 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
     window.setTimeout(() => { flights.current = flights.current.filter((f) => f.key !== entry.key); scene.current?.invalidate(); }, entry.dur + 50);
   }, []);
 
-  const reset = () => {
-    alive.current += 1;
+  const lay = useCallback((which: Part) => {
     flights.current = [];
     shown.current.clear();
     setHand(waiting());
     setExtra(null);
-    setTaken(new Set());
+    setPart(which);
+    setFinished(false);
+    setTaken(new Set(order.current.slice(DEALT, DEALT + START_TAKEN)));
     setMark(null);
-    setRivalPond(false);
-    setRivalHold(false);
-    setHow(null);
+    setMyPond(RIVERS[which].mine);
+    setRivalPonds(RIVERS[which].rivals);
+    setRivalHold([false, false, false]);
+    setHot(null);
     setNote(null);
-    setView('hand');
-    setPhase('idle');
-  };
+  }, []);
 
-  const complete = (piece: Piece, key: string) => {
-    setHand((now) => [...now, piece].sort(byKey));
-    setExtra(null);
-    setPhase('won');
-    setNote(key === 'tsumo'
-      ? { title: t('¡Tsumo!', 'Tsumo!', 'Tsumo!'), body: t('Ganaste con una ficha que robaste tú del muro. Pagan los tres rivales.', 'You won on a tile you drew yourself from the wall. All three rivals pay.', 'Você ganhou com uma peça que comprou do muro. Os três rivais pagam.') }
-      : { title: t('¡Ron!', 'Ron!', 'Ron!'), body: t('Ganaste con la ficha que descartó un rival. Paga solo quien la botó.', 'You won on a tile a rival discarded. Only the one who threw it pays.', 'Você ganhou com a peça que um rival descartou. Só quem a descartou paga.') });
-  };
-
-  const play = async (kind: How) => {
-    reset();
-    await sleep(60);
+  const script = useCallback(async (which: Part) => {
     const run = ++alive.current;
     const live = () => alive.current === run;
-    setHow(kind);
-    setPhase('playing');
-    setView('wide');
-    await sleep(900);
-    if (!live()) return;
-    if (kind === 'tsumo') {
-      const tile = order.current[DEALT + 3];
-      setNote({ title: t('Tsumo: robas tú', 'Tsumo: you draw', 'Tsumo: você compra'), body: t('Es tu turno: robas la siguiente ficha del muro, la que brilla.', 'It is your turn: you draw the next tile from the wall, the one that glows.', 'É sua vez: você compra a próxima peça do muro, a que brilha.') });
+    const wait = async (ms: number) => { await sleep(ms); return live(); };
+    let next = DEALT + START_TAKEN;
+    const mine = [...RIVERS[which].mine];
+    const rivals = RIVERS[which].rivals.map((list) => [...list]);
+    const said = (title: string, body: string) => setNote({ title, body });
+
+    const rivalTurn = async (i: number, code: string) => {
+      const tile = order.current[next]; next += 1;
+      const slot = handSlot(i + 1, 13, true);
+      setTaken((now) => new Set(now).add(tile));
+      fly({ key: `draw-${tile}`, from: wallPos(tile), to: { x: slot.x, y: slot.y, z: FELT_Z + 3, rot: slot.rot }, dur: 600, faceUp: false });
+      if (!(await wait(650))) return false;
+      setRivalHold((now) => now.map((v, k) => (k === i ? true : v)));
+      if (!(await wait(250))) return false;
+      setRivalHold((now) => now.map((v, k) => (k === i ? false : v)));
+      fly({ key: `throw-${i}-${rivals[i].length}`, code, from: { x: slot.x, y: slot.y, z: FELT_Z + 3, rot: slot.rot }, to: pondPos(i + 1, rivals[i].length), dur: 550, faceUp: true });
+      if (!(await wait(600))) return false;
+      rivals[i].push(code);
+      setRivalPonds(rivals.map((list) => [...list]));
+      return true;
+    };
+    const rivalRound = async (codes: string[]) => {
+      for (let i = 0; i < 3; i += 1) if (!(await rivalTurn(i, codes[i]))) return false;
+      return true;
+    };
+    const myDraw = async (code: string) => {
+      const tile = order.current[next]; next += 1;
       setMark(tile);
-      await sleep(2200);
-      if (!live()) return;
+      if (!(await wait(1800))) return null;
       setMark(null);
       setTaken((now) => new Set(now).add(tile));
-      const goal = handX(hand.length - 1, hand.length + 1) - WIDTH * 0.95 + WIDTH * 1.9;
-      fly({ key: 'win', from: wallPos(tile), to: { x: goal, y: HAND_Y, z: FELT_Z + 3, rot: 0 }, dur: 1100, faceUp: false });
-      await sleep(1000);
-      if (!live()) return;
+      const goal = handX(12, 14) - WIDTH * 0.95 + WIDTH * 1.9;
+      fly({ key: `mine-${tile}`, from: wallPos(tile), to: { x: goal, y: HAND_Y, z: FELT_Z + 3, rot: 0 }, dur: 1000, faceUp: false });
+      if (!(await wait(950))) return null;
       setView('hand');
-      setExtra({ id: 200, code: WINNER });
-      setNote({ title: t('¡Es la 6z!', 'It is the 6z!', 'É o 6z!'), body: t('Con ella tus dos 6z se vuelven un grupo: la mano queda completa.', 'With it your two 6z become a set: the hand is complete.', 'Com ela seus dois 6z viram um grupo: a mão fica completa.') });
-      await sleep(2000);
-      if (!live()) return;
-      complete({ id: 200, code: WINNER }, 'tsumo');
+      if (!(await wait(250))) return null;
+      const piece = { id: 300 + tile, code };
+      setExtra(piece);
+      return piece;
+    };
+
+    // the opening: the hand and its waits, then the table zooms out
+    lay(which);
+    setView('hand');
+    setTags(true);
+    if (which === 'tsumo') {
+      said(t('Mitad de la partida', 'Midway through the game', 'Metade da partida'), t('Ya se jugaron varios turnos: cada jugador tiene su río de descartes. Mira tu mano: tres grupos, dos parejas… y te falta una sola ficha, la 1z o la 6z.', 'Several turns are already played: every player has a river of discards. Look at your hand: three sets, two pairs… and you are one tile short, the 1z or the 6z.', 'Vários turnos já foram jogados: cada jogador tem seu rio de descartes. Veja sua mão: três grupos, dois pares… e falta uma só peça, o 1z ou o 6z.'));
+      if (!(await wait(5500))) return;
+    } else {
+      said(t('Rebobinamos', 'Rewind', 'Voltamos atrás'), t('Misma mano y misma espera (1z o 6z), pero otra partida: otros descartes y otro final.', 'Same hand and same wait (1z or 6z), but another game: other discards and another ending.', 'Mesma mão e mesma espera (1z ou 6z), mas outra partida: outros descartes e outro final.'));
+      if (!(await wait(4000))) return;
+    }
+    setView('wide');
+    setTags(false);
+    if (!(await wait(900))) return;
+
+    // a round where nothing helps
+    said(t('Siguen los turnos', 'The turns go on', 'Os turnos continuam'), t('Cada rival roba una ficha del muro y bota otra a su río, uno tras otro.', 'Each rival draws a tile from the wall and throws another into their river, one after the other.', 'Cada rival compra uma peça do muro e descarta outra no seu rio, um após o outro.'));
+    if (!(await rivalRound(which === 'tsumo' ? ['5p', '8s', '6m'] : ['1p', '6s', '4p']))) return;
+    said(t('Tu turno', 'Your turn', 'Sua vez'), t('Robas la siguiente ficha del muro, la que brilla.', 'You draw the next tile from the wall, the one that glows.', 'Você compra a próxima peça do muro, a que brilha.'));
+    const useless = which === 'tsumo' ? '8s' : '9m';
+    const first = await myDraw(useless);
+    if (!first) return;
+    said(t(`Robaste la ${useless}`, `You drew the ${useless}`, `Você comprou o ${useless}`), t('No forma grupo con nada de tu mano: no sirve. La botas y sigues esperando.', 'It makes no set with your hand: it does not help. You throw it and keep waiting.', 'Não forma grupo com nada da sua mão: não serve. Você descarta e continua esperando.'));
+    if (!(await wait(2600))) return;
+    fly({ key: 'toss', code: useless, from: { x: handX(12, 14) - WIDTH * 0.95 + WIDTH * 1.9, y: HAND_Y, z: FELT_Z + 1, rot: 0 }, to: pondPos(0, mine.length), dur: 650, faceUp: true });
+    setExtra(null);
+    if (!(await wait(700))) return;
+    mine.push(useless);
+    setMyPond([...mine]);
+    setView('wide');
+    if (!(await wait(900))) return;
+
+    if (which === 'tsumo') {
+      said(t('Otra vuelta', 'Another lap', 'Outra volta'), t('Los rivales siguen jugando…', 'The rivals keep playing…', 'Os rivais continuam jogando…'));
+      if (!(await rivalRound(['6p', '2s', '1m']))) return;
+      said(t('Tu turno otra vez', 'Your turn again', 'Sua vez de novo'), t('Vuelves a robar de la siguiente pila.', 'You draw from the next stack again.', 'Você compra da próxima pilha de novo.'));
+      const winner = await myDraw(WINNER);
+      if (!winner) return;
+      setTags(true);
+      said(t('¡Robaste la 6z!', 'You drew the 6z!', 'Você comprou o 6z!'), t('Mira tus grupos: 1-2-3 manzu, 4-5-6 pinzu, 3-4-5 souzu y la pareja de 1z. Tenías dos 6z y te faltaba una tercera: justo la que acabas de robar.', 'Look at your sets: 1-2-3 manzu, 4-5-6 pinzu, 3-4-5 souzu and the pair of 1z. You held two 6z and needed a third: exactly the one you just drew.', 'Veja seus grupos: 1-2-3 manzu, 4-5-6 pinzu, 3-4-5 souzu e o par de 1z. Você tinha dois 6z e faltava um terceiro: justo o que acabou de comprar.'));
+      if (!(await wait(5500))) return;
+      setHand((now) => [...now, winner].sort(byKey));
+      setExtra(null);
+      setFinished(true);
+      said(t('¡Tsumo!', 'Tsumo!', 'Tsumo!'), t('Completaste 4 grupos y 1 pareja con una ficha que robaste tú mismo: eso se llama tsumo. La ronda termina y pagan los tres rivales.', 'You completed 4 sets and 1 pair with a tile you drew yourself: that is called tsumo. The round ends and all three rivals pay.', 'Você completou 4 grupos e 1 par com uma peça que comprou: isso se chama tsumo. A rodada termina e os três rivais pagam.'));
+      if (!(await wait(6500))) return;
+      said(t('Hay otra forma de ganar', 'There is another way to win', 'Há outra forma de ganhar'), t('No siempre la robas tú. Veamos qué pasa cuando la ficha que necesitas la bota otro jugador.', 'You do not always draw it yourself. Let us see what happens when another player throws the tile you need.', 'Nem sempre é você que compra. Vamos ver o que acontece quando outro jogador descarta a peça que você precisa.'));
+      if (!(await wait(4000))) return;
+      void script('ron');
       return;
     }
-    // ron: the player across draws and throws the tile you need
-    const tile = order.current[DEALT + 1];
-    const slot = handSlot(2, 13, true);
-    setNote({ title: t('Ron: un rival la bota', 'Ron: a rival throws it', 'Ron: um rival descarta'), body: t('El jugador de enfrente roba y va a descartar una ficha…', 'The player across draws and is about to discard a tile…', 'O jogador à frente compra e vai descartar uma peça…') });
-    setTaken((now) => new Set(now).add(tile));
-    fly({ key: 'rival-draw', from: wallPos(tile), to: { x: slot.x, y: slot.y, z: FELT_Z + 3, rot: slot.rot }, dur: 800, faceUp: false });
-    await sleep(850);
-    if (!live()) return;
-    setRivalHold(true);
-    await sleep(500);
-    setRivalHold(false);
-    fly({ key: 'rival-throw', code: WINNER, from: { x: slot.x, y: slot.y, z: FELT_Z + 3, rot: slot.rot }, to: pondPos(2, 0), dur: 700, faceUp: true });
-    await sleep(750);
-    if (!live()) return;
-    setRivalPond(true);
-    setPhase('offer');
-    setNote({ title: t('¡Esa te sirve!', 'That one helps you!', 'Essa serve!'), body: t('Es la 6z que esperabas. No la robaste: la botó un rival. Puedes reclamarla diciendo «Ron».', 'It is the 6z you were waiting for. You did not draw it: a rival threw it. You can claim it by calling “Ron”.', 'É o 6z que você esperava. Você não comprou: um rival descartou. Pode reivindicá-la dizendo «Ron».') });
-  };
 
-  const callRon = async () => {
-    if (phase !== 'offer') return;
-    const run = ++alive.current;
-    const live = () => alive.current === run;
-    setPhase('playing');
-    setRivalPond(false);
-    const goal = handX(hand.length - 1, hand.length + 1) - WIDTH * 0.95 + WIDTH * 1.9;
-    fly({ key: 'claim', code: WINNER, from: pondPos(2, 0), to: { x: goal, y: HAND_Y, z: FELT_Z + 3, rot: 0 }, dur: 1100, faceUp: true });
-    await sleep(900);
-    if (!live()) return;
+    // ron: the player on your left throws the tile you need
+    said(t('Otra vuelta', 'Another lap', 'Outra volta'), t('Los rivales siguen jugando…', 'The rivals keep playing…', 'Os rivais continuam jogando…'));
+    if (!(await rivalTurn(0, '3p'))) return;
+    if (!(await rivalTurn(1, '8m'))) return;
+    said(t('Juega el jugador de tu izquierda', 'The player on your left plays', 'Joga o jogador à sua esquerda'), t('Roba su ficha y va a descartar…', 'Draws a tile and is about to throw…', 'Compra sua peça e vai descartar…'));
+    if (!(await rivalTurn(2, WINNER))) return;
+    setHot({ player: 3, slot: rivals[2].length - 1 });
+    said(t('¡Esa es tu ficha!', 'That is your tile!', 'Essa é a sua peça!'), t('No la robaste tú: la botó otro jugador. Pero es la 6z que completa tu grupo, y las reglas te dejan ganar con ella.', 'You did not draw it: another player threw it. But it is the 6z that completes your set, and the rules let you win on it.', 'Você não comprou: outro jogador descartou. Mas é o 6z que completa seu grupo, e as regras deixam você ganhar com ele.'));
+    if (!(await wait(5000))) return;
+    said(t('Dices «Ron»', 'You call “Ron”', 'Você diz «Ron»'), t('Reclamas la ficha del rival y la pones en tu mano antes de que siga el juego.', 'You claim the rival’s tile and place it in your hand before the game goes on.', 'Você reivindica a peça do rival e coloca na sua mão antes do jogo continuar.'));
+    const at = pondPos(3, rivals[2].length - 1);
+    setHot(null);
+    setRivalPonds(rivals.map((list, k) => (k === 2 ? list.slice(0, -1) : list)));
+    const goal = handX(12, 14) - WIDTH * 0.95 + WIDTH * 1.9;
+    fly({ key: 'claim', code: WINNER, from: at, to: { x: goal, y: HAND_Y, z: FELT_Z + 3, rot: 0 }, dur: 1100, faceUp: true });
+    if (!(await wait(1000))) return;
     setView('hand');
-    await sleep(300);
-    setExtra({ id: 201, code: WINNER });
-    await sleep(1400);
-    if (!live()) return;
-    complete({ id: 201, code: WINNER }, 'ron');
-  };
+    setTags(true);
+    if (!(await wait(400))) return;
+    const piece = { id: 399, code: WINNER };
+    setExtra(piece);
+    if (!(await wait(2600))) return;
+    setHand((now) => [...now, piece].sort(byKey));
+    setExtra(null);
+    setFinished(true);
+    said(t('¡Ron!', 'Ron!', 'Ron!'), t('Ganaste con la ficha que botó otro jugador: eso se llama ron. La ronda termina y paga solo quien la botó.', 'You won on a tile another player threw: that is called ron. The round ends and only the one who threw it pays.', 'Você ganhou com a peça que outro jogador descartou: isso se chama ron. A rodada termina e só quem descartou paga.'));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lay, fly, language]);
 
-  useEffect(() => () => { alive.current += 1; }, []);
+  useEffect(() => {
+    void script('tsumo');
+    return () => { alive.current += 1; };
+  }, [script]);
 
   const total = hand.length + (extra ? 1 : 0);
 
@@ -154,23 +216,26 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
     g.table();
     const { palette: p } = g;
     paintDealtTable(g, assignments.current, { taken, mark });
-    if (mark !== null) g.needsFrame = true;
+    if (mark !== null || hot) g.needsFrame = true;
 
-    if (rivalPond) {
-      const at = pondPos(2, 0);
-      g.tile(at.x, at.y, at.rot, FELT_Z, { flip: 1, face: picture(`${p.faces}/${WINNER}.svg`), gold: true, hop: 1 + Math.sin(g.now / 160) * 0.8 });
-      g.needsFrame = true;
-    }
-    if (rivalHold) {
-      const slot = handSlot(2, 13, true);
+    const face = (code: string) => picture(`${p.faces}/${code}.svg`);
+    myPond.forEach((code, slot) => { const at = pondPos(0, slot); g.tile(at.x, at.y, at.rot, FELT_Z, { flip: 1, face: face(code) }); });
+    rivalPonds.forEach((list, i) => list.forEach((code, slot) => {
+      const at = pondPos(i + 1, slot);
+      const glow = hot?.player === i + 1 && hot.slot === slot;
+      g.tile(at.x, at.y, at.rot, FELT_Z, { flip: 1, face: face(code), gold: glow, hop: glow ? 1 + Math.sin(g.now / 160) * 0.8 : 0 });
+    }));
+    rivalHold.forEach((holding, i) => {
+      if (!holding) return;
+      const slot = handSlot(i + 1, 13, true);
       g.standTile(slot.x, slot.y, slot.rot, 90, { joined: true });
-    }
+    });
     const clock = performance.now();
     flights.current.forEach((f) => {
       const k = Math.min(1, (clock - f.start) / f.dur);
       const e = k * k * (3 - 2 * k);
       const turnTo = ((f.to.rot - f.from.rot + 540) % 360) - 180;
-      g.tile(f.from.x + (f.to.x - f.from.x) * e, f.from.y + (f.to.y - f.from.y) * e, f.from.rot + turnTo * e, f.from.z + (f.to.z - f.from.z) * e, { flip: f.faceUp ? 1 : 0, face: f.code ? picture(`${p.faces}/${f.code}.svg`) : null, hop: Math.sin(k * Math.PI) * 7, order: 9e4 });
+      g.tile(f.from.x + (f.to.x - f.from.x) * e, f.from.y + (f.to.y - f.from.y) * e, f.from.rot + turnTo * e, f.from.z + (f.to.z - f.from.z) * e, { flip: f.faceUp ? 1 : 0, face: f.code ? face(f.code) : null, hop: Math.sin(k * Math.PI) * 7, order: 9e4 });
       if (k < 1) g.needsFrame = true;
     });
 
@@ -181,14 +246,14 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
       st.x += (goalX - st.x) * slide;
       if (Math.abs(goalX - st.x) > 0.03) moving = true;
       shown.current.set(piece.id, st);
-      g.standTile(st.x, HAND_Y, 0, 90, { face: picture(`${p.faces}/${piece.code}.svg`), joined: true, order: HAND_Y * 100 + 50 });
+      g.standTile(st.x, HAND_Y, 0, 90, { face: face(piece.code), joined: true, order: HAND_Y * 100 + 50 });
     };
     hand.forEach((piece, i) => place(piece, handX(i, total) - (extra ? WIDTH * 0.95 : 0)));
     if (extra) place(extra, handX(hand.length - 1, total) - WIDTH * 0.95 + WIDTH * 1.9);
     if (moving) g.needsFrame = true;
     g.flush();
 
-    if (phase === 'won' || phase === 'idle') {
+    if (tags && view === 'hand') {
       tagsOf(hand).forEach((tag) => {
         const a = shown.current.get(hand[tag.from].id);
         const b = shown.current.get(hand[tag.to].id);
@@ -203,32 +268,25 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
       const pos = g.project(at.x, at.y, FELT_Z + 9);
       g.pill(pos.x, pos.y, t('Robas de aquí', 'You draw from here', 'Você compra daqui'), { bg: p.gold, fg: p.ink, size: 12, border: p.ink });
     }
-    if (rivalPond) {
-      const at = pondPos(2, 0);
+    if (hot) {
+      const at = pondPos(hot.player, hot.slot);
       const pos = g.project(at.x, at.y, FELT_Z + 9);
       g.pill(pos.x, pos.y, t('La botó un rival', 'A rival threw it', 'Um rival descartou'), { bg: p.gold, fg: p.ink, size: 12, border: p.ink });
     }
   };
 
   void ROT;
-  const idle = phase === 'idle' || phase === 'won';
   return (
     <div className="sort-stage deck-stage">
-      <div className={`sort-board deck-board is-table is-hand is-draw${phase === 'won' ? ' is-sorted' : ''}`}>
+      <div className={`sort-board deck-board is-table is-hand is-draw${finished ? ' is-sorted' : ''}`}>
         <IsoCanvas ref={scene} draw={draw} />
         <div className="sort-actions deck-actions">
-          <span>{t('Esperas 1z o 6z', 'You wait on 1z or 6z', 'Você espera 1z ou 6z')}</span>
-          {idle && (
-            <>
-              <button type="button" className={`sort-button${how === 'tsumo' ? ' is-primary' : ''}`} onClick={() => { void play('tsumo'); }}>{t('Tsumo: la robo yo', 'Tsumo: I draw it', 'Tsumo: eu compro')}</button>
-              <button type="button" className={`sort-button${how === 'ron' ? ' is-primary' : ''}`} onClick={() => { void play('ron'); }}>{t('Ron: la bota un rival', 'Ron: a rival throws it', 'Ron: um rival descarta')}</button>
-            </>
-          )}
-          {phase === 'offer' && <button type="button" className="sort-button is-primary" onClick={() => { void callRon(); }}>{t('¡Ron!', 'Ron!', 'Ron!')}</button>}
+          <button type="button" className={`sort-button${part === 'tsumo' ? ' is-primary' : ''}`} onClick={() => { void script('tsumo'); }}>{t('Ver tsumo', 'Watch tsumo', 'Ver tsumo')}</button>
+          <button type="button" className={`sort-button${part === 'ron' ? ' is-primary' : ''}`} onClick={() => { void script('ron'); }}>{t('Ver ron', 'Watch ron', 'Ver ron')}</button>
         </div>
-        <p className={`sort-win is-top${phase === 'won' ? '' : ' is-note'}`} role="status">
-          <b>{note?.title ?? t('Tu mano espera una ficha', 'Your hand waits on a tile', 'Sua mão espera uma peça')}</b>
-          <span>{note?.body ?? t('Te falta una sola ficha: la 1z o la 6z. Hay dos maneras de completarla; pruébalas.', 'You are one tile away: the 1z or the 6z. There are two ways to complete it; try them.', 'Falta uma só peça: o 1z ou o 6z. Há duas maneiras de completar; experimente.')}</span>
+        <p className={`sort-win is-top${finished ? '' : ' is-note'}`} role="status">
+          <b>{note?.title ?? ''}</b>
+          <span>{note?.body ?? ''}</span>
         </p>
       </div>
     </div>
