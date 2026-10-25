@@ -1210,3 +1210,12 @@ a.sort-button { text-decoration: none; }
 @media (max-width: 980px) {
     .tutorial-lab .table-explorer-inspector { height: auto; min-height: 0; }
 }
+
+a.sort-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 2.4em;
+    text-align: center;
+}

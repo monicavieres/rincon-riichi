@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
-import { FIRST_DEAD, around, dealAssignments, drawOrder, gAt, handSlot } from './DealBoard';
+import { FIRST_DEAD, OUT, around, dealAssignments, drawOrder, gAt, handSlot } from './DealBoard';
 import { DEALT, HAND_Y, WIDE_VIEW, WIDTH, byKey, handX, pondPos, sleep, wallPos, type Fly, type Piece } from './DrawBoard';
 import { paintDealtTable } from './HandSort';
 import { FELT_Z, IsoCanvas, picture, type IsoHandle, type Painter } from './iso3d';
@@ -25,12 +25,15 @@ const PRE_PONDS = [['9s', '2p'], ['4z', '8m'], ['3z', '7p']];
 
 const piecesOf = (codes: string[]): Piece[] => codes.map((code, i) => ({ id: 500 + i, code })).sort(byKey);
 
-/** Where the tiles of an open meld lie: to the right of your hand, the called one turned toward who threw it. */
-function meldSpots(count: number, sidewaysAt: number) {
+/** Where the tiles of an open meld lie, from startX on: the called one turned toward who threw it. */
+function meldSpots(count: number, sidewaysAt: number, startX: number) {
   const widths = Array.from({ length: count }, (_, i) => (i === sidewaysAt ? 4.8 : 3.6));
-  let x = 97 - widths.reduce((a, b) => a + b, 0);
+  let x = startX;
   return widths.map((w, i) => { const spot = { x: x + w / 2, rot: i === sidewaysAt ? 90 : 0 }; x += w; return spot; });
 }
+const meldWidth = (count: number) => count * 3.6 + 1.2;
+/** Hand and meld sit side by side, centred as one group. */
+const groupStart = (slots: number, count: number) => 50 - (slots * WIDTH + 3 + meldWidth(count)) / 2;
 
 /**
  * Calls on the table: chii, pon and kan, one at a time. A rival throws, you take the tile, the meld lies turned toward
@@ -46,7 +49,10 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
   const [taken, setTaken] = useState<Set<number>>(() => new Set(order.current.slice(DEALT, DEALT + PRE_TAKEN)));
   const [myPond, setMyPond] = useState<string[]>([]);
   const [ponds, setPonds] = useState<string[][]>(PRE_PONDS);
-  const [meld, setMeld] = useState<{ codes: string[]; at: number } | null>(null);
+  const [meld, setMeld] = useState<{ codes: string[]; at: number; slots: number } | null>(null);
+  const [extra, setExtra] = useState<Piece | null>(null);
+  const [mark, setMark] = useState<number | null>(null);
+  const [kanDora, setKanDora] = useState(false);
   const [turn, setTurn] = useState<number | null>(null);
   const [skipped, setSkipped] = useState<number[]>([]);
   const [hot, setHot] = useState<{ player: number; slot: number } | null>(null);
@@ -81,6 +87,9 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
     setMyPond([]);
     setPonds(PRE_PONDS.map((list) => [...list]));
     setMeld(null);
+    setExtra(null);
+    setMark(null);
+    setKanDora(false);
     setSkipped([]);
     setHot(null);
     setOpen(false);
@@ -126,7 +135,8 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
     // the meld forms, the called tile turned toward who threw it
     const sidewaysAt = sc.from === 3 ? 0 : sc.from === 2 ? 1 : (sc.own.length + 1) - 1;
     const codes = which === 'chii' ? ['4p', '5p', '6p'] : which === 'pon' ? ['6z', '6z', '6z'] : ['3s', '3s', '3s', '3s'];
-    const spots = meldSpots(codes.length, sidewaysAt);
+    const slots = mine.length - 0 - (sc.own.length) + 1;
+    const spots = meldSpots(codes.length, sidewaysAt, groupStart(slots, codes.length) + slots * WIDTH + 3);
     const ownLeft = [...sc.own];
     const gone: Piece[] = [];
     mine.forEach((piece) => { const k = ownLeft.indexOf(piece.code); if (k >= 0) { ownLeft.splice(k, 1); gone.push(piece); } });
@@ -147,7 +157,7 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
       kan: t('La ficha tomada va girada hacia quien la botó: aquí, a la derecha. Como el kan agrega una ficha extra, robas una de reemplazo del muro muerto, se revela otro dora, y luego botas.', 'The taken tile lies turned toward whoever threw it: here, to the right. Since a kan adds an extra tile, you draw a replacement from the dead wall, another dora is revealed, and then you throw.', 'A peça pega fica girada para quem descartou: aqui, à direita. Como o kan acrescenta uma peça extra, você compra uma de reposição do muro morto, outro dora é revelado e depois você descarta.'),
     }[which]);
     if (!(await wait(1300))) return;
-    setMeld({ codes, at: sidewaysAt });
+    setMeld({ codes, at: sidewaysAt, slots });
     setShout(null);
     if (!(await wait(3800))) return;
 
@@ -158,12 +168,35 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
 
     // you throw and the turn goes on to your right
     if (which === 'kan') {
-      const dead = gAt(FIRST_DEAD + 5);
-      const tile = dead.side * 34 + dead.stack;
-      const goal = handX(hand.length - 1, mine.length - gone.length + 1);
-      fly({ key: 'dead', from: wallPos(tile), to: { x: goal, y: HAND_Y, z: FELT_Z + 3, rot: 0 }, dur: 1200, faceUp: false });
-      said(t('Robas del muro muerto', 'You draw from the dead wall', 'Você compra do muro morto'), t('Un kan agrega una ficha, así que robas una de reemplazo del muro muerto y se revela un nuevo dora.', 'A kan adds a tile, so you draw a replacement from the dead wall and a new dora is revealed.', 'Um kan acrescenta uma peça, então você compra uma de reposição do muro morto e um novo dora é revelado.'));
-      if (!(await wait(3800))) return;
+      // the replacement comes from the end of the dead wall next to the break; the new dora is the next indicator
+      const rin = gAt(FIRST_DEAD);
+      const tile = rin.side * 34 + 17 + rin.stack;
+      const home = wallPos(tile);
+      const out = OUT[rin.side];
+      setView('wide');
+      said(t('Robas del muro muerto', 'You draw from the dead wall', 'Você compra do muro morto'), t('Un kan agrega una ficha a tu mano, así que robas una de reemplazo. No sale del muro de robo sino del muro muerto: las 14 fichas apartadas. Es la que brilla, la del extremo junto al corte.', 'A kan adds a tile to your hand, so you draw a replacement. It does not come from the live wall but from the dead wall: the 14 set-apart tiles. It is the one that glows, at the end next to the break.', 'Um kan acrescenta uma peça à sua mão, então você compra uma de reposição. Ela não sai do muro de compra e sim do muro morto: as 14 peças separadas. É a que brilha, a da ponta junto ao corte.'));
+      setMark(tile);
+      if (!(await wait(5200))) return;
+      setMark(null);
+      setTaken((now) => new Set(now).add(tile));
+      const n = mine.length - gone.length;
+      const goal = groupStart(n + 1, codes.length) + (n + 0.5) * WIDTH + 1.2;
+      fly({ key: 'dead', from: { x: home.x + out[0] * 3.4, y: home.y + out[1] * 3.4, z: FELT_Z + 4, rot: home.rot }, to: { x: goal, y: HAND_Y, z: FELT_Z + 3, rot: 0 }, dur: 1300, faceUp: false });
+      if (!(await wait(1250))) return;
+      setView('hand');
+      if (!(await wait(300))) return;
+      const piece = { id: 900, code: '2s' };
+      setExtra(piece);
+      said(t('Tienes una ficha extra', 'You hold an extra tile', 'Você tem uma peça extra'), t('La ficha de reemplazo ya está en tu mano. Pero el kan trae otro bonus: se revela un dora más.', 'The replacement tile is in your hand. But a kan brings another bonus: one more dora is revealed.', 'A peça de reposição já está na sua mão. Mas o kan traz outro bônus: um dora a mais é revelado.'));
+      if (!(await wait(3200))) return;
+      setView('wide');
+      setKanDora(true);
+      said(t('Se revela un dora más', 'One more dora is revealed', 'Mais um dora é revelado'), t('Cada kan da bonus: se voltea otro indicador de dora del muro muerto, el siguiente al primero. La ficha siguiente a la que se ve vale un han extra para quien la tenga en su mano, ¡también tus rivales!', 'Every kan gives a bonus: another dora indicator in the dead wall is turned over, the next one after the first. The tile that follows the one shown is worth an extra han to whoever holds it, your rivals too!', 'Cada kan dá bônus: outro indicador de dora do muro morto é virado, o seguinte ao primeiro. A peça que vem depois da mostrada vale um han extra para quem a tiver na mão, seus rivais também!'));
+      if (!(await wait(8000))) return;
+      setView('hand');
+      setHand((now) => [...now, piece].sort(byKey));
+      setExtra(null);
+      if (!(await wait(900))) return;
     }
     const spare = mine.find((piece) => piece.code === sc.spare && !gone.includes(piece))!;
     fly({ key: 'toss', code: spare.code, from: { x: shown.current.get(spare.id) ?? 50, y: HAND_Y, z: FELT_Z + 1, rot: 0 }, to: pondPos(0, 0), dur: 800, faceUp: true });
@@ -185,7 +218,7 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
     const dt = Math.min(200, g.now - lastFrame.current);
     lastFrame.current = g.now;
     const ease = 1 - Math.exp(-dt / 420);
-    const target = view === 'hand' ? { u: 58, v: 72, zoom: 1.28 } : WIDE_VIEW;
+    const target = view === 'hand' ? { u: 50, v: 74, zoom: 1.4 } : WIDE_VIEW;
     cam.u += (target.u - cam.u) * ease;
     cam.v += (target.v - cam.v) * ease;
     cam.zoom += (target.zoom - cam.zoom) * ease;
@@ -193,7 +226,8 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
     g.view = { ...cam };
     g.table();
     const { palette: p } = g;
-    paintDealtTable(g, assignments.current, { taken });
+    paintDealtTable(g, assignments.current, { taken, mark, kanDora });
+    if (mark !== null || kanDora) g.needsFrame = true;
     const face = (code: string) => picture(`${p.faces}/${code}.svg`);
 
     myPond.forEach((code, slot) => { const at = pondPos(0, slot); g.tile(at.x, at.y, at.rot, FELT_Z, { flip: 1, face: face(code) }); });
@@ -204,7 +238,7 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
     }));
     if (hot) g.needsFrame = true;
     if (meld) {
-      const spots = meldSpots(meld.codes.length, meld.at);
+      const spots = meldSpots(meld.codes.length, meld.at, groupStart(meld.slots, meld.codes.length) + meld.slots * WIDTH + 3);
       meld.codes.forEach((code, i) => g.tile(spots[i].x, 95.4, spots[i].rot, FELT_Z, { flip: 1, face: face(code) }));
     }
     const clock = performance.now();
@@ -218,18 +252,32 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
 
     let moving = false;
     const slide = 1 - Math.exp(-dt / 150);
-    const shift = meld ? -WIDTH * (meld.codes.length + 0.6) / 2 : 0;
-    hand.forEach((piece, i) => {
-      const goal = handX(i, hand.length) + shift;
+    const base = meld ? groupStart(meld.slots, meld.codes.length) : 0;
+    const spotX = (i: number) => (meld ? base + (i + 0.5) * WIDTH : handX(i, hand.length));
+    const placeTile = (piece: Piece, goal: number) => {
       const cur = shown.current.get(piece.id) ?? goal;
       const x = cur + (goal - cur) * slide;
       if (Math.abs(goal - x) > 0.03) moving = true;
       shown.current.set(piece.id, x);
       g.standTile(x, HAND_Y, 0, 90, { face: face(piece.code), joined: true, order: HAND_Y * 100 + 50 });
-    });
+    };
+    hand.forEach((piece, i) => placeTile(piece, spotX(i)));
+    if (extra) placeTile(extra, spotX(hand.length) + 1.2);
     if (moving) g.needsFrame = true;
     g.flush();
 
+    if (mark !== null) {
+      const at = wallPos(mark);
+      const side = Math.floor(mark / 34);
+      const pos = g.project(at.x + OUT[side][0] * 3.4, at.y + OUT[side][1] * 3.4, FELT_Z + 10);
+      g.pill(pos.x, pos.y, t('Ficha de reemplazo', 'Replacement tile', 'Peça de reposição'), { bg: p.gold, fg: p.ink, size: 11, border: p.ink });
+    }
+    if (kanDora) {
+      const kd = gAt(FIRST_DEAD + 3);
+      const at = wallPos(kd.side * 34 + 17 + kd.stack);
+      const pos = g.project(at.x + OUT[kd.side][0] * 3.4, at.y + OUT[kd.side][1] * 3.4, FELT_Z + 10);
+      g.pill(pos.x, pos.y, t('Nuevo dora', 'New dora', 'Novo dora'), { bg: p.gold, fg: p.ink, size: 11, border: p.ink });
+    }
     // who plays: a pill at every seat, the one on turn in gold
     const names = SEATS[language];
     for (let seat = 0; seat < 4; seat += 1) {
@@ -239,9 +287,8 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
       const out = skipped.includes(seat);
       g.pill(pos.x, pos.y, `${on ? '▶ ' : ''}${names[seat]}${out ? ` · ${t('pierde turno', 'loses turn', 'perde a vez')}` : ''}`, { bg: on ? p.gold : out ? '#fbd0cf' : '#ffffffcc', fg: out ? '#8a1f2a' : p.ink, size: 10, border: p.ink });
     }
-    const spots = hand.length > 0 ? shown.current.get(hand[hand.length - 1].id) : undefined;
-    if (view === 'hand' && spots !== undefined) {
-      const pos = g.project(handX(0, hand.length) + shift - 2, HAND_Y, FELT_Z + 12);
+    if (view === 'hand' && hand.length > 0) {
+      const pos = g.project(spotX(0) - 2, HAND_Y, FELT_Z + 12);
       g.pill(pos.x, pos.y - 10, open ? t('Mano abierta', 'Open hand', 'Mão aberta') : t('Mano cerrada', 'Closed hand', 'Mão fechada'), { bg: open ? '#ffd9b5' : '#cdeedd', fg: open ? '#8a4300' : '#14683f', size: 12, border: open ? '#8a4300' : '#14683f' });
     }
   };

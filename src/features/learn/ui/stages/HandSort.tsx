@@ -36,7 +36,7 @@ const SUIT_PILL: Record<SuitId, { bg: string; fg: string; name: { es: string; en
 };
 
 /** Walls, dead wall, dora and the rivals' hands as the deal left them. */
-export function paintDealtTable(g: Painter, assignments: ReturnType<typeof dealAssignments>, extra: { taken?: Set<number>; mark?: number | null } = {}) {
+export function paintDealtTable(g: Painter, assignments: ReturnType<typeof dealAssignments>, extra: { taken?: Set<number>; mark?: number | null; kanDora?: boolean } = {}) {
   const { palette: p, ctx } = g;
   const COMPASS = 24;
   g.add(50 * 100 + 50, () => {
@@ -91,8 +91,10 @@ export function paintDealtTable(g: Painter, assignments: ReturnType<typeof dealA
         dx = ALONG[side][0] * pull;
         dy = ALONG[side][1] * pull;
       }
+      const kanAt = gAt(FIRST_DEAD + 3);
+      const isKanDora = !!extra.kanDora && level === 1 && side === kanAt.side && stack === kanAt.stack;
       const isDora = level === 1 && side === doraAt.side && stack === doraAt.stack;
-      g.tile(home.x + dx, home.y + dy, home.rot, FELT_Z + level * TILE_T + (isDead ? 0.8 : 0), { gold: isDead || extra.mark === index, hop: extra.mark === index ? 1.6 + Math.sin(g.now / 160) * 0.9 : 0, flip: isDora ? 1 : 0, face: isDora ? picture(`${p.faces}/4p.svg`) : null });
+      g.tile(home.x + dx, home.y + dy, home.rot, FELT_Z + level * TILE_T + (isDead ? 0.8 : 0), { gold: isDead || extra.mark === index || isKanDora, hop: extra.mark === index || isKanDora ? 1.6 + Math.sin(g.now / 160) * 0.9 : 0, flip: isDora || isKanDora ? 1 : 0, face: isDora ? picture(`${p.faces}/4p.svg`) : isKanDora ? picture(`${p.faces}/2z.svg`) : null });
     }
 
 }

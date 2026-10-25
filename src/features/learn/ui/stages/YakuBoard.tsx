@@ -39,6 +39,7 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
   const [sideways, setSideways] = useState(false);
   const [stick, setStick] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [shout, setShout] = useState(false);
   const [note, setNote] = useState<{ title: string; body: string } | null>(null);
   const shown = useRef<Map<number, number>>(new Map());
   const motion = useRef<{ kind: 'tile' | 'stick'; from: { x: number; y: number }; to: { x: number; y: number }; start: number; dur: number } | null>(null);
@@ -53,13 +54,16 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
     setMode(next);
     setSub(which);
     setBusy(false);
+    setShout(false);
     setSideways(false);
     setStick(false);
     if (next === 'riichi') {
       setHand(piecesOf(SETS.riichi, 100));
-      setExtra({ id: 199, code: RIICHI_THROW });
+      const drawn = { id: 199, code: RIICHI_THROW };
+      setExtra(drawn);
+      void declare(drawn);
       setPond(PAST);
-      setNote({ title: t('Riichi: mano cerrada a una ficha', 'Riichi: closed hand, one tile away', 'Riichi: mão fechada a uma peça'), body: t('Tu mano está cerrada (sin llamadas) y te falta una sola ficha: esperas 4p o 7p. Acabas de robar un 9 manzu que no sirve. Para declarar riichi, pulsa «Declarar riichi».', 'Your hand is closed (no calls) and one tile short: you wait on 4p or 7p. You just drew a 9 manzu that does not help. To declare riichi, press “Declare riichi”.', 'Sua mão está fechada (sem chamadas) e falta uma só peça: você espera 4p ou 7p. Acabou de comprar um 9 manzu que não serve. Para declarar riichi, toque em «Declarar riichi».') });
+      setNote({ title: t('Riichi: mano cerrada a una ficha', 'Riichi: closed hand, one tile away', 'Riichi: mão fechada a uma peça'), body: t('Tu mano está cerrada (sin llamadas) y te falta una sola ficha: esperas 4p o 7p. Acabas de robar un 9 manzu que no sirve. Veamos cómo se declara riichi.', 'Your hand is closed (no calls) and one tile short: you wait on 4p or 7p. You just drew a 9 manzu that does not help. Let us see how riichi is declared.', 'Sua mão está fechada (sem chamadas) e falta uma só peça: você espera 4p ou 7p. Acabou de comprar um 9 manzu que não serve. Vamos ver como se declara riichi.') });
       return;
     }
     setExtra(null);
@@ -71,13 +75,19 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
   const [slot, setSlot] = useState<HTMLElement | null>(null);
   useEffect(() => { setSlot(document.getElementById('yaku-controls')); }, []);
 
-  const declare = async () => {
-    if (busy || !extra) return;
+  const declare = async (piece: Piece) => {
     const run = ++alive.current;
     const live = () => alive.current === run;
     setBusy(true);
+    await sleep(3800);
+    if (!live()) return;
+    setShout(true);
+    setNote({ title: t('¡Riichi!', 'Riichi!', 'Riichi!'), body: t('Antes de nada, lo dices en voz alta: «Riichi». Estás declarando que tu mano está a una ficha de ganar.', 'First, you say it out loud: “Riichi”. You are announcing that your hand is one tile from winning.', 'Antes de tudo, você diz em voz alta: «Riichi». Está anunciando que sua mão está a uma peça de ganhar.') });
+    await sleep(3200);
+    if (!live()) return;
+    setShout(false);
     setNote({ title: t('1 · Botas la ficha girada', '1 · You throw the tile sideways', '1 · Você descarta a peça de lado'), body: t('La ficha que botas al declarar riichi va acostada de lado: así todos ven que declaraste.', 'The tile you throw when declaring riichi lies on its side: that way everyone sees you declared.', 'A peça que você descarta ao declarar riichi fica deitada: assim todos veem que você declarou.') });
-    const from = { x: shown.current.get(extra.id) ?? 50, y: HAND_Y };
+    const from = { x: shown.current.get(piece.id) ?? 50, y: HAND_Y };
     const to = pondPos(0, PAST.length);
     motion.current = { kind: 'tile', from, to: { x: to.x + 0.6, y: to.y }, start: performance.now(), dur: 900 };
     await sleep(950);
@@ -192,11 +202,6 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
         </div>
       )}
       <a className="sort-button" href="../aprender/yaku-reference.html" target="_blank" rel="noopener">{t('Aprender los otros yaku ↗', 'Learn the other yaku ↗', 'Aprender os outros yaku ↗')}</a>
-      {mode === 'riichi' && (
-        <button type="button" className="sort-button is-primary" onClick={() => { if (stick) show('riichi', 'yes'); else void declare(); }} disabled={busy}>
-          {stick ? t('Ver otra vez', 'Watch again', 'Ver de novo') : t('Ver cómo se declara', 'See how it is declared', 'Ver como se declara')}
-        </button>
-      )}
     </div>
   );
   return (
@@ -205,6 +210,15 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
       {mode === 'riichi' ? (
         <div className="sort-board deck-board is-table is-hand is-draw is-yaku">
           <IsoCanvas ref={scene} draw={draw} />
+          <div className="sort-actions deck-actions">
+            <button type="button" className="sort-button" onClick={() => show('riichi', 'yes')}>↻ {t('Reiniciar animación', 'Restart animation', 'Reiniciar animação')}</button>
+          </div>
+          {shout && (
+            <div className="win-shout" role="status">
+              <span className="win-cat" aria-hidden="true">🐱</span>
+              <b>RIICHI!</b>
+            </div>
+          )}
           <p className="sort-win is-top is-note" role="status">
             <b>{note?.title}</b>
             <span>{note?.body}</span>
