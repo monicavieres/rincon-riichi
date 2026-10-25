@@ -6,6 +6,7 @@ import { RackStage } from './stages/RackStage';
 import { DeckBoard, TILE_BACK, type DeckStatus } from './stages/DeckBoard';
 import { HandSort } from './stages/HandSort';
 import { DrawBoard } from './stages/DrawBoard';
+import { WinBoard } from './stages/WinBoard';
 import { DealBoard, type DealStatus } from './stages/DealBoard';
 import { TableTopBoard, type TableTopStatus } from './stages/TableTopBoard';
 import { WallBoard, type WallStatus } from './stages/WallBoard';
@@ -22,6 +23,11 @@ const TABS: Array<{ id: Tab; label: LocalizedText }> = [
 ];
 
 const PRACTICE_COPY = {
+  win: L(
+    'Pulsa «Tsumo» para ver cómo la robas tú del muro, o «Ron» para ver cómo la bota un rival y tú la reclamas con «¡Ron!». Prueba las dos.',
+    'Press “Tsumo” to see yourself draw it from the wall, or “Ron” to see a rival throw it and you claim it with “Ron!”. Try both.',
+    'Toque em «Tsumo» para ver você mesmo comprá-la do muro, ou em «Ron» para ver um rival descartá-la e você reivindicá-la com «Ron!». Experimente as duas.',
+  ),
   draw: L(
     'Primero bota la ficha que sobra: tócala o arrástrala hacia arriba. Luego robas una ficha y botas otra, siempre la que no ayuda. Si tocas una que sí sirve, la escena te dice «¡Ojo, esa no!» y te explica por qué.',
     'First throw the spare tile: tap it or drag it up. Then you draw a tile and throw another, always the one that does not help. If you pick one that does help, the scene says “Careful, not that one!” and tells you why.',
@@ -194,7 +200,7 @@ function TileThumb({ codes, scattered = false }: { codes: string[]; scattered?: 
 function thumbFor(stop: TutorialStop) {
   const spec = stop.stage;
   if (spec.kind === 'table') return <ZoneThumb focus={spec.focus} />;
-  if (spec.kind === 'deck') return spec.mode === 'draw' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'hand' ? <TileThumb codes={['4p', '1m', '6z']} scattered /> : <SceneThumb mode={spec.mode} />;
+  if (spec.kind === 'deck') return spec.mode === 'win' ? <TileThumb codes={['6z', '6z', '6z']} /> : spec.mode === 'draw' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'hand' ? <TileThumb codes={['4p', '1m', '6z']} scattered /> : <SceneThumb mode={spec.mode} />;
   if (spec.kind === 'sort') return <TileThumb codes={['4p', '1m', '6z']} scattered />;
   return <TileThumb codes={spec.rows[0].groups[0].tiles} />;
 }
@@ -302,6 +308,7 @@ export function TutorialWorkspace() {
           </div>
 
           {spec.kind === 'deck' && spec.mode === 'shuffle' && <DeckBoard language={language} onStatus={setDeck} />}
+          {spec.kind === 'deck' && spec.mode === 'win' && <WinBoard key={language} language={language} />}
           {spec.kind === 'deck' && spec.mode === 'draw' && <DrawBoard key={language} language={language} />}
           {spec.kind === 'deck' && spec.mode === 'hand' && <HandSort key={language} language={language} onStatus={setSort} />}
           {spec.kind === 'deck' && spec.mode === 'deal' && <DealBoard key={language} language={language} onStatus={setDealt} />}

@@ -6,37 +6,37 @@ import { wallSlot } from './DeckBoard';
 import { paintDealtTable } from './HandSort';
 import { FELT_Z, IsoCanvas, TILE_T, picture, type IsoHandle, type Painter } from './iso3d';
 
-const WIDTH = 3.6;
-const HAND_Y = 94.4;
+export const WIDTH = 3.6;
+export const HAND_Y = 94.4;
 const FLIGHT_MS = 650;
 const HIT_Z = FELT_Z + 2.5;
 /** What the wall hands you, turn after turn: two that do nothing for the hand, then the one that completes it. */
-const DRAWS = ['8s', '9m', '6z'];
+const DRAWS = ['8s', '9m'];
 
-type Piece = { id: number; code: string };
+export type Piece = { id: number; code: string };
 type Phase = 'start' | 'rivals' | 'choose' | 'merge' | 'won';
-type Pos = { x: number; y: number; z: number; rot: number };
-type Fly = { key: string; code?: string; from: Pos; to: Pos; start: number; dur: number; faceUp: boolean };
+export type Pos = { x: number; y: number; z: number; rot: number };
+export type Fly = { key: string; code?: string; from: Pos; to: Pos; start: number; dur: number; faceUp: boolean };
 
 /** What the three rivals throw, round after round (right, across, left). */
 const RIVAL_THROWS = [['2z', '7p', '4m'], ['3z', '9s', '1p'], ['5m', '8p', '2s']];
-const DEALT = 53; // tiles taken by the deal: 13 each plus the dealer's first draw
-const HAND_VIEW = { u: 50, v: 74, zoom: 1.55 };
-const WIDE_VIEW = { u: 50, v: 49, zoom: 0.86 };
-const sleep = (ms: number) => new Promise<void>((resolve) => { window.setTimeout(resolve, ms); });
+export const DEALT = 53; // tiles taken by the deal: 13 each plus the dealer's first draw
+export const HAND_VIEW = { u: 50, v: 74, zoom: 1.55 };
+export const WIDE_VIEW = { u: 50, v: 49, zoom: 0.86 };
+export const sleep = (ms: number) => new Promise<void>((resolve) => { window.setTimeout(resolve, ms); });
 const WHO = [
   { es: 'el jugador de tu derecha', en: 'the player on your right', pt: 'o jogador à sua direita' },
   { es: 'el jugador de enfrente', en: 'the player across from you', pt: 'o jogador à sua frente' },
   { es: 'el jugador de tu izquierda', en: 'the player on your left', pt: 'o jogador à sua esquerda' },
 ];
 
-const wallPos = (tile: number): Pos => {
+export const wallPos = (tile: number): Pos => {
   const side = Math.floor(tile / 34);
   const k = tile % 34;
   const slot = wallSlot(side, k % 17, k < 17 ? 0 : 1);
   return { x: slot.x, y: slot.y, z: FELT_Z + (k < 17 ? 0 : 1) * TILE_T, rot: slot.rot };
 };
-const pondPos = (player: number, slot: number): Pos => {
+export const pondPos = (player: number, slot: number): Pos => {
   const own = { x: 50 + ((slot % 6) - 2.5) * 3.7, y: 65 + Math.floor(slot / 6) * 4.9 };
   const at = around(own, player);
   return { x: at.x, y: at.y, z: FELT_Z, rot: ROT[player] };
@@ -45,12 +45,12 @@ type Grab = { id: number; dx: number; dy: number; x: number; y: number; sx: numb
 
 const suitRank = (code: string) => 'mpsz'.indexOf(code[1]);
 const sortKey = (code: string) => suitRank(code) * 10 + Number(code[0]);
-const byKey = (a: Piece, b: Piece) => sortKey(a.code) - sortKey(b.code) || a.id - b.id;
+export const byKey = (a: Piece, b: Piece) => sortKey(a.code) - sortKey(b.code) || a.id - b.id;
 
-const startHand = (): Piece[] => DEALT_HAND.map((code, id) => ({ id, code })).sort(byKey);
+export const startHand = (): Piece[] => DEALT_HAND.map((code, id) => ({ id, code })).sort(byKey);
 
 /** Greedy read of a sorted hand: runs and triplets are groups, two alike are a pair, the rest is spare. */
-function tagsOf(hand: Piece[]) {
+export function tagsOf(hand: Piece[]) {
   const out: Array<{ kind: 'group' | 'pair' | 'spare'; from: number; to: number }> = [];
   let i = 0;
   while (i < hand.length) {
@@ -65,13 +65,13 @@ function tagsOf(hand: Piece[]) {
   return out;
 }
 
-const TAG_LOOK = {
+export const TAG_LOOK = {
   group: { bg: '#cdeedd', fg: '#14683f', name: { es: 'Grupo', en: 'Set', pt: 'Grupo' } },
   pair: { bg: '#fff0b8', fg: '#7a5a00', name: { es: 'Pareja', en: 'Pair', pt: 'Par' } },
   spare: { bg: '#fbd0cf', fg: '#8a1f2a', name: { es: 'Sobra', en: 'Spare', pt: 'Sobra' } },
 } as const;
 
-const handX = (index: number, count: number) => 50 + (index - (count - 1) / 2) * WIDTH;
+export const handX = (index: number, count: number) => 50 + (index - (count - 1) / 2) * WIDTH;
 
 /**
  * Step after sorting: the same table, your hand in order. Each turn you draw one tile; keep it if it builds a group,
@@ -196,8 +196,13 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
       setNote({ title: t('¡Sí, esa!', 'Yes, that one!', 'Isso, essa!'), body: phase === 'start'
         ? t('La 9p no se junta con nada: sale a tu río (tu zona de descartes). Quedas con 13 fichas.', 'The 9p joins nothing: it goes to your pond (your discard area). You are left with 13 tiles.', 'O 9p não se junta a nada: vai para o seu rio (sua área de descartes). Você fica com 13 peças.')
         : t('No ayudaba a la mano, así que sale. Quedas con 13 y robas otra.', 'It did not help the hand, so it goes. You are back to 13 and draw again.', 'Não ajudava a mão, então sai. Você volta a 13 e compra outra.') });
-      if (phase !== 'start') setRound((now) => now + 1);
-      else setRound(0);
+      if (phase === 'start') { setRound(0); setPhase('rivals'); return; }
+      if (round + 1 >= DRAWS.length) {
+        setPhase('won');
+        setNote({ title: t('Dos turnos listos', 'Two turns done', 'Dois turnos prontos'), body: t('Así se juega: robas, miras si te sirve y botas la que no. Tu mano espera una 1z o una 6z para completarse. ¿Cómo se gana con ella? Lo vemos en el siguiente paso.', 'That is how it plays: draw, see if it helps, throw the one that does not. Your hand waits for a 1z or a 6z to complete. How do you win with it? We see that in the next step.', 'É assim que se joga: compra, vê se serve e descarta a que não. Sua mão espera um 1z ou um 6z para completar. Como se ganha com ela? Vemos no próximo passo.') });
+        return;
+      }
+      setRound((now) => now + 1);
       setPhase('rivals');
       return;
     }

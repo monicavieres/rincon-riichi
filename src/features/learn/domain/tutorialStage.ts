@@ -9,7 +9,7 @@ export type LocalCallout = Omit<TableCallout, 'label'> & { label: LocalizedText 
 
 export type StageSpec =
   | { kind: 'sort' }
-  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' }
+  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' | 'win' }
   | { kind: 'table'; focus: TableFocus; callouts: LocalCallout[] }
   | { kind: 'rack'; rows: RackRow[]; footer?: LocalizedText };
 
@@ -335,6 +335,11 @@ export const tutorialStops: TutorialStop[] = [
     practice: { href: '../aprender/eficiencia.html', label: L('Aprender eficiencia', 'Learn efficiency', 'Aprender eficiência') },
   },
   {
+    id: 'ron-tsumo', part: 'discover', short: L('Ron y tsumo', 'Ron and tsumo', 'Ron e tsumo'), ...text('ron-tsumo'),
+    stage: { kind: 'deck', mode: 'win' },
+    practice: { href: '../practicar/calc.html', label: L('Practicar el puntaje', 'Practise scoring', 'Praticar a pontuação') },
+  },
+  {
     id: 'what-is-mahjong', part: 'discover', short: L('La mesa', 'The table', 'A mesa'), ...text('what-is-mahjong'),
     stage: { kind: 'table', focus: zone('mesa'), callouts: tableCallouts.mesa },
     practice: { href: '../aprender/tiles.html', label: L('Conocer las fichas', 'Meet the tiles', 'Conhecer as peças') },
@@ -429,21 +434,6 @@ export const tutorialStops: TutorialStop[] = [
       ]),
     },
     practice: { href: '../aprender/defensa.html', label: L('Aprender defensa', 'Learn defence', 'Aprender defesa') },
-  },
-  {
-    id: 'ron-tsumo', part: 'win', short: L('Ron y tsumo', 'Ron and tsumo', 'Ron e tsumo'), ...text('ron-tsumo'),
-    stage: {
-      kind: 'table',
-      focus: {
-        boxes: [{ x: 240, y: 366, z: FELT, w: 120, d: 54, h: 15 }, { x: 438, y: 534, z: FELT, w: 20, d: 15, h: 27 }],
-        zoom: 1.7,
-      },
-      callouts: [
-        { label: L('Ron: un rival descarta tu ficha', 'Ron: a rival discards your tile', 'Ron: um rival descarta sua peça'), at: [361, 380, FELT + 7], dx: 56, dy: 40 },
-        { label: L('Tsumo: la robas tú', 'Tsumo: you draw it yourself', 'Tsumo: você mesmo compra'), at: [448, 552, FELT], dx: 40, dy: 50 },
-      ],
-    },
-    practice: { href: '../practicar/calc.html', label: L('Practicar el puntaje', 'Practise scoring', 'Praticar a pontuação') },
   },
   {
     id: 'furiten', part: 'win', short: L('Furiten', 'Furiten', 'Furiten'), ...text('furiten'),
