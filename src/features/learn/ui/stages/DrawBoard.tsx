@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { DEALT_HAND } from '../../domain/dealtHand';
-import { dealAssignments } from './DealBoard';
+import { ROT, around, dealAssignments, drawOrder, handSlot, turn } from './DealBoard';
+import { wallSlot } from './DeckBoard';
 import { paintDealtTable } from './HandSort';
-import { FELT_Z, IsoCanvas, picture, type IsoHandle, type Painter } from './iso3d';
+import { FELT_Z, IsoCanvas, TILE_T, picture, type IsoHandle, type Painter } from './iso3d';
 
 const WIDTH = 3.6;
 const HAND_Y = 94.4;
@@ -13,8 +14,34 @@ const HIT_Z = FELT_Z + 2.5;
 const DRAWS = ['8s', '9m', '6z'];
 
 type Piece = { id: number; code: string };
-type Flight = { piece: Piece; fromX: number; fromY: number; slot: number; start: number };
-type Phase = 'start' | 'wait' | 'choose' | 'merge' | 'won';
+type Phase = 'start' | 'rivals' | 'choose' | 'merge' | 'won';
+type Pos = { x: number; y: number; z: number; rot: number };
+type Fly = { key: string; code?: string; from: Pos; to: Pos; start: number; dur: number; faceUp: boolean };
+
+/** What the three rivals throw, round after round (right, across, left). */
+const RIVAL_THROWS = [['2z', '7p', '4m'], ['3z', '9s', '1p'], ['5m', '8p', '2s']];
+const DEALT = 53; // tiles taken by the deal: 13 each plus the dealer's first draw
+const POND_SHIFT = -14;
+const HAND_VIEW = { u: 50, v: 86, zoom: 2.15 };
+const WIDE_VIEW = { u: 50, v: 49, zoom: 0.86 };
+const sleep = (ms: number) => new Promise<void>((resolve) => { window.setTimeout(resolve, ms); });
+const WHO = [
+  { es: 'el jugador de tu derecha', en: 'the player on your right', pt: 'o jogador à sua direita' },
+  { es: 'el jugador de enfrente', en: 'the player across from you', pt: 'o jogador à sua frente' },
+  { es: 'el jugador de tu izquierda', en: 'the player on your left', pt: 'o jogador à sua esquerda' },
+];
+
+const wallPos = (tile: number): Pos => {
+  const side = Math.floor(tile / 34);
+  const k = tile % 34;
+  const slot = wallSlot(side, k % 17, k < 17 ? 0 : 1);
+  return { x: slot.x, y: slot.y, z: FELT_Z + (k < 17 ? 0 : 1) * TILE_T, rot: slot.rot };
+};
+const pondPos = (player: number, slot: number): Pos => {
+  const own = { x: 50 + ((slot % 6) - 2.5) * 3.9 + POND_SHIFT, y: 73.6 + Math.floor(slot / 6) * 5.4 };
+  const at = around(own, player);
+  return { x: at.x, y: at.y, z: FELT_Z, rot: ROT[player] };
+};
 type Grab = { id: number; dx: number; dy: number; x: number; y: number; sx: number; sy: number };
 
 const suitRank = (code: string) => 'mpsz'.indexOf(code[1]);
@@ -46,7 +73,6 @@ const TAG_LOOK = {
 } as const;
 
 const handX = (index: number, count: number) => 50 + (index - (count - 1) / 2) * WIDTH;
-const pondAt = (slot: number) => ({ x: 14 + (slot % 6) * 3.9, y: 76 + Math.floor(slot / 6) * 5.4 });
 
 /**
  * Step after sorting: the same table, your hand in order. Each turn you draw one tile; keep it if it builds a group,
@@ -62,7 +88,14 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
   const [round, setRound] = useState(0);
   const [note, setNote] = useState<{ title: string; body: string } | null>(null);
   const shown = useRef<Map<number, { x: number; lift: number }>>(new Map());
-  const flight = useRef<Flight | null>(null);
+  const flights = useRef<Fly[]>([]);
+  const alive = useRef(0);
+  const [taken, setTaken] = useState<Set<number>>(new Set());
+  const [rivalPonds, setRivalPonds] = useState<string[][]>([[], [], []]);
+  const [rivalHold, setRivalHold] = useState<boolean[]>([false, false, false]);
+  const [mark, setMark] = useState<number | null>(null);
+  const [view, setView] = useState<'hand' | 'wide'>('hand');
+  const order = useRef(drawOrder());
   const viewNow = useRef({ u: 50, v: 90, zoom: 2.3 });
   const lastFrame = useRef(0);
   const scene = useRef<IsoHandle>(null);
@@ -72,17 +105,59 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
   const [grabbing, setGrabbing] = useState(false);
   const helps = drawn?.code === '6z';
 
-  const throwAway = useCallback((piece: Piece, fromX: number, fromY: number) => {
-    flight.current = { piece, fromX, fromY, slot: pond.length, start: performance.now() };
-    setPond((now) => [...now, piece]);
-    window.setTimeout(() => { flight.current = null; scene.current?.invalidate(); }, FLIGHT_MS + 60);
-  }, [pond.length]);
+  const fly = useCallback((entry: Omit<Fly, 'start'>) => {
+    flights.current = [...flights.current.filter((f) => f.key !== entry.key), { ...entry, start: performance.now() }];
+    scene.current?.invalidate();
+    window.setTimeout(() => { flights.current = flights.current.filter((f) => f.key !== entry.key); scene.current?.invalidate(); }, entry.dur + 50);
+  }, []);
 
-  // after a throw, the wall hands you the next tile
+  const throwAway = useCallback((piece: Piece, fromX: number, fromY: number) => {
+    fly({ key: `mine-${piece.id}`, code: piece.code, from: { x: fromX, y: fromY, z: FELT_Z + 1, rot: 0 }, to: pondPos(0, pond.length), dur: FLIGHT_MS, faceUp: true });
+    window.setTimeout(() => setPond((now) => [...now, piece]), FLIGHT_MS);
+  }, [pond.length, fly]);
+
+  // the rest of the table plays: each rival draws from the wall and throws; then the wall hands you yours
   useEffect(() => {
-    if (phase !== 'wait') return undefined;
-    const timer = window.setTimeout(() => {
+    if (phase !== 'rivals') return undefined;
+    const run = ++alive.current;
+    const live = () => alive.current === run;
+    const go = async () => {
+      setView('wide');
+      await sleep(900);
+      for (let i = 0; i < 3 && live(); i += 1) {
+        const player = i + 1;
+        const tile = order.current[DEALT + round * 4 + i];
+        const slot = handSlot(player, 13, true);
+        setNote({ title: t(`Roba ${WHO[i].es}`, `${WHO[i].en[0].toUpperCase()}${WHO[i].en.slice(1)} draws`, `${WHO[i].pt[0].toUpperCase()}${WHO[i].pt.slice(1)} compra`), body: t('Toma la siguiente ficha del muro y después bota una a su río.', 'Takes the next tile from the wall and then throws one into their pond.', 'Pega a próxima peça do muro e depois descarta uma no seu rio.') });
+        setTaken((now) => new Set(now).add(tile));
+        fly({ key: `draw-${tile}`, from: wallPos(tile), to: { x: slot.x, y: slot.y, z: FELT_Z + 3, rot: slot.rot }, dur: 800, faceUp: false });
+        await sleep(850);
+        if (!live()) return;
+        setRivalHold((now) => now.map((v, k) => (k === i ? true : v)));
+        await sleep(450);
+        const code = RIVAL_THROWS[round][i];
+        const to = pondPos(player, rivalPonds[i].length);
+        setRivalHold((now) => now.map((v, k) => (k === i ? false : v)));
+        fly({ key: `throw-${player}-${rivalPonds[i].length}`, code, from: { x: slot.x, y: slot.y, z: FELT_Z + 3, rot: slot.rot }, to, dur: 650, faceUp: true });
+        await sleep(700);
+        if (!live()) return;
+        setRivalPonds((now) => now.map((list, k) => (k === i ? [...list, code] : list)));
+      }
+      if (!live()) return;
+      const tile = order.current[DEALT + round * 4 + 3];
       const code = DRAWS[round];
+      setNote({ title: t('Te toca robar', 'Your turn to draw', 'Sua vez de comprar'), body: t('Tu ficha viene de la siguiente pila del muro: la que brilla.', 'Your tile comes from the next stack of the wall: the one that glows.', 'Sua peça vem da próxima pilha do muro: a que brilha.') });
+      setMark(tile);
+      await sleep(2200);
+      if (!live()) return;
+      setMark(null);
+      setTaken((now) => new Set(now).add(tile));
+      const goal = handX(hand.length - 1, hand.length + 1) - WIDTH * 0.95 + WIDTH * 1.9;
+      fly({ key: `draw-${tile}`, from: wallPos(tile), to: { x: goal, y: HAND_Y, z: FELT_Z + 3, rot: 0 }, dur: 1100, faceUp: false });
+      await sleep(1000);
+      if (!live()) return;
+      setView('hand');
+      await sleep(150);
       setDrawn({ id: 100 + round, code });
       if (code === '6z') {
         setPhase('merge');
@@ -91,8 +166,10 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
         setPhase('choose');
         setNote({ title: t(`Robaste la ${code}`, `You drew the ${code}`, `Você comprou o ${code}`), body: t('Ahora tienes 14 fichas: bota una. Toca o arrastra hacia arriba la que no ayuda a tu mano.', 'Now you hold 14 tiles: throw one. Tap or drag up the one that does not help your hand.', 'Agora você tem 14 peças: descarte uma. Toque ou arraste para cima a que não ajuda sua mão.') });
       }
-    }, 1100);
-    return () => window.clearTimeout(timer);
+    };
+    void go();
+    return () => { alive.current += 1; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, round]);
 
   // a draw that completes the hand slides into place
@@ -108,7 +185,7 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
   }, [phase, drawn]);
 
   const tryThrow = (piece: Piece, fromX: number, fromY: number) => {
-    if (phase === 'merge' || phase === 'won' || phase === 'wait') {
+    if (phase === 'merge' || phase === 'won' || phase === 'rivals') {
       if (phase === 'merge') setNote({ title: t('¡Ojo, esa sí!', 'Careful, that one yes!', 'Atenção, essa sim!'), body: t('Con esta robada completas la mano: no botes nada.', 'This draw completes your hand: throw nothing.', 'Essa compra completa sua mão: não descarte nada.') });
       return;
     }
@@ -122,7 +199,7 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
         : t('No ayudaba a la mano, así que sale. Quedas con 13 y robas otra.', 'It did not help the hand, so it goes. You are back to 13 and draw again.', 'Não ajudava a mão, então sai. Você volta a 13 e compra outra.') });
       if (phase !== 'start') setRound((now) => now + 1);
       else setRound(0);
-      setPhase('wait');
+      setPhase('rivals');
       return;
     }
     const tag = tagsOf(hand).find((entry) => hand.slice(entry.from, entry.to + 1).some((other) => other.id === piece.id));
@@ -137,8 +214,14 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
   };
 
   const restart = () => {
-    flight.current = null;
+    alive.current += 1;
+    flights.current = [];
     shown.current.clear();
+    setTaken(new Set());
+    setRivalPonds([[], [], []]);
+    setRivalHold([false, false, false]);
+    setMark(null);
+    setView('hand');
     setHand(startHand());
     setDrawn(null);
     setPond([]);
@@ -200,7 +283,7 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
     const dt = Math.min(200, g.now - lastFrame.current);
     lastFrame.current = g.now;
     const ease = 1 - Math.exp(-dt / 420);
-    const target = { u: 50, v: 86, zoom: 2.15 };
+    const target = view === 'hand' ? HAND_VIEW : WIDE_VIEW;
     cam.u += (target.u - cam.u) * ease;
     cam.v += (target.v - cam.v) * ease;
     cam.zoom += (target.zoom - cam.zoom) * ease;
@@ -208,24 +291,31 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
     g.view = { ...cam };
     g.table();
     const { palette: p } = g;
-    paintDealtTable(g, assignments.current);
+    paintDealtTable(g, assignments.current, { taken, mark });
+    if (mark !== null) g.needsFrame = true;
 
-    // your pond: what you threw lies face up in front of your hand
-    const flying = flight.current;
+    // ponds: everything thrown lies face up in front of its owner
     pond.forEach((piece, slot) => {
-      if (flying && flying.piece.id === piece.id) return;
-      const at = pondAt(slot);
-      g.tile(at.x, at.y, 0, FELT_Z, { flip: 1, face: picture(`${p.faces}/${piece.code}.svg`) });
+      const at = pondPos(0, slot);
+      g.tile(at.x, at.y, at.rot, FELT_Z, { flip: 1, face: picture(`${p.faces}/${piece.code}.svg`) });
     });
-    if (flying) {
-      const k = Math.min(1, (performance.now() - flying.start) / FLIGHT_MS);
-      const e = 1 - (1 - k) * (1 - k);
-      const to = pondAt(flying.slot);
-      const x = flying.fromX + (to.x - flying.fromX) * e;
-      const y = flying.fromY + (to.y - flying.fromY) * e;
-      g.tile(x, y, 0, FELT_Z + 1, { flip: 1, face: picture(`${p.faces}/${flying.piece.code}.svg`), hop: Math.sin(k * Math.PI) * 7, order: 9e4 });
+    rivalPonds.forEach((list, i) => list.forEach((code, slot) => {
+      const at = pondPos(i + 1, slot);
+      g.tile(at.x, at.y, at.rot, FELT_Z, { flip: 1, face: picture(`${p.faces}/${code}.svg`) });
+    }));
+    rivalHold.forEach((holding, i) => {
+      if (!holding) return;
+      const slot = handSlot(i + 1, 13, true);
+      g.standTile(slot.x, slot.y, slot.rot, 90, { joined: true });
+    });
+    const clock = performance.now();
+    flights.current.forEach((f) => {
+      const k = Math.min(1, (clock - f.start) / f.dur);
+      const e = k * k * (3 - 2 * k);
+      const rot = f.from.rot + turn(f.from.rot, f.to.rot) * e;
+      g.tile(f.from.x + (f.to.x - f.from.x) * e, f.from.y + (f.to.y - f.from.y) * e, rot, f.from.z + (f.to.z - f.from.z) * e, { flip: f.faceUp ? 1 : 0, face: f.code ? picture(`${p.faces}/${f.code}.svg`) : null, hop: Math.sin(k * Math.PI) * 7, order: 9e4 });
       if (k < 1) g.needsFrame = true;
-    }
+    });
 
     // your hand, standing; the drawn tile waits a little apart on the right
     let moving = false;
@@ -248,7 +338,7 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
       place(piece, goalX, goalLift, from);
     };
     hand.forEach((piece, i) => put(piece, handX(i, total) - (drawn ? WIDTH * 0.95 : 0), 0));
-    if (drawn) put(drawn, handX(hand.length - 1, total) - WIDTH * 0.95 + WIDTH * 1.9, 0.8, handX(hand.length - 1, total) + WIDTH * 4);
+    if (drawn) put(drawn, handX(hand.length - 1, total) - WIDTH * 0.95 + WIDTH * 1.9, 0.8);
     if (moving) g.needsFrame = true;
     g.flush();
 
@@ -260,6 +350,11 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
       const pos = g.project((a.x + b.x) / 2, HAND_Y, FELT_Z + 8);
       g.pill(pos.x, pos.y + 7, look.name[language], { bg: look.bg, fg: look.fg, size: 11, border: look.fg });
     });
+    if (mark !== null) {
+      const at = wallPos(mark);
+      const pos = g.project(at.x, at.y, FELT_Z + 9);
+      g.pill(pos.x, pos.y, t('Robas de aquí', 'You draw from here', 'Você compra daqui'), { bg: p.gold, fg: p.ink, size: 12, border: p.ink });
+    }
     if (drawn) {
       const st = shown.current.get(drawn.id);
       if (st) {
@@ -280,7 +375,7 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
         <p className={`sort-win is-top${phase === 'won' ? '' : ' is-note'}`} role="status">
           <b>{note?.title ?? (phase === 'start' ? t('Tu mano ordenada', 'Your sorted hand', 'Sua mão ordenada') : phase === 'choose' ? t('¿Te sirve este robo?', 'Does this draw help?', 'Essa compra serve?') : t('Robando del muro…', 'Drawing from the wall…', 'Comprando do muro…'))}</b>
           <span>{note?.body ?? (phase === 'start'
-            ? t('Mira: tres grupos de tres, dos parejas… y una ficha suelta. Tu meta es 4 grupos y 1 pareja. Toca o arrastra hacia arriba la que sobra para botarla.', 'Look: three sets of three, two pairs… and one loose tile. Your goal is 4 sets and 1 pair. Throw the spare one.', 'Veja: três grupos de três, dois pares… e uma peça solta. Sua meta é 4 grupos e 1 par. Descarte a que sobra.')
+            ? t('Ya robaste tu ficha 14 al repartir, así que solo falta botar. Mira: tres grupos, dos parejas… y una ficha suelta. Toca o arrastra hacia arriba la que sobra.', 'You already drew your 14th tile in the deal, so all that is left is to throw. Look: three sets, two pairs… and one loose tile. Tap or drag up the spare one.', 'Você já comprou sua 14ª peça na distribuição, então só falta descartar. Veja: três grupos, dois pares… e uma peça solta. Toque ou arraste para cima a que sobra.')
             : phase === 'choose'
               ? t('Fíjate si forma un grupo o mejora una pareja. Si no, se bota; si sí, te la quedas.', 'See whether it makes a set or improves a pair. If not, throw it; if so, keep it.', 'Veja se forma um grupo ou melhora um par. Se não, descarte; se sim, fique com ela.')
               : '')}</span>

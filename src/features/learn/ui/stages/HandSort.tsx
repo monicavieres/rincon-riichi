@@ -36,7 +36,7 @@ const SUIT_PILL: Record<SuitId, { bg: string; fg: string; name: { es: string; en
 };
 
 /** Walls, dead wall, dora and the rivals' hands as the deal left them. */
-export function paintDealtTable(g: Painter, assignments: ReturnType<typeof dealAssignments>) {
+export function paintDealtTable(g: Painter, assignments: ReturnType<typeof dealAssignments>, extra: { taken?: Set<number>; mark?: number | null } = {}) {
   const { palette: p } = g;
     const doraAt = gAt(FIRST_DEAD + 2);
     const dead = new Set<string>();
@@ -48,6 +48,7 @@ export function paintDealtTable(g: Painter, assignments: ReturnType<typeof dealA
       const k = index % 34;
       const stack = k % ROW;
       const level = k < ROW ? 0 : 1;
+      if (extra.taken?.has(index)) continue;
       const held = assignments.get(index);
       if (held) {
         if (held.player === 0) continue;
@@ -68,7 +69,7 @@ export function paintDealtTable(g: Painter, assignments: ReturnType<typeof dealA
         dy = ALONG[side][1] * pull;
       }
       const isDora = level === 1 && side === doraAt.side && stack === doraAt.stack;
-      g.tile(home.x + dx, home.y + dy, home.rot, FELT_Z + level * TILE_T + (isDead ? 0.8 : 0), { gold: isDead, flip: isDora ? 1 : 0, face: isDora ? picture(`${p.faces}/4p.svg`) : null });
+      g.tile(home.x + dx, home.y + dy, home.rot, FELT_Z + level * TILE_T + (isDead ? 0.8 : 0), { gold: isDead || extra.mark === index, hop: extra.mark === index ? 1.6 + Math.sin(g.now / 160) * 0.9 : 0, flip: isDora ? 1 : 0, face: isDora ? picture(`${p.faces}/4p.svg`) : null });
     }
 
 }

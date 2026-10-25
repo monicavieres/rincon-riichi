@@ -1074,3 +1074,5 @@ a.sort-button { text-decoration: none; }
     font: 600 12px/1.2 var(--font-sans);
     font-style: normal;
 }
+
+.sort-board.is-draw canvas { -webkit-mask-image: none; mask-image: none; }

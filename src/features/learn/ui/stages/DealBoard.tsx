@@ -24,7 +24,7 @@ type Flight = { player: number; slot: number; start: number; extra: boolean };
 
 export const gAt = (G: number) => ({ side: (OPENED_SIDE + Math.floor(G / ROW) + 4 * 8) % 4, stack: ((G % ROW) + ROW) % ROW });
 /** Tile index of a wall tile: sides hold 34 each, lower row first. */
-const tileOf = (side: number, stack: number, level: number) => side * 34 + level * ROW + stack;
+export const tileOf = (side: number, stack: number, level: number) => side * 34 + level * ROW + stack;
 
 export const around = (point: { x: number; y: number }, side: number) => {
   const a = (-90 * side * Math.PI) / 180;
@@ -50,9 +50,9 @@ export function handSlot(player: number, n: number, extra: boolean) {
 }
 
 /** The order tiles leave the live wall: from the break leftwards, upper tile of a stack first. */
-function drawOrder() {
+export function drawOrder() {
   const order: number[] = [];
-  for (let G = FIRST_DEAD - 1; order.length < 60; G -= 1) {
+  for (let G = FIRST_DEAD - 1; order.length < 90; G -= 1) {
     const at = gAt(G);
     order.push(tileOf(at.side, at.stack, 1), tileOf(at.side, at.stack, 0));
   }
