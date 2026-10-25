@@ -542,10 +542,12 @@ export class Painter {
       if (i > 1) this.poly(g.top, shade(legColor, 1.15), p.ink);
     });
 
-    const slab = this.box(50, 50, 0, 106, 106, FELT_Z, 0);
-    slab.sides.forEach((face) => {
-      this.bandedFace(face, [[0, 0.66, p.rail], [0.66, 1, mix(p.rail, '#000000', 0.38)]], 0.95 * lit(face.n) + 0.05, p.ink);
-    });
+    const slices = 12;
+    const edge = (i: number) => this.plane(-3, -3, 103, 103, 4.5, (FELT_Z * i) / slices);
+    ctx.lineJoin = 'round';
+    for (let i = 0; i <= slices; i += 1) this.poly(edge(i), null, p.ink, this.lw * 2);
+    const low = mix(p.rail, '#000000', 0.38);
+    for (let i = 0; i <= slices; i += 1) this.poly(edge(i), i / slices < 0.34 ? low : p.rail);
     const rail = this.plane(-3, -3, 103, 103, 4.5, FELT_Z);
     this.poly(rail, p.rail, p.ink, this.lw * 1.5);
     this.poly(this.plane(-1.6, -1.6, 101.6, 101.6, 3.4, FELT_Z), null, p.rim, this.lw * 2);
