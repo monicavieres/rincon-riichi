@@ -15,7 +15,24 @@ import { SortBoard, tilePath, type SortStatus } from './stages/SortBoard';
 type Tab = 'summary' | 'observe' | 'practice';
 
 /** **word** marks a highlighted term. */
-const rich = (text: string) => text.split('**').map((part, i) => (i % 2 ? <mark key={i} className="term-mark">{part}</mark> : part));
+const rich = (text: string) => text.split('**').map((part, i) => (i % 2 ? (/^(yaku|tanyao|riichi|yakuhai)\b/i.test(part) ? <mark key={i} className="term-mark">{part}</mark> : <strong key={i}>{part}</strong>) : part));
+/** Plain lines become paragraphs; lines starting with "- " become a bulleted list. */
+function Body({ text }: { text: string }) {
+  const blocks: Array<{ list: boolean; lines: string[] }> = [];
+  text.split('\n').forEach((line) => {
+    const list = line.startsWith('- ');
+    const last = blocks[blocks.length - 1];
+    if (last && last.list === list && list) last.lines.push(line.slice(2));
+    else blocks.push({ list, lines: [list ? line.slice(2) : line] });
+  });
+  return (
+    <>
+      {blocks.map((block, i) => (block.list
+        ? <ul key={i} className="body-list">{block.lines.map((line, k) => <li key={k}>{rich(line)}</li>)}</ul>
+        : <p key={i}>{rich(block.lines[0])}</p>))}
+    </>
+  );
+}
 const L = (es: string, en: string, pt: string): LocalizedText => ({ es, en, pt });
 
 const TABS: Array<{ id: Tab; label: LocalizedText }> = [
@@ -353,7 +370,7 @@ export function TutorialWorkspace() {
           <div className="explorer-inspector-copy">
             <p className="panel-label">{t(stop.eyebrow)}</p>
             <h2>{t(stop.title)}</h2>
-            {tab === 'summary' && <p>{rich(t(stop.body))}</p>}
+            {tab === 'summary' && <Body text={t(stop.body)} />}
             {tab === 'observe' && <ul>{stop.bullets.map((bullet, bulletIndex) => <li key={bulletIndex}>{rich(t(bullet))}</li>)}</ul>}
             {tab === 'practice' && (
               <div className="explorer-practice">
