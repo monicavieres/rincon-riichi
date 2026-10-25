@@ -14,7 +14,7 @@ export type ModuleCard = {
 
 export const learnModules: ModuleCard[] = [
   { id: 'tutorial', title: 'Tutorial', description: 'Guía paso a paso: mesa, muro, fichas y yakus.', route: 'aprender/tutorial.html', icon: 'icon-tutorial', tone: 'pink', translationBase: 'module.tutorial', status: 'v1.0' },
-  { id: 'fichas', title: 'Fichas', description: 'Manzu, pinzu, souzu, vientos, dragones y aka dora.', route: 'aprender/tiles.html', icon: 'icon-tiles', tone: 'green', translationBase: 'module.fichas' },
+  { id: 'fichas', title: 'Fichas', description: 'Manzu, pinzu, souzu, vientos, dragones y aka dora.', route: 'aprender/tiles.html', icon: 'icon-tiles', tone: 'green', translationBase: 'module.fichas', status: 'v1.0' },
   { id: 'machi', title: 'Tipos de Espera', description: 'Ryanmen, kanchan, penchan, tanki, nobetan y más esperas.', route: 'aprender/machi.html', icon: 'icon-machi', tone: 'yellow', translationBase: 'module.machi' },
   { id: 'yaku-ref', title: 'Guía de Yakus', description: 'Todos los yaku con su valor y ejemplo de fichas.', route: 'aprender/yaku-reference.html', icon: 'icon-yaku', tone: 'green', translationBase: 'module.yakuRef' },
   { id: 'dora', title: 'Dora', description: 'Indicador, ciclos, aka, ura y kan dora.', route: 'aprender/dora.html', icon: 'icon-dora', tone: 'green', translationBase: 'module.dora' },
