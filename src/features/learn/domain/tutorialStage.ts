@@ -336,6 +336,19 @@ export const tutorialStops: TutorialStop[] = [
   },
   {
     id: 'ron-tsumo', part: 'discover', short: L('Ron y tsumo', 'Ron and tsumo', 'Ron e tsumo'), ...text('ron-tsumo'),
+    eyebrow: L('Cerrar la mano', 'Closing the hand', 'Fechar a mão'),
+    title: L('Dos formas de ganar: tsumo y ron', 'Two ways to win: tsumo and ron', 'Duas formas de ganhar: tsumo e ron'),
+    body: L(
+      'Cuando te falta una sola ficha para completar la mano (4 grupos y 1 pareja), puedes ganar de dos maneras. Tsumo: la ficha que te falta la robas tú del muro. Ron: la ficha que te falta la descarta otro jugador. En ninguno de los dos casos la metes en silencio entre tus fichas: apenas la mano queda completa, declaras «Tsumo» o «Ron» y muestras tu mano.',
+      'When you are one tile short of a complete hand (4 sets and 1 pair), there are two ways to win. Tsumo: the tile you need is one you draw yourself from the wall. Ron: the tile you need is discarded by another player. Either way you do not quietly slip it into your hand: as soon as the hand is complete you declare “Tsumo” or “Ron” and show your hand.',
+      'Quando falta uma só peça para completar a mão (4 grupos e 1 par), há duas formas de ganhar. Tsumo: a peça que falta é uma que você compra do muro. Ron: a peça que falta é descartada por outro jogador. Em nenhum dos casos você a coloca em silêncio na mão: assim que a mão fica completa, declara «Tsumo» ou «Ron» e mostra a mão.',
+    ),
+    bullets: [
+      L('Tsumo: robas tú la ficha que completa; pagan los tres rivales.', 'Tsumo: you draw the completing tile; all three rivals pay.', 'Tsumo: você compra a peça que completa; os três rivais pagam.'),
+      L('Ron: otro jugador descarta la ficha que necesitas; paga solo quien la botó.', 'Ron: another player discards the tile you need; only the one who threw it pays.', 'Ron: outro jogador descarta a peça que você precisa; só quem descartou paga.'),
+      L('Siempre: declaras, muestras la mano y se revisan los grupos y los yaku.', 'Always: you declare, show your hand and the sets and yaku are checked.', 'Sempre: você declara, mostra a mão e os grupos e yaku são conferidos.'),
+    ],
+    remember: L('Mano completa → declaras «Tsumo» o «Ron» → muestras tu mano.', 'Complete hand → declare “Tsumo” or “Ron” → show your hand.', 'Mão completa → declara «Tsumo» ou «Ron» → mostra a mão.'),
     stage: { kind: 'deck', mode: 'win' },
     practice: { href: '../practicar/calc.html', label: L('Practicar el puntaje', 'Practise scoring', 'Praticar a pontuação') },
   },

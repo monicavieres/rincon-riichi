@@ -38,6 +38,7 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
   const [rivalHold, setRivalHold] = useState<boolean[]>([false, false, false]);
   const [hot, setHot] = useState<{ player: number; slot: number } | null>(null);
   const [tags, setTags] = useState(true);
+  const [callout, setCallout] = useState<string | null>(null);
   const [note, setNote] = useState<{ title: string; body: string } | null>(null);
   const flights = useRef<Fly[]>([]);
   const shown = useRef<Map<number, { x: number; lift: number }>>(new Map());
@@ -64,6 +65,7 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
     setRivalPonds(RIVERS[which].rivals);
     setRivalHold([false, false, false]);
     setHot(null);
+    setCallout(null);
     setNote(null);
   }, []);
 
@@ -152,11 +154,15 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
       setTags(true);
       said(t('¡Robaste el Chun (中)!', 'You drew the Chun (中)!', 'Você comprou o Chun (中)!'), t('Mira tus grupos: 1-2-3 manzu, 4-5-6 pinzu, 3-4-5 souzu y la pareja de Este (東). Tenías dos Chun (中) y te faltaba una tercera: justo la que acabas de robar.', 'Look at your sets: 1-2-3 manzu, 4-5-6 pinzu, 3-4-5 souzu and the pair of East (東). You held two Chun (中) and needed a third: exactly the one you just drew.', 'Veja seus grupos: 1-2-3 manzu, 4-5-6 pinzu, 3-4-5 souzu e o par de Leste (東). Você tinha dois Chun (中) e faltava um terceiro: justo o que acabou de comprar.'));
       if (!(await wait(5500))) return;
+      setCallout('TSUMO');
+      said(t('Declaras «Tsumo»', 'You declare “Tsumo”', 'Você declara «Tsumo»'), t('La ficha completa tu mano. No la metes en silencio entre las demás: la dejas aparte y dices «Tsumo».', 'The tile completes your hand. You do not slip it in among the others: you leave it apart and say “Tsumo”.', 'A peça completa sua mão. Você não a coloca em silêncio entre as outras: deixa de lado e diz «Tsumo».'));
+      if (!(await wait(4500))) return;
+      setCallout(null);
       setHand((now) => [...now, winner].sort(byKey));
       setExtra(null);
       setFinished(true);
-      said(t('¡Tsumo!', 'Tsumo!', 'Tsumo!'), t('Completaste 4 grupos y 1 pareja con una ficha que robaste tú mismo: eso se llama tsumo. La ronda termina y pagan los tres rivales.', 'You completed 4 sets and 1 pair with a tile you drew yourself: that is called tsumo. The round ends and all three rivals pay.', 'Você completou 4 grupos e 1 par com uma peça que comprou: isso se chama tsumo. A rodada termina e os três rivais pagam.'));
-      if (!(await wait(6500))) return;
+      said(t('Muestras tu mano', 'You show your hand', 'Você mostra a mão'), t('Abres la mano para que todos la vean: 4 grupos y 1 pareja, con una ficha que robaste tú. Eso es tsumo: la ronda termina y pagan los tres rivales.', 'You open your hand for all to see: 4 sets and 1 pair, with a tile you drew yourself. That is tsumo: the round ends and all three rivals pay.', 'Você abre a mão para todos verem: 4 grupos e 1 par, com uma peça que você mesmo comprou. Isso é tsumo: a rodada termina e os três rivais pagam.'));
+      if (!(await wait(7000))) return;
       said(t('Hay otra forma de ganar', 'There is another way to win', 'Há outra forma de ganhar'), t('No siempre la robas tú. Veamos qué pasa cuando la ficha que necesitas la bota otro jugador.', 'You do not always draw it yourself. Let us see what happens when another player throws the tile you need.', 'Nem sempre é você que compra. Vamos ver o que acontece quando outro jogador descarta a peça que você precisa.'));
       if (!(await wait(4000))) return;
       void script('ron');
@@ -172,7 +178,7 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
     setHot({ player: 3, slot: rivals[2].length - 1 });
     said(t('¡Esa es tu ficha!', 'That is your tile!', 'Essa é a sua peça!'), t('No la robaste tú: la botó otro jugador. Pero es el Chun (中) que completa tu grupo, y las reglas te dejan ganar con ella.', 'You did not draw it: another player threw it. But it is the Chun (中) that completes your set, and the rules let you win on it.', 'Você não comprou: outro jogador descartou. Mas é o Chun (中) que completa seu grupo, e as regras deixam você ganhar com ele.'));
     if (!(await wait(5000))) return;
-    said(t('Dices «Ron»', 'You call “Ron”', 'Você diz «Ron»'), t('Reclamas la ficha del rival y la pones en tu mano antes de que siga el juego.', 'You claim the rival’s tile and place it in your hand before the game goes on.', 'Você reivindica a peça do rival e coloca na sua mão antes do jogo continuar.'));
+    said(t('Tomas la ficha del rival', 'You take the rival’s tile', 'Você pega a peça do rival'), t('Como completa tu mano, puedes tomarla antes de que siga el juego.', 'Since it completes your hand, you may take it before the game goes on.', 'Como completa sua mão, você pode pegá-la antes do jogo continuar.'));
     const at = pondPos(3, rivals[2].length - 1);
     setHot(null);
     setRivalPonds(rivals.map((list, k) => (k === 2 ? list.slice(0, -1) : list)));
@@ -184,11 +190,14 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
     if (!(await wait(400))) return;
     const piece = { id: 399, code: WINNER };
     setExtra(piece);
-    if (!(await wait(2600))) return;
+    setCallout('RON');
+    said(t('Declaras «Ron»', 'You declare “Ron”', 'Você declara «Ron»'), t('La ficha del rival completa tu mano. No la mezclas con las tuyas: la dejas aparte y dices «Ron».', 'The rival’s tile completes your hand. You do not mix it with yours: you leave it apart and say “Ron”.', 'A peça do rival completa sua mão. Você não a mistura com as suas: deixa de lado e diz «Ron».'));
+    if (!(await wait(4500))) return;
+    setCallout(null);
     setHand((now) => [...now, piece].sort(byKey));
     setExtra(null);
     setFinished(true);
-    said(t('¡Ron!', 'Ron!', 'Ron!'), t('Ganaste con la ficha que botó otro jugador: eso se llama ron. La ronda termina y paga solo quien la botó.', 'You won on a tile another player threw: that is called ron. The round ends and only the one who threw it pays.', 'Você ganhou com a peça que outro jogador descartou: isso se chama ron. A rodada termina e só quem descartou paga.'));
+    said(t('Muestras tu mano', 'You show your hand', 'Você mostra a mão'), t('Abres la mano para que todos la vean: 4 grupos y 1 pareja, con la ficha que botó otro jugador. Eso es ron: la ronda termina y paga solo quien la botó.', 'You open your hand for all to see: 4 sets and 1 pair, with the tile another player threw. That is ron: the round ends and only the one who threw it pays.', 'Você abre a mão para todos verem: 4 grupos e 1 par, com a peça que outro jogador descartou. Isso é ron: a rodada termina e só quem descartou paga.'));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lay, fly, language]);
 
@@ -267,6 +276,13 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
       const at = wallPos(mark);
       const pos = g.project(at.x, at.y, FELT_Z + 9);
       g.pill(pos.x, pos.y, t('Robas de aquí', 'You draw from here', 'Você compra daqui'), { bg: p.gold, fg: p.ink, size: 12, border: p.ink });
+    }
+    if (callout && extra) {
+      const st = shown.current.get(extra.id);
+      if (st) {
+        const pos = g.project(st.x, HAND_Y, FELT_Z + 12);
+        g.pill(pos.x, pos.y - 6, `${callout}!`, { bg: p.gold, fg: p.ink, size: 16, border: p.ink });
+      }
     }
     if (hot) {
       const at = pondPos(hot.player, hot.slot);
