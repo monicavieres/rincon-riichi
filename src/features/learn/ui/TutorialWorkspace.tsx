@@ -368,6 +368,18 @@ export function TutorialWorkspace() {
                 <a href={stop.practice.href}>{t(stop.practice.label)} <span aria-hidden="true">→</span></a>
               </div>
             )}
+            {spec.kind === 'deck' && spec.mode === 'hand' && (
+              <div className="tile-help">
+                <a href="../aprender/tiles.html" target="_blank" rel="noopener">
+                  <b>{t(L('¿No sabes cuál es cuál?', 'Not sure which is which?', 'Não sabe qual é qual?'))}</b>
+                  <span>{t(L('Conoce las 34 fichas: manzu, pinzu, souzu, vientos y dragones', 'Meet the 34 tiles: manzu, pinzu, souzu, winds and dragons', 'Conheça as 34 peças: manzu, pinzu, souzu, ventos e dragões'))} ↗</span>
+                </a>
+                <a href="../practicar/que-ficha-es.html" target="_blank" rel="noopener">
+                  <b>{t(L('Quiz: ¿qué ficha es?', 'Quiz: which tile is it?', 'Quiz: que peça é?'))}</b>
+                  <span>{t(L('Practica reconocerlas hasta que te salgan solas', 'Practise until you know them by heart', 'Pratique até reconhecê-las de cabeça'))} ↗</span>
+                </a>
+              </div>
+            )}
           </div>
 
           <div className="explorer-inspector-footer">

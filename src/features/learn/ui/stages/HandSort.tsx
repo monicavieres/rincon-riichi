@@ -192,8 +192,6 @@ export function HandSort({ language, onStatus }: { language: TutorialLanguage; o
         <IsoCanvas ref={scene} draw={draw} handlers={{ onPointerDown: onDown, onPointerMove: onMove, onPointerUp: onUp, onPointerCancel: onUp }} />
         <div className="sort-actions deck-actions">
           <span>{rack.length}/{rack.length} {t('en tu mano', 'in your hand', 'na sua mão')}</span>
-          <a className="sort-button" href="../aprender/tiles.html" target="_blank" rel="noopener">{t('Conocer las fichas ↗', 'Meet the tiles ↗', 'Conhecer as peças ↗')}</a>
-          <a className="sort-button" href="../practicar/que-ficha-es.html" target="_blank" rel="noopener">{t('Quiz: ¿qué ficha es? ↗', 'Quiz: which tile is it? ↗', 'Quiz: que peça é? ↗')}</a>
           <button type="button" className="sort-button" onClick={shuffle}>{t('Desordenar', 'Scramble', 'Desordenar')}</button>
           <button type="button" className="sort-button is-primary" onClick={autoSort}>{t('Ordenar', 'Sort', 'Ordenar')}</button>
         </div>
