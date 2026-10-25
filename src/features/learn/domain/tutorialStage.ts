@@ -9,7 +9,7 @@ export type LocalCallout = Omit<TableCallout, 'label'> & { label: LocalizedText 
 
 export type StageSpec =
   | { kind: 'sort' }
-  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' | 'win' | 'yaku' | 'calls' }
+  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' | 'win' | 'yaku' | 'calls' | 'furiten' }
   | { kind: 'table'; focus: TableFocus; callouts: LocalCallout[] }
   | { kind: 'rack'; rows: RackRow[]; footer?: LocalizedText };
 
@@ -423,6 +423,24 @@ export const tutorialStops: TutorialStop[] = [
     practice: { href: '../practicar/yaku.html', label: L('Practicar yaku', 'Practise yaku', 'Praticar yaku') },
   },
   {
+    id: 'furiten', part: 'discover', short: L('Furiten', 'Furiten', 'Furiten'),
+    eyebrow: L('Una trampa al ganar', 'A catch when winning', 'Uma armadilha ao ganhar'),
+    title: L('Furiten: cuando no puedes hacer ron', 'Furiten: when you cannot call ron', 'Furiten: quando você não pode fazer ron'),
+    body: L(
+      'Hay una regla más sobre **cómo se puede ganar**: si una ficha de tu **espera** ya está en tus **propios descartes**, estás en **furiten** y **no puedes ganar por ron**:\n- Ejemplo: esperas **4p o 7p** y ya botaste un **7p**.\n- Aunque un rival bote el **4p**, tienes que **dejarla pasar**.\n- Lo que sí puedes: ganar por **tsumo**, robando tú la ficha.\nRevisa siempre tu río antes de decir «Ron».',
+      'There is one more rule about **how you can win**: if a tile of your **wait** is already in your **own discards**, you are in **furiten** and **cannot win by ron**:\n- Example: you wait on **4p or 7p** and already threw a **7p**.\n- Even if a rival throws the **4p**, you have to **let it pass**.\n- What you can do: win by **tsumo**, drawing the tile yourself.\nAlways check your river before saying “Ron”.',
+      'Há mais uma regra sobre **como se pode ganhar**: se uma peça da sua **espera** já está nos seus **próprios descartes**, você está em **furiten** e **não pode ganhar por ron**:\n- Exemplo: você espera **4p ou 7p** e já descartou um **7p**.\n- Mesmo que um rival descarte o **4p**, você precisa **deixar passar**.\n- O que você pode: ganhar por **tsumo**, comprando a peça.\nConfira sempre seu rio antes de dizer «Ron».',
+    ),
+    bullets: [
+      L('Furiten: alguna ficha de tu espera está en tus propios descartes.', 'Furiten: a tile of your wait is in your own discards.', 'Furiten: alguma peça da sua espera está nos seus próprios descartes.'),
+      L('En furiten no ganas por ron, pero sí por tsumo.', 'In furiten you cannot win by ron, but you can by tsumo.', 'Em furiten você não ganha por ron, mas ganha por tsumo.'),
+      L('Revisa tu río antes de declarar.', 'Check your river before declaring.', 'Confira seu rio antes de declarar.'),
+    ],
+    remember: L('Si tu espera está en tu río, solo tsumo.', 'If your wait is in your river, tsumo only.', 'Se sua espera está no seu rio, só tsumo.'),
+    stage: { kind: 'deck', mode: 'furiten' },
+    practice: { href: '../practicar/furiten.html', label: L('Practicar furiten', 'Practise furiten', 'Praticar furiten') },
+  },
+  {
     id: 'what-is-mahjong', part: 'discover', short: L('La mesa', 'The table', 'A mesa'), ...text('what-is-mahjong'),
     stage: { kind: 'table', focus: zone('mesa'), callouts: tableCallouts.mesa },
     practice: { href: '../aprender/tiles.html', label: L('Conocer las fichas', 'Meet the tiles', 'Conhecer as peças') },
@@ -512,18 +530,6 @@ export const tutorialStops: TutorialStop[] = [
       ]),
     },
     practice: { href: '../aprender/defensa.html', label: L('Aprender defensa', 'Learn defence', 'Aprender defesa') },
-  },
-  {
-    id: 'furiten', part: 'win', short: L('Furiten', 'Furiten', 'Furiten'), ...text('furiten'),
-    stage: {
-      kind: 'table',
-      focus: zone('descartes'),
-      callouts: relabel('descartes', [
-        L('Si tu espera está aquí: furiten', 'If your wait is here: furiten', 'Se sua espera está aqui: furiten'),
-        L('Revisa cada descarte tuyo', 'Check each of your discards', 'Confira cada descarte seu'),
-      ]),
-    },
-    practice: { href: '../practicar/furiten.html', label: L('Practicar furiten', 'Practise furiten', 'Praticar furiten') },
   },
   {
     id: 'dora', part: 'win', short: L('Dora', 'Dora', 'Dora'), ...text('dora'),

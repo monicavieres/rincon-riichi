@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { FIRST_DEAD, around, dealAssignments, drawOrder, gAt, handSlot } from './DealBoard';
-import { DEALT, HAND_VIEW, HAND_Y, WIDE_VIEW, WIDTH, byKey, handX, pondPos, sleep, wallPos, type Fly, type Piece } from './DrawBoard';
+import { DEALT, HAND_Y, WIDE_VIEW, WIDTH, byKey, handX, pondPos, sleep, wallPos, type Fly, type Piece } from './DrawBoard';
 import { paintDealtTable } from './HandSort';
 import { FELT_Z, IsoCanvas, picture, type IsoHandle, type Painter } from './iso3d';
 
@@ -185,7 +185,7 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
     const dt = Math.min(200, g.now - lastFrame.current);
     lastFrame.current = g.now;
     const ease = 1 - Math.exp(-dt / 420);
-    const target = view === 'hand' ? HAND_VIEW : WIDE_VIEW;
+    const target = view === 'hand' ? { u: 58, v: 72, zoom: 1.28 } : WIDE_VIEW;
     cam.u += (target.u - cam.u) * ease;
     cam.v += (target.v - cam.v) * ease;
     cam.zoom += (target.zoom - cam.zoom) * ease;

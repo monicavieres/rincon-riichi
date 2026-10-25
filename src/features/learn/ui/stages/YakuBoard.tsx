@@ -191,6 +191,7 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
           {subs.map((item) => <button key={item.id} type="button" className={`sort-button${sub === item.id ? ' is-on' : ''}`} onClick={() => show(mode, item.id)}>{item.label}</button>)}
         </div>
       )}
+      <a className="sort-button" href="../aprender/yaku-reference.html" target="_blank" rel="noopener">{t('Aprender los otros yaku ↗', 'Learn the other yaku ↗', 'Aprender os outros yaku ↗')}</a>
       {mode === 'riichi' && (
         <button type="button" className="sort-button is-primary" onClick={() => { if (stick) show('riichi', 'yes'); else void declare(); }} disabled={busy}>
           {stick ? t('Ver otra vez', 'Watch again', 'Ver de novo') : t('Ver cómo se declara', 'See how it is declared', 'Ver como se declara')}

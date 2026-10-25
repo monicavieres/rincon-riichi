@@ -9,6 +9,7 @@ import { DrawBoard } from './stages/DrawBoard';
 import { WinBoard } from './stages/WinBoard';
 import { YakuBoard } from './stages/YakuBoard';
 import { CallsBoard } from './stages/CallsBoard';
+import { FuritenBoard } from './stages/FuritenBoard';
 import { DealBoard, type DealStatus } from './stages/DealBoard';
 import { TableTopBoard, type TableTopStatus } from './stages/TableTopBoard';
 import { WallBoard, type WallStatus } from './stages/WallBoard';
@@ -44,6 +45,11 @@ const TABS: Array<{ id: Tab; label: LocalizedText }> = [
 ];
 
 const PRACTICE_COPY = {
+  furiten: L(
+    'Mira la animación: tu espera es 4p o 7p, pero ya botaste un 7p. Cuando un rival bota el 4p no puedes hacer ron; solo el tsumo sirve. «Ver otra vez» la repite.',
+    'Watch the animation: your wait is 4p or 7p, but you already threw a 7p. When a rival throws the 4p you cannot call ron; only tsumo works. “Watch again” replays it.',
+    'Veja a animação: sua espera é 4p ou 7p, mas você já descartou um 7p. Quando um rival descarta o 4p você não pode fazer ron; só o tsumo serve. «Ver de novo» repete.',
+  ),
   calls: L(
     'Elige Chii, Pon o Kan y mira la jugada: quién bota, cómo va la ficha tomada, a quién se le salta el turno y cómo tu mano pasa de cerrada a abierta. «Ver otra vez» la repite.',
     'Choose Chii, Pon or Kan and watch the play: who throws, how the taken tile lies, whose turn is skipped and how your hand goes from closed to open. “Watch again” replays it.',
@@ -231,7 +237,7 @@ function TileThumb({ codes, scattered = false }: { codes: string[]; scattered?: 
 function thumbFor(stop: TutorialStop) {
   const spec = stop.stage;
   if (spec.kind === 'table') return <ZoneThumb focus={spec.focus} />;
-  if (spec.kind === 'deck') return spec.mode === 'calls' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'yaku' ? <TileThumb codes={['2m', '3m', '4m']} /> : spec.mode === 'win' ? <TileThumb codes={['6z', '6z', '6z']} /> : spec.mode === 'draw' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'hand' ? <TileThumb codes={['4p', '1m', '6z']} scattered /> : <SceneThumb mode={spec.mode} />;
+  if (spec.kind === 'deck') return spec.mode === 'furiten' ? <TileThumb codes={['4p', '7p']} /> : spec.mode === 'calls' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'yaku' ? <TileThumb codes={['2m', '3m', '4m']} /> : spec.mode === 'win' ? <TileThumb codes={['6z', '6z', '6z']} /> : spec.mode === 'draw' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'hand' ? <TileThumb codes={['4p', '1m', '6z']} scattered /> : <SceneThumb mode={spec.mode} />;
   if (spec.kind === 'sort') return <TileThumb codes={['4p', '1m', '6z']} scattered />;
   return <TileThumb codes={spec.rows[0].groups[0].tiles} />;
 }
@@ -339,6 +345,7 @@ export function TutorialWorkspace() {
           </div>
 
           {spec.kind === 'deck' && spec.mode === 'shuffle' && <DeckBoard language={language} onStatus={setDeck} />}
+          {spec.kind === 'deck' && spec.mode === 'furiten' && <FuritenBoard key={language} language={language} />}
           {spec.kind === 'deck' && spec.mode === 'calls' && <CallsBoard key={language} language={language} />}
           {spec.kind === 'deck' && spec.mode === 'yaku' && <YakuBoard key={language} language={language} />}
           {spec.kind === 'deck' && spec.mode === 'win' && <WinBoard key={language} language={language} />}
@@ -387,6 +394,7 @@ export function TutorialWorkspace() {
             {tab === 'summary' && <Body text={t(stop.body)} />}
             {stop.id === 'yaku' && <div id="yaku-controls" className="yaku-controls" />}
             {stop.id === 'calls' && <div id="calls-controls" className="yaku-controls" />}
+            {stop.id === 'furiten' && <div id="furiten-controls" className="yaku-controls" />}
             {tab === 'observe' && <ul>{stop.bullets.map((bullet, bulletIndex) => <li key={bulletIndex}>{rich(t(bullet))}</li>)}</ul>}
             {tab === 'practice' && (
               <div className="explorer-practice">
