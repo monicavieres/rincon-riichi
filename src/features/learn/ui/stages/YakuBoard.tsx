@@ -299,7 +299,7 @@ function TanyaoCard({ t }: { t: (es: string, en: string, pt: string) => string }
 }
 
 /** The 1000-point riichi stick, lying in the compass slot. */
-function drawStick(g: Painter, x: number, y: number, lift: number) {
+export function drawStick(g: Painter, x: number, y: number, lift: number) {
   const { palette: p } = g;
   g.add(y * 100 + 70, () => {
     const box = g.box(x, y, FELT_Z + lift, 9.6, 1.4, 1.1, 0);

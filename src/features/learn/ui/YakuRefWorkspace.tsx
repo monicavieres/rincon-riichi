@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { YAKU_LIST } from '../domain/yakuData';
 import { SAMPLES, checkYaku, pinfuWhy, sortTiles, windTriplets } from '../domain/yakuCheck';
-import { YAKU_FLOWS, type FlowStep } from '../domain/yakuFlows';
+import { YAKU_FLOWS } from '../domain/yakuFlows';
+import { FLOW_SCRIPTS } from '../domain/yakuFlowScripts';
+import { YakuFlowBoard } from './stages/YakuFlowBoard';
 import { initialLanguage, usePageChrome } from './usePageChrome';
 
 type Lang = 'es' | 'en' | 'pt';
@@ -74,7 +76,7 @@ export function YakuRefWorkspace() {
   };
   const removeAt = (at: number) => setBuilt((now) => now.filter((_, i) => i !== at));
   const verdict = intro ? null : checkYaku(yaku.id, built, lastTile ?? undefined, { round: roundWind, seat: seatWind });
-  const flow = intro ? undefined : YAKU_FLOWS[yaku.id];
+  const flow = intro ? undefined : FLOW_SCRIPTS[yaku.id] ? YAKU_FLOWS[yaku.id] : undefined;
   const buildable = !intro && checkYaku(yaku.id, [], undefined) !== 'situational';
   const why = !intro && yaku.id === 'pinfu' && built.length === 14 ? pinfuWhy(built, lastTile ?? undefined, { round: roundWind, seat: seatWind }) : null;
   const winds = windTriplets(built);
@@ -131,7 +133,7 @@ export function YakuRefWorkspace() {
               <div className="machi-block is-wait"><small>{copy.plus}</small><div className="machi-row"><span className="yaku-chip">役</span></div></div>
             </div>
           ) : tab === 'flow' && flow ? (
-            <FlowPlayer key={`${yaku.id}-${language}`} flow={flow} language={language} ui={ui} face={face} onFaceError={onFaceError} />
+            <YakuFlowBoard key={`${yaku.id}-${language}`} flowId={yaku.id} language={language} replayLabel={ui.replay} />
           ) : tab === 'build' ? (
             <div className="tiles-felt yaku-builder" key={`${yaku.id}-build`}>
               <div className="yb-block" onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from.startsWith('hand:')) removeAt(Number(from.slice(5))); }}>
@@ -272,45 +274,5 @@ export function YakuRefWorkspace() {
         ))}
       </nav>
     </section>
-  );
-}
-
-type FlowUi = { seats: string[]; acts: Record<string, string>; wall: string; replay: string };
-
-/** A short, self-playing example of how a yaku comes about during a game. */
-function FlowPlayer({ flow, language, ui, face, onFaceError }: { flow: FlowStep[]; language: Lang; ui: FlowUi; face: (code: string) => string; onFaceError: (event: { currentTarget: HTMLImageElement }, code: string) => void }) {
-  const [step, setStep] = useState(0);
-  const [run, setRun] = useState(0);
-  useEffect(() => {
-    setStep(0);
-    let at = 0;
-    const timer = window.setInterval(() => {
-      at = at + 1 >= flow.length + 1 ? 0 : at + 1;
-      setStep(Math.min(at, flow.length - 1));
-    }, 5200);
-    return () => window.clearInterval(timer);
-  }, [flow, run]);
-  const current = flow[step];
-  return (
-    <div className="tiles-felt yaku-flow" key={step}>
-      <button type="button" className="machi-replay" onClick={() => setRun((n) => n + 1)}>↻ {ui.replay}</button>
-      <div className="yf-seats">
-        {ui.seats.map((name, seat) => (
-          <span key={name} className={`yf-seat${current.actor === seat ? ' is-on' : ''}`}>{name}{current.actor === seat ? ` · ${ui.acts[current.action]}` : ''}</span>
-        ))}
-      </div>
-      <div className="yf-table">
-        {current.wall !== undefined && <span className="yf-wall">{ui.wall}: {current.wall}</span>}
-        {current.stick && <span className="yf-stick" aria-hidden="true" />}
-        {current.tile ? <img className={`yf-tile is-${current.action}`} src={face(current.tile)} alt={current.tile} onError={(event) => onFaceError(event, current.tile!)} /> : <span className="yf-hold">…</span>}
-      </div>
-      {current.hand && (
-        <div className="machi-row is-small yaku-hand">
-          {current.hand.map((code, i) => <img key={`${code}-${i}`} src={face(code)} alt={code} draggable={false} onError={(event) => onFaceError(event, code)} />)}
-        </div>
-      )}
-      <p className="machi-caption yf-caption">{current.text[language]}</p>
-      <div className="yf-dots">{flow.map((_, i) => <button type="button" key={i} className={i === step ? 'is-on' : ''} onClick={() => setStep(i)} aria-label={`${i + 1}`} />)}</div>
-    </div>
   );
 }
