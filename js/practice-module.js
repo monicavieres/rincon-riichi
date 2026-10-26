@@ -961,6 +961,7 @@ document.addEventListener("rincon:mounted", () => {
         languageSelect: document.querySelector("#languageSelect"),
         roundLabel: document.querySelector("#roundLabel"),
         scoreLabel: document.querySelector("#scoreLabel"),
+        quickTimer: document.querySelector("#quickTimer"),
         hand: document.querySelector("#hand"),
         roundContext: document.querySelector("#roundContext"),
         questionTitle: document.querySelector("#questionTitle"),
@@ -1050,6 +1051,7 @@ function hasStartView() {
 
 function showLanding() {
     if (!hasStartView()) return;
+    stopQuickRun();
     state.started = false;
     els.startView.hidden = false;
     if (els.quizCard) els.quizCard.hidden = true;
@@ -1065,6 +1067,54 @@ function showLanding() {
     if (coachImg) coachImg.src = chibi;
 }
 
+//: Quick mode (time attack): see js/quick-mode.js. Right = +1, wrong = −2, endless questions until the clock ends.
+function quickOn() {
+    return Boolean(window.RinconQuick && window.RinconQuick.active());
+}
+
+function updateQuickHud(run) {
+    if (els.quickTimer) {
+        els.quickTimer.hidden = false;
+        els.quickTimer.textContent = `${run.left} s`;
+        els.quickTimer.classList.toggle("is-low", run.left <= 10);
+    }
+    if (els.roundLabel) els.roundLabel.textContent = `✓ ${run.correct} · ✕ ${run.wrong}`;
+}
+
+function finishQuick() {
+    state.quickSummary = window.RinconQuick.stats();
+    state.started = false;
+    showResults();
+}
+
+function beginQuickRun() {
+    state.quickSummary = null;
+    const started = Boolean(window.RinconQuick && window.RinconQuick.begin(updateQuickHud, finishQuick));
+    if (els.quickTimer) els.quickTimer.hidden = !started;
+    return started;
+}
+
+function stopQuickRun() {
+    if (window.RinconQuick) window.RinconQuick.stop();
+    if (els.quickTimer) els.quickTimer.hidden = true;
+}
+
+//: A quick run never runs out of questions: when the set is used up, draw a fresh one.
+function refillQuick() {
+    if (state.page === "tileName") {
+        const mode = TILE_NAME_MODES.find((m) => m.id === state.tileMode) || TILE_NAME_MODES[0];
+        const pool = mode.tiles();
+        modules.tileName.questions = buildTileNameQuestions(Math.min(10, pool.length), pool);
+    } else if (state.page === "chinitsu") {
+        modules.chinitsu.questions = buildChinitsuQuestions(10);
+    } else if (state.page === "valores") {
+        modules.valores.questions = pickValoresRound(10);
+    } else {
+        seedLocalQuestions();
+    }
+    state.round = 0;
+}
+
 function startGame() {
     state.started = true;
     state.round = 0;
@@ -1074,6 +1124,7 @@ function startGame() {
     if (els.resultsCard) els.resultsCard.hidden = true;
     if (els.quizCard) els.quizCard.hidden = false;
     render();
+    beginQuickRun();
     if (els.quizCard && els.quizCard.scrollIntoView) els.quizCard.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -1321,6 +1372,7 @@ function renderTileModes() {
 }
 
 function showTileStart() {
+    stopQuickRun();
     const resultsCard = document.querySelector("#resultsCard");
     if (resultsCard) resultsCard.hidden = true;
     els.quizCard.hidden = true;
@@ -1668,6 +1720,7 @@ function choiceButton(choice) {
             state.selected = choice;
             [...els.choices.children].forEach((item) => item.classList.remove("is-selected"));
             button.classList.add("is-selected");
+            if (quickOn()) submit();
         }
     });
     return button;
@@ -1687,6 +1740,7 @@ function submit() {
     const allowEmpty = state.page === "chinitsu";
     const hasSelection = multi ? (state.selected && state.selected.length > 0) : Boolean(state.selected);
     if (!hasSelection && !allowEmpty) {
+        if (quickOn()) return;
         els.feedback.hidden = false;
         ensureFeedbackCoach();
         els.feedbackTitle.textContent = `! ${t("choose")}`;
@@ -1712,7 +1766,12 @@ function submit() {
         correct = state.selected === expected;
         correctAnswer = expected;
     }
-    if (correct) state.score += 1;
+    if (quickOn()) {
+        window.RinconQuick.record(correct);
+        state.score += correct ? 1 : -2;
+    } else if (correct) {
+        state.score += 1;
+    }
 
     state.results.push({
         tile: (question.hand && question.hand[0]) || (question.tileId) || "1p",
@@ -1724,6 +1783,14 @@ function submit() {
 
     booleanizeChoices(question, correct, correctAnswer, multi);
     els.scoreLabel.textContent = `${t("score")}: ${state.score}`;
+
+    if (quickOn()) {
+        updateQuickHud(window.RinconQuick.stats());
+        els.submitButton.hidden = true;
+        els.nextButton.hidden = true;
+        setTimeout(() => { if (quickOn()) next(); }, 380);
+        return;
+    }
 
     if (state.page === "tileName" && els.tileExplainModal) {
         showTileExplainModal(question, correct);
@@ -1797,6 +1864,12 @@ function revealWait(question) {
 function next() {
     state.round += 1;
     const total = modules[state.page].questions.length;
+    if (state.round >= total && quickOn()) {
+        refillQuick();
+        render();
+        updateQuickHud(window.RinconQuick.stats());
+        return;
+    }
     if (state.round >= total) {
         showResults();
         return;
@@ -1816,10 +1889,18 @@ function showResults() {
 function renderResultsSummary() {
     const body = els.resultsBody;
     const scoreEl = els.resultsScore;
-    const score = `${state.score} / ${state.results.length}`;
+    const quick = state.quickSummary;
+    const score = quick ? `${state.score} pts` : `${state.score} / ${state.results.length}`;
     if (scoreEl) scoreEl.textContent = score;
     if (body) {
-        body.replaceChildren(...state.results.map((entry) => {
+        const lead = [];
+        if (quick) {
+            const head = document.createElement("div");
+            head.className = "results-row quick-summary";
+            head.textContent = `⚡ ${quick.seconds} s · ✓ ${quick.correct} · ✕ ${quick.wrong} (−2)`;
+            lead.push(head);
+        }
+        body.replaceChildren(...lead, ...state.results.map((entry) => {
             const row = document.createElement("div");
             row.className = `results-row${entry.correct ? " is-correct" : " is-wrong"}`;
             const mark = document.createElement("span");
@@ -1861,6 +1942,7 @@ function startTileQuiz(modeId) {
     if (els.resultsCard) els.resultsCard.hidden = true;
     els.quizCard.hidden = false;
     render();
+    beginQuickRun();
 }
 
 function restart() {
@@ -1883,6 +1965,7 @@ function restart() {
     }
     state.started = true;
     render();
+    beginQuickRun();
 }
 
 function tileImage(tileId) {

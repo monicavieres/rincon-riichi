@@ -305,6 +305,7 @@ document.addEventListener("rincon:mounted", () => {
         quizCard: document.querySelector("#quizCard"),
         questionCounter: document.querySelector("#questionCounter"),
         scoreLabel: document.querySelector("#scoreLabel"),
+        quickTimer: document.querySelector("#quickTimer"),
         roundContext: document.querySelector("#roundContext"),
         quizHand: document.querySelector("#quizHand"),
         answerGrid: document.querySelector("#answerGrid"),
@@ -371,11 +372,42 @@ document.addEventListener("rincon:mounted", () => {
 });
 
 function showStartView() {
+    stopQuickRun();
     state.started = false;
     els.startView.hidden = false;
     els.quizCard.hidden = true;
     els.finalCard.hidden = true;
     setCoach("ready", t("coachReady"));
+}
+
+//: Quick mode (time attack): see js/quick-mode.js. Right = +1, wrong = −2, endless hands until the clock ends.
+function quickOn() {
+    return Boolean(window.RinconQuick && window.RinconQuick.active());
+}
+
+function updateQuickHud(run) {
+    if (els.quickTimer) {
+        els.quickTimer.hidden = false;
+        els.quickTimer.textContent = `${run.left} s`;
+        els.quickTimer.classList.toggle("is-low", run.left <= 10);
+    }
+    if (els.questionCounter) els.questionCounter.textContent = `✓ ${run.correct} · ✕ ${run.wrong}`;
+}
+
+function finishQuick() {
+    state.started = false;
+    renderFinal();
+}
+
+function beginQuickRun() {
+    const started = Boolean(window.RinconQuick && window.RinconQuick.begin(updateQuickHud, finishQuick));
+    if (els.quickTimer) els.quickTimer.hidden = !started;
+    return started;
+}
+
+function stopQuickRun() {
+    if (window.RinconQuick) window.RinconQuick.stop();
+    if (els.quickTimer) els.quickTimer.hidden = true;
 }
 
 function startGame() {
@@ -392,6 +424,7 @@ function startGame() {
     els.quizCard.hidden = false;
     setCoach("ready", t("coachReady"));
     renderQuestion();
+    beginQuickRun();
     els.quizCard.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -503,6 +536,7 @@ function submitAnswer() {
     if (!current || state.answered) return;
 
     if (state.selected.size === 0) {
+        if (quickOn()) return;
         els.feedbackPanel.hidden = false;
         els.feedbackTitle.textContent = `! ${t("chooseOne")}`;
         els.feedbackText.textContent = "";
@@ -518,7 +552,12 @@ function submitAnswer() {
     const extraIds = selectedIds.filter((id) => !correctIds.includes(id));
     const correct = missedIds.length === 0 && extraIds.length === 0;
 
-    if (correct) state.score += 1;
+    if (quickOn()) {
+        window.RinconQuick.record(correct);
+        state.score += correct ? 1 : -2;
+    } else if (correct) {
+        state.score += 1;
+    }
 
     [...els.answerGrid.children].forEach((button) => {
         const id = button.dataset.yaku;
@@ -535,6 +574,13 @@ function submitAnswer() {
     setCoach(stateMode, coachLine);
 
     els.scoreLabel.textContent = `${t("score")}: ${state.score}`;
+    if (quickOn()) {
+        updateQuickHud(window.RinconQuick.stats());
+        els.submitButton.hidden = true;
+        els.nextButton.hidden = true;
+        setTimeout(() => { if (quickOn()) nextQuestion(); }, 380);
+        return;
+    }
     els.feedbackPanel.hidden = false;
     els.feedbackTitle.textContent = correct ? `✓ ${t("correct")}` : `× ${t("incorrect")}`;
     const answerLabelKey = correctIds.length > 1 ? "answersWere" : "answerWas";
@@ -564,14 +610,22 @@ function submitAnswer() {
 
 function nextQuestion() {
     state.round += 1;
+    if (quickOn() && state.round >= state.questions.length) {
+        state.questions = shuffle([...templates]).slice(0, 10);
+        state.round = 0;
+    }
     setCoach("ready", t("coachReady"));
     renderQuestion();
 }
 
 function renderFinal() {
+    const quick = window.RinconQuick && window.RinconQuick.stats();
+    const wasQuick = Boolean(quick && quick.left <= 0);
+    stopQuickRun();
+    els.quizCard.hidden = true;
     els.finalCard.hidden = false;
     els.finalTitle.textContent = t("final");
-    els.finalText.textContent = t("finalText")(state.score, state.questions.length);
+    els.finalText.textContent = wasQuick ? `⚡ ${quick.seconds} s · ✓ ${quick.correct} · ✕ ${quick.wrong} (−2) → ${state.score} pts` : t("finalText")(state.score, state.questions.length);
     els.nextButton.hidden = true;
     els.restartButton.hidden = false;
     setCoach("correct", t("coachDone"));

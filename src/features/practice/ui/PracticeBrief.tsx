@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BRIEFS, BRIEF_CHIPS, BRIEF_UI } from '../domain/practiceBriefs';
 import type { PracticeKey } from '../domain/practiceCatalog';
+import { QuickSetup } from './QuickSetup';
 
 type Lang = 'es' | 'en' | 'pt';
 const FACE_DIR: Record<string, string> = {
@@ -88,6 +89,7 @@ export function PracticeBrief({ kind, title, subtitle, i18n = true }: { kind: Pr
           <ol className="brief-steps">{brief.steps.map((step, i) => <li key={i}><b>{i + 1}</b><span>{step[language]}</span></li>)}</ol>
         </>
       )}
+      <QuickSetup />
       <div className="brief-controls" onMouseOver={(event) => { const index = modeOf(event); if (index !== null) setFocus(index); }} onMouseLeave={() => setFocus(null)}>
         {kind === 'tileName' ? <div className="tile-modes" id="tileModes" /> : <button className="big-button green start-button" id="startButton" data-i18n={keyed('start')}>Empezar</button>}
       </div>

@@ -1483,3 +1483,28 @@ a.sort-button {
 .practice-start-felt .brief-steps li { padding: 0.5cqw 1cqw; }
 .practice-start-felt h1 { font-size: clamp(22px, 3.6cqw, 40px); }
 .practice-start-felt .tile-start-chips span { padding: 2px 10px; }
+
+/* keyboard play */
+.kb-hint { display: flex; align-items: center; gap: var(--space-4); margin: var(--space-2) 0; padding: var(--space-2) var(--space-3); border: 2px dashed var(--line, #d9c9b0); border-radius: var(--radius-md); }
+.kb-arrows { display: grid; grid-template-columns: repeat(3, 28px); grid-template-rows: repeat(2, 28px); gap: 3px; }
+.kb-up { grid-column: 2; grid-row: 1; }
+.kb-left { grid-column: 1; grid-row: 2; }
+.kb-downk { grid-column: 2; grid-row: 2; }
+.kb-right { grid-column: 3; grid-row: 2; }
+.kb-key { display: grid; place-items: center; width: 28px; height: 28px; border: 2px solid var(--ink); border-radius: 7px; background: var(--card); box-shadow: 0 3px 0 var(--ink); color: var(--ink); font: 800 14px / 1 var(--font-sans); transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.08s ease; }
+.kb-key.is-wide { width: 44px; }
+.kb-key.is-down { transform: translateY(3px); box-shadow: 0 0 0 var(--ink); background: var(--gold, #f2b42c); }
+.kb-legend { display: grid; gap: 4px; font: 600 12px / 1.2 var(--font-sans); color: var(--ink); }
+.kb-line { display: flex; align-items: center; gap: 8px; }
+.answer-button.is-cursor { outline: 3px solid var(--gold, #f2b42c); outline-offset: 2px; }
+
+/* quick mode */
+.quick-setup { display: grid; gap: 0.6cqw; justify-items: center; }
+.quick-modes, .quick-seconds { display: inline-flex; gap: 0; overflow: hidden; border: 2px solid #fff; border-radius: 99px; }
+.quick-modes button, .quick-seconds button { padding: 0.35em 1.1em; border: 0; background: transparent; color: #fff; font: 700 clamp(10px, 1.5cqw, 14px) / 1.2 var(--font-display); text-transform: uppercase; cursor: pointer; }
+.quick-modes button.is-on, .quick-seconds button.is-on { background: var(--gold, #f2b42c); color: var(--ink); }
+.quick-hint { margin: 0; color: rgba(255, 255, 255, 0.9); font: 500 clamp(10px, 1.5cqw, 13px) / 1.3 var(--font-sans); }
+.quick-timer { min-width: 4.2em; text-align: center; background: var(--gold, #f2b42c); color: var(--ink); }
+.quick-timer.is-low { background: #e0473e; color: #fff; animation: quick-pulse 0.8s ease-in-out infinite; }
+@keyframes quick-pulse { 50% { transform: scale(1.1); } }
+.quick-summary { font-weight: 800; }

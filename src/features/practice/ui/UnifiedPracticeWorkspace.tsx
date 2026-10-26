@@ -1,6 +1,7 @@
 import type { PracticeDefinition } from '../domain/practiceCatalog';
 import { PRACTICE_RAIL } from '../domain/practiceCatalog';
 import { PracticeBrief } from './PracticeBrief';
+import { KeyboardHint } from './KeyboardHint';
 
 const chevron = (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg>
@@ -49,7 +50,7 @@ export function UnifiedPracticeWorkspace({ definition }: { definition: PracticeD
 
       <div className="table-explorer-workspace" id="quizCard" hidden>
         <div className="table-explorer-stage">
-          <div className="explorer-progress"><span className="status ready" id="roundLabel">1 / 10</span><strong className="module-pill" id="scoreLabel">Puntaje: 0</strong></div>
+          <div className="explorer-progress"><span className="status ready" id="roundLabel">1 / 10</span><strong className="module-pill" id="scoreLabel">Puntaje: 0</strong><strong className="module-pill quick-timer" id="quickTimer" hidden>60 s</strong></div>
           <div className="tiles-felt practice-felt">
             <p className="eyebrow" data-i18n={tileName ? 'tileLabel' : 'handLabel'}>{tileName ? 'Ficha' : 'Mano'}</p>
             <div className="round-context" id="roundContext" />
@@ -64,6 +65,7 @@ export function UnifiedPracticeWorkspace({ definition }: { definition: PracticeD
             <h2 id="questionTitle" />
             <p id="questionHelp" />
             <div className={`choice-grid ${tileName ? 'tile-name-choices' : 'tile-choices'}`} id="choices" />
+            <KeyboardHint />
             <div className="feedback-panel" id="feedback" hidden><strong id="feedbackTitle" /><p id="feedbackText" /></div>
             <div className="module-actions"><button className="big-button green" id="submitButton" data-i18n="submit">Enviar</button><button className="big-button green" id="nextButton" data-i18n="next" hidden>Siguiente</button><button className="big-button pink" id="restartButton" data-i18n="restart" hidden>Otra vez</button></div>
           </div>
