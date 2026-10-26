@@ -1398,3 +1398,28 @@ a.sort-button {
 .dora-arrow { color: var(--gold, #f2b42c); font: 800 clamp(16px, 3cqw, 28px) / 1 var(--font-sans); }
 .dora-glyph { width: clamp(70px, 12cqw, 120px); font-size: clamp(36px, 7cqw, 64px); }
 .dora-thumb { font: 800 28px / 1 var(--font-sans); color: var(--ink); }
+
+/* score guide */
+.score-felt { align-content: center; gap: 1cqw; justify-items: center; color: #fff; padding: 2cqw; overflow: auto; }
+.score-table { border-collapse: separate; border-spacing: 3px; color: var(--ink); font: 600 clamp(9px, 1.35cqw, 13px) / 1.2 var(--font-sans); }
+.score-table th, .score-table td { padding: 0.5cqw 0.8cqw; border-radius: 8px; background: var(--card); text-align: center; }
+.score-table th { background: var(--gold, #f2b42c); font-weight: 800; }
+.score-table td b { display: block; font-weight: 800; }
+.score-table td small { display: block; opacity: 0.75; }
+.score-table td.is-empty { background: rgba(255, 255, 255, 0.35); }
+.score-table.is-limits th small { display: block; opacity: 0.8; font-weight: 600; }
+.score-tiles { display: inline-flex; align-items: center; gap: 1px; vertical-align: middle; }
+.score-tiles img { width: clamp(16px, 2.6cqw, 26px); height: auto; }
+.score-tiles img.is-side { transform: rotate(90deg); margin: 0 4px; }
+.score-back { display: block; width: clamp(16px, 2.6cqw, 26px); aspect-ratio: 0.72; border: 2px solid var(--ink); border-radius: 4px; background: var(--tile-back, #c9743a); }
+.fu-list { display: grid; gap: 0.8cqw; width: 100%; max-width: 92%; }
+.fu-item { display: flex; align-items: center; gap: 1.2cqw; padding: 0.8cqw 1.2cqw; border-radius: 12px; background: rgba(255, 255, 255, 0.12); text-align: left; }
+.fu-item .score-tiles { flex: none; min-width: 7cqw; justify-content: center; }
+.fu-item b { display: block; font: 700 clamp(11px, 1.7cqw, 15px) / 1.2 var(--font-sans); }
+.fu-item em { margin-left: 6px; padding: 1px 8px; border-radius: 99px; background: var(--gold, #f2b42c); color: var(--ink); font-style: normal; }
+.fu-item span { font: 500 clamp(10px, 1.5cqw, 13px) / 1.3 var(--font-sans); opacity: 0.92; }
+.score-calc { display: flex; flex-wrap: wrap; justify-content: center; gap: 1cqw; }
+.score-calc label { display: grid; gap: 2px; font: 700 clamp(9px, 1.3cqw, 12px) / 1.2 var(--font-sans); text-transform: uppercase; letter-spacing: 0.06em; }
+.score-calc select { padding: 4px 8px; border: 2px solid var(--ink); border-radius: 10px; background: var(--card); color: var(--ink); font: 600 14px var(--font-sans); }
+.score-result { display: grid; gap: 4px; justify-items: center; font: 600 clamp(12px, 1.9cqw, 17px) / 1.3 var(--font-sans); }
+.score-result .is-total { padding: 4px 18px; border-radius: 99px; background: var(--gold, #f2b42c); color: var(--ink); }

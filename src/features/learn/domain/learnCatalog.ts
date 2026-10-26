@@ -1,4 +1,4 @@
-export type LearnKind = 'tutorial' | 'tiles' | 'machi' | 'dora' | 'yakuReference' | 'score' | 'reference';
+export type LearnKind = 'tutorial' | 'tiles' | 'machi' | 'dora' | 'defensa' | 'reglas' | 'yakuReference' | 'score' | 'reference';
 export type LearnDefinition = { kind: LearnKind; title: string; bodyClass: string; shellClass: string };
 
 const byFile: Record<string, LearnDefinition> = {
@@ -6,10 +6,10 @@ const byFile: Record<string, LearnDefinition> = {
   'tiles.html': { kind: 'tiles', title: 'Fichas', bodyClass: 'ref-body', shellClass: 'ref-shell' },
   'machi.html': { kind: 'machi', title: 'Tipos de Espera', bodyClass: 'ref-body', shellClass: 'ref-shell' },
   'yaku-reference.html': { kind: 'yakuReference', title: 'Guía de Yakus', bodyClass: 'ref-body', shellClass: 'ref-shell' },
-  'score.html': { kind: 'score', title: 'Puntajes', bodyClass: 'score-body', shellClass: 'score-shell' },
+  'score.html': { kind: 'score', title: 'Puntajes', bodyClass: 'ref-body', shellClass: 'ref-shell' },
   'dora.html': { kind: 'dora', title: 'Dora', bodyClass: 'ref-body', shellClass: 'ref-shell' },
-  'defensa.html': { kind: 'reference', title: 'Defensa', bodyClass: 'ref-body', shellClass: 'ref-shell' },
-  'reglas.html': { kind: 'reference', title: 'Reglas Especiales', bodyClass: 'ref-body', shellClass: 'ref-shell' },
+  'defensa.html': { kind: 'defensa', title: 'Defensa', bodyClass: 'ref-body', shellClass: 'ref-shell' },
+  'reglas.html': { kind: 'reglas', title: 'Reglas Especiales', bodyClass: 'ref-body', shellClass: 'ref-shell' },
 };
 
 export function getLearnDefinition(pathname: string): LearnDefinition {
