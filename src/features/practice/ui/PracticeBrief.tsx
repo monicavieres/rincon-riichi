@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BRIEFS, BRIEF_CHIPS, BRIEF_UI } from '../domain/practiceBriefs';
+import { BRIEFS, BRIEF_UI } from '../domain/practiceBriefs';
 import type { PracticeKey } from '../domain/practiceCatalog';
 import { QuickSetup } from './QuickSetup';
 
@@ -93,7 +93,6 @@ export function PracticeBrief({ kind, title, subtitle, i18n = true }: { kind: Pr
       <div className="brief-controls" onMouseOver={(event) => { const index = modeOf(event); if (index !== null) setFocus(index); }} onMouseLeave={() => setFocus(null)}>
         {kind === 'tileName' ? <div className="tile-modes" id="tileModes" /> : <button className="big-button green start-button" id="startButton" data-i18n={keyed('start')}>Empezar</button>}
       </div>
-      <div className="tile-start-chips" aria-hidden="true">{BRIEF_CHIPS[language].map((chip) => <span key={chip}>{chip}</span>)}</div>
     </div>
   );
 }

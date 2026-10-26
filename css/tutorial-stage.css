@@ -1508,3 +1508,11 @@ a.sort-button {
 .quick-timer.is-low { background: #e0473e; color: #fff; animation: quick-pulse 0.8s ease-in-out infinite; }
 @keyframes quick-pulse { 50% { transform: scale(1.1); } }
 .quick-summary { font-weight: 800; }
+.brief-family .machi-row img { width: clamp(12px, 2.4cqw, 26px); }
+.practice-start-felt { gap: 0.6cqw; padding: 1.5% 2%; }
+.practice-start-felt h1 { font-size: clamp(20px, 3.2cqw, 34px); }
+.brief-atlas { row-gap: 0.4cqw; }
+.brief-controls .tile-mode { padding: 0.5cqw 1cqw; }
+@media (min-width: 981px) {
+    .practice-lab .practice-start .table-explorer-stage { height: min(68vh, 640px); }
+}
