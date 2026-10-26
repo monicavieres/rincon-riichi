@@ -18,7 +18,6 @@ export const learnModules: ModuleCard[] = [
   { id: 'machi', title: 'Tipos de Espera', description: 'Ryanmen, kanchan, penchan, tanki, nobetan y más esperas.', route: 'aprender/machi.html', icon: 'icon-machi', tone: 'yellow', translationBase: 'module.machi', status: 'v1.0' },
   { id: 'yaku-ref', title: 'Guía de Yakus', description: 'Todos los yaku con su valor y ejemplo de fichas.', route: 'aprender/yaku-reference.html', icon: 'icon-yaku', tone: 'green', translationBase: 'module.yakuRef', status: 'v1.0' },
   { id: 'dora', title: 'Dora', description: 'Indicador, ciclos, aka, ura y kan dora.', route: 'aprender/dora.html', icon: 'icon-dora', tone: 'green', translationBase: 'module.dora' },
-  { id: 'eficiencia', title: 'Eficiencia de Fichas', description: 'Bloques, ukeire y la teoría de 5 bloques.', route: 'aprender/eficiencia.html', icon: 'icon-eficiencia', tone: 'blue', translationBase: 'module.eficiencia' },
   { id: 'defensa', title: 'Defensa', description: 'Genbutsu, suji, kabe, one-chance y fold.', route: 'aprender/defensa.html', icon: 'icon-defensa', tone: 'pink', translationBase: 'module.defensa' },
   { id: 'reglas', title: 'Reglas Especiales', description: 'Empates, chombo, pao y otras reglas poco comunes.', route: 'aprender/reglas.html', icon: 'icon-reglas', tone: 'red', translationBase: 'module.reglas' },
   { id: 'puntaje', title: 'Puntajes', description: 'Tablas de pagos, fu y honba.', route: 'aprender/score.html', icon: 'icon-score', tone: 'orange', translationBase: 'module.puntaje' },

@@ -5,7 +5,7 @@ Sitio web para aprender y practicar conceptos de mahjong riichi con enfoque visu
 ## Características
 
 - **Home** orientada a aprender y practicar, no a jugar partidas completas
-- **Aprender**: fichas, tutorial paso a paso, tipos de espera, guía de yakus, dora, eficiencia, defensa y reglas especiales
+- **Aprender**: fichas, tutorial paso a paso, tipos de espera, guía de yakus, dora, defensa y reglas especiales
 - **Practicar**: yaku, esperas, fu, han, puntajes, valores, furiten y reconocimiento de fichas
 - **Recursos**: fuentes y créditos, comunidades, sitios para jugar y bibliotecas
 - **Idiomas**: selector ES / EN / PT

@@ -115,8 +115,8 @@ export const tableExplorerStops: TableExplorerStop[] = [
       'Ganar exige completar la forma y tener al menos un yaku.',
     ],
     practicePrompt: 'Antes de descartar, pregunta qué grupos ya tienes, qué fichas te faltan y cuántas fichas diferentes mejoran tu mano.',
-    actionLabel: 'Practicar eficiencia',
-    route: 'aprender/eficiencia.html',
+    actionLabel: 'Ver tipos de espera',
+    route: 'aprender/machi.html',
     hotspot: [448, 541, 148],
     focus: { boxes: [{ x: 330, y: 534, z: FELT, w: 128, d: 15, h: 27 }], zoom: 3.2 },
     callouts: [

@@ -327,7 +327,7 @@ export const tutorialStops: TutorialStop[] = [
     ],
     remember: L('13 fichas para esperar, 14 para decidir qué descartar.', '13 tiles to wait with, 14 to decide what to discard.', '13 peças para esperar, 14 para decidir o que descartar.'),
     stage: { kind: 'deck', mode: 'deal' },
-    practice: { href: '../aprender/eficiencia.html', label: L('Aprender eficiencia', 'Learn efficiency', 'Aprender eficiência') },
+    practice: { href: '../practicar/que-ficha-es.html', label: L('Practicar nombres de fichas', 'Practise tile names', 'Praticar nomes de peças') },
   },
   {
     id: 'sort',
@@ -367,7 +367,7 @@ export const tutorialStops: TutorialStop[] = [
     ],
     remember: L('Guarda lo que acerca a 4 grupos y 1 pareja; bota lo que no.', 'Keep what gets you closer to 4 sets and 1 pair; throw what does not.', 'Guarde o que aproxima de 4 grupos e 1 par; descarte o que não.'),
     stage: { kind: 'deck', mode: 'draw' },
-    practice: { href: '../aprender/eficiencia.html', label: L('Aprender eficiencia', 'Learn efficiency', 'Aprender eficiência') },
+    practice: { href: '../aprender/machi.html', label: L('Aprender tipos de espera', 'Learn wait types', 'Aprender tipos de espera') },
   },
   {
     id: 'ron-tsumo', part: 'discover', short: L('Ron y tsumo', 'Ron and tsumo', 'Ron e tsumo'), ...text('ron-tsumo'),
