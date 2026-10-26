@@ -1565,3 +1565,7 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 #quickPad .quick-pad-center { grid-area: center; display: grid; justify-items: center; gap: 4px; padding: 0 clamp(8px, 2cqw, 24px); }
 #quickPad .quick-pad-center img { width: clamp(56px, 10cqw, 110px); height: auto; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.35)); }
 #quickPad .quick-pad-suit { padding: 2px 12px; border: 2px solid rgba(255, 255, 255, 0.7); border-radius: 99px; color: #fff; font: 800 clamp(11px, 1.6cqw, 15px) / 1.4 var(--font-sans); text-transform: uppercase; letter-spacing: 0.08em; }
+#quickPad.is-around { gap: clamp(4px, 0.8cqw, 10px); }
+#quickPad.is-around .quick-pad-key { min-height: clamp(34px, 5.2cqw, 60px); }
+#quickPad .quick-pad-center img { width: clamp(40px, 8cqw, 90px); max-height: 15vh; width: auto; }
+#quickPad .quick-pad-center { gap: 2px; }
