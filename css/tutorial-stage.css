@@ -1546,3 +1546,7 @@ body.quick-running .answer-button[data-arrow]::before { top: 50%; left: 12px; wi
 #quickPad[data-count="3"] { grid-template-areas: ". up ." "left . right"; }
 #quickPad[data-count="3"] .quick-pad-key[data-slot="3"] { grid-area: right; }
 body.quick-pad #quizCard #choices, body.quick-pad #quizCard .kb-hint { display: none; }
+
+/* Practice HUD: one slim row in the corner of the stage */
+.practice-lab .explorer-progress { display: flex; flex-wrap: nowrap; gap: 6px; min-width: 0; padding: 0; border: 0; background: transparent; box-shadow: none; }
+.practice-lab .explorer-progress > * { white-space: nowrap; }

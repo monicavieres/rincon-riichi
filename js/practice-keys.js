@@ -25,7 +25,7 @@
     function root() {
         for (const selector of containers) {
             const node = document.querySelector(selector);
-            if (node && node.offsetParent !== null) return node;
+            if (node && !node.closest("[hidden]")) return node;
         }
         return null;
     }
@@ -41,6 +41,7 @@
 
     /** Puts each option's arrow on its answer button. */
     function label() {
+        quick();
         const node = root();
         if (!node) return;
         const list = [...node.querySelectorAll(".answer-button")];
