@@ -5,19 +5,11 @@ import { PracticeBrief } from './PracticeBrief';
 export function YakuWorkspace() {
   return (
     <section className="table-explorer tutorial-lab practice-lab" aria-label="Identifica el Yaku">
-      <div className="table-explorer-workspace" id="startView">
+      <div className="table-explorer-workspace practice-start" id="startView">
         <div className="table-explorer-stage practice-coach">
-          <PracticeBrief kind="yaku" />
+          <PracticeBrief kind="yaku" title="Identifica el Yaku" subtitle="Diez manos rápidas con feedback inmediato." />
           <span id="coachSpeech" hidden />
         </div>
-        <aside className="table-explorer-inspector">
-          <nav className="explorer-tabs"><button type="button" className="is-active" data-i18n="eyebrow">Módulo jugable</button></nav>
-          <div className="explorer-inspector-copy">
-            <h2 data-i18n="title">Identifica el Yaku</h2>
-            <p data-i18n="subtitle">Diez manos rápidas con feedback inmediato.</p>
-            <button className="big-button green start-button" id="startButton" data-i18n="start">Empezar</button>
-          </div>
-        </aside>
       </div>
 
       <div className="table-explorer-workspace" id="quizCard" aria-live="polite" hidden>

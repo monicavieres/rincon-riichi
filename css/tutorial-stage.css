@@ -1458,3 +1458,28 @@ a.sort-button {
 .brief-family .machi-row img { width: clamp(14px, 2.9cqw, 32px); }
 .practice-brief { gap: 1cqw; padding: 2%; }
 .practice-lab .practice-coach .tile-start-chips span { background: rgba(255, 255, 255, 0.12); box-shadow: none; }
+
+/* start screens: the whole green stage holds title, what is trained and the buttons */
+.practice-lab .practice-start { grid-template-columns: 1fr; }
+.practice-lab .practice-start .practice-coach { min-height: 0; }
+.practice-start-felt h1 { margin: 0; color: #fff; font: 800 clamp(26px, 4.4cqw, 48px) / 1.05 var(--font-display); }
+.practice-start-felt .start-sub { margin: 0; max-width: 60ch; color: rgba(255, 255, 255, 0.9); font: 500 clamp(12px, 1.8cqw, 17px) / 1.35 var(--font-sans); }
+.brief-controls { width: 100%; display: grid; justify-items: center; }
+.brief-controls .start-button { padding: 0.8em 2.6em; font-size: clamp(14px, 2cqw, 20px); }
+.brief-controls .tile-modes { display: flex; flex-wrap: wrap; justify-content: center; gap: 1cqw; max-width: 96%; }
+.brief-controls .tile-mode { display: flex; align-items: center; gap: 0.8cqw; padding: 0.7cqw 1.3cqw; border: 2px solid var(--ink); border-radius: 14px; background: var(--card); color: var(--ink); box-shadow: 0 3px 0 var(--ink); cursor: pointer; font: 700 clamp(10px, 1.5cqw, 14px) / 1.1 var(--font-display); text-transform: uppercase; transition: transform 0.12s ease; }
+.brief-controls .tile-mode:hover { transform: translateY(-3px); background: var(--gold-soft, #ffe9a8); }
+.brief-controls .tile-mode img { width: clamp(22px, 3.4cqw, 34px) !important; height: auto; }
+.brief-family .machi-row img.is-dim { opacity: 0.25; filter: grayscale(1); transform: scale(0.94); }
+.brief-family .machi-row img { transition: opacity 0.18s ease, transform 0.18s ease; }
+@media (min-width: 981px) {
+    .practice-lab .practice-start .table-explorer-stage { aspect-ratio: auto; height: min(64vh, 585px); }
+}
+.practice-start-felt { gap: 0.8cqw; }
+.brief-atlas { grid-template-columns: repeat(2, auto); column-gap: 3cqw; row-gap: 0.8cqw; }
+.practice-start-felt { justify-content: center; align-content: center; }
+.practice-start-felt .yaku-hand { flex-wrap: nowrap; }
+.practice-start-felt .yaku-hand img, .practice-start-felt .machi-row.is-small img { width: clamp(14px, 2.6cqw, 28px); }
+.practice-start-felt .brief-steps li { padding: 0.5cqw 1cqw; }
+.practice-start-felt h1 { font-size: clamp(22px, 3.6cqw, 40px); }
+.practice-start-felt .tile-start-chips span { padding: 2px 10px; }

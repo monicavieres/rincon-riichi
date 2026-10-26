@@ -31,7 +31,18 @@ function useSiteSettings() {
 }
 
 /** The start screen's stage: what the drill trains, with an example, instead of a mascot. */
-export function PracticeBrief({ kind }: { kind: PracticeKey }) {
+const MODE_FILTERS: Array<(code: string) => boolean> = [
+  () => true,
+  (code) => code.endsWith('m'),
+  (code) => code.endsWith('p'),
+  (code) => code.endsWith('s'),
+  (code) => code.endsWith('z'),
+  (code) => code.endsWith('m') || code.endsWith('z'),
+  (code) => !code.endsWith('z'),
+];
+
+export function PracticeBrief({ kind, title, subtitle, i18n = true }: { kind: PracticeKey; title: string; subtitle: string; i18n?: boolean }) {
+  const [focus, setFocus] = useState<number | null>(null);
   const { language, theme } = useSiteSettings();
   const brief = BRIEFS[kind];
   const ui = BRIEF_UI[language];
@@ -42,15 +53,25 @@ export function PracticeBrief({ kind }: { kind: PracticeKey }) {
   };
   const tile = (code: string, gold = false) => <img key={`${code}-${gold}`} className={gold ? 'is-gold' : undefined} src={face(code)} alt={code} draggable={false} onError={(event) => onError(event, code)} />;
 
+  const keyed = (name: string) => (i18n ? name : undefined);
+  const modeOf = (event: { target: EventTarget }) => {
+    const button = (event.target as HTMLElement).closest('.tile-mode');
+    if (!button || !button.parentElement) return null;
+    return Array.from(button.parentElement.children).indexOf(button);
+  };
+
   return (
-    <div className="tiles-felt practice-brief">
-      <div className="machi-name"><b>{kind === 'tileName' ? ui.atlas : brief.goal[language]}</b></div>
+    <div className="tiles-felt practice-brief practice-start-felt">
+      <h1 id="startTitle" data-i18n={keyed(kind === 'tileName' ? 'tileStart.title' : 'title')}>{title}</h1>
+      <p className="start-sub" id="startSubtitle" data-i18n={keyed(kind === 'tileName' ? 'tileStart.subtitle' : 'subtitle')}>{subtitle}</p>
       {kind === 'tileName' ? (
         <div className="brief-atlas">
           {FAMILIES.map((family, i) => (
             <div className="brief-family" key={ui.families[i]}>
               <small>{ui.families[i]}</small>
-              <div className="machi-row is-small">{family.map((code) => tile(code))}</div>
+              <div className="machi-row is-small">{family.map((code) => (
+                <img key={code} className={focus !== null && !MODE_FILTERS[focus](code) ? 'is-dim' : undefined} src={face(code)} alt={code} draggable={false} onError={(event) => onError(event, code)} />
+              ))}</div>
             </div>
           ))}
         </div>
@@ -58,7 +79,6 @@ export function PracticeBrief({ kind }: { kind: PracticeKey }) {
         <>
           {brief.tiles.length > 0 && (
             <div className="machi-block">
-              <small>{ui.example}</small>
               <div className="machi-row is-small yaku-hand">
                 {brief.tiles.map((code, i) => <img key={`${code}-${i}`} src={face(code)} alt={code} draggable={false} onError={(event) => onError(event, code)} />)}
                 {brief.gold?.map((code) => tile(code, true))}
@@ -68,6 +88,9 @@ export function PracticeBrief({ kind }: { kind: PracticeKey }) {
           <ol className="brief-steps">{brief.steps.map((step, i) => <li key={i}><b>{i + 1}</b><span>{step[language]}</span></li>)}</ol>
         </>
       )}
+      <div className="brief-controls" onMouseOver={(event) => { const index = modeOf(event); if (index !== null) setFocus(index); }} onMouseLeave={() => setFocus(null)}>
+        {kind === 'tileName' ? <div className="tile-modes" id="tileModes" /> : <button className="big-button green start-button" id="startButton" data-i18n={keyed('start')}>Empezar</button>}
+      </div>
       <div className="tile-start-chips" aria-hidden="true">{BRIEF_CHIPS[language].map((chip) => <span key={chip}>{chip}</span>)}</div>
     </div>
   );

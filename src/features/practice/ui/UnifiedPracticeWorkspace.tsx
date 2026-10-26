@@ -28,18 +28,10 @@ export function UnifiedPracticeWorkspace({ definition }: { definition: PracticeD
   const tileName = definition.key === 'tileName';
   return (
     <section className="table-explorer tutorial-lab practice-lab" aria-label={definition.title}>
-      <div className="table-explorer-workspace" id="startView" hidden={!tileName}>
+      <div className="table-explorer-workspace practice-start" id="startView" hidden={!tileName}>
         <div className="table-explorer-stage practice-coach">
-          <PracticeBrief kind={definition.key} />
+          <PracticeBrief kind={definition.key} title={definition.title} subtitle={tileName ? 'Elige un grupo de fichas y nómbralas. Cada grupo saca 10 fichas al azar.' : 'Elige cuándo empezar.'} i18n={tileName} />
         </div>
-        <aside className="table-explorer-inspector">
-          <nav className="explorer-tabs"><button type="button" className="is-active" data-i18n={tileName ? 'tileStart.eyebrow' : undefined}>Módulo jugable</button></nav>
-          <div className="explorer-inspector-copy">
-            <h2 id="startTitle" data-i18n={tileName ? 'tileStart.title' : undefined}>{definition.title}</h2>
-            <p id="startSubtitle" data-i18n={tileName ? 'tileStart.subtitle' : undefined}>Elige un modo para comenzar.</p>
-            {tileName ? <div className="tile-modes" id="tileModes" /> : <button className="big-button green start-button" id="startButton">Empezar</button>}
-          </div>
-        </aside>
       </div>
 
       <div className="table-explorer-workspace" id="resultsCard" hidden>
