@@ -1423,3 +1423,21 @@ a.sort-button {
 .score-calc select { padding: 4px 8px; border: 2px solid var(--ink); border-radius: 10px; background: var(--card); color: var(--ink); font: 600 14px var(--font-sans); }
 .score-result { display: grid; gap: 4px; justify-items: center; font: 600 clamp(12px, 1.9cqw, 17px) / 1.3 var(--font-sans); }
 .score-result .is-total { padding: 4px 18px; border-radius: 99px; background: var(--gold, #f2b42c); color: var(--ink); }
+
+/* practice drills: same stage / inspector / rail as the learn modules */
+.practice-lab [hidden] { display: none !important; }
+.practice-lab .rail-link { text-decoration: none; }
+.practice-lab .practice-coach { align-content: center; justify-items: center; text-align: center; gap: var(--space-4); }
+.practice-lab .practice-felt { position: relative; display: grid; align-content: center; justify-items: center; gap: var(--space-3); padding: 3%; color: #fff; overflow: auto; }
+.practice-lab .practice-felt .eyebrow { color: rgba(255, 255, 255, 0.85); }
+.practice-lab .module-hand { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4cqw; }
+.practice-lab .module-hand img { width: clamp(24px, 5.2cqw, 48px); height: auto; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.35)); }
+.practice-lab .choice-grid { display: grid; gap: var(--space-2); margin: var(--space-3) 0; }
+.practice-lab .module-actions { display: flex; gap: var(--space-2); margin-top: var(--space-3); }
+.practice-lab .tile-modes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
+.practice-lab .results-head { display: grid; gap: var(--space-2); justify-items: center; }
+.practice-lab .explorer-inspector-copy { overflow-y: auto; }
+.practice-lab .module-hand:has(> img:only-child) img { width: clamp(70px, 14cqw, 130px); }
+.practice-lab .practice-felt:has(#furitenTable) { align-content: start; padding-top: 12%; }
+.practice-lab .practice-felt:has(#furitenTable) .module-hand img { width: clamp(16px, 3cqw, 30px); }
+.practice-lab .practice-felt:has(#furitenTable) .furiten-board { transform: scale(0.82); transform-origin: top center; }
