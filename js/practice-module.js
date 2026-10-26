@@ -1712,7 +1712,10 @@ function choiceButton(choice) {
     button.dataset.choice = choice;
     const suitName = singleSuitName();
     if (looksLikeTile(choice)) button.append(tileImage(choice));
-    else button.textContent = suitName && choice.endsWith(` ${suitName}`) ? choice.slice(0, -suitName.length - 1) : choice;
+    else {
+        const bare = suitName && choice.endsWith(` ${suitName}`) ? choice.slice(0, -suitName.length - 1) : choice;
+        button.textContent = state.page === "tileName" ? bare.replace(/ (Man|Pin|Sou)zu$/, " $1") : bare;
+    }
     button.addEventListener("click", () => {
         if (state.answered) return;
         const multi = modules[state.page].multi;
