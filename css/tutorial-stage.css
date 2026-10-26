@@ -1516,3 +1516,12 @@ a.sort-button {
 @media (min-width: 981px) {
     .practice-lab .practice-start .table-explorer-stage { height: min(68vh, 640px); }
 }
+.answer-button { position: relative; }
+.answer-button[data-arrow]::before { content: attr(data-arrow); position: absolute; top: 4px; left: 4px; display: grid; place-items: center; width: 20px; height: 20px; border: 2px solid var(--ink); border-radius: 6px; background: var(--card); box-shadow: 0 2px 0 var(--ink); color: var(--ink); font: 800 12px / 1 var(--font-sans); }
+
+/* results: big, high-contrast final score on the green stage */
+.practice-brief .results-head { display: grid; gap: 1cqw; justify-items: center; color: #fff; }
+.practice-brief .results-head .eyebrow { color: rgba(255, 255, 255, 0.85); letter-spacing: 0.16em; }
+.practice-brief .results-head h2 { margin: 0; color: #fff; font: 800 clamp(30px, 5cqw, 56px) / 1 var(--font-display); }
+.practice-brief .results-head .results-score { margin: 0; color: #fff; font: 600 clamp(14px, 2.2cqw, 22px) / 1.2 var(--font-sans); }
+.practice-brief .results-head .results-score strong { display: inline-block; margin-top: 0.4cqw; padding: 0.15em 0.9em; border-radius: 99px; background: var(--gold, #f2b42c); color: var(--ink); font: 800 clamp(26px, 5cqw, 52px) / 1.1 var(--font-display); }

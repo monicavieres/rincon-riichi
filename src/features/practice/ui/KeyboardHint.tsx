@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 
 type Lang = 'es' | 'en' | 'pt';
 const COPY = {
-  es: { move: 'Mover', pick: 'Elegir', send: 'Enviar', title: 'Juega con el teclado' },
-  en: { move: 'Move', pick: 'Pick', send: 'Send', title: 'Play with the keyboard' },
-  pt: { move: 'Mover', pick: 'Escolher', send: 'Enviar', title: 'Jogue com o teclado' },
+  es: { move: 'Cada flecha es una respuesta', pick: '', send: 'Enviar / siguiente', title: 'Juega con el teclado' },
+  en: { move: 'Each arrow is an answer', pick: '', send: 'Send / next', title: 'Play with the keyboard' },
+  pt: { move: 'Cada seta é uma resposta', pick: '', send: 'Enviar / próxima', title: 'Jogue com o teclado' },
 };
 const KEYS: Record<string, string> = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', ' ': 'space', Enter: 'enter' };
 
@@ -34,7 +34,6 @@ export function KeyboardHint() {
       </div>
       <div className="kb-legend">
         <span className="kb-line"><b>{copy.move}</b></span>
-        <span className="kb-line">{cap('space', '␣', 'is-wide')} <b>{copy.pick}</b></span>
         <span className="kb-line">{cap('enter', '⏎', 'is-wide')} <b>{copy.send}</b></span>
       </div>
     </div>

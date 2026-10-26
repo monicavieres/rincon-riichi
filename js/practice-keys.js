@@ -1,83 +1,68 @@
 /*
- * Keyboard play for every practice drill: the arrow keys move a cursor over the answers, Space picks the one under the
- * cursor, Enter sends the answer (or goes to the next question). Works with the drill engines through their DOM.
+ * Keyboard play for every practice drill: each arrow key is one answer. ← ↑ ↓ → pick the first, second, third and
+ * fourth option at once (a badge on each answer shows its arrow). Single-answer drills send the answer right away;
+ * multi-answer drills toggle the tile and Enter sends. Enter also moves on after an answer.
  */
 (function () {
     const containers = ["#choices", "#answerGrid"];
+    const MULTI_PAGES = ["esperaFichas", "chinitsu"];
+    const ORDER = {
+        1: ["ArrowLeft"],
+        2: ["ArrowLeft", "ArrowRight"],
+        3: ["ArrowLeft", "ArrowUp", "ArrowRight"],
+        4: ["ArrowLeft", "ArrowUp", "ArrowDown", "ArrowRight"]
+    };
+    const GLYPH = { ArrowLeft: "←", ArrowUp: "↑", ArrowDown: "↓", ArrowRight: "→" };
 
-    function buttons() {
+    function root() {
         for (const selector of containers) {
-            const root = document.querySelector(selector);
-            if (root && root.offsetParent !== null) return [...root.querySelectorAll(".answer-button")];
+            const node = document.querySelector(selector);
+            if (node && node.offsetParent !== null) return node;
         }
-        return [];
+        return null;
     }
 
-    function cursorOf(list) {
-        return list.findIndex((button) => button.classList.contains("is-cursor"));
+    function keyFor(count, index) {
+        const keys = ORDER[Math.min(4, count)] || [];
+        return keys[index] || null;
     }
 
-    function setCursor(list, index) {
-        list.forEach((button, i) => button.classList.toggle("is-cursor", i === index));
-        if (list[index]) list[index].scrollIntoView({ block: "nearest", inline: "nearest" });
+    function isMulti(node) {
+        return node.id === "answerGrid" || MULTI_PAGES.includes(document.body.dataset.modulePage || "");
     }
 
-    /** The neighbour in the pressed direction: the closest button whose centre lies that way. */
-    function neighbour(list, from, key) {
-        const here = list[from].getBoundingClientRect();
-        const cx = here.left + here.width / 2;
-        const cy = here.top + here.height / 2;
-        let best = -1;
-        let bestScore = Infinity;
-        list.forEach((button, i) => {
-            if (i === from) return;
-            const box = button.getBoundingClientRect();
-            const dx = box.left + box.width / 2 - cx;
-            const dy = box.top + box.height / 2 - cy;
-            const ahead = key === "ArrowRight" ? dx : key === "ArrowLeft" ? -dx : key === "ArrowDown" ? dy : -dy;
-            const side = key === "ArrowRight" || key === "ArrowLeft" ? Math.abs(dy) : Math.abs(dx);
-            if (ahead <= 4) return;
-            const score = ahead + side * 2.5;
-            if (score < bestScore) { bestScore = score; best = i; }
+    /** Puts each option's arrow on its answer button. */
+    function label() {
+        const node = root();
+        if (!node) return;
+        const list = [...node.querySelectorAll(".answer-button")];
+        list.forEach((button, index) => {
+            const key = keyFor(list.length, index);
+            if (key) button.dataset.arrow = GLYPH[key];
+            else delete button.dataset.arrow;
         });
-        return best;
     }
 
     document.addEventListener("keydown", (event) => {
         const tag = document.activeElement && document.activeElement.tagName;
         if (["INPUT", "SELECT", "TEXTAREA"].includes(tag)) return;
-        const list = buttons();
-        if (!list.length) return;
-        const arrow = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key);
-        if (arrow) {
-            event.preventDefault();
-            event.stopPropagation();
-            const current = cursorOf(list);
-            if (current < 0) { setCursor(list, 0); return; }
-            const next = neighbour(list, current, event.key);
-            if (next >= 0) setCursor(list, next);
-            return;
-        }
-        if (event.key === " " || event.code === "Space") {
-            const current = cursorOf(list);
-            if (current < 0) return;
-            event.preventDefault();
-            list[current].click();
-            return;
-        }
-        if (event.key === "Enter") {
-            // Single-answer drills: Enter on the cursor picks it first, so arrows + Enter is enough.
-            const current = cursorOf(list);
-            const picked = list.some((button) => button.classList.contains("is-selected"));
-            const answered = list.some((button) => button.classList.contains("is-correct") || button.classList.contains("is-wrong"));
-            if (current >= 0 && !picked && !answered) list[current].click();
+        if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) return;
+        const node = root();
+        if (!node) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const list = [...node.querySelectorAll(".answer-button")];
+        if (list.some((button) => button.disabled)) return;
+        const index = list.findIndex((_, i) => keyFor(list.length, i) === event.key);
+        if (index < 0) return;
+        list[index].click();
+        if (!isMulti(node)) {
+            const submit = document.querySelector("#submitButton");
+            if (submit && !submit.hidden) submit.click();
         }
     }, true);
 
-    // a fresh question starts with no cursor
-    new MutationObserver((records) => {
-        records.forEach((record) => {
-            if (record.type === "childList" && record.addedNodes.length) document.querySelectorAll(".answer-button.is-cursor").forEach((button) => { if (!button.isConnected) return; });
-        });
-    }).observe(document.body, { childList: true, subtree: true });
+    document.addEventListener("DOMContentLoaded", () => {
+        new MutationObserver(label).observe(document.body, { childList: true, subtree: true });
+    });
 }());
