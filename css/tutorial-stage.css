@@ -1555,3 +1555,13 @@ body.quick-pad .practice-lab .practice-felt .eyebrow { display: none; }
 body.quick-pad .practice-lab .module-hand:has(> img:only-child) img { width: clamp(50px, 9cqw, 96px); }
 #quickPad .quick-pad-key { min-height: clamp(40px, 6.5cqw, 72px); }
 #quickPad { margin-top: 0; }
+
+/* Tile drills in quick mode: the tile in the middle, one arrow answer on each side */
+body.quick-around #quizCard #hand, body.quick-around #quizCard #roundContext { display: none; }
+body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-content: center; }
+#quickPad.is-around { width: min(96%, 820px); grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); grid-template-rows: auto auto auto; grid-template-areas: ". up ." "left center right" ". down ."; align-items: center; }
+#quickPad.is-around[data-count="3"] { grid-template-areas: ". up ." "left center right"; }
+#quickPad.is-around[data-count="2"] { grid-template-areas: "left center right"; }
+#quickPad .quick-pad-center { grid-area: center; display: grid; justify-items: center; gap: 4px; padding: 0 clamp(8px, 2cqw, 24px); }
+#quickPad .quick-pad-center img { width: clamp(56px, 10cqw, 110px); height: auto; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.35)); }
+#quickPad .quick-pad-suit { padding: 2px 12px; border: 2px solid rgba(255, 255, 255, 0.7); border-radius: 99px; color: #fff; font: 800 clamp(11px, 1.6cqw, 15px) / 1.4 var(--font-sans); text-transform: uppercase; letter-spacing: 0.08em; }

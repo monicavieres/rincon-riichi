@@ -60,7 +60,11 @@
         document.body.classList.toggle("quick-pad", Boolean(stage));
         let holder = document.querySelector("#quickPad");
         if (!stage) { if (holder) holder.remove(); return; }
-        const signature = list.map((button) => `${button.className}|${button.disabled}|${button.innerHTML}`).join("¦");
+        const hand = document.querySelector("#hand");
+        const around = document.body.dataset.modulePage === "tileName" && hand && hand.children.length === 1;
+        document.body.classList.toggle("quick-around", Boolean(around));
+        const context = document.querySelector("#roundContext");
+        const signature = (around ? `${hand.innerHTML}|${context ? context.textContent : ""}¦` : "") + list.map((button) => `${button.className}|${button.disabled}|${button.innerHTML}`).join("¦");
         if (holder && holder.dataset.signature === signature) return;
         if (!holder) {
             holder = document.createElement("div");
@@ -69,7 +73,21 @@
         }
         holder.dataset.signature = signature;
         holder.dataset.count = String(Math.min(4, list.length));
-        holder.replaceChildren(...list.map((button, index) => {
+        holder.classList.toggle("is-around", Boolean(around));
+        const center = [];
+        if (around) {
+            const mid = document.createElement("div");
+            mid.className = "quick-pad-center";
+            if (context && context.textContent) {
+                const tag = document.createElement("span");
+                tag.className = "quick-pad-suit";
+                tag.textContent = context.textContent;
+                mid.append(tag);
+            }
+            mid.append(...[...hand.children].map((child) => child.cloneNode(true)));
+            center.push(mid);
+        }
+        holder.replaceChildren(...center, ...list.map((button, index) => {
             const copy = document.createElement("button");
             copy.type = "button";
             copy.className = `${button.className} quick-pad-key`;

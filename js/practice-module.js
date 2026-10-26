@@ -1430,6 +1430,7 @@ function render() {
             renderContext(question.context);
         } else if ((state.page === "tileName" || state.page === "chinitsu") && els.roundContext) {
             els.roundContext.replaceChildren();
+            if (singleSuitName()) els.roundContext.textContent = singleSuitName();
         }
         if (question.winningTile) {
             els.hand.replaceChildren(...renderHand(question));
@@ -1697,13 +1698,21 @@ function meldGroup(call) {
     return group;
 }
 
+//: In a single-suit tile drill the suit is shown once above the tile, so the answers are just the number.
+function singleSuitName() {
+    const suit = { manzu: "m", pinzu: "p", souzu: "s" }[state.tileMode];
+    if (state.page !== "tileName" || !suit) return "";
+    return TILE_NAME_COPY[state.language].suits[suit];
+}
+
 function choiceButton(choice) {
     const button = document.createElement("button");
     button.type = "button";
     button.className = `answer-button${looksLikeTile(choice) ? " choice-tile" : ""}`;
     button.dataset.choice = choice;
+    const suitName = singleSuitName();
     if (looksLikeTile(choice)) button.append(tileImage(choice));
-    else button.textContent = choice;
+    else button.textContent = suitName && choice.endsWith(` ${suitName}`) ? choice.slice(0, -suitName.length - 1) : choice;
     button.addEventListener("click", () => {
         if (state.answered) return;
         const multi = modules[state.page].multi;
