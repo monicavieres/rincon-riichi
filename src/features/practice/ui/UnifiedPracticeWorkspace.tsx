@@ -1,5 +1,6 @@
 import type { PracticeDefinition } from '../domain/practiceCatalog';
 import { PRACTICE_RAIL } from '../domain/practiceCatalog';
+import { PracticeBrief } from './PracticeBrief';
 
 const chevron = (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg>
@@ -29,8 +30,7 @@ export function UnifiedPracticeWorkspace({ definition }: { definition: PracticeD
     <section className="table-explorer tutorial-lab practice-lab" aria-label={definition.title}>
       <div className="table-explorer-workspace" id="startView" hidden={!tileName}>
         <div className="table-explorer-stage practice-coach">
-          <div className="tile-coach"><div className="speech-bubble" id="startCoach">Mira la mano, responde y revisa tu puntaje al final.</div><img className="mini-chibi sticker-img" id="startChibi" src={`../assets/${definition.chibi}`} alt="Monique coach" /></div>
-          <div className="tile-start-chips" aria-hidden="true"><span id="chipOne">10 rondas</span><span id="chipTwo">Feedback inmediato</span><span id="chipThree">Puntaje final</span></div>
+          <PracticeBrief kind={definition.key} />
         </div>
         <aside className="table-explorer-inspector">
           <nav className="explorer-tabs"><button type="button" className="is-active" data-i18n={tileName ? 'tileStart.eyebrow' : undefined}>Módulo jugable</button></nav>
@@ -44,7 +44,7 @@ export function UnifiedPracticeWorkspace({ definition }: { definition: PracticeD
 
       <div className="table-explorer-workspace" id="resultsCard" hidden>
         <div className="table-explorer-stage practice-coach">
-          <div className="results-head"><p className="eyebrow">Sesión completa</p><h2>Resultado final</h2><p className="results-score">Puntaje <strong id="resultsScore">0 / 0</strong></p></div>
+          <div className="tiles-felt practice-brief"><div className="results-head"><p className="eyebrow">Sesión completa</p><h2>Resultado final</h2><p className="results-score">Puntaje <strong id="resultsScore">0 / 0</strong></p></div></div>
         </div>
         <aside className="table-explorer-inspector">
           <nav className="explorer-tabs"><button type="button" className="is-active">Resultado</button></nav>

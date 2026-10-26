@@ -1,4 +1,5 @@
 import { PracticeRail } from './UnifiedPracticeWorkspace';
+import { PracticeBrief } from './PracticeBrief';
 
 /** The yaku drill, laid out like the other practice drills: stage, inspector and the rail of drills. */
 export function YakuWorkspace() {
@@ -6,8 +7,8 @@ export function YakuWorkspace() {
     <section className="table-explorer tutorial-lab practice-lab" aria-label="Identifica el Yaku">
       <div className="table-explorer-workspace" id="startView">
         <div className="table-explorer-stage practice-coach">
-          <div className="tile-coach"><div className="speech-bubble" id="coachSpeech" data-i18n="coachReady">Busca primero la forma.</div><img className="mini-chibi sticker-img" id="coachImage" src="../assets/chibi-yaku.png" alt="Monique pensando" /></div>
-          <div className="tile-start-chips" aria-hidden="true"><span data-i18n="startChipOne">10 manos</span><span data-i18n="startChipTwo">Selección múltiple</span><span data-i18n="startChipThree">Feedback inmediato</span></div>
+          <PracticeBrief kind="yaku" />
+          <span id="coachSpeech" hidden />
         </div>
         <aside className="table-explorer-inspector">
           <nav className="explorer-tabs"><button type="button" className="is-active" data-i18n="eyebrow">Módulo jugable</button></nav>
@@ -34,7 +35,7 @@ export function YakuWorkspace() {
             <h2 data-i18n="question">¿Qué yaku ves?</h2>
             <p className="answer-help" data-i18n="selectHelp">Selecciona una o más opciones.</p>
             <div className="answer-grid" id="answerGrid" />
-            <div className="feedback-panel" id="feedbackPanel" hidden><img className="feedback-coach sticker-img" id="feedbackCoach" src="../assets/chibi-incorrect.png" alt="Monique" /><div className="feedback-copy"><strong id="feedbackTitle" /><p id="feedbackText" /></div></div>
+            <div className="feedback-panel" id="feedbackPanel" hidden><div className="feedback-copy"><strong id="feedbackTitle" /><p id="feedbackText" /></div></div>
             <div className="module-actions quiz-actions"><button className="big-button green" id="submitButton" data-i18n="submit">Enviar</button><button className="big-button green" id="nextButton" data-i18n="next" hidden>Siguiente mano</button><button className="big-button pink" id="restartButton" data-i18n="restart" hidden>Otra vez</button></div>
           </div>
         </aside>
@@ -42,7 +43,7 @@ export function YakuWorkspace() {
 
       <div className="table-explorer-workspace" id="finalCard" hidden>
         <div className="table-explorer-stage practice-coach">
-          <img className="mini-chibi sticker-img" src="../assets/chibi-score.png" alt="Monique celebrando" />
+          <div className="tiles-felt practice-brief"><div className="results-head"><p className="eyebrow" data-i18n="finalEyebrow">Sesión completa</p><h2 data-i18n="finalTitle">Resultado final</h2></div></div>
         </div>
         <aside className="table-explorer-inspector">
           <nav className="explorer-tabs"><button type="button" className="is-active" data-i18n="finalEyebrow">Sesión completa</button></nav>

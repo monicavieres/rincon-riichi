@@ -1441,3 +1441,20 @@ a.sort-button {
 .practice-lab .practice-felt:has(#furitenTable) { align-content: start; padding-top: 12%; }
 .practice-lab .practice-felt:has(#furitenTable) .module-hand img { width: clamp(16px, 3cqw, 30px); }
 .practice-lab .practice-felt:has(#furitenTable) .furiten-board { transform: scale(0.82); transform-origin: top center; }
+
+/* practice start screens: what the drill trains */
+.practice-brief { display: grid; align-content: center; justify-items: center; gap: 1.6cqw; width: 100%; height: 100%; padding: 3%; color: #fff; text-align: center; overflow: auto; }
+.brief-atlas { display: grid; gap: 0.8cqw; }
+.brief-family { display: grid; gap: 0.3cqw; justify-items: center; }
+.brief-family small { font: 700 clamp(9px, 1.3cqw, 12px) / 1 var(--font-sans); letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.85; }
+.brief-family .machi-row img { width: clamp(18px, 4cqw, 36px); }
+.brief-steps { display: grid; gap: 0.8cqw; width: min(100%, 520px); margin: 0; padding: 0; list-style: none; text-align: left; }
+.brief-steps li { display: flex; align-items: center; gap: 1.2cqw; padding: 0.8cqw 1.2cqw; border-radius: 12px; background: rgba(255, 255, 255, 0.14); font: 600 clamp(11px, 1.7cqw, 15px) / 1.3 var(--font-sans); }
+.brief-steps li b { display: grid; place-items: center; flex: none; width: 2em; aspect-ratio: 1; border-radius: 50%; background: var(--gold, #f2b42c); color: var(--ink); }
+.practice-lab .practice-coach { padding: 0; }
+.practice-lab .practice-coach .tile-start-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.practice-lab .practice-coach .tile-start-chips span { padding: 3px 12px; border: 2px solid rgba(255, 255, 255, 0.6); border-radius: 99px; color: #fff; font: 700 clamp(9px, 1.3cqw, 12px) / 1.4 var(--font-sans); text-transform: uppercase; }
+.brief-family .machi-row { flex-wrap: nowrap; max-width: none; width: auto; }
+.brief-family .machi-row img { width: clamp(14px, 2.9cqw, 32px); }
+.practice-brief { gap: 1cqw; padding: 2%; }
+.practice-lab .practice-coach .tile-start-chips span { background: rgba(255, 255, 255, 0.12); box-shadow: none; }

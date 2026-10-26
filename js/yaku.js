@@ -644,19 +644,8 @@ function t(key) {
 }
 
 function setCoach(mode, text) {
-    const image = mode === "correct" ? "chibi-correct"
-        : mode === "almost" ? "chibi-almost"
-        : mode === "ready" ? "chibi-yaku"
-        : mode === "think" ? "chibi-thinking"
-        : "chibi-incorrect";
-    els.coachSpeech.textContent = text;
-    const src = `../assets/${image}.png`;
-    els.coachImage.src = src;
-    if (els.feedbackCoach) {
-        els.feedbackCoach.src = src;
-        els.feedbackCoach.classList.toggle("is-sad", mode === "incorrect");
-    }
-    els.coachImage.classList.toggle("is-sad", mode === "incorrect");
+    // The cartoon coach is gone: only the line of text survives, when the page still has a place for it.
+    if (els.coachSpeech) els.coachSpeech.textContent = text;
 }
 
 function shuffle(items) {

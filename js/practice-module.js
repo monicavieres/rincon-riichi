@@ -1937,13 +1937,7 @@ function getFeedbackCoach() {
 }
 
 function ensureFeedbackCoach() {
-    if (!els.feedback || els.feedback.dataset.coachInjected) return;
-    const img = document.createElement("img");
-    img.className = "feedback-coach sticker-img";
-    img.src = getFeedbackCoach();
-    img.alt = "Monique coach";
-    els.feedback.prepend(img);
-    els.feedback.dataset.coachInjected = "true";
+    // The cartoon coach was removed from the practice drills.
 }
 
 //: Clear the feedback area (coach + reveal blocks) so the next question shows a
