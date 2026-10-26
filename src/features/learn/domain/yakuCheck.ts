@@ -63,13 +63,17 @@ const holdsEdge = (meld: Meld) => meld.tiles.some((code) => isTerminal(code) || 
 const holdsTerminal = (meld: Meld) => meld.tiles.some(isTerminal);
 
 /** Why a hand is or is not pinfu: all sequences, a worthless pair, and the winning tile completing a two-sided wait. */
+export type Winds = { round: number; seat: number };
+const DEFAULT_WINDS: Winds = { round: 1, seat: 1 };
+const valueWind = (code: string, winds: Winds) => code === `${winds.round}z` || code === `${winds.seat}z`;
+
 export type PinfuWhy = 'ok' | 'triplet' | 'pair' | 'wait' | 'incomplete';
-export function pinfuWhy(codes: string[], winner: string | undefined): PinfuWhy {
+export function pinfuWhy(codes: string[], winner: string | undefined, winds: Winds = DEFAULT_WINDS): PinfuWhy {
   const all = splits(codes);
   if (all.length === 0) return 'incomplete';
   const sequencesOnly = all.filter((s) => s.melds.every((m) => m.kind === 'sequence'));
   if (sequencesOnly.length === 0) return 'triplet';
-  const quiet = sequencesOnly.filter((s) => !isDragon(s.pair) && s.pair !== '1z');
+  const quiet = sequencesOnly.filter((s) => !isDragon(s.pair) && !valueWind(s.pair, winds));
   if (quiet.length === 0) return 'pair';
   const twoSided = (s: Split) => s.melds.some((m) => {
     const a = num(m.start);
@@ -78,7 +82,7 @@ export function pinfuWhy(codes: string[], winner: string | undefined): PinfuWhy 
   return quiet.some(twoSided) ? 'ok' : 'wait';
 }
 
-export function checkYaku(id: string, codes: string[], winner?: string): Check {
+export function checkYaku(id: string, codes: string[], winner?: string, winds: Winds = DEFAULT_WINDS): Check {
   if (SITUATIONAL.has(id)) return 'situational';
   if (codes.length !== 14) return 'incomplete';
   const all = splits(codes);
@@ -90,8 +94,8 @@ export function checkYaku(id: string, codes: string[], winner?: string): Check {
   const tiles = codes;
   switch (id) {
     case 'tanyao': return yes(tiles.every((code) => !isHonor(code) && !isTerminal(code)));
-    case 'yakuhai': return yes(any((s) => s.melds.some((m) => m.kind === 'triplet' && (isDragon(m.start) || m.start === '1z'))));
-    case 'pinfu': return yes(pinfuWhy(codes, winner) === 'ok');
+    case 'yakuhai': return yes(any((s) => s.melds.some((m) => m.kind === 'triplet' && (isDragon(m.start) || valueWind(m.start, winds)))));
+    case 'pinfu': return yes(pinfuWhy(codes, winner, winds) === 'ok');
     case 'iipeikou': return yes(any((s) => dupSequences(s) === 1));
     case 'chiitoitsu': return yes(chiitoi);
     case 'toitoi': return yes(any((s) => s.melds.every((m) => m.kind === 'triplet')));
@@ -130,3 +134,8 @@ export const SAMPLES: Record<string, string[]> = {
   chinroutou: ['1m', '1m', '1m', '9m', '9m', '9m', '1p', '1p', '1p', '9p', '9p', '9p', '1s', '1s'],
   ryuuiisou: ['2s', '2s', '2s', '3s', '3s', '3s', '4s', '4s', '4s', '6s', '6s', '6s', '8s', '8s'],
 };
+
+/** Wind triplets (East to North) in a hand: they only score if the wind is the round wind or the player's own. */
+export function windTriplets(codes: string[]): string[] {
+  return ['1z', '2z', '3z', '4z'].filter((code) => codes.filter((c) => c === code).length >= 3);
+}

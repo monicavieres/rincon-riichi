@@ -1386,3 +1386,9 @@ a.sort-button {
 .yf-dots button { width: 10px; height: 10px; padding: 0; border: 0; border-radius: 50%; background: rgba(255, 255, 255, 0.4); cursor: pointer; }
 .yf-dots button.is-on { background: var(--gold, #f2b42c); transform: scale(1.3); }
 .yb-tile.is-last img { outline: 3px solid var(--gold, #f2b42c); border-radius: 6px; filter: drop-shadow(0 0 6px #ffd36e); }
+
+.yb-tile.is-wind img { outline: 3px solid #ffd23f; outline-offset: -1px; border-radius: 6px; background: #fff3a6; filter: drop-shadow(0 0 8px #ffd23f); }
+.yaku-winds { display: flex; gap: var(--space-3); margin: var(--space-2) 0; }
+.yaku-winds label { display: grid; gap: 2px; font: 700 12px / 1.2 var(--font-sans); text-transform: uppercase; letter-spacing: 0.06em; }
+.yaku-winds select { padding: 4px 8px; border: 2px solid var(--ink); border-radius: 10px; background: var(--card); color: var(--ink); font: 600 14px var(--font-sans); }
+.yaku-wind-note { padding: var(--space-2) var(--space-3); border: 2px solid #d4a800; border-radius: var(--radius-md); background: #fff3b0; font: 500 13px / 1.4 var(--font-sans); }
