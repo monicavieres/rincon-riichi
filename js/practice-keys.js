@@ -14,6 +14,14 @@
     };
     const GLYPH = { ArrowLeft: "←", ArrowUp: "↑", ArrowDown: "↓", ArrowRight: "→" };
 
+    function quick() {
+        const on = Boolean(window.RinconQuick && window.RinconQuick.active());
+        document.body.classList.toggle("quick-running", on);
+        const node = root();
+        document.body.classList.toggle("quick-multi", on && Boolean(node) && isMulti(node));
+        return on;
+    }
+
     function root() {
         for (const selector of containers) {
             const node = document.querySelector(selector);
@@ -36,6 +44,7 @@
         const node = root();
         if (!node) return;
         const list = [...node.querySelectorAll(".answer-button")];
+        if (!quick()) { list.forEach((button) => delete button.dataset.arrow); return; }
         list.forEach((button, index) => {
             const key = keyFor(list.length, index);
             if (key) button.dataset.arrow = GLYPH[key];
@@ -47,6 +56,7 @@
         const tag = document.activeElement && document.activeElement.tagName;
         if (["INPUT", "SELECT", "TEXTAREA"].includes(tag)) return;
         if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) return;
+        if (!quick()) return;
         const node = root();
         if (!node) return;
         event.preventDefault();
@@ -64,5 +74,6 @@
 
     document.addEventListener("DOMContentLoaded", () => {
         new MutationObserver(label).observe(document.body, { childList: true, subtree: true });
+        setInterval(label, 400);
     });
 }());

@@ -1525,3 +1525,10 @@ a.sort-button {
 .practice-brief .results-head h2 { margin: 0; color: #fff; font: 800 clamp(30px, 5cqw, 56px) / 1 var(--font-display); }
 .practice-brief .results-head .results-score { margin: 0; color: #fff; font: 600 clamp(14px, 2.2cqw, 22px) / 1.2 var(--font-sans); }
 .practice-brief .results-head .results-score strong { display: inline-block; margin-top: 0.4cqw; padding: 0.15em 0.9em; border-radius: 99px; background: var(--gold, #f2b42c); color: var(--ink); font: 800 clamp(26px, 5cqw, 52px) / 1.1 var(--font-display); }
+
+/* Arrows only play in Quick mode: no hint or send button there, and each arrow sits beside its answer */
+.kb-hint { display: none; }
+body.quick-running .kb-hint { display: flex; }
+body.quick-running:not(.quick-multi) #submitButton { display: none; }
+body.quick-running .answer-button[data-arrow] { display: flex; align-items: center; gap: var(--space-3); padding-left: 56px; }
+body.quick-running .answer-button[data-arrow]::before { top: 50%; left: 12px; width: 32px; height: 32px; transform: translateY(-50%); font-size: 18px; border-radius: 8px; }

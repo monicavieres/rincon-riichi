@@ -34,7 +34,6 @@ export function KeyboardHint() {
       </div>
       <div className="kb-legend">
         <span className="kb-line"><b>{copy.move}</b></span>
-        <span className="kb-line">{cap('enter', '⏎', 'is-wide')} <b>{copy.send}</b></span>
       </div>
     </div>
   );
