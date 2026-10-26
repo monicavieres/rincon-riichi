@@ -1323,3 +1323,9 @@ a.sort-button {
 .machi-pair .machi-block { width: auto; flex: 0 0 auto; }
 .machi-pair .machi-row { width: auto; flex-wrap: nowrap; max-width: none; }
 .machi-pair .machi-row img { width: clamp(22px, 4.2cqw, 44px); }
+
+/* yaku guide */
+.yaku-hand { flex-wrap: wrap; }
+.yaku-hand img { width: clamp(20px, 4cqw, 40px); }
+.yaku-han { padding: 3px 14px; border-radius: 99px; background: var(--gold, #f2b42c); color: var(--ink); font: 800 clamp(11px, 1.8cqw, 16px) / 1.3 var(--font-display); text-transform: uppercase; }
+.yaku-chip { display: grid; place-items: center; width: clamp(40px, 7cqw, 64px); aspect-ratio: 1; border: 3px solid var(--gold, #f2b42c); border-radius: 14px; color: var(--gold, #f2b42c); font: 800 clamp(22px, 4cqw, 36px) / 1 var(--font-sans); }
