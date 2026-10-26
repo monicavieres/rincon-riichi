@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { YAKU_LIST } from '../domain/yakuData';
+import { SAMPLES, checkYaku, sortTiles } from '../domain/yakuCheck';
 import { initialLanguage, usePageChrome } from './usePageChrome';
 
 type Lang = 'es' | 'en' | 'pt';
@@ -10,9 +11,9 @@ const FACE_DIR: Record<string, string> = {
 const FALLBACK_DIR = 'tiles-fluffystuff-composite';
 
 const UI = {
-  es: { info: 'Qué es', data: 'Valor', value: 'Valor', example: 'Ejemplo de mano', note: 'Nota', quiz: 'Practicar: identifica el yaku', step: 'Yaku', of: 'de', arrows: 'usa las flechas', back: 'Anterior', next: 'Siguiente', rail: 'Yakus', hanNote: 'El valor en han se suma al contar el puntaje. Con mano cerrada algunos yaku valen más.', yakuman: 'Yakuman', perTriplet: 'por trío', closed: 'cerrado', open: 'abierto' },
-  en: { info: 'What it is', data: 'Value', value: 'Value', example: 'Example hand', note: 'Note', quiz: 'Practise: identify the yaku', step: 'Yaku', of: 'of', arrows: 'use the arrows', back: 'Previous', next: 'Next', rail: 'Yaku', hanNote: 'The han value adds up when counting the score. With a closed hand some yaku are worth more.', yakuman: 'Yakuman', perTriplet: 'per triplet', closed: 'closed', open: 'open' },
-  pt: { info: 'O que é', data: 'Valor', value: 'Valor', example: 'Mão de exemplo', note: 'Nota', quiz: 'Praticar: identifique o yaku', step: 'Yaku', of: 'de', arrows: 'use as setas', back: 'Anterior', next: 'Próxima', rail: 'Yakus', hanNote: 'O valor em han soma na contagem da pontuação. Com mão fechada alguns yaku valem mais.', yakuman: 'Yakuman', perTriplet: 'por trio', closed: 'fechada', open: 'aberta' },
+  es: { build: 'Armar', buildHelp: 'Arrastra fichas hasta tu mano (o tócalas) hasta juntar 14. La página te dice si formaste este yaku.', clear: 'Limpiar', sample: 'Cargar ejemplo', palette: 'Todas las fichas', yourHand: 'Tu mano', slots: 'fichas', rYes: '¡Sí! Esta mano forma', rNo: 'Todavía no forma este yaku. Recuerda:', rIncomplete: 'Aún no es una mano completa: necesitas 4 grupos y 1 pareja (o la forma especial de este yaku).', rSituational: 'Este yaku no depende de las fichas sino de cómo ganas, así que aquí no se puede armar. Lee la descripción.', removeHint: 'Toca una ficha para sumarla a tu mano; toca una de tu mano para quitarla.', info: 'Qué es', data: 'Valor', value: 'Valor', example: 'Ejemplo de mano', note: 'Nota', quiz: 'Practicar: identifica el yaku', step: 'Yaku', of: 'de', arrows: 'usa las flechas', back: 'Anterior', next: 'Siguiente', rail: 'Yakus', hanNote: 'El valor en han se suma al contar el puntaje. Con mano cerrada algunos yaku valen más.', yakuman: 'Yakuman', perTriplet: 'por trío', closed: 'cerrado', open: 'abierto' },
+  en: { build: 'Build', buildHelp: 'Drag tiles to your hand (or tap them) until you have 14. The page tells you whether you formed this yaku.', clear: 'Clear', sample: 'Load example', palette: 'All tiles', yourHand: 'Your hand', slots: 'tiles', rYes: 'Yes! This hand forms', rNo: 'Not this yaku yet. Remember:', rIncomplete: 'Not a complete hand yet: you need 4 sets and 1 pair (or the special shape of this yaku).', rSituational: 'This yaku depends on how you win, not on the tiles, so it cannot be built here. Read the description.', removeHint: 'Tap a tile to add it to your hand; tap one in your hand to remove it.', info: 'What it is', data: 'Value', value: 'Value', example: 'Example hand', note: 'Note', quiz: 'Practise: identify the yaku', step: 'Yaku', of: 'of', arrows: 'use the arrows', back: 'Previous', next: 'Next', rail: 'Yaku', hanNote: 'The han value adds up when counting the score. With a closed hand some yaku are worth more.', yakuman: 'Yakuman', perTriplet: 'per triplet', closed: 'closed', open: 'open' },
+  pt: { build: 'Montar', buildHelp: 'Arraste peças para sua mão (ou toque nelas) até ter 14. A página diz se você formou este yaku.', clear: 'Limpar', sample: 'Carregar exemplo', palette: 'Todas as peças', yourHand: 'Sua mão', slots: 'peças', rYes: 'Sim! Esta mão forma', rNo: 'Ainda não forma este yaku. Lembre-se:', rIncomplete: 'Ainda não é uma mão completa: você precisa de 4 grupos e 1 par (ou da forma especial deste yaku).', rSituational: 'Este yaku depende de como você ganha, não das peças, então não dá para montar aqui. Leia a descrição.', removeHint: 'Toque numa peça para somá-la à sua mão; toque numa da sua mão para removê-la.', info: 'O que é', data: 'Valor', value: 'Valor', example: 'Mão de exemplo', note: 'Nota', quiz: 'Praticar: identifique o yaku', step: 'Yaku', of: 'de', arrows: 'use as setas', back: 'Anterior', next: 'Próxima', rail: 'Yakus', hanNote: 'O valor em han soma na contagem da pontuação. Com mão fechada alguns yaku valem mais.', yakuman: 'Yakuman', perTriplet: 'por trio', closed: 'fechada', open: 'aberta' },
 };
 
 const INTRO = {
@@ -43,7 +44,8 @@ const chevron = (
 export function YakuRefWorkspace() {
   const [language, setLanguage] = useState<Lang>(initialLanguage);
   const [index, setIndex] = useState(0);
-  const [tab, setTab] = useState<'info' | 'data'>('info');
+  const [tab, setTab] = useState<'info' | 'data' | 'build'>('info');
+  const [built, setBuilt] = useState<string[]>([]);
   const theme = usePageChrome(language, setLanguage);
   const railRef = useRef<HTMLElement>(null);
   const ui = UI[language];
@@ -59,9 +61,16 @@ export function YakuRefWorkspace() {
   };
   const han = (text: string) => (text === '役満' ? ui.yakuman : text.replace('por trío', ui.perTriplet).replace('cerrado', ui.closed).replace('abierto', ui.open));
 
+  const counts = new Map<string, number>();
+  built.forEach((code) => counts.set(code, (counts.get(code) ?? 0) + 1));
+  const addTile = (code: string) => setBuilt((now) => (now.length >= 14 || now.filter((c) => c === code).length >= 4 ? now : sortTiles([...now, code])));
+  const removeAt = (at: number) => setBuilt((now) => now.filter((_, i) => i !== at));
+  const verdict = intro ? null : checkYaku(yaku.id, built);
+
   const open = useCallback((next: number) => {
     setIndex(Math.max(0, Math.min(YAKU_LIST.length, next)));
     setTab('info');
+    setBuilt([]);
   }, []);
 
   useEffect(() => {
@@ -107,6 +116,33 @@ export function YakuRefWorkspace() {
               <div className="machi-arrow" aria-hidden="true">＋</div>
               <div className="machi-block is-wait"><small>{copy.plus}</small><div className="machi-row"><span className="yaku-chip">役</span></div></div>
             </div>
+          ) : tab === 'build' ? (
+            <div className="tiles-felt yaku-builder" key={`${yaku.id}-build`}>
+              <div className="yb-block" onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from.startsWith('hand:')) removeAt(Number(from.slice(5))); }}>
+                <small>{ui.palette}</small>
+                <div className="yb-palette">
+                  {['m', 'p', 's', 'z'].map((x) => (
+                    <div className="yb-row" key={x}>
+                      {Array.from({ length: x === 'z' ? 7 : 9 }, (_, i) => `${i + 1}${x}`).map((code) => (
+                        <button type="button" key={code} className={`yb-tile${(counts.get(code) ?? 0) >= 4 ? ' is-used' : ''}`} draggable onDragStart={(event) => event.dataTransfer.setData('text/plain', code)} onClick={() => addTile(code)} aria-label={code}>
+                          <img src={face(code)} alt="" draggable={false} onError={(event) => onFaceError(event, code)} />
+                        </button>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="yb-block yb-hand" onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (!from.startsWith('hand:')) addTile(from); }}>
+                <small>{ui.yourHand} · {built.length}/14 {ui.slots}</small>
+                <div className="yb-slots">
+                  {Array.from({ length: 14 }, (_, i) => built[i] ? (
+                    <button type="button" key={`${built[i]}-${i}`} className="yb-tile is-in" draggable onDragStart={(event) => event.dataTransfer.setData('text/plain', `hand:${i}`)} onClick={() => removeAt(i)} aria-label={built[i]}>
+                      <img src={face(built[i])} alt="" draggable={false} onError={(event) => onFaceError(event, built[i])} />
+                    </button>
+                  ) : <span key={`empty-${i}`} className="yb-empty" />)}
+                </div>
+              </div>
+            </div>
           ) : (
             <div className="tiles-felt machi-felt" key={yaku.id}>
               <div className="machi-name"><b>{yaku.romaji}</b><span>{yaku.kanji}</span></div>
@@ -125,8 +161,8 @@ export function YakuRefWorkspace() {
 
         <aside className="table-explorer-inspector" aria-live="polite">
           <nav className="explorer-tabs" role="tablist">
-            {(intro ? (['info'] as const) : (['info', 'data'] as const)).map((id) => (
-              <button type="button" key={id} role="tab" aria-selected={tab === id} className={tab === id ? 'is-active' : ''} onClick={() => setTab(id)}>{id === 'info' ? (intro ? copy.short : ui.info) : ui.data}</button>
+            {(intro ? (['info'] as const) : (['info', 'data', 'build'] as const)).map((id) => (
+              <button type="button" key={id} role="tab" aria-selected={tab === id} className={tab === id ? 'is-active' : ''} onClick={() => setTab(id)}>{id === 'info' ? (intro ? copy.short : ui.info) : id === 'data' ? ui.data : ui.build}</button>
             ))}
           </nav>
           <div className="explorer-inspector-copy">
@@ -143,7 +179,21 @@ export function YakuRefWorkspace() {
               <>
                 <p className="panel-label">{han(yaku.han)}</p>
                 <h2>{yaku.romaji} <span className="machi-kanji-inline">{yaku.kanji}</span></h2>
-                {tab === 'info' ? (
+                {tab === 'build' ? (
+                  <>
+                    <p>{ui.buildHelp}</p>
+                    <div className={`yaku-result is-${verdict}`}>
+                      {verdict === 'yes' && <strong>{ui.rYes} {yaku.romaji} {yaku.kanji}</strong>}
+                      {verdict === 'no' && <><strong>{ui.rNo}</strong> {yaku[language]}</>}
+                      {verdict === 'incomplete' && <>{built.length === 0 ? ui.removeHint : ui.rIncomplete} <em>({built.length}/14)</em></>}
+                      {verdict === 'situational' && ui.rSituational}
+                    </div>
+                    <div className="yaku-controls finish-buttons">
+                      <button type="button" className="sort-button" onClick={() => setBuilt([])}>{ui.clear}</button>
+                      <button type="button" className="sort-button" onClick={() => setBuilt(sortTiles(SAMPLES[yaku.id] ?? yaku.tiles))}>{ui.sample}</button>
+                    </div>
+                  </>
+                ) : tab === 'info' ? (
                   <>
                     <p>{yaku[language]}</p>
                     {yaku.note && <ul className="body-list"><li><strong>{ui.note}</strong>: {yaku.note}</li></ul>}
