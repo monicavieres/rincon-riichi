@@ -62,7 +62,23 @@ const dupSequences = (split: Split) => {
 const holdsEdge = (meld: Meld) => meld.tiles.some((code) => isTerminal(code) || isHonor(code));
 const holdsTerminal = (meld: Meld) => meld.tiles.some(isTerminal);
 
-export function checkYaku(id: string, codes: string[]): Check {
+/** Why a hand is or is not pinfu: all sequences, a worthless pair, and the winning tile completing a two-sided wait. */
+export type PinfuWhy = 'ok' | 'triplet' | 'pair' | 'wait' | 'incomplete';
+export function pinfuWhy(codes: string[], winner: string | undefined): PinfuWhy {
+  const all = splits(codes);
+  if (all.length === 0) return 'incomplete';
+  const sequencesOnly = all.filter((s) => s.melds.every((m) => m.kind === 'sequence'));
+  if (sequencesOnly.length === 0) return 'triplet';
+  const quiet = sequencesOnly.filter((s) => !isDragon(s.pair) && s.pair !== '1z');
+  if (quiet.length === 0) return 'pair';
+  const twoSided = (s: Split) => s.melds.some((m) => {
+    const a = num(m.start);
+    return winner !== undefined && m.tiles.includes(winner) && ((winner === m.start && a <= 6) || (winner === m.tiles[2] && a >= 2));
+  });
+  return quiet.some(twoSided) ? 'ok' : 'wait';
+}
+
+export function checkYaku(id: string, codes: string[], winner?: string): Check {
   if (SITUATIONAL.has(id)) return 'situational';
   if (codes.length !== 14) return 'incomplete';
   const all = splits(codes);
@@ -75,7 +91,7 @@ export function checkYaku(id: string, codes: string[]): Check {
   switch (id) {
     case 'tanyao': return yes(tiles.every((code) => !isHonor(code) && !isTerminal(code)));
     case 'yakuhai': return yes(any((s) => s.melds.some((m) => m.kind === 'triplet' && (isDragon(m.start) || m.start === '1z'))));
-    case 'pinfu': return yes(any((s) => s.melds.every((m) => m.kind === 'sequence') && !isDragon(s.pair) && s.pair !== '1z'));
+    case 'pinfu': return yes(pinfuWhy(codes, winner) === 'ok');
     case 'iipeikou': return yes(any((s) => dupSequences(s) === 1));
     case 'chiitoitsu': return yes(chiitoi);
     case 'toitoi': return yes(any((s) => s.melds.every((m) => m.kind === 'triplet')));

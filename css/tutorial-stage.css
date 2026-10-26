@@ -1367,3 +1367,22 @@ a.sort-button {
 .yaku-result.is-yes { border-color: #1d8f5a; background: #dff7e9; }
 .yaku-result.is-no { border-color: #b3332f; background: #fde4e2; }
 .yaku-result.is-situational { border-color: #8a6a00; background: #fff3cc; }
+
+/* yaku guide: game-flow examples */
+.yaku-flow { position: relative; display: grid; align-content: center; gap: 1.2cqw; justify-items: center; text-align: center; color: #fff; padding: 2cqw; }
+.yf-seats { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.8cqw; }
+.yf-seat { padding: 3px 12px; border-radius: 99px; background: rgba(255, 255, 255, 0.14); font: 700 clamp(10px, 1.5cqw, 13px) / 1.4 var(--font-sans); }
+.yf-seat.is-on { background: var(--gold, #f2b42c); color: var(--ink); }
+.yf-table { position: relative; display: grid; place-items: center; min-width: 14cqw; min-height: 11cqw; padding: 1cqw 2cqw; border: 2px dashed rgba(255, 255, 255, 0.45); border-radius: 16px; }
+.yf-tile { width: clamp(34px, 7cqw, 64px); height: auto; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.4)); animation: machi-drop 0.7s cubic-bezier(0.2, 0.9, 0.3, 1) both; }
+.yf-tile.is-win { filter: drop-shadow(0 0 10px #ffd36e); outline: 3px solid var(--gold, #f2b42c); border-radius: 8px; }
+.yf-tile.is-riichi { transform: rotate(90deg); }
+.yf-hold { font-size: 28px; opacity: 0.7; }
+.yf-wall { position: absolute; top: 4px; left: 8px; font: 700 clamp(9px, 1.3cqw, 12px) / 1 var(--font-sans); opacity: 0.9; }
+.yf-stick { position: absolute; bottom: 6px; width: 60%; height: 7px; border: 2px solid var(--ink); border-radius: 4px; background: #fbf7ec; }
+.yf-stick::after { content: ''; position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px; border-radius: 50%; background: #d6322b; }
+.yf-caption { margin-top: 0.4cqw; }
+.yf-dots { display: flex; gap: 8px; }
+.yf-dots button { width: 10px; height: 10px; padding: 0; border: 0; border-radius: 50%; background: rgba(255, 255, 255, 0.4); cursor: pointer; }
+.yf-dots button.is-on { background: var(--gold, #f2b42c); transform: scale(1.3); }
+.yb-tile.is-last img { outline: 3px solid var(--gold, #f2b42c); border-radius: 6px; filter: drop-shadow(0 0 6px #ffd36e); }

@@ -59,9 +59,9 @@ export const YAKU_LIST: YakuEntry[] = [
     "romaji": "Pinfu",
     "kanji": "平和",
     "han": "1 han",
-    "es": "Mano cerrada: cuatro secuencias, par sin valor y espera de dos lados.",
-    "en": "Closed hand: four sequences, a value-less pair and a two-sided wait.",
-    "pt": "Mão fechada: quatro sequências, par sem valor e espera dos dois lados.",
+    "es": "Cuatro secuencias y un par que no valga puntos (ni dragones, ni tu viento, ni el de la ronda). Además, tu ficha ganadora debe completar una secuencia esperando por ambos lados.",
+    "en": "Four sequences and a pair that is worth nothing (no dragons, not your wind, not the round wind). Also, your winning tile must complete a sequence that was waiting on both sides.",
+    "pt": "Quatro sequências e um par que não valha nada (sem dragões, nem seu vento, nem o da rodada). Além disso, sua peça vencedora deve completar uma sequência que esperava dos dois lados.",
     "tiles": [
       "2m",
       "3m",
@@ -78,7 +78,7 @@ export const YAKU_LIST: YakuEntry[] = [
       "5p",
       "5p"
     ],
-    "note": "Casi obliga a cerrar: ni llamadas ni par de honor."
+    "note": "Solo con mano cerrada. No es una mano «sin puntos»: es una forma muy concreta, y una espera de un solo lado (kanchan, penchan, tanki) no cuenta."
   },
   {
     "id": "riichi",
