@@ -1532,3 +1532,17 @@ body.quick-running .kb-hint { display: flex; }
 body.quick-running:not(.quick-multi) #submitButton { display: none; }
 body.quick-running .answer-button[data-arrow] { display: flex; align-items: center; gap: var(--space-3); padding-left: 56px; }
 body.quick-running .answer-button[data-arrow]::before { top: 50%; left: 12px; width: 32px; height: 32px; transform: translateY(-50%); font-size: 18px; border-radius: 8px; }
+
+/* Quick mode: answers around an arrow pad, using the green stage */
+#quickPad { display: grid; gap: clamp(6px, 1.2cqw, 14px); width: min(94%, 760px); margin-top: var(--space-3); grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-areas: ". up ." "left down right"; }
+#quickPad .quick-pad-key { position: relative; display: flex; align-items: center; justify-content: center; gap: var(--space-3); min-height: clamp(52px, 9cqw, 84px); padding: 8px 12px 8px 56px; text-align: center; font-size: clamp(14px, 2.2cqw, 22px); }
+#quickPad .quick-pad-key::before { top: 50%; left: 12px; width: 34px; height: 34px; transform: translateY(-50%); font-size: 20px; }
+#quickPad .quick-pad-key[data-slot="1"] { grid-area: left; }
+#quickPad .quick-pad-key[data-slot="2"] { grid-area: up; }
+#quickPad .quick-pad-key[data-slot="3"] { grid-area: down; }
+#quickPad .quick-pad-key[data-slot="4"] { grid-area: right; }
+#quickPad[data-count="2"] { grid-template-areas: "left . right"; }
+#quickPad[data-count="2"] .quick-pad-key[data-slot="2"] { grid-area: right; }
+#quickPad[data-count="3"] { grid-template-areas: ". up ." "left . right"; }
+#quickPad[data-count="3"] .quick-pad-key[data-slot="3"] { grid-area: right; }
+body.quick-pad #quizCard #choices, body.quick-pad #quizCard .kb-hint { display: none; }

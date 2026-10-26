@@ -44,12 +44,48 @@
         const node = root();
         if (!node) return;
         const list = [...node.querySelectorAll(".answer-button")];
-        if (!quick()) { list.forEach((button) => delete button.dataset.arrow); return; }
+        if (!quick()) { list.forEach((button) => delete button.dataset.arrow); pad(null, list); return; }
         list.forEach((button, index) => {
             const key = keyFor(list.length, index);
             if (key) button.dataset.arrow = GLYPH[key];
             else delete button.dataset.arrow;
         });
+        pad(node, list);
+    }
+
+    /** Quick mode: the answers sit around an arrow pad on the green stage, each one beside its own arrow. */
+    function pad(node, list) {
+        const stage = node && node.id === "choices" ? document.querySelector("#quizCard .practice-felt") : null;
+        document.body.classList.toggle("quick-pad", Boolean(stage));
+        let holder = document.querySelector("#quickPad");
+        if (!stage) { if (holder) holder.remove(); return; }
+        const signature = list.map((button) => `${button.className}|${button.disabled}|${button.innerHTML}`).join("¦");
+        if (holder && holder.dataset.signature === signature) return;
+        if (!holder) {
+            holder = document.createElement("div");
+            holder.id = "quickPad";
+            stage.appendChild(holder);
+        }
+        holder.dataset.signature = signature;
+        holder.dataset.count = String(Math.min(4, list.length));
+        holder.replaceChildren(...list.map((button, index) => {
+            const copy = document.createElement("button");
+            copy.type = "button";
+            copy.className = `${button.className} quick-pad-key`;
+            copy.dataset.slot = String(index + 1);
+            copy.dataset.arrow = button.dataset.arrow || "";
+            copy.disabled = button.disabled;
+            copy.innerHTML = button.innerHTML;
+            copy.addEventListener("click", () => {
+                if (button.disabled) return;
+                button.click();
+                if (!isMulti(node)) {
+                    const submit = document.querySelector("#submitButton");
+                    if (submit && !submit.hidden) submit.click();
+                }
+            });
+            return copy;
+        }));
     }
 
     document.addEventListener("keydown", (event) => {
