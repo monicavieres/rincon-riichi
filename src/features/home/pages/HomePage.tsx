@@ -2,13 +2,14 @@ import { AppHeader } from '../../../shared/ui/AppHeader';
 import { SoftBackground } from '../../../shared/ui/SoftBackground';
 import { learnModules, practiceModules } from '../domain/moduleCatalog';
 import { ModuleGrid } from '../ui/ModuleGrid';
-import { explorerText } from '../domain/tableExplorerCopy';
 import { pick, useLanguage } from '../../../shared/i18n/useLanguage';
-import { RiichiTableExplorer } from '../ui/RiichiTableExplorer';
+
+const headline = { es: 'Aprende Riichi Mahjong', en: 'Learn Riichi Mahjong', pt: 'Aprenda Riichi Mahjong' };
+const hint = { es: 'Empieza por el tutorial.', en: 'Start with the tutorial.', pt: 'Comece pelo tutorial.' };
 
 function HomeHeadline() {
   const language = useLanguage();
-  return <><h1 id="table-explorer-title">{pick(explorerText.headline, language)}</h1><p>{pick(explorerText.hint, language)}</p></>;
+  return <><h1 id="table-explorer-title">{pick(headline, language)}</h1><p>{pick(hint, language)}</p></>;
 }
 
 export function HomePage() {
@@ -20,7 +21,7 @@ export function HomePage() {
           home
           headline={<HomeHeadline />}
         />
-        <div id="inicio" data-home-section><RiichiTableExplorer /></div>
+        <div id="inicio" data-home-section />
         <section className="section-heading" id="aprender" data-home-section><h2 data-i18n="modules.title">Aprender</h2><p data-i18n="modules.subtitle">Conceptos, reglas y referencias para entender Riichi.</p></section>
         <ModuleGrid modules={learnModules} className="section-grid" />
         <section className="section-heading compact minigame-heading" id="practicar" data-home-section><h2 data-i18n="modules.minigamesTitle">Practicar</h2><p data-i18n="modules.minigamesSubtitle">Manos concretas y feedback inmediato.</p></section>
