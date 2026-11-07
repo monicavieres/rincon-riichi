@@ -100,7 +100,7 @@ export function PointsBoard({ language }: { language: TutorialLanguage }) {
     // 1) the payer leaves the sticks on the table
     setNote({ title: t('Dejas los palitos en la mesa', 'The sticks are left on the table', 'Os palitos ficam na mesa'), body: t(`Quien paga no se los pasa a la mano: ${which === 'receive' ? 'el jugador de tu izquierda' : 'tú'} deja los palitos sobre la mesa: 3 de 1 000, 1 de 500 y 4 de 100.`, `The payer does not hand them over: ${which === 'receive' ? 'the player on your left' : 'you'} leave${which === 'receive' ? 's' : ''} the sticks on the table: 3 of 1,000, 1 of 500 and 4 of 100.`, `Quem paga não entrega na mão: ${which === 'receive' ? 'o jogador à sua esquerda' : 'você'} deixa os palitos sobre a mesa: 3 de 1.000, 1 de 500 e 4 de 100.`) });
     // the sticks lie on the table in two tidy columns, one stick per row, so none sits on top of another
-    const slotAt = (n: number) => ({ x: spot.x + (n < 4 ? -5 : 4.8), y: spot.y + ((n < 4 ? n : n - 4) - 1.5) * 2.1 });
+    const slotAt = (n: number) => ({ x: spot.x + (n < 4 ? -5 : 4.8), y: spot.y + ((n < 4 ? n : n - 4) - 1.5) * 3.2 });
     const stack: Array<{ value: Value; i: number }> = [];
     VALUES.forEach((v) => { for (let i = 0; i < PRICE[v]; i += 1) stack.push({ value: v, i }); });
     const payerTray = trayAt(payer, 1000, 1);
