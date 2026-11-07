@@ -11,7 +11,7 @@ const KEYS: Record<string, string> = { ArrowUp: 'up', ArrowDown: 'down', ArrowLe
 /** An illustrative keyboard: the keys that play the drill light up as they are pressed. */
 export function KeyboardHint() {
   const [pressed, setPressed] = useState<string | null>(null);
-  const [language, setLanguage] = useState<Lang>(() => { const saved = localStorage.getItem('rincon-riichi-language'); return saved === 'en' || saved === 'pt' ? saved : 'es'; });
+  const [language, setLanguage] = useState<Lang>(() => { const saved = localStorage.getItem('rincon-riichi-language'); return saved === 'es' || saved === 'pt' ? saved : 'en'; });
   useEffect(() => {
     const down = (event: KeyboardEvent) => { const key = KEYS[event.key]; if (key) setPressed(key); };
     const up = () => setPressed(null);

@@ -9,9 +9,9 @@ const KEY = 'rincon-riichi-language';
 const read = (): Language => {
   try {
     const saved = localStorage.getItem(KEY);
-    return saved === 'en' || saved === 'pt' ? saved : 'es';
+    return saved === 'es' || saved === 'pt' ? saved : 'en';
   } catch {
-    return 'es';
+    return 'en';
   }
 };
 

@@ -21,7 +21,7 @@ function read() {
 /** Mode picker on the start screen: the normal ten-question round or the timed quick mode, with its length. */
 export function QuickSetup() {
   const [config, setConfig] = useState(read);
-  const [language, setLanguage] = useState<Lang>(() => { const saved = localStorage.getItem('rincon-riichi-language'); return saved === 'en' || saved === 'pt' ? saved : 'es'; });
+  const [language, setLanguage] = useState<Lang>(() => { const saved = localStorage.getItem('rincon-riichi-language'); return saved === 'es' || saved === 'pt' ? saved : 'en'; });
   useEffect(() => {
     const select = document.querySelector<HTMLSelectElement>('#languageSelect');
     const change = () => { const next = select?.value; if (next === 'es' || next === 'en' || next === 'pt') setLanguage(next); };

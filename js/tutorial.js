@@ -1,5 +1,5 @@
 (function () {
-  const defaultLanguage = "es";
+  const defaultLanguage = "en";
   const supportedLanguages = ["es", "en", "pt"];
   const languageStorageKey = "rincon-riichi-language";
   const tileBasePath = "../assets/tiles-fluffystuff-composite/";

@@ -17,7 +17,7 @@ const FAMILIES = [
 ];
 
 function useSiteSettings() {
-  const read = (): Lang => { const saved = localStorage.getItem('rincon-riichi-language'); return saved === 'en' || saved === 'pt' ? saved : 'es'; };
+  const read = (): Lang => { const saved = localStorage.getItem('rincon-riichi-language'); return saved === 'es' || saved === 'pt' ? saved : 'en'; };
   const [language, setLanguage] = useState<Lang>(read);
   const [theme, setTheme] = useState(() => document.documentElement.getAttribute('data-theme') || 'light');
   useEffect(() => {

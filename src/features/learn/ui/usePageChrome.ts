@@ -5,7 +5,7 @@ const THEMES = ['light', 'dark', 'cute', 'samurai', 'cyberpunk', 'vaquero', 'fru
 
 export function initialLanguage(): Lang {
   const saved = localStorage.getItem('rincon-riichi-language');
-  return saved === 'en' || saved === 'pt' ? saved : 'es';
+  return saved === 'es' || saved === 'pt' ? saved : 'en';
 }
 
 /**
