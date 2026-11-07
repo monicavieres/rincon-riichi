@@ -1621,3 +1621,10 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .intro-dots { display: flex; gap: 6px; }
 .intro-dots i { width: 9px; height: 9px; border-radius: 99px; background: rgba(255, 255, 255, 0.4); cursor: pointer; }
 .intro-dots i.is-on { width: 22px; background: var(--gold, #f2b42c); }
+.intro-slide h3 { font-size: max(17px, 3cqw); }
+.intro-note { font-size: max(12px, 1.7cqw); }
+.intro-groups figcaption { font-size: max(9px, 1.3cqw); }
+.intro-card small { font-size: max(11px, 1.4cqw); }
+.intro-tile { width: max(26px, 5cqw); }
+.intro-seat .intro-tile { width: max(24px, 4cqw); }
+.intro-seat { font-size: max(10px, 1.4cqw); }

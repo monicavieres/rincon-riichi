@@ -217,9 +217,9 @@ export const tutorialStops: TutorialStop[] = [
     eyebrow: L('Empieza aquí', 'Start here', 'Comece aqui'),
     title: L('Qué es el mahjong riichi', 'What riichi mahjong is', 'O que é o mahjong riichi'),
     body: L(
-      'Mahjong es un juego de mesa para cuatro personas que se juega con fichas. Antes de tocar la mesa, cuatro ideas:\n- **Fichas:** hay 34 clases y 4 copias de cada una, 136 en total.\n- **Asientos:** cada jugador se sienta en un lado y tiene un **viento de asiento** (Este, Sur, Oeste o Norte).\n- **Ronda:** la partida se juega en rondas; cada ronda tiene un **viento de la ronda** que es igual para todos.\n- Usa las flechas del tablero para ver cada idea.',
-      'Mahjong is a table game for four people played with tiles. Before touching the table, four ideas:\n- **Tiles:** there are 34 kinds with 4 copies of each, 136 in all.\n- **Seats:** each player sits on one side and has a **seat wind** (East, South, West or North).\n- **Round:** the game is played in rounds; each round has a **round wind** that is the same for everyone.\n- Use the board arrows to see each idea.',
-      'Mahjong é um jogo de mesa para quatro pessoas jogado com peças. Antes de tocar na mesa, quatro ideias:\n- **Peças:** há 34 tipos com 4 cópias de cada, 136 no total.\n- **Assentos:** cada jogador senta de um lado e tem um **vento do assento** (Leste, Sul, Oeste ou Norte).\n- **Rodada:** a partida é jogada em rodadas; cada rodada tem um **vento da rodada** igual para todos.\n- Use as setas do quadro para ver cada ideia.',
+      'Mahjong es un juego de mesa para cuatro personas con fichas.\n- **Fichas:** 34 clases, 4 copias de cada una: 136.\n- **Asientos:** cada jugador tiene un **viento de asiento**.\n- **Ronda:** la partida se juega en rondas, con un **viento de la ronda** igual para todos.',
+      'Mahjong is a table game for four people, played with tiles.\n- **Tiles:** 34 kinds, 4 copies of each: 136.\n- **Seats:** each player has a **seat wind**.\n- **Round:** the game is played in rounds, with a **round wind** that is the same for everyone.',
+      'Mahjong é um jogo de mesa para quatro pessoas, jogado com peças.\n- **Peças:** 34 tipos, 4 cópias de cada: 136.\n- **Assentos:** cada jogador tem um **vento do assento**.\n- **Rodada:** a partida é jogada em rodadas, com um **vento da rodada** igual para todos.',
     ),
     bullets: [
       L('Hay 34 clases de ficha y 4 copias de cada una.', 'There are 34 kinds of tile and 4 copies of each.', 'Há 34 tipos de peça e 4 cópias de cada.'),
