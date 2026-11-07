@@ -99,6 +99,8 @@ export function PointsBoard({ language }: { language: TutorialLanguage }) {
 
     // 1) the payer leaves the sticks on the table
     setNote({ title: t('Dejas los palitos en la mesa', 'The sticks are left on the table', 'Os palitos ficam na mesa'), body: t(`Quien paga no se los pasa a la mano: ${which === 'receive' ? 'el jugador de tu izquierda' : 'tú'} deja los palitos sobre la mesa: 3 de 1 000, 1 de 500 y 4 de 100.`, `The payer does not hand them over: ${which === 'receive' ? 'the player on your left' : 'you'} leave${which === 'receive' ? 's' : ''} the sticks on the table: 3 of 1,000, 1 of 500 and 4 of 100.`, `Quem paga não entrega na mão: ${which === 'receive' ? 'o jogador à sua esquerda' : 'você'} deixa os palitos sobre a mesa: 3 de 1.000, 1 de 500 e 4 de 100.`) });
+    // the sticks lie on the table in two tidy columns, one stick per row, so none sits on top of another
+    const slotAt = (n: number) => ({ x: spot.x + (n < 4 ? -5 : 4.8), y: spot.y + ((n < 4 ? n : n - 4) - 1.5) * 2.1 });
     const stack: Array<{ value: Value; i: number }> = [];
     VALUES.forEach((v) => { for (let i = 0; i < PRICE[v]; i += 1) stack.push({ value: v, i }); });
     const payerTray = trayAt(payer, 1000, 1);
@@ -110,11 +112,11 @@ export function PointsBoard({ language }: { language: TutorialLanguage }) {
     setWallets((now) => now.map((w, k) => { if (k !== payer) return w; const n = copy(w); VALUES.forEach((v) => { n[v] -= PRICE[v]; }); return n; }));
     stack.forEach((s, n) => {
       const from = trayAt(payer, s.value, 1);
-      flyStick({ key: `p-${n}`, value: s.value, from, to: { x: spot.x + ((n % 5) - 2) * 1.6, y: spot.y + Math.floor(n / 5) * 2.4 - 1.4, z: FELT_Z }, dur: 1100, turn: 0 });
+      flyStick({ key: `p-${n}`, value: s.value, from, to: { ...slotAt(n), z: FELT_Z + 0.5 }, dur: 1100, turn: 0 });
     });
     pawTo(payer, { x: payerTray.x, y: payerTray.y }, spot, 1100);
     if (!(await wait(1200))) return;
-    setOnTable(stack.map((s, n) => ({ value: s.value, at: { x: spot.x + ((n % 5) - 2) * 1.6, y: spot.y + Math.floor(n / 5) * 2.4 - 1.4 } })));
+    setOnTable(stack.map((s, n) => ({ value: s.value, at: slotAt(n) })));
     drawers.current[payer].goal = 0;
     pawTo(payer, spot, around({ x: 50, y: 112 }, payer), 800);
     if (!(await pause(t('Siguiente', 'Next', 'Próximo')))) return;
@@ -203,7 +205,7 @@ export function PointsBoard({ language }: { language: TutorialLanguage }) {
             const inY = 105.6 + row * 2.1 - 9 + slide;
             const pos = place(81, inY + 9 - 9 * 0);
             void pos;
-            const realAt = around({ x: 81, y: 105.6 + row * 2.1 - 9 + slide }, player);
+            const realAt = around({ x: 81 + (i % 2 ? 0.9 : -0.9), y: 105.6 + row * 2.1 - 9 + slide + i * 0.25 }, player);
             stick(v, realAt.x, realAt.y, at.z);
           }
         });
@@ -213,7 +215,7 @@ export function PointsBoard({ language }: { language: TutorialLanguage }) {
       const total = VALUES.reduce((sum, v) => sum + v * w[v], 0);
       g.pill(pos.x, pos.y + 6, `${['Tú', 'Derecha', 'Enfrente', 'Izquierda'][player]} · ${total.toLocaleString('es')}`, { bg: '#ffffffdd', fg: p.ink, size: 9, border: p.ink });
     });
-    onTable.forEach((s, n) => stick(s.value, s.at.x, s.at.y, FELT_Z + 0.5 + (n % 2) * 0.2));
+    onTable.forEach((s, n) => stick(s.value, s.at.x, s.at.y, FELT_Z + 0.5));
     const clock = performance.now();
     flights.current.forEach((f) => {
       const k = Math.min(1, (clock - f.start) / f.dur);
