@@ -1717,3 +1717,11 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .point-stick.s5000 { background: #f2b42c; }
 .point-stick.s5000 i { background: #d9701c; width: 5px; height: 10px; }
 .point-stick.s10000 { background: #e04b45; }
+.score-flow { display: grid; gap: clamp(8px, 1.6cqw, 14px); justify-items: center; width: min(84%, 440px); }
+.score-hands { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.score-hands span { padding: 3px 10px; border: 2px solid rgba(255, 255, 255, 0.7); border-radius: 99px; background: rgba(255, 255, 255, 0.12); font: 800 max(10px, 1.4cqw) / 1.2 var(--font-sans); text-transform: uppercase; }
+.score-hands .is-end { background: #f2b42c; color: #23203f; border-color: #23203f; }
+.score-board { display: grid; gap: 5px; width: 100%; margin: 0; padding: 0; list-style: none; }
+.score-board li { display: grid; grid-template-columns: 2em 1fr auto; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.14); font: 700 max(11px, 1.6cqw) / 1.1 var(--font-sans); }
+.score-board li.is-first { background: #f2b42c; color: #23203f; box-shadow: 0 0 0 2px #fff6c2; }
+.score-board em { font-style: normal; font-variant-numeric: tabular-nums; font-weight: 800; }

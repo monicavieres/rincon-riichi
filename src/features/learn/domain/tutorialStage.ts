@@ -507,9 +507,9 @@ export const tutorialStops: TutorialStop[] = [
     eyebrow: L('Antes de contar', 'Before counting', 'Antes de contar'),
     title: L('Los puntos son palitos de colores', 'Points are colour-coded sticks', 'Os pontos são palitos coloridos'),
     body: L(
-      'En mahjong se juega con puntos, y los puntos se llevan en **palitos** de colores.\n- Cada palito **equivale** a una cantidad: 100, 500, 1 000, 5 000 o 10 000.\n- El color y los puntitos dicen **cuánto vale**.\n- Se combinan para pagar cualquier cantidad.',
-      'Mahjong is played for points, and the points are kept as colour-coded **sticks**.\n- Each stick is **worth** an amount: 100, 500, 1,000, 5,000 or 10,000.\n- The colour and the dots tell you **how much**.\n- They combine to pay any amount.',
-      'No mahjong joga-se por pontos, e os pontos são guardados em **palitos** coloridos.\n- Cada palito **equivale** a uma quantia: 100, 500, 1.000, 5.000 ou 10.000.\n- A cor e os pontinhos dizem **quanto vale**.\n- Combinam-se para pagar qualquer quantia.',
+      'La partida se juega en rondas y, al terminar, **gana quien tiene más puntos**: por eso se cuentan. Los puntos se llevan en **palitos** de colores.\n- Cada palito **equivale** a una cantidad: 100 a 10 000.\n- El color y los puntitos dicen **cuánto vale**.',
+      'The game is played over rounds and, when it ends, **whoever has the most points wins**: that is why they are counted. Points are kept as colour-coded **sticks**.\n- Each stick is **worth** an amount: 100 to 10,000.\n- The colour and the dots tell you **how much**.',
+      'A partida é jogada em rodadas e, ao terminar, **ganha quem tem mais pontos**: por isso se contam. Os pontos são guardados em **palitos** coloridos.\n- Cada palito **equivale** a uma quantia: 100 a 10.000.\n- A cor e os pontinhos dizem **quanto vale**.',
     ),
     bullets: [
       L('Cada palito vale una cantidad fija.', 'Each stick is worth a fixed amount.', 'Cada palito vale uma quantia fixa.'),

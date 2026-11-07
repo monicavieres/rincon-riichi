@@ -98,6 +98,29 @@ export function SticksBoard({ language }: { language: TutorialLanguage }) {
   return (
     <SlideStage language={language} slides={[
       {
+        title: t('Para qué sirven los puntos', 'What the points are for', 'Para que servem os pontos'),
+        body: (
+          <div className="score-flow">
+            <div className="score-hands">
+              {[1, 2, 3].map((n) => <span key={n}>{t('Mano', 'Hand', 'Mão')} {n}</span>)}
+              <span>…</span>
+              <span className="is-end">{t('Fin', 'End', 'Fim')}</span>
+            </div>
+            <ol className="score-board">
+              {[
+                [t('Tú', 'You', 'Você'), '34 200'],
+                [t('Derecha', 'Right', 'Direita'), '27 800'],
+                [t('Enfrente', 'Across', 'Em frente'), '21 500'],
+                [t('Izquierda', 'Left', 'Esquerda'), '16 500'],
+              ].map(([name, pts], i) => (
+                <li key={name} className={i === 0 ? 'is-first' : ''}><span>{i === 0 ? '🏆' : i + 1}</span><b>{name}</b><em>{pts}</em></li>
+              ))}
+            </ol>
+          </div>
+        ),
+        note: t('La partida se juega en varias rondas. Después de cada mano los puntos cambian de dueño, y cuando la partida termina se comparan: quien tiene más puntos gana. Para eso se cuentan.', 'A game is played over several rounds. After each hand the points change hands, and when the game ends they are compared: whoever has the most points wins. That is why they are counted.', 'A partida é jogada em várias rodadas. Após cada mão os pontos mudam de dono, e quando a partida termina são comparados: quem tem mais pontos ganha. É para isso que se contam.'),
+      },
+      {
         title: t('Los puntos son palitos de colores', 'Points are colour-coded sticks', 'Os pontos são palitos coloridos'),
         body: (
           <div className="stick-list">
@@ -121,7 +144,7 @@ export function SticksBoard({ language }: { language: TutorialLanguage }) {
       {
         title: t('Cada jugador guarda los suyos', 'Each player keeps their own', 'Cada jogador guarda os seus'),
         body: <div className="intro-row is-big">{STICKS.map((s) => stick(s))}</div>,
-        note: t('Los palitos de cada jugador van en su cajón, bajo su borde de la mesa. Al terminar una mano, quien paga entrega palitos y el ganador los recibe; gana la partida quien termina con más puntos. Lo vemos en el siguiente paso.', 'Each player’s sticks live in their drawer, under their edge of the table. When a hand ends, the payer hands over sticks and the winner receives them; the game goes to whoever ends with the most points. We see it in the next step.', 'Os palitos de cada jogador ficam na gaveta, sob a sua borda da mesa. Ao fim de uma mão, quem paga entrega palitos e o vencedor os recebe; ganha a partida quem termina com mais pontos. Vemos isso no próximo passo.'),
+        note: t('Los palitos de cada jugador van en su cajón, bajo su borde de la mesa. Al terminar una mano, quien paga entrega palitos y el ganador los recibe. Lo vemos en el siguiente paso.', 'Each player’s sticks live in their drawer, under their edge of the table. When a hand ends, the payer hands over sticks and the winner receives them. We see it in the next step.', 'Os palitos de cada jogador ficam na gaveta, sob a sua borda da mesa. Ao fim de uma mão, quem paga entrega palitos e o vencedor os recebe. Vemos isso no próximo passo.'),
       },
     ]} />
   );
