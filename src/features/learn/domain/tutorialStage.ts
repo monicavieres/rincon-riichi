@@ -31,7 +31,7 @@ export type TutorialStop = {
 
 /** A one-line summary of what each step is about, shown under its name in the lesson rail. */
 export const stepSubtitles: Record<string, LocalizedText> = {
-  compassTour: L('Vientos, números y ranuras', 'Winds, numbers and slots', 'Ventos, números e encaixes'),
+  'compass-tour': L('Vientos, números y ranuras', 'Winds, numbers and slots', 'Ventos, números e encaixes'),
   intro: L('Fichas, asientos y rondas', 'Tiles, seats and rounds', 'Peças, assentos e rodadas'),
   shuffle: L('136 fichas boca abajo', 'All 136 tiles face down', 'As 136 peças viradas'),
   walls: L('4 muros de 17 pilas', '4 walls of 17 stacks', '4 muros de 17 pilhas'),
