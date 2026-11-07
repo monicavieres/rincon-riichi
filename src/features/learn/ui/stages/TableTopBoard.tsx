@@ -584,7 +584,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
       ctx.save();
       ctx.shadowColor = 'rgba(255,214,90,1)';
       ctx.shadowBlur = g.k * (2 + pulse * 4);
-      g.poly(g.plane(cx - (horizontal ? along : across), cy - (horizontal ? across : along), cx + (horizontal ? along : across), cy + (horizontal ? across : along), 0.9, zTop), `rgba(255,214,90,${0.45 + pulse * 0.4})`, '#fff6c2', g.lw * 3.4);
+      g.poly(g.plane(cx - (horizontal ? along : across), cy - (horizontal ? across : along), cx + (horizontal ? along : across), cy + (horizontal ? across : along), 0.9, zTop), `rgba(255,214,90,${0.12 + pulse * 0.18})`, '#fff6c2', g.lw * 4);
       ctx.restore();
       g.pill(g.W / 2, 24, `${rolled}  →  ${WIND_NAME[language][openSide]}`, { bg: p.gold, fg: p.ink, size: 14 });
     }
