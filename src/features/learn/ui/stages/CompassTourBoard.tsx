@@ -55,13 +55,15 @@ export function CompassTourBoard({ language }: { language: TutorialLanguage }) {
   const [total, setTotal] = useState(7);
   const [count, setCount] = useState(0);
   const [counting, setCounting] = useState(false);
+  const [direct, setDirect] = useState(false);
   const timer = useRef<number>(0);
   const boxes = useMemo(numberBoxes, []);
   useEffect(() => () => window.clearInterval(timer.current), []);
-  useEffect(() => { window.clearInterval(timer.current); setCount(0); setCounting(false); }, [slide]);
+  useEffect(() => { window.clearInterval(timer.current); setCount(0); setCounting(false); setDirect(false); }, [slide]);
   /** Counts 1, 2, 3… around the compass, one number every half second, until the dice total. */
   const run = (next: number) => {
     window.clearInterval(timer.current);
+    setDirect(false);
     setTotal(next);
     setCount(0);
     setCounting(true);
@@ -72,10 +74,18 @@ export function CompassTourBoard({ language }: { language: TutorialLanguage }) {
       if (n >= next) { window.clearInterval(timer.current); setCounting(false); }
     }, 520);
   };
+  /** The shortcut: no counting, find the total on the compass and read the wind it sits under. */
+  const jump = (next = total) => {
+    window.clearInterval(timer.current);
+    setTotal(next);
+    setCounting(false);
+    setCount(next);
+    setDirect(true);
+  };
   const another = () => {
     let next = 2 + Math.floor(Math.random() * 11);
     if (next === total) next = next === 12 ? 2 : next + 1;
-    run(next);
+    if (direct) jump(next); else run(next);
   };
   const [theme, setTheme] = useState(themeNow);
   useEffect(() => {
@@ -111,7 +121,7 @@ export function CompassTourBoard({ language }: { language: TutorialLanguage }) {
     },
     {
       title: t('Los numeritos de cada lado', 'The small numbers on each side', 'Os números de cada lado'),
-      text: t('Los números van del 1 al 12 repartidos alrededor, en sentido antihorario desde el Este. Con la suma de los dados, cuenta hasta ese número: el lado donde cae es el muro que se abre. Pulsa «Contar» para verlo.', 'The numbers go from 1 to 12 all around, counter-clockwise starting at East. Take the dice total and count up to that number: the side it lands on is the wall that opens. Press “Count” to see it.', 'Os números vão de 1 a 12 ao redor, no sentido anti-horário a partir do Leste. Com a soma dos dados, conte até esse número: o lado onde cai é o muro que abre. Toque em «Contar» para ver.'),
+      text: t('Podrías contar 1, 2, 3… alrededor de la mesa cada vez; el compass trae los números para ahorrártelo. Busca la suma de los dados en el compass: el viento bajo el que está es el muro que se abre.', 'You could count 1, 2, 3… around the table every time; the compass has the numbers to save you that. Find the dice total on the compass: the wind it sits under is the wall that opens.', 'Você poderia contar 1, 2, 3… ao redor da mesa toda vez; o compass traz os números para poupar isso. Ache a soma dos dados no compass: o vento sob o qual ela está é o muro que abre.'),
       marks: numbers,
     },
     {
@@ -138,7 +148,9 @@ export function CompassTourBoard({ language }: { language: TutorialLanguage }) {
           <img src={`../assets/illustrations/consola-top-${theme}.svg`} alt="" />
           <svg viewBox="0 0 700 700" aria-hidden="true" key={slide}>
             {slide === 1
-              ? (count === 0 && !counting
+              ? (direct
+                ? <>{boxes.filter((box) => box.n === total).map((box) => <rect key={box.n} className="ct-mark is-now" x={box.x} y={box.y} width={box.w} height={box.h} rx="10" />)}{pulse(winds[(total - 1) % 4], 99)}</>
+                : count === 0 && !counting
                 ? numbers.map(pulse)
                 : boxes.filter((box) => box.n <= count).map((box) => (
                   <rect key={box.n} className={box.n === count ? 'ct-mark is-now' : 'ct-count'} x={box.x} y={box.y} width={box.w} height={box.h} rx="10" />
@@ -154,10 +166,13 @@ export function CompassTourBoard({ language }: { language: TutorialLanguage }) {
               <span className="ct-dice">{t('Dados', 'Dice', 'Dados')} → <b>{total}</b></span>
               <span className="ct-counter">{count > 0 ? <b>{count}</b> : '—'}</span>
               {count >= total && !counting && (
-                <span className="ct-result">{count} → {WIND_NAMES[language][(total - 1) % 4]}: {t('ese muro se abre', 'that wall opens', 'esse muro abre')}</span>
+                <span className="ct-result">{direct
+                  ? `${total} ${t('está bajo', 'is under', 'está sob')} ${WIND_NAMES[language][(total - 1) % 4]}: ${t('ese muro se abre', 'that wall opens', 'esse muro abre')}`
+                  : `${count} → ${WIND_NAMES[language][(total - 1) % 4]}: ${t('ese muro se abre', 'that wall opens', 'esse muro abre')}`}</span>
               )}
               <div className="ct-count-buttons">
-                <button type="button" className="sort-button is-primary" onClick={() => run(total)} disabled={counting}>{count === 0 ? t('Contar', 'Count', 'Contar') : t('Contar otra vez', 'Count again', 'Contar de novo')}</button>
+                <button type="button" className="sort-button" onClick={() => run(total)} disabled={counting}>{t('Contar uno a uno', 'Count one by one', 'Contar um a um')}</button>
+                <button type="button" className="sort-button is-primary" onClick={() => jump()} disabled={counting}>{t('Atajo: buscar el número', 'Shortcut: find the number', 'Atalho: achar o número')}</button>
                 <button type="button" className="sort-button" onClick={another} disabled={counting}>{t('Otra tirada', 'Another roll', 'Outra jogada')}</button>
               </div>
             </div>
