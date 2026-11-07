@@ -276,9 +276,9 @@ export const tutorialStops: TutorialStop[] = [
     eyebrow: L('Poner la mesa', 'Setting the table', 'Preparar a mesa'),
     title: L('Coloca el compass y el viento de ronda', 'Place the compass and the round wind', 'Coloque o compass e o vento da rodada'),
     body: L(
-      'Como dealer, tú pones lo que falta en la mesa: el compass en el centro, con cada viento hacia su asiento, y la placa naranja del viento de ronda pegada al borde, a la derecha del dealer inicial. Arrastra cada pieza al recuadro que brilla. Una vez colocado el compass, tú eres el dealer y juegas como Este; el jugador a tu derecha es Sur, el de enfrente es Oeste y el de tu izquierda es Norte.',
-      'As dealer, you set what is missing on the table: the compass in the centre, each wind facing its seat, and the orange round-wind plate against the edge, to the right of the first dealer. Drag each piece to the glowing spot. Once the compass is down, you are the dealer and play as East; the player on your right is South, the one across is West and the one on your left is North.',
-      'Como dealer, você coloca o que falta na mesa: o compass no centro, cada vento voltado para seu assento, e a placa laranja do vento da rodada junto à borda, à direita do dealer inicial. Arraste cada peça ao lugar que brilha. Com o compass colocado, você é o dealer e joga como Leste; o jogador à sua direita é Sul, o da frente é Oeste e o da sua esquerda é Norte.',
+      'Como dealer, tú pones lo que falta en la mesa: el compass en el centro, con cada viento hacia su asiento, y la placa del viento de ronda al borde, a la derecha del dealer. Arrastra cada pieza al recuadro que brilla.',
+      'As dealer, you set what is missing on the table: the compass in the centre, each wind facing its seat, and the round-wind plate at the edge, to the right of the dealer. Drag each piece to the glowing spot.',
+      'Como dealer, você coloca o que falta na mesa: o compass no centro, cada vento voltado para seu assento, e a placa do vento da rodada na borda, à direita do dealer. Arraste cada peça ao lugar que brilha.',
     ),
     bullets: [
       L('Cada asiento tiene un viento: tú eres Este (y dealer); Sur está a tu derecha, Oeste enfrente y Norte a tu izquierda.', 'Each seat has a wind: you are East (and dealer); South is on your right, West across and North on your left.', 'Cada assento tem um vento: você é Leste (e dealer); Sul está à sua direita, Oeste em frente e Norte à sua esquerda.'),
