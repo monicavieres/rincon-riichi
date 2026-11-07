@@ -1660,3 +1660,13 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .ct-counter { font: 800 max(30px, 6cqw) / 1 var(--font-display, var(--font-sans)); color: #ffe27a; min-height: 1em; }
 .ct-result { padding: 4px 12px; border-radius: 10px; background: #f2b42c; color: #23203f; font: 800 max(12px, 1.7cqw) / 1.2 var(--font-sans); text-transform: uppercase; }
 .ct-count-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+.ct-board { grid-template-rows: minmax(0, 1fr) auto; }
+.ct-art { min-height: 0; }
+.ct-copy { min-height: 0; gap: 4px; }
+.ct-copy h3 { font-size: max(15px, 2.4cqw); }
+.ct-copy p { font-size: max(11px, 1.5cqw); line-height: 1.35; }
+.ct-count-box { grid-template-columns: auto auto 1fr; align-items: center; gap: 6px 10px; }
+.ct-count-box .ct-result { grid-column: 1 / -1; }
+.ct-count-buttons { grid-column: 1 / -1; }
+.ct-counter { font-size: max(24px, 4.4cqw); }
+.ct-count-buttons .sort-button { padding: 5px 10px; font-size: max(10px, 1.3cqw); }

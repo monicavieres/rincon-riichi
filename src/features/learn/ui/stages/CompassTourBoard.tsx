@@ -121,7 +121,7 @@ export function CompassTourBoard({ language }: { language: TutorialLanguage }) {
     },
     {
       title: t('Los numeritos de cada lado', 'The small numbers on each side', 'Os números de cada lado'),
-      text: t('Podrías contar 1, 2, 3… alrededor de la mesa cada vez; el compass trae los números para ahorrártelo. Busca la suma de los dados en el compass: el viento bajo el que está es el muro que se abre.', 'You could count 1, 2, 3… around the table every time; the compass has the numbers to save you that. Find the dice total on the compass: the wind it sits under is the wall that opens.', 'Você poderia contar 1, 2, 3… ao redor da mesa toda vez; o compass traz os números para poupar isso. Ache a soma dos dados no compass: o vento sob o qual ela está é o muro que abre.'),
+      text: t('No hace falta contar 1, 2, 3… cada vez: el compass trae los números como atajo. Busca la suma de los dados y mira bajo qué viento está.', 'No need to count 1, 2, 3… every time: the compass has the numbers as a shortcut. Find the dice total and see which wind it is under.', 'Não precisa contar 1, 2, 3… toda vez: o compass traz os números como atalho. Ache a soma dos dados e veja sob qual vento ela está.'),
       marks: numbers,
     },
     {
