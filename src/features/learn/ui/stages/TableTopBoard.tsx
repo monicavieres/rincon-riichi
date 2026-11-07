@@ -444,14 +444,14 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
         for (let i = 0; i < dots; i += 1) {
           const u = ((i + phase) / dots);
           const q = g.project(from.x + (to.x - from.x) * u, from.y + (to.y - from.y) * u, FELT_Z + 5);
-          const size = g.k * (0.35 + 0.45 * Math.sin(u * Math.PI));
+          const size = g.k * (0.7 + 0.8 * Math.sin(u * Math.PI));
           ctx2.save();
           ctx2.globalAlpha = 0.35 + 0.65 * Math.sin(u * Math.PI);
           ctx2.fillStyle = p.gold;
           ctx2.strokeStyle = p.ink;
           ctx2.lineWidth = g.lw;
           ctx2.beginPath();
-          ctx2.arc(q.x, q.y, Math.max(2, size), 0, Math.PI * 2);
+          ctx2.arc(q.x, q.y, Math.max(3.5, size), 0, Math.PI * 2);
           ctx2.fill();
           ctx2.stroke();
           ctx2.restore();
@@ -461,7 +461,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
           const reach = 0.5 + ((i * 37) % 10) / 10;
           const tw = (Math.sin(g.now / 260 + i * 1.7 + seed) + 1) / 2;
           const q = g.project(to.x + Math.cos(ang) * 5.5 * reach, to.y + Math.sin(ang) * 4.2 * reach, FELT_Z + 6);
-          const r = g.k * (0.4 + tw * 0.9);
+          const r = Math.max(3, g.k * (0.8 + tw * 1.5));
           ctx2.save();
           ctx2.globalAlpha = 0.25 + tw * 0.75;
           ctx2.fillStyle = '#fff6c2';
