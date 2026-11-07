@@ -1652,3 +1652,11 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .ct-legend li { display: flex; align-items: center; gap: 10px; font: 600 max(12px, 1.6cqw) / 1.2 var(--font-sans); }
 .ct-legend b { display: grid; place-items: center; width: 2em; height: 2em; border: 2px solid #fff6c2; border-radius: 50%; background: rgba(255, 255, 255, 0.14); font: 800 max(14px, 2cqw) / 1 'Noto Serif JP', 'Hiragino Mincho ProN', serif; }
 .ct-legend strong { text-transform: uppercase; letter-spacing: 0.04em; }
+.ct-count { fill: rgba(255, 214, 90, 0.35); stroke: #fff6c2; stroke-width: 4; }
+.ct-mark.is-now { fill: rgba(255, 214, 90, 0.7); stroke-width: 9; animation: none; }
+.ct-count-box { display: grid; gap: 8px; justify-items: start; }
+.ct-dice { padding: 3px 12px; border-radius: 99px; background: rgba(255, 255, 255, 0.16); font: 700 max(12px, 1.6cqw) / 1.2 var(--font-sans); }
+.ct-dice b { font-size: 1.3em; color: #ffe27a; }
+.ct-counter { font: 800 max(30px, 6cqw) / 1 var(--font-display, var(--font-sans)); color: #ffe27a; min-height: 1em; }
+.ct-result { padding: 4px 12px; border-radius: 10px; background: #f2b42c; color: #23203f; font: 800 max(12px, 1.7cqw) / 1.2 var(--font-sans); text-transform: uppercase; }
+.ct-count-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
