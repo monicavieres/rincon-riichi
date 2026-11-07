@@ -87,6 +87,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
   const [dieShow, setDieShow] = useState(1);
   const [dieReady, setDieReady] = useState(false);
   const [rivalsGo, setRivalsGo] = useState(false);
+  const [waiting, setWaiting] = useState(false);
 
   const clearTimers = () => { timers.current.forEach((id) => { window.clearInterval(id); window.clearTimeout(id); }); timers.current = []; };
 
@@ -188,6 +189,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     if (!compassOn) { setCompassAt(CENTER); setCompassOn(true); } else if (!plateOn) { setPlateAt(PLATE_TARGET); setPlateOn(true); }
   };
 
+  /** The dice roll is the only automatic part; every later phase waits for the player to press Next. */
   const roll = () => {
     if (rolling) return;
     clearTimers();
@@ -198,64 +200,62 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     setPhase('idle');
     setDoraCount(0);
     setDeadCount(0);
+    setWaiting(false);
     flipStart.current = 0;
     const later = (ms: number, action: () => void) => { timers.current.push(window.setTimeout(action, ms)); };
     later(1100, () => {
       const a = 1 + Math.floor(Math.random() * 6);
       const b = 1 + Math.floor(Math.random() * 6);
-      const total = a + b;
       setFaces([a, b]);
       setRolling(false);
-      setRolled(total);
-      // 1) zoom to the compass and light the number and its wind
+      setRolled(a + b);
       setPhase('compass');
-      later(3000, () => {
-        // 2) move to that player's wall and count the stacks from its right end
-        setPhase('wall');
-        let n = 0;
-        const count = window.setInterval(() => {
-          n += 1;
-          setCounted(n);
-          if (n >= total) {
-            window.clearInterval(count);
-            // 3) count seven stacks on from the break: that is where the dead wall ends
-            later(1000, () => {
-              setPhase('dead');
-              let d = 0;
-              const seven = window.setInterval(() => {
-                d += 1;
-                setDeadCount(d);
-                if (d < 7) return;
-                window.clearInterval(seven);
-                // 4) cut at both ends and slide the dead wall apart
-                later(1100, () => {
-                  splitStart.current = performance.now();
-                  setPhase('split');
-                  // 5) count three stacks into the dead wall and turn the dora indicator face up
-                  later(2300, () => {
-                    setPhase('dora');
-                    let c = 0;
-                    const tally = window.setInterval(() => {
-                      c += 1;
-                      setDoraCount(c);
-                      if (c < 3) return;
-                      window.clearInterval(tally);
-                      later(800, () => {
-                        flipStart.current = performance.now();
-                        later(2300, () => setPhase('done'));
-                      });
-                    }, 700);
-                    timers.current.push(tally);
-                  });
-                });
-              }, 380);
-              timers.current.push(seven);
-            });
-          }
-        }, 330);
-        timers.current.push(count);
-      });
+      setWaiting(true);
     });
+  };
+
+  /** Plays the next phase and stops again when it has finished, so the player can read what happened. */
+  const advance = () => {
+    if (!waiting || rolled === null) return;
+    setWaiting(false);
+    const later = (ms: number, action: () => void) => { timers.current.push(window.setTimeout(action, ms)); };
+    if (phase === 'compass') {
+      setPhase('wall');
+      let n = 0;
+      const count = window.setInterval(() => {
+        n += 1;
+        setCounted(n);
+        if (n >= rolled) { window.clearInterval(count); later(500, () => setWaiting(true)); }
+      }, 420);
+      timers.current.push(count);
+    } else if (phase === 'wall') {
+      setPhase('dead');
+      let d = 0;
+      const seven = window.setInterval(() => {
+        d += 1;
+        setDeadCount(d);
+        if (d >= 7) { window.clearInterval(seven); later(500, () => setWaiting(true)); }
+      }, 420);
+      timers.current.push(seven);
+    } else if (phase === 'dead') {
+      splitStart.current = performance.now();
+      setPhase('split');
+      later(2300, () => setWaiting(true));
+    } else if (phase === 'split') {
+      setPhase('dora');
+      let c = 0;
+      const tally = window.setInterval(() => {
+        c += 1;
+        setDoraCount(c);
+        if (c < 3) return;
+        window.clearInterval(tally);
+        later(800, () => {
+          flipStart.current = performance.now();
+          later(2300, () => setPhase('done'));
+        });
+      }, 800);
+      timers.current.push(tally);
+    }
   };
 
   const press = (action: () => void) => (event: ReactKeyboardEvent) => {
@@ -561,15 +561,27 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
       const sc = (COMPASS * 1.16) / 700;
       const at = [[350, 565], [560, 350], [350, 140], [140, 350]][openSide];
       const dir = [[1, 0], [0, -1], [-1, 0], [0, 1]][openSide];
-      const idx = (rolled - (openSide + 1)) / 4;
-      const off = (idx - 1) * 56;
+      const size = openSide % 2 === 0 ? 31 : 29;
+      const numbers = [[1, 5, 9], [2, 6, 10], [3, 7, 11], [4, 8, 12]][openSide];
+      ctx.save();
+      ctx.font = `800 ${size}px 'Barlow Semi Condensed', 'Barlow', system-ui, sans-serif`;
+      const parts = numbers.flatMap((n, i) => (i ? [' · ', String(n)] : [String(n)]));
+      const widths = parts.map((part) => ctx.measureText(part).width);
+      ctx.restore();
+      const total = widths.reduce((sum, w) => sum + w, 0);
+      const k = (rolled - (openSide + 1)) / 4;
+      const partIndex = k * 2;
+      const before = widths.slice(0, partIndex).reduce((sum, w) => sum + w, 0);
+      const off = before + widths[partIndex] / 2 - total / 2;
       const cx = CENTER.x + (at[0] + dir[0] * off - 350) * sc;
       const cy = CENTER.y + (at[1] + dir[1] * off - 350) * sc;
+      const along = ((widths[partIndex] + 12) / 2) * sc;
+      const across = ((size * 1.45) / 2) * sc;
       const horizontal = dir[0] !== 0;
       const pulse = 0.5 + 0.5 * Math.sin(g.now / 180);
       g.needsFrame = true;
-      const zTop = FELT_Z + 3.15;
-      g.poly(g.plane(cx - (horizontal ? 1.9 : 1.2), cy - (horizontal ? 1.2 : 1.9), cx + (horizontal ? 1.9 : 1.2), cy + (horizontal ? 1.2 : 1.9), 0.7, zTop), `rgba(255,214,90,${0.35 + pulse * 0.35})`, p.gold, g.lw * 2.4);
+      const zTop = FELT_Z + 1.7;
+      g.poly(g.plane(cx - (horizontal ? along : across), cy - (horizontal ? across : along), cx + (horizontal ? along : across), cy + (horizontal ? across : along), 0.7, zTop), `rgba(255,214,90,${0.35 + pulse * 0.4})`, p.gold, g.lw * 2.8);
       g.pill(g.W / 2, 24, `${rolled}  →  ${WIND_NAME[language][openSide]}`, { bg: p.gold, fg: p.ink, size: 14 });
     }
 
@@ -681,11 +693,34 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
           ) : (
             <>
               {rolled !== null && <span>{faces[0]} + {faces[1]} = {rolled}</span>}
-              <button type="button" className="sort-button is-primary" onClick={roll} onKeyDown={press(roll)} disabled={rolling}>{rolled === null ? t('Lanzar dados', 'Roll dice', 'Lançar dados') : t('Lanzar otra vez', 'Roll again', 'Lançar de novo')}</button>
+              {waiting && phase !== 'done' && (
+                <button type="button" className="sort-button is-primary" onClick={advance} onKeyDown={press(advance)}>
+                  {phase === 'compass' ? t('Siguiente: contar pilas', 'Next: count stacks', 'Próximo: contar pilhas') : phase === 'wall' ? t('Siguiente: muro muerto', 'Next: dead wall', 'Próximo: muro morto') : phase === 'dead' ? t('Siguiente: separar', 'Next: split it off', 'Próximo: separar') : t('Siguiente: indicador de dora', 'Next: dora indicator', 'Próximo: indicador de dora')} →
+                </button>
+              )}
+              <button type="button" className={`sort-button${rolled === null ? ' is-primary' : ''}`} onClick={roll} onKeyDown={press(roll)} disabled={rolling}>{rolled === null ? t('Lanzar dados', 'Roll dice', 'Lançar dados') : t('Repetir desde el inicio', 'Start over', 'Recomeçar')}</button>
             </>
           )}
         </div>
 
+        {mode === 'dice' && phase !== 'done' && (
+          <p className="deck-guide" role="status">
+            {rolling
+              ? t('Los dados ruedan…', 'The dice are rolling…', 'Os dados rolam…')
+              : rolled === null
+                ? t('Paso 1: lanza los dos dados. Su suma decide qué muro se abre.', 'Step 1: roll the two dice. Their total decides which wall opens.', 'Passo 1: lance os dois dados. A soma decide qual muro abre.')
+                : phase === 'compass'
+                  ? t(`Paso 2: los dados suman ${rolled}. En el compass, el ${rolled} está en el lado ${WIND_NAME.es[openSide ?? 0]}: ese es el muro que se abre.`, `Step 2: the dice total ${rolled}. On the compass, ${rolled} is on the ${WIND_NAME.en[openSide ?? 0]} side: that wall is opened.`, `Passo 2: os dados somam ${rolled}. No compass, o ${rolled} está no lado ${WIND_NAME.pt[openSide ?? 0]}: esse muro abre.`)
+                  : phase === 'wall'
+                    ? t(`Paso 3: en ese muro contamos ${rolled} pilas desde su extremo derecho (${counted}/${rolled}). Ahí se hace el corte.`, `Step 3: on that wall we count ${rolled} stacks from its right end (${counted}/${rolled}). The cut goes there.`, `Passo 3: nesse muro contamos ${rolled} pilhas a partir da extremidade direita (${counted}/${rolled}). O corte fica ali.`)
+                    : phase === 'dead'
+                      ? t(`Paso 4: desde el corte contamos 7 pilas más (${deadCount}/7): son el muro muerto, 14 fichas.`, `Step 4: from the cut we count 7 more stacks (${deadCount}/7): that is the dead wall, 14 tiles.`, `Passo 4: do corte contamos mais 7 pilhas (${deadCount}/7): é o muro morto, 14 peças.`)
+                      : phase === 'split'
+                        ? t('Paso 5: el muro muerto se separa del resto. De ahí no se roba durante la partida.', 'Step 5: the dead wall is set apart from the rest. You do not draw from it during the game.', 'Passo 5: o muro morto é separado do resto. Dele não se compra durante a partida.')
+                        : t(`Paso 6: en la 3ª pila del muro muerto se voltea la ficha de arriba (${doraCount}/3): es el indicador de dora.`, `Step 6: on the 3rd stack of the dead wall the top tile is turned face up (${doraCount}/3): the dora indicator.`, `Passo 6: na 3ª pilha do muro morto vira-se a peça de cima (${doraCount}/3): é o indicador de dora.`)}
+            {waiting && phase !== 'done' ? ` ${t('Pulsa «Siguiente» para continuar.', 'Press “Next” to continue.', 'Toque em «Próximo» para continuar.')}` : ''}
+          </p>
+        )}
         {mode === 'dealer' && dealerRoll === null && (
           <p className="deck-guide" role="status">
             {!rivalsGo

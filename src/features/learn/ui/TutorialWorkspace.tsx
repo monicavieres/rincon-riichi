@@ -110,9 +110,9 @@ const PRACTICE_COPY = {
     'Arraste o compass ao contorno do centro e a placa laranja ao da borda. Sem arrastar? «Colocar →» coloca a próxima peça.',
   ),
   dice: L(
-    'Pulsa «Lanzar dados», mira qué muro se ilumina y cuenta las pilas desde su extremo derecho. Puedes repetirlo las veces que quieras.',
-    'Press “Roll dice”, see which wall lights up and count the stacks from its right end. Repeat as often as you like.',
-    'Toque em «Lançar dados», veja qual muro acende e conte as pilhas a partir da extremidade direita. Pode repetir quantas vezes quiser.',
+    'Pulsa «Lanzar dados» y avanza con «Siguiente»: cada paso se explica dentro de la animación. Puedes repetirlo las veces que quieras.',
+    'Press “Roll dice” and move on with “Next”: each step is explained inside the animation. Repeat as often as you like.',
+    'Toque em «Lançar dados» e avance com «Próximo»: cada passo é explicado dentro da animação. Pode repetir quantas vezes quiser.',
   ),
   deal: L(
     'Mira el orden: dealer, Sur, Oeste y Norte, de 4 en 4 fichas. Cuenta cuántas lleva cada mano en su etiqueta y pulsa «Repetir» para verlo otra vez.',
