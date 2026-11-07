@@ -1628,3 +1628,7 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .intro-tile { width: max(26px, 5cqw); }
 .intro-seat .intro-tile { width: max(24px, 4cqw); }
 .intro-seat { font-size: max(10px, 1.4cqw); }
+.intro-table { gap: 2px; align-content: center; text-align: center; }
+.intro-table b { font: 800 max(10px, 1.5cqw) / 1 var(--font-sans); }
+.intro-table small { font: 600 max(9px, 1.2cqw) / 1.2 var(--font-sans); text-transform: none; padding: 0 4px; }
+.intro-card em { font: 700 max(10px, 1.35cqw) / 1.3 var(--font-sans); font-style: normal; padding: 3px 8px; border-radius: 8px; background: rgba(242, 180, 44, 0.9); color: var(--ink); }

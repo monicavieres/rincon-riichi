@@ -46,9 +46,9 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
             <div className="intro-seat is-left">{tile('4z')}<span>{t('Norte', 'North', 'Norte')}</span></div>
             <div className="intro-seat is-right">{tile('2z')}<span>{t('Sur', 'South', 'Sul')}</span></div>
             <div className="intro-seat is-me">{tile('1z')}<span>{t('Tú · Este', 'You · East', 'Você · Leste')}</span></div>
-            <div className="intro-table">{t('mesa', 'table', 'mesa')}</div>
+            <div className="intro-table"><b>{t('Compass', 'Compass', 'Compass')}</b><small>{t('cada viento mira a su asiento', 'each wind faces its seat', 'cada vento olha para o seu assento')}</small></div>
           </div>
-          <p className="intro-note">{t('Cada asiento tiene un viento: el viento de asiento. El turno avanza en sentido antihorario: Este → Sur → Oeste → Norte.', 'Each seat has a wind: the seat wind. Play goes counter-clockwise: East → South → West → North.', 'Cada assento tem um vento: o vento do assento. O jogo avança no sentido anti-horário: Leste → Sul → Oeste → Norte.')}</p>
+          <p className="intro-note">{t('Cada asiento tiene un viento: el viento de asiento. Se marca con el compass, en el centro de la mesa. El turno va en sentido antihorario: Este → Sur → Oeste → Norte.', 'Each seat has a wind: the seat wind. The compass in the centre of the table marks it. Play goes counter-clockwise: East → South → West → North.', 'Cada assento tem um vento: o vento do assento. O compass, no centro da mesa, o indica. O jogo vai no sentido anti-horário: Leste → Sul → Oeste → Norte.')}</p>
         </>
       ),
     },
@@ -60,15 +60,17 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
             <div className="intro-card">
               <span className="intro-plate">東</span>
               <b>{t('Viento de la ronda', 'Round wind', 'Vento da rodada')}</b>
-              <small>{t('Es el mismo para los cuatro. Lo marca la placa de la mesa: Este primero, luego Sur.', 'The same for all four. The plate on the table shows it: East first, then South.', 'É o mesmo para os quatro. A placa da mesa o mostra: Leste primeiro, depois Sul.')}</small>
+              <small>{t('Es el mismo para los cuatro: Este primero, luego Sur.', 'The same for all four: East first, then South.', 'É o mesmo para os quatro: Leste primeiro, depois Sul.')}</small>
+              <em>{t('Va en la placa, en el borde de la mesa, a la derecha del dealer.', 'It goes on the plate, at the table edge, to the dealer’s right.', 'Vai na placa, na borda da mesa, à direita do dealer.')}</em>
             </div>
             <div className="intro-card">
               <span className="intro-row">{tile('1z')}{tile('2z')}{tile('3z')}{tile('4z')}</span>
               <b>{t('Viento de asiento', 'Seat wind', 'Vento do assento')}</b>
-              <small>{t('Distinto para cada jugador, y cambia de asiento en asiento cuando pasa la mano.', 'Different for each player, and it moves seat to seat as hands pass.', 'Diferente para cada jogador, e muda de assento em assento quando a mão passa.')}</small>
+              <small>{t('Distinto para cada jugador; cambia cuando pasa la mano.', 'Different for each player; it changes when the hand passes.', 'Diferente para cada jogador; muda quando a mão passa.')}</small>
+              <em>{t('Va en el compass, en el centro de la mesa.', 'It goes on the compass, in the centre of the table.', 'Vai no compass, no centro da mesa.')}</em>
             </div>
           </div>
-          <p className="intro-note">{t('Una ronda son cuatro manos, una por cada dealer. Después de la ronda Este viene la Sur.', 'A round is four hands, one for each dealer. After the East round comes the South round.', 'Uma rodada são quatro mãos, uma para cada dealer. Depois da rodada Leste vem a Sul.')}</p>
+          <p className="intro-note">{t('Una ronda son cuatro manos, una por cada dealer. Cómo se juega una mano lo veremos más adelante.', 'A round is four hands, one for each dealer. How a hand is played comes later.', 'Uma rodada são quatro mãos, uma para cada dealer. Como se joga uma mão veremos mais adiante.')}</p>
         </>
       ),
     },

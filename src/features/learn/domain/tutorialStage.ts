@@ -217,9 +217,9 @@ export const tutorialStops: TutorialStop[] = [
     eyebrow: L('Empieza aquí', 'Start here', 'Comece aqui'),
     title: L('Qué es el mahjong riichi', 'What riichi mahjong is', 'O que é o mahjong riichi'),
     body: L(
-      'Mahjong es un juego de mesa para cuatro personas con fichas.\n- **Fichas:** 34 clases, 4 copias de cada una: 136.\n- **Asientos:** cada jugador tiene un **viento de asiento**.\n- **Ronda:** la partida se juega en rondas, con un **viento de la ronda** igual para todos.',
-      'Mahjong is a table game for four people, played with tiles.\n- **Tiles:** 34 kinds, 4 copies of each: 136.\n- **Seats:** each player has a **seat wind**.\n- **Round:** the game is played in rounds, with a **round wind** that is the same for everyone.',
-      'Mahjong é um jogo de mesa para quatro pessoas, jogado com peças.\n- **Peças:** 34 tipos, 4 cópias de cada: 136.\n- **Assentos:** cada jogador tem um **vento do assento**.\n- **Rodada:** a partida é jogada em rodadas, com um **vento da rodada** igual para todos.',
+      'Mahjong es un juego de mesa para cuatro personas con fichas.\n- **Fichas:** 34 clases, 4 copias de cada una: 136.\n- **Asientos:** cada jugador tiene un **viento de asiento** (va en el compass, al centro).\n- **Ronda:** la partida se juega en rondas, con un **viento de la ronda** igual para todos (va en la placa, en el borde).\nCómo se juega una mano lo veremos después.',
+      'Mahjong is a table game for four people, played with tiles.\n- **Tiles:** 34 kinds, 4 copies of each: 136.\n- **Seats:** each player has a **seat wind** (it goes on the compass, in the centre).\n- **Round:** the game is played in rounds, with a **round wind** that is the same for everyone (it goes on the plate, at the edge).\nHow a hand is played comes later.',
+      'Mahjong é um jogo de mesa para quatro pessoas, jogado com peças.\n- **Peças:** 34 tipos, 4 cópias de cada: 136.\n- **Assentos:** cada jogador tem um **vento do assento** (vai no compass, ao centro).\n- **Rodada:** a partida é jogada em rodadas, com um **vento da rodada** igual para todos (vai na placa, na borda).\nComo se joga uma mão veremos depois.',
     ),
     bullets: [
       L('Hay 34 clases de ficha y 4 copias de cada una.', 'There are 34 kinds of tile and 4 copies of each.', 'Há 34 tipos de peça e 4 cópias de cada.'),
