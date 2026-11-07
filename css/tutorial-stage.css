@@ -1577,3 +1577,13 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .deck-meter { height: 10px !important; }
 .deck-meter.is-done i { background: #2fb457; box-shadow: 0 0 14px 3px rgba(47, 180, 87, 0.8); }
 @keyframes deck-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(47, 180, 87, 0.7); } 50% { box-shadow: 0 0 0 10px rgba(47, 180, 87, 0); } }
+
+/* Home hero: the table picture beside what the site is for */
+.home-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: var(--space-6, 32px); align-items: center; margin: var(--space-4, 16px) 0 var(--space-6, 32px); padding: clamp(16px, 3vw, 36px); border: 2px solid var(--line, #d9c9b0); border-radius: var(--radius-lg, 20px); background: var(--card); }
+.home-hero-copy { display: grid; gap: var(--space-3, 12px); justify-items: start; }
+.home-hero h1 { margin: 0; font-size: clamp(28px, 4.2vw, 52px); line-height: 1.05; }
+.home-hero-goal { margin: 0; max-width: 46ch; font-size: clamp(15px, 1.5vw, 18px); line-height: 1.5; color: var(--ink-soft, var(--ink)); }
+.home-hero-actions { display: flex; flex-wrap: wrap; gap: var(--space-2, 8px); margin-top: var(--space-2, 8px); }
+.home-hero-actions .big-button { text-decoration: none; }
+.home-hero-art img { display: block; width: 100%; height: auto; }
+@media (max-width: 760px) { .home-hero { grid-template-columns: 1fr; } }
