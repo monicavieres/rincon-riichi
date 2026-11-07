@@ -5,6 +5,7 @@ import { around, dealAssignments } from './DealBoard';
 import { sleep } from './DrawBoard';
 import { paintDealtTable } from './HandSort';
 import { FELT_Z, IsoCanvas, type IsoHandle, type Painter } from './iso3d';
+import { useGate } from './useGate';
 
 type Case = 'keeps' | 'passes' | 'round' | 'types';
 
@@ -26,6 +27,7 @@ const SEAT_NAME = {
  */
 export function RoundsBoard({ language }: { language: TutorialLanguage }) {
   const t = (es: string, en: string, pt: string) => ({ es, en, pt }[language]);
+  const gate = useGate();
   const scene = useRef<IsoHandle>(null);
   const assignments = useRef(dealAssignments());
   const [which, setWhich] = useState<Case>('keeps');
@@ -56,6 +58,8 @@ export function RoundsBoard({ language }: { language: TutorialLanguage }) {
     const run = ++alive.current;
     const live = () => alive.current === run;
     const wait = async (ms: number) => { await sleep(ms); return live(); };
+    gate.reset();
+    const pause = async (label: string) => { await gate.wait(label); return live(); };
     const said = (title: string, body: string) => setNote({ title, body });
     setWhich(next);
     if (next === 'types') { setNote(null); return; }
@@ -69,10 +73,10 @@ export function RoundsBoard({ language }: { language: TutorialLanguage }) {
 
     if (next === 'keeps') {
       said(t('Ronda Este · mano 1', 'East round · hand 1', 'Rodada Leste · mão 1'), t('Cada jugador tiene un viento de asiento según el compass: tú eres Este, el dealer. Juegas la mano…', 'Every player has a seat wind from the compass: you are East, the dealer. You play the hand…', 'Cada jogador tem um vento de assento pelo compass: você é Leste, o dealer. Você joga a mão…'));
-      if (!(await wait(4800))) return;
+      if (!(await pause(t('Siguiente', 'Next', 'Próximo')))) return;
       setShout('TSUMO');
       said(t('¡Ganas siendo dealer!', 'You win as the dealer!', 'Você ganha sendo dealer!'), t('Ganaste la mano. Cuando el dealer gana, sigue siendo dealer.', 'You won the hand. When the dealer wins, the dealer stays dealer.', 'Você ganhou a mão. Quando o dealer ganha, continua sendo dealer.'));
-      if (!(await wait(4800))) return;
+      if (!(await pause(t('Siguiente', 'Next', 'Próximo')))) return;
       setShout(null);
       setHandNo(2);
       said(t('Sigues de dealer · mano 2', 'You stay dealer · hand 2', 'Você continua dealer · mão 2'), t('El compass no se mueve y los vientos de asiento no cambian: tú sigues siendo Este y los demás conservan su viento. Se juega otra mano con el mismo dealer.', 'The compass does not move and the seat winds do not change: you are still East and the others keep their wind. Another hand is played with the same dealer.', 'O compass não se move e os ventos de assento não mudam: você continua Leste e os outros mantêm seu vento. Outra mão é jogada com o mesmo dealer.'));
@@ -80,11 +84,11 @@ export function RoundsBoard({ language }: { language: TutorialLanguage }) {
     }
     if (next === 'passes') {
       said(t('Ronda Este · mano 1', 'East round · hand 1', 'Rodada Leste · mão 1'), t('Esta vez el dealer eres tú, pero la mano la gana otro jugador…', 'This time you are the dealer, but another player wins the hand…', 'Desta vez você é o dealer, mas outro jogador ganha a mão…'));
-      if (!(await wait(4200))) return;
+      if (!(await pause(t('Siguiente', 'Next', 'Próximo')))) return;
       setShout('RON');
       setWinnerPill(1);
       said(t('Gana el jugador de tu derecha', 'The player on your right wins', 'Ganha o jogador à sua direita'), t('El dealer no ganó, así que pierde el turno de ser dealer.', 'The dealer did not win, so the dealer seat passes on.', 'O dealer não ganhou, então perde o posto de dealer.'));
-      if (!(await wait(4600))) return;
+      if (!(await pause(t('Siguiente', 'Next', 'Próximo')))) return;
       setShout(null);
       setWinnerPill(null);
       turnCompass();
@@ -93,13 +97,13 @@ export function RoundsBoard({ language }: { language: TutorialLanguage }) {
       if (!live()) return;
       setDealer(1);
       setHandNo(2);
-      if (!(await wait(5600))) return;
+      if (!(await pause(t('Siguiente', 'Next', 'Próximo')))) return;
       said(t('Ronda Este · mano 2', 'East round · hand 2', 'Rodada Leste · mão 2'), t('Mientras el dealer no gane, el compass sigue girando mano a mano y cada jugador será Este una vez.', 'As long as the dealer does not win, the compass keeps turning hand after hand and every player gets to be East once.', 'Enquanto o dealer não ganhar, o compass continua girando mão após mão e cada jogador será Leste uma vez.'));
       return;
     }
     // a whole lap: the round wind changes
     said(t('Cuatro manos sin que el dealer gane', 'Four hands where the dealer does not win', 'Quatro mãos sem o dealer ganhar'), t('Veamos qué pasa cuando el compass da la vuelta completa: cada jugador fue dealer una vez.', 'Let us see what happens when the compass goes all the way round: every player has been dealer once.', 'Vamos ver o que acontece quando o compass dá a volta completa: cada jogador foi dealer uma vez.'));
-    if (!(await wait(3800))) return;
+    if (!(await pause(t('Siguiente', 'Next', 'Próximo')))) return;
     for (let i = 1; i <= 3; i += 1) {
       turnCompass();
       await sleep(900);
@@ -107,7 +111,7 @@ export function RoundsBoard({ language }: { language: TutorialLanguage }) {
       setDealer(i);
       setHandNo(i + 1);
       said(t(`Pasa el dealer · mano ${i + 1}`, `The dealer passes · hand ${i + 1}`, `O dealer passa · mão ${i + 1}`), t('El compass gira y el siguiente jugador es Este.', 'The compass turns and the next player is East.', 'O compass gira e o próximo jogador é Leste.'));
-      if (!(await wait(3000))) return;
+      if (!(await pause(t('Siguiente', 'Next', 'Próximo')))) return;
     }
     turnCompass();
     await sleep(900);
@@ -115,13 +119,13 @@ export function RoundsBoard({ language }: { language: TutorialLanguage }) {
     setDealer(0);
     setHandNo(5);
     said(t('Vuelves a ser dealer', 'You are dealer again', 'Você é dealer de novo'), t('Después de cuatro manos le toca otra vez al primer dealer: tú vuelves a ser Este.', 'After four hands it is the first dealer’s turn again: you are East once more.', 'Depois de quatro mãos é de novo a vez do primeiro dealer: você é Leste outra vez.'));
-    if (!(await wait(4600))) return;
+    if (!(await pause(t('Siguiente', 'Next', 'Próximo')))) return;
     flipPlate('南');
     said(t('Cambia el viento de la ronda', 'The round wind changes', 'O vento da rodada muda'), t('Al completar la vuelta, la ronda pasa de Este a Sur: damos vuelta la placa del borde para indicar la ronda Sur (南).', 'Once the lap is complete the round goes from East to South: we flip the plate at the edge to show the South round (南).', 'Ao completar a volta, a rodada passa de Leste para Sul: viramos a placa da borda para indicar a rodada do Sul (南).'));
     await sleep(1100);
     if (!live()) return;
     setSouthRound(true);
-    if (!(await wait(5500))) return;
+    if (!(await pause(t('Siguiente', 'Next', 'Próximo')))) return;
     said(t('Ronda Sur · mano 5', 'South round · hand 5', 'Rodada Sul · mão 5'), t('Ahora un trío de Sur también da yakuhai para todos, además del viento de asiento de cada uno. Todo se repite hasta terminar la partida.', 'Now a triplet of South also gives yakuhai to everyone, besides each player’s seat wind. It all repeats until the game ends.', 'Agora um trio de Sul também dá yakuhai para todos, além do vento de assento de cada um. Tudo se repete até o fim da partida.'));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language, turnCompass, flipPlate]);
@@ -181,6 +185,11 @@ export function RoundsBoard({ language }: { language: TutorialLanguage }) {
       ) : (
         <div className="sort-board deck-board is-table is-hand is-draw is-yaku">
           <IsoCanvas ref={scene} draw={draw} />
+          {gate.label && (
+            <div className="sort-actions deck-actions">
+              <button type="button" className="sort-button is-primary" onClick={gate.pass}>{gate.label} →</button>
+            </div>
+          )}
           <div className="sort-actions deck-actions">
             <button type="button" className="sort-button" onClick={() => { void play(which); }}>↻ {t('Reiniciar animación', 'Restart animation', 'Reiniciar animação')}</button>
           </div>

@@ -117,9 +117,9 @@ const PRACTICE_COPY = {
     'Toque em «Lançar dados» e avance com «Próximo»: cada passo é explicado dentro da animação. Pode repetir quantas vezes quiser.',
   ),
   deal: L(
-    'Mira el orden: dealer, Sur, Oeste y Norte, de 4 en 4 fichas. Cuenta cuántas lleva cada mano en su etiqueta y pulsa «Repetir» para verlo otra vez.',
-    'Watch the order: dealer, South, West, North, 4 tiles at a time. Check each hand’s count on its label and press “Replay” to see it again.',
-    'Observe a ordem: dealer, Sul, Oeste e Norte, de 4 em 4 peças. Confira a contagem de cada mão na etiqueta e toque em «Repetir» para rever.',
+    'Pulsa «Empezar el reparto» y avanza con «Siguiente»: cada ronda se explica dentro de la animación. Cuenta las fichas de cada mano en su etiqueta; «Repetir» lo reinicia.',
+    'Press “Start the deal” and move on with “Next”: each round is explained inside the animation. Check each hand’s count on its label; “Replay” restarts it.',
+    'Toque em «Começar a distribuição» e avance com «Próximo»: cada rodada é explicada dentro da animação. Confira a contagem de cada mão na etiqueta; «Repetir» reinicia.',
   ),
   table: L(
     'Mira la zona resaltada y lee cada etiqueta. Usa ⤢ para ver la mesa completa y volver a ubicarte.',

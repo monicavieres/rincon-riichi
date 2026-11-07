@@ -6,6 +6,7 @@ import { ROT, around, dealAssignments } from './DealBoard';
 import { WIDE_VIEW, sleep } from './DrawBoard';
 import { paintDealtTable } from './HandSort';
 import { FELT_Z, IsoCanvas, shade, type IsoHandle, type Painter } from './iso3d';
+import { useGate } from './useGate';
 
 type Value = 10000 | 5000 | 1000 | 500 | 100;
 type Wallet = Record<Value, number>;
@@ -43,6 +44,7 @@ type Move = { player: number; from: Pt; to: Pt; start: number; dur: number } | n
  */
 export function PointsBoard({ language }: { language: TutorialLanguage }) {
   const t = (es: string, en: string, pt: string) => ({ es, en, pt }[language]);
+  const gate = useGate();
   const scene = useRef<IsoHandle>(null);
   const assignments = useRef(dealAssignments());
   const [scenario, setScenario] = useState<Scenario>('receive');
@@ -76,6 +78,8 @@ export function PointsBoard({ language }: { language: TutorialLanguage }) {
     const run = ++alive.current;
     const live = () => alive.current === run;
     const wait = async (ms: number) => { await sleep(ms); return live(); };
+    gate.reset();
+    const pause = async (label: string) => { await gate.wait(label); return live(); };
     const winner = which === 'receive' ? 0 : 1;
     const payer = which === 'receive' ? 3 : 0;
     const names = { 0: t('tú', 'you', 'você'), 1: t('el jugador de tu derecha', 'the player on your right', 'o jogador à sua direita'), 3: t('el jugador de tu izquierda', 'the player on your left', 'o jogador à sua esquerda') } as Record<number, string>;
@@ -91,7 +95,7 @@ export function PointsBoard({ language }: { language: TutorialLanguage }) {
     setNote({ title: t('Contar los puntos', 'Counting the points', 'Contar os pontos'), body: which === 'receive'
       ? t('Ganaste por ron y contaste tu mano: 3 900 puntos (yaku, dora y fu; cómo se cuenta está en la sección de puntajes). Paga quien botó la ficha: el jugador de tu izquierda.', 'You won by ron and counted your hand: 3,900 points (yaku, dora and fu; how to count is in the scoring section). The one who threw the tile pays: the player on your left.', 'Você ganhou por ron e contou sua mão: 3.900 pontos (yaku, dora e fu; como contar está na seção de pontuação). Paga quem descartou a peça: o jogador à sua esquerda.')
       : t('Esta vez gana el jugador de tu derecha con tu descarte y cuenta 3 900 puntos. Pagas tú, que botaste la ficha.', 'This time the player on your right wins on your discard and counts 3,900 points. You pay, since you threw the tile.', 'Desta vez o jogador à sua direita ganha com seu descarte e conta 3.900 pontos. Você paga, pois descartou a peça.') });
-    if (!(await wait(5200))) return;
+    if (!(await pause(t('Siguiente', 'Next', 'Próximo')))) return;
 
     // 1) the payer leaves the sticks on the table
     setNote({ title: t('Dejas los palitos en la mesa', 'The sticks are left on the table', 'Os palitos ficam na mesa'), body: t(`Quien paga no se los pasa a la mano: ${which === 'receive' ? 'el jugador de tu izquierda' : 'tú'} deja los palitos sobre la mesa: 3 de 1 000, 1 de 500 y 4 de 100.`, `The payer does not hand them over: ${which === 'receive' ? 'the player on your left' : 'you'} leave${which === 'receive' ? 's' : ''} the sticks on the table: 3 of 1,000, 1 of 500 and 4 of 100.`, `Quem paga não entrega na mão: ${which === 'receive' ? 'o jogador à sua esquerda' : 'você'} deixa os palitos sobre a mesa: 3 de 1.000, 1 de 500 e 4 de 100.`) });
@@ -113,7 +117,7 @@ export function PointsBoard({ language }: { language: TutorialLanguage }) {
     setOnTable(stack.map((s, n) => ({ value: s.value, at: { x: spot.x + ((n % 5) - 2) * 1.6, y: spot.y + Math.floor(n / 5) * 2.4 - 1.4 } })));
     drawers.current[payer].goal = 0;
     pawTo(payer, spot, around({ x: 50, y: 112 }, payer), 800);
-    if (!(await wait(2600))) return;
+    if (!(await pause(t('Siguiente', 'Next', 'Próximo')))) return;
 
     // 2) the winner takes them
     setNote({ title: which === 'receive' ? t('Los tomas tú', 'You take them', 'Você pega') : t('Los toma tu rival', 'Your rival takes them', 'Seu rival pega'), body: t(`${which === 'receive' ? 'Tomas' : 'El ganador toma'} los palitos de la mesa y ${which === 'receive' ? 'los guardas' : 'los guarda'} con ${which === 'receive' ? 'tus puntos' : 'sus puntos'}. El marcador queda 3 900 puntos arriba para ${names[winner]}.`, `${which === 'receive' ? 'You take' : 'The winner takes'} the sticks from the table and ${which === 'receive' ? 'keep' : 'keeps'} them with ${which === 'receive' ? 'your' : 'their'} points. The score goes up 3,900 for ${names[winner]}.`, `${which === 'receive' ? 'Você pega' : 'O vencedor pega'} os palitos da mesa e ${which === 'receive' ? 'guarda' : 'guarda'} com ${which === 'receive' ? 'seus' : 'os seus'} pontos. O placar sobe 3.900 para ${names[winner]}.`) });
@@ -251,6 +255,11 @@ export function PointsBoard({ language }: { language: TutorialLanguage }) {
       {slot && createPortal(controls, slot)}
       <div className="sort-board deck-board is-table is-hand is-draw is-yaku">
         <IsoCanvas ref={scene} draw={draw} />
+        {gate.label && (
+          <div className="sort-actions deck-actions">
+            <button type="button" className="sort-button is-primary" onClick={gate.pass}>{gate.label} →</button>
+          </div>
+        )}
         <span className="deck-rival-hand points-paw" ref={pawEl} style={{ opacity: 0, left: 0, top: 0 }}><Palm look={look} /></span>
         <div className="sort-actions deck-actions">
           <button type="button" className="sort-button" onClick={() => { void play(scenario); }}>↻ {t('Reiniciar animación', 'Restart animation', 'Reiniciar animação')}</button>

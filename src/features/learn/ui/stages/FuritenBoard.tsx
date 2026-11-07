@@ -5,6 +5,7 @@ import { dealAssignments, drawOrder, handSlot } from './DealBoard';
 import { DEALT, HAND_VIEW, HAND_Y, WIDE_VIEW, WIDTH, byKey, handX, pondPos, sleep, tagsOf, TAG_LOOK, wallPos, type Fly, type Piece } from './DrawBoard';
 import { paintDealtTable } from './HandSort';
 import { FELT_Z, IsoCanvas, picture, type IsoHandle, type Painter } from './iso3d';
+import { useGate } from './useGate';
 
 /** A hand that waits on 4p or 7p, with a 7p already in your own river: furiten. */
 const HAND = ['2m', '3m', '4m', '4p', '5p', '6p', '7s', '8s', '9s', '1z', '1z', '5p', '6p'];
@@ -21,6 +22,7 @@ const piecesOf = (codes: string[]): Piece[] => codes.map((code, i) => ({ id: 700
  */
 export function FuritenBoard({ language }: { language: TutorialLanguage }) {
   const t = (es: string, en: string, pt: string) => ({ es, en, pt }[language]);
+  const gate = useGate();
   const scene = useRef<IsoHandle>(null);
   const assignments = useRef(dealAssignments());
   const order = useRef(drawOrder());
@@ -55,6 +57,8 @@ export function FuritenBoard({ language }: { language: TutorialLanguage }) {
     const run = ++alive.current;
     const live = () => alive.current === run;
     const wait = async (ms: number) => { await sleep(ms); return live(); };
+    gate.reset();
+    const pause = async (label: string) => { await gate.wait(label); return live(); };
     const said = (title: string, body: string) => setNote({ title, body });
     flights.current = [];
     shown.current.clear();
@@ -74,13 +78,13 @@ export function FuritenBoard({ language }: { language: TutorialLanguage }) {
     // 1) your wait
     setMarkWaits(true);
     said(t('Tu mano espera 4p o 7p', 'Your hand waits on 4p or 7p', 'Sua mão espera 4p ou 7p'), t('Estás a una ficha de ganar: te sirve un 4 pinzu o un 7 pinzu. Hasta aquí, todo normal.', 'You are one tile from winning: a 4 pinzu or a 7 pinzu completes it. So far, normal.', 'Você está a uma peça de ganhar: um 4 pinzu ou um 7 pinzu completa. Até aqui, normal.'));
-    if (!(await wait(5200))) return;
+    if (!(await pause(t('Siguiente', 'Next', 'Próximo')))) return;
 
     // 2) the catch: a wait already in your river
     setMarkPond(true);
     setView('wide');
     said(t('Pero ya botaste un 7p', 'But you already threw a 7p', 'Mas você já descartou um 7p'), t('Mira tu río de descartes: ahí hay un 7 pinzu, una de tus esperas. Cuando una ficha de tu espera está en tus propios descartes, estás en furiten.', 'Look at your river: there is a 7 pinzu there, one of your waits. When a tile you wait on is in your own discards, you are in furiten.', 'Veja seu rio de descartes: há um 7 pinzu ali, uma das suas esperas. Quando uma peça da sua espera está nos seus próprios descartes, você está em furiten.'));
-    if (!(await wait(6500))) return;
+    if (!(await pause(t('Siguiente', 'Next', 'Próximo')))) return;
 
     // 3) a rival throws a winning tile
     const slotRival = handSlot(2, 13, true);
@@ -96,7 +100,7 @@ export function FuritenBoard({ language }: { language: TutorialLanguage }) {
     if (!(await wait(2200))) return;
     setShout({ text: 'FURITEN', bad: true });
     said(t('¡No puedes hacer ron!', 'You cannot call ron!', 'Você não pode fazer ron!'), t('Aunque sea tu espera, en furiten no puedes ganar con el descarte de un rival: tienes que dejar pasar la ficha.', 'Even though it is your wait, in furiten you cannot win on a rival’s discard: you have to let the tile go.', 'Mesmo sendo sua espera, em furiten você não pode ganhar com o descarte de um rival: precisa deixar a peça passar.'));
-    if (!(await wait(6500))) return;
+    if (!(await pause(t('Siguiente', 'Next', 'Próximo')))) return;
     setShout(null);
     setHot(null);
 
@@ -116,7 +120,7 @@ export function FuritenBoard({ language }: { language: TutorialLanguage }) {
     setExtra({ id: 799, code: '7p' });
     setShout({ text: 'TSUMO', bad: false });
     said(t('¡Tsumo!', 'Tsumo!', 'Tsumo!'), t('Robaste el 7 pinzu y ganas por tsumo, aunque estés en furiten. Con ron no habrías podido.', 'You drew the 7 pinzu and win by tsumo, even in furiten. With ron you could not have.', 'Você comprou o 7 pinzu e ganha por tsumo, mesmo em furiten. Com ron não teria podido.'));
-    if (!(await wait(4200))) return;
+    if (!(await pause(t('Siguiente', 'Next', 'Próximo')))) return;
     setReveal(true);
     setMarkWaits(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -233,6 +237,11 @@ export function FuritenBoard({ language }: { language: TutorialLanguage }) {
       {slot && createPortal(controls, slot)}
       <div className="sort-board deck-board is-table is-hand is-draw is-yaku">
         <IsoCanvas ref={scene} draw={draw} />
+        {gate.label && (
+          <div className="sort-actions deck-actions">
+            <button type="button" className="sort-button is-primary" onClick={gate.pass}>{gate.label} →</button>
+          </div>
+        )}
         {shout && (
           <div className={`win-shout${shout.bad ? ' is-bad' : ''}`} key={shout.text} role="status">
             <span className="win-cat" aria-hidden="true">{shout.bad ? '🙅' : '🐱'}</span>

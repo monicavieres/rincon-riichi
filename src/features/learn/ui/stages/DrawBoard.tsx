@@ -106,6 +106,11 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
   const viewNow = useRef({ u: 50, v: 90, zoom: 2.3 });
   const lastFrame = useRef(0);
   const scene = useRef<IsoHandle>(null);
+  /** The scene stops at each turn until the player presses the button, so the text can be read first. */
+  const gateRes = useRef<(() => void) | null>(null);
+  const [gateLabel, setGateLabel] = useState<string | null>(null);
+  const gate = (label: string) => new Promise<void>((resolve) => { gateRes.current = resolve; setGateLabel(label); });
+  const pass = () => { const resolve = gateRes.current; gateRes.current = null; setGateLabel(null); resolve?.(); };
 
   const total = hand.length + (drawn ? 1 : 0);
   const grab = useRef<Grab | null>(null);
@@ -133,6 +138,9 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
       await sleep(900);
       for (let i = 0; i < 3 && live(); i += 1) {
         const player = i + 1;
+        setNote({ title: t(`Ahora juega ${WHO[i].es}`, `Now ${WHO[i].en} plays`, `Agora ${WHO[i].pt} joga`), body: t('Cada turno es igual: toma una ficha del muro y descarta otra. Mira cómo lo hace.', 'Every turn is the same: take a tile from the wall and throw another. Watch how.', 'Todo turno é igual: pega uma peça do muro e descarta outra. Veja como.') });
+        await gate(t('Ver su turno', 'See their turn', 'Ver a vez'));
+        if (!live()) return;
         const tile = order.current[DEALT + round * 4 + i];
         const slot = handSlot(player, 13, true);
         setNote({ title: t(`Roba ${WHO[i].es}`, `${WHO[i].en[0].toUpperCase()}${WHO[i].en.slice(1)} draws`, `${WHO[i].pt[0].toUpperCase()}${WHO[i].pt.slice(1)} compra`), body: t('Toma la siguiente ficha del muro y después bota una a su río.', 'Takes the next tile from the wall and then throws one into their pond.', 'Pega a próxima peça do muro e depois descarta uma no seu rio.') });
@@ -155,7 +163,7 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
       const code = DRAWS[round];
       setNote({ title: t('Te toca robar', 'Your turn to draw', 'Sua vez de comprar'), body: t('Tu ficha viene de la siguiente pila del muro: la que brilla.', 'Your tile comes from the next stack of the wall: the one that glows.', 'Sua peça vem da próxima pilha do muro: a que brilha.') });
       setMark(tile);
-      await sleep(2200);
+      await gate(t('Robar mi ficha', 'Draw my tile', 'Comprar minha peça'));
       if (!live()) return;
       setMark(null);
       setTaken((now) => new Set(now).add(tile));
@@ -175,7 +183,7 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
       }
     };
     void go();
-    return () => { alive.current += 1; };
+    return () => { alive.current += 1; gateRes.current = null; setGateLabel(null); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, round]);
 
@@ -227,6 +235,8 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
 
   const restart = () => {
     alive.current += 1;
+    gateRes.current = null;
+    setGateLabel(null);
     flights.current = [];
     shown.current.clear();
     setTaken(new Set());
@@ -382,6 +392,7 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
         <IsoCanvas ref={scene} draw={draw} handlers={{ onPointerDown: onDown, onPointerMove: onMove, onPointerUp: onUp, onPointerCancel: onUp }} />
         <div className="sort-actions deck-actions">
           <span>{total} {t('fichas', 'tiles', 'peças')}</span>
+          {gateLabel && <button type="button" className="sort-button is-primary" onClick={pass}>{gateLabel} →</button>}
           {phase === 'won' && <button type="button" className="sort-button" onClick={restart}>{t('Repetir', 'Again', 'Repetir')}</button>}
         </div>
         <p className={`sort-win is-top${phase === 'won' ? '' : ' is-note'}`} role="status">

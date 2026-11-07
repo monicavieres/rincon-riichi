@@ -4,6 +4,7 @@ import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { FIRST_DEAD, OUT, around, dealAssignments, drawOrder, gAt, handSlot } from './DealBoard';
 import { DEALT, HAND_Y, WIDE_VIEW, WIDTH, byKey, handX, pondPos, sleep, wallPos, type Fly, type Piece } from './DrawBoard';
 import { paintDealtTable } from './HandSort';
+import { useGate } from './useGate';
 import { FELT_Z, IsoCanvas, picture, type IsoHandle, type Painter } from './iso3d';
 
 type Call = 'chii' | 'pon' | 'kan';
@@ -63,6 +64,7 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
   const flights = useRef<Fly[]>([]);
   const shown = useRef<Map<number, number>>(new Map());
   const alive = useRef(0);
+  const gate = useGate();
   const viewNow = useRef({ u: 50, v: 49, zoom: 0.86 });
   const lastFrame = useRef(0);
 
@@ -75,7 +77,9 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
   const play = useCallback(async (which: Call) => {
     const run = ++alive.current;
     const live = () => alive.current === run;
+    gate.reset();
     const wait = async (ms: number) => { await sleep(ms); return live(); };
+    const pause = async (label: string) => { await gate.wait(label); return live(); };
     const sc = SCENES[which];
     const said = (title: string, body: string) => setNote({ title, body });
     flights.current = [];
@@ -104,7 +108,7 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
     }[which];
     said(intro[0], intro[1]);
     setTurn(sc.from === 3 ? 2 : sc.from - 1);
-    if (!(await wait(5500))) return;
+    if (!(await pause(t('Ver la jugada', 'See the play', 'Ver a jogada')))) return;
 
     // the rival throws
     const names = SEATS[language];
@@ -120,7 +124,7 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
     if (!(await wait(850))) return;
     setPonds((now) => now.map((list, k) => (k === sc.from - 1 ? [...list, sc.tile] : list)));
     setHot({ player: sc.from, slot: PRE_PONDS[sc.from - 1].length });
-    if (!(await wait(3500))) return;
+    if (!(await pause(t('Llamar la ficha', 'Call the tile', 'Chamar a peça')))) return;
 
     // the call
     setShout(sc.shout);
@@ -130,7 +134,7 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
     said(t(`¡${sc.shout}!`, `${sc.shout}!`, `${sc.shout}!`), which === 'chii'
       ? t('Dices «Chii» antes de que juegue el siguiente. El turno es tuyo.', 'You say “Chii” before the next one plays. The turn is yours.', 'Você diz «Chii» antes de o próximo jogar. A vez é sua.')
       : t(`Dices «${sc.shout[0]}${sc.shout.slice(1).toLowerCase()}»: el turno salta a ti y ${sc.skipped.length === 1 ? 'el jugador de tu izquierda pierde' : 'los jugadores de enfrente y de tu izquierda pierden'} su turno.`, `You say “${sc.shout[0]}${sc.shout.slice(1).toLowerCase()}”: the turn jumps to you and ${sc.skipped.length === 1 ? 'the player on your left loses' : 'the players across and on your left lose'} their turn.`, `Você diz «${sc.shout[0]}${sc.shout.slice(1).toLowerCase()}»: a vez pula para você e ${sc.skipped.length === 1 ? 'o jogador da sua esquerda perde' : 'os jogadores à frente e à esquerda perdem'} a vez.`));
-    if (!(await wait(3200))) return;
+    if (!(await pause(t('Tomar la ficha', 'Take the tile', 'Pegar a peça')))) return;
 
     // the meld forms, the called tile turned toward who threw it
     const sidewaysAt = sc.from === 3 ? 0 : sc.from === 2 ? 1 : (sc.own.length + 1) - 1;
@@ -159,12 +163,12 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
     if (!(await wait(1300))) return;
     setMeld({ codes, at: sidewaysAt, slots });
     setShout(null);
-    if (!(await wait(3800))) return;
+    if (!(await pause(t('Siguiente', 'Next', 'Próximo')))) return;
 
     // closed becomes open
     setOpen(true);
     said(t('Tu mano ahora está abierta', 'Your hand is now open', 'Sua mão agora está aberta'), t('Al hacer una llamada tu mano deja de ser cerrada y pasa a ser abierta: ya no puedes declarar riichi y algunos yaku valen menos o no cuentan. A cambio, avanzas más rápido.', 'Making a call turns your hand from closed to open: you can no longer declare riichi and some yaku are worth less or do not count. In return, you move faster.', 'Ao fazer uma chamada sua mão deixa de ser fechada e passa a ser aberta: você não pode mais declarar riichi e alguns yaku valem menos ou não contam. Em troca, avança mais rápido.'));
-    if (!(await wait(5500))) return;
+    if (!(await pause(t('Siguiente', 'Next', 'Próximo')))) return;
 
     // you throw and the turn goes on to your right
     if (which === 'kan') {
@@ -176,7 +180,7 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
       setView('wide');
       said(t('Robas del muro muerto', 'You draw from the dead wall', 'Você compra do muro morto'), t('Un kan agrega una ficha a tu mano, así que robas una de reemplazo. No sale del muro de robo sino del muro muerto: las 14 fichas apartadas. Es la que brilla, la del extremo junto al corte.', 'A kan adds a tile to your hand, so you draw a replacement. It does not come from the live wall but from the dead wall: the 14 set-apart tiles. It is the one that glows, at the end next to the break.', 'Um kan acrescenta uma peça à sua mão, então você compra uma de reposição. Ela não sai do muro de compra e sim do muro morto: as 14 peças separadas. É a que brilha, a da ponta junto ao corte.'));
       setMark(tile);
-      if (!(await wait(5200))) return;
+      if (!(await pause(t('Robar el reemplazo', 'Draw the replacement', 'Comprar a reposição')))) return;
       setMark(null);
       setTaken((now) => new Set(now).add(tile));
       const n = mine.length - gone.length;
@@ -188,11 +192,11 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
       const piece = { id: 900, code: '2s' };
       setExtra(piece);
       said(t('Tienes una ficha extra', 'You hold an extra tile', 'Você tem uma peça extra'), t('La ficha de reemplazo ya está en tu mano. Pero el kan trae otro bonus: se revela un dora más.', 'The replacement tile is in your hand. But a kan brings another bonus: one more dora is revealed.', 'A peça de reposição já está na sua mão. Mas o kan traz outro bônus: um dora a mais é revelado.'));
-      if (!(await wait(3200))) return;
+      if (!(await pause(t('Siguiente: el dora', 'Next: the dora', 'Próximo: o dora')))) return;
       setView('wide');
       setKanDora(true);
       said(t('Se revela un dora más', 'One more dora is revealed', 'Mais um dora é revelado'), t('Cada kan da bonus: se voltea otro indicador de dora del muro muerto, el siguiente al primero. La ficha siguiente a la que se ve vale un han extra para quien la tenga en su mano, ¡también tus rivales!', 'Every kan gives a bonus: another dora indicator in the dead wall is turned over, the next one after the first. The tile that follows the one shown is worth an extra han to whoever holds it, your rivals too!', 'Cada kan dá bônus: outro indicador de dora do muro morto é virado, o seguinte ao primeiro. A peça que vem depois da mostrada vale um han extra para quem a tiver na mão, seus rivais também!'));
-      if (!(await wait(8000))) return;
+      if (!(await pause(t('Siguiente', 'Next', 'Próximo')))) return;
       setView('hand');
       setHand((now) => [...now, piece].sort(byKey));
       setExtra(null);
@@ -309,6 +313,11 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
       {slot && createPortal(controls, slot)}
       <div className="sort-board deck-board is-table is-hand is-draw is-yaku">
         <IsoCanvas ref={scene} draw={draw} />
+        {gate.label && (
+          <div className="sort-actions deck-actions">
+            <button type="button" className="sort-button is-primary" onClick={gate.pass}>{gate.label} →</button>
+          </div>
+        )}
         {shout && (
           <div className="win-shout" key={shout} role="status">
             <span className="win-cat" aria-hidden="true">🐱</span>

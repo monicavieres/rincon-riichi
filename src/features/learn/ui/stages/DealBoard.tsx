@@ -95,38 +95,55 @@ export function DealBoard({ language, onStatus }: { language: TutorialLanguage; 
     return takes;
   };
 
+  /** The deal in chapters: the player presses Next to play each one, so every step can be read before the tiles move. */
+  const CHAPTERS = 7;
+  const [chapter, setChapter] = useState(0); // chapters already played
+  const [waiting, setWaiting] = useState(true);
+  const GROUPS = [[0, 4], [4, 8], [8, 12], [12, 16], [16, 17]]; // take ranges of chapters 1–5
+
   useEffect(() => {
     flights.current = new Map();
     counts.current = [0, 0, 0, 0];
     revealStart.current = 0;
     setFinished(false);
     setCurrent(-1);
-    const takes = plan();
-    takesRef.current = takes;
-    let at = 900;
-    takes.forEach((take, index) => {
-      const start = at;
-      timers.current.push(window.setTimeout(() => {
-        setCurrent(index);
-        setCaption(take.caption);
-        take.tiles.forEach((tile, i) => {
-          const slot = counts.current[take.player];
-          counts.current[take.player] += 1;
-          flights.current.set(tile, { player: take.player, slot, start: performance.now() + i * 110, extra: !!take.extra });
-        });
-        scene.current?.invalidate();
-      }, start));
-      at += take.tiles.length > 1 ? 1050 : 800;
-    });
-    // then the camera comes in on your hand and the tiles turn face up, one by one
-    timers.current.push(window.setTimeout(() => {
-      revealStart.current = performance.now();
-      setCaption(t('Ahora, ¡mira tu mano!', 'Now, look at your hand!', 'Agora, veja a sua mão!'));
-      scene.current?.invalidate();
-    }, at + 700));
-    timers.current.push(window.setTimeout(() => { setFinished(true); setCaption(''); }, at + 700 + 14 * 110 + 1500));
+    setChapter(0);
+    setWaiting(true);
+    setCaption('');
+    takesRef.current = plan();
     return () => { timers.current.forEach(window.clearTimeout); timers.current = []; };
   }, [run, language]);
+
+  const advance = () => {
+    if (!waiting || chapter >= CHAPTERS - 1 && finished) return;
+    const takes = takesRef.current;
+    setWaiting(false);
+    const next = chapter + 1;
+    setChapter(next);
+    const later = (ms: number, action: () => void) => { timers.current.push(window.setTimeout(action, ms)); };
+    if (next <= GROUPS.length) {
+      const [from, to] = GROUPS[next - 1];
+      let at = 200;
+      for (let index = from; index < to; index += 1) {
+        const take = takes[index];
+        later(at, () => {
+          setCurrent(index);
+          take.tiles.forEach((tile, i) => {
+            const slot = counts.current[take.player];
+            counts.current[take.player] += 1;
+            flights.current.set(tile, { player: take.player, slot, start: performance.now() + i * 110, extra: !!take.extra });
+          });
+          scene.current?.invalidate();
+        });
+        at += take.tiles.length > 1 ? 900 : 700;
+      }
+      later(at + 500, () => setWaiting(true));
+    } else {
+      // the last chapter: the camera comes in on your hand and the tiles turn face up, one by one
+      later(200, () => { revealStart.current = performance.now(); scene.current?.invalidate(); });
+      later(200 + 14 * 110 + 1500, () => { setFinished(true); });
+    }
+  };
 
   useEffect(() => { onStatus?.({ done: finished, step: current }); }, [finished, current, onStatus]);
 
@@ -206,7 +223,6 @@ export function DealBoard({ language, onStatus }: { language: TutorialLanguage; 
       const active = current >= 0 && takesRef.current[current]?.player === player && !finished;
       g.pill(pos.x, pos.y, `${SEAT_NAME[language][player]} · ${counts.current[player]}`, { bg: active ? p.gold : 'rgba(10,20,20,0.62)', fg: active ? p.ink : '#fff', size: 10 });
     }
-    if (caption) g.pill(g.W / 2, 24, caption, { bg: p.gold, fg: p.ink, size: 13 });
   };
 
   return (
@@ -216,8 +232,27 @@ export function DealBoard({ language, onStatus }: { language: TutorialLanguage; 
         <p className="deck-caption">{t('El reparto, tomando del muro vivo', 'The deal, from the live wall', 'A distribuição, do muro vivo')}</p>
         <div className="sort-actions deck-actions">
           <span>{finished ? t('13 + 1 fichas', '13 + 1 tiles', '13 + 1 peças') : `${Math.max(0, current + 1)}/17`}</span>
+          {!finished && waiting && (
+            <button type="button" className="sort-button is-primary" onClick={advance}>
+              {chapter === 0 ? t('Empezar el reparto', 'Start the deal', 'Começar a distribuição') : chapter < 5 ? t('Siguiente', 'Next', 'Próximo') : t('Mirar mi mano', 'Look at my hand', 'Ver minha mão')} →
+            </button>
+          )}
           <button type="button" className="sort-button" onClick={() => setRun((value) => value + 1)}>{t('Repetir', 'Replay', 'Repetir')}</button>
         </div>
+        {!finished && (
+          <p className="deck-guide" role="status">
+            {[
+              t('El muro está abierto. Desde el corte, cada jugador toma fichas: primero el dealer (tú) y luego en sentido antihorario.', 'The wall is open. From the cut, each player takes tiles: first the dealer (you), then counter-clockwise.', 'O muro está aberto. A partir do corte, cada jogador pega peças: primeiro o dealer (você) e depois no sentido anti-horário.'),
+              t('Ronda 1 de 3: cada jugador toma 4 fichas, uno tras otro. Se toman de a 4 para repartir parejo.', 'Round 1 of 3: each player takes 4 tiles, one after another. Taking 4 at a time keeps the deal even.', 'Rodada 1 de 3: cada jogador pega 4 peças, um após o outro. Pegar de 4 em 4 mantém a distribuição justa.'),
+              t('Ronda 2 de 3: otras 4 fichas para cada uno. Ya van 8 por jugador.', 'Round 2 of 3: another 4 tiles each. That makes 8 per player.', 'Rodada 2 de 3: mais 4 peças para cada um. Já são 8 por jogador.'),
+              t('Ronda 3 de 3: otras 4 más. Ahora cada jugador tiene 12 fichas.', 'Round 3 of 3: 4 more. Now each player has 12 tiles.', 'Rodada 3 de 3: mais 4. Agora cada jogador tem 12 peças.'),
+              t('Una ficha más para cada uno: todos llegan a 13, que es el tamaño de la mano.', 'One more tile each: everyone reaches 13, the size of a hand.', 'Mais uma peça para cada um: todos chegam a 13, o tamanho da mão.'),
+              t('El dealer toma una última: su primera robada. Por eso empieza con 14 y es quien debe descartar primero.', 'The dealer takes a last one: the first draw. That is why they start with 14 and discard first.', 'O dealer pega uma última: a primeira compra. Por isso começa com 14 e descarta primeiro.'),
+              t('Ahora, ¡mira tu mano! Solo tú ves tus fichas; los demás ven solo sus dorsos.', 'Now, look at your hand! Only you see your tiles; the others see only their backs.', 'Agora, veja a sua mão! Só você vê as suas peças; os outros veem só os versos.'),
+            ][Math.min(chapter, 6)]}
+            {waiting && chapter < 6 ? ` ${t('Pulsa «Siguiente» para continuar.', 'Press “Next” to continue.', 'Toque em «Próximo» para continuar.')}` : ''}
+          </p>
+        )}
         {finished && (
           <p className="sort-win is-top" role="status">
             <b>{t('Esta es tu mano: 13 fichas y la robada', 'This is your hand: 13 tiles and the draw', 'Esta é a sua mão: 13 peças e a comprada')}</b>
