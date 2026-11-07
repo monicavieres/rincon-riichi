@@ -575,13 +575,17 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
       const off = before + widths[partIndex] / 2 - total / 2;
       const cx = CENTER.x + (at[0] + dir[0] * off - 350) * sc;
       const cy = CENTER.y + (at[1] + dir[1] * off - 350) * sc;
-      const along = ((widths[partIndex] + 12) / 2) * sc;
-      const across = ((size * 1.45) / 2) * sc;
+      const along = ((widths[partIndex] + 26) / 2) * sc;
+      const across = ((size * 2.1) / 2) * sc;
       const horizontal = dir[0] !== 0;
       const pulse = 0.5 + 0.5 * Math.sin(g.now / 180);
       g.needsFrame = true;
       const zTop = FELT_Z + 1.7;
-      g.poly(g.plane(cx - (horizontal ? along : across), cy - (horizontal ? across : along), cx + (horizontal ? along : across), cy + (horizontal ? across : along), 0.7, zTop), `rgba(255,214,90,${0.35 + pulse * 0.4})`, p.gold, g.lw * 2.8);
+      ctx.save();
+      ctx.shadowColor = 'rgba(255,214,90,1)';
+      ctx.shadowBlur = g.k * (2 + pulse * 4);
+      g.poly(g.plane(cx - (horizontal ? along : across), cy - (horizontal ? across : along), cx + (horizontal ? along : across), cy + (horizontal ? across : along), 0.9, zTop), `rgba(255,214,90,${0.45 + pulse * 0.4})`, '#fff6c2', g.lw * 3.4);
+      ctx.restore();
       g.pill(g.W / 2, 24, `${rolled}  →  ${WIND_NAME[language][openSide]}`, { bg: p.gold, fg: p.ink, size: 14 });
     }
 
@@ -710,7 +714,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
               : rolled === null
                 ? t('Paso 1: lanza los dos dados. Su suma decide qué muro se abre.', 'Step 1: roll the two dice. Their total decides which wall opens.', 'Passo 1: lance os dois dados. A soma decide qual muro abre.')
                 : phase === 'compass'
-                  ? t(`Paso 2: los dados suman ${rolled}. En el compass, el ${rolled} está en el lado ${WIND_NAME.es[openSide ?? 0]}: ese es el muro que se abre.`, `Step 2: the dice total ${rolled}. On the compass, ${rolled} is on the ${WIND_NAME.en[openSide ?? 0]} side: that wall is opened.`, `Passo 2: os dados somam ${rolled}. No compass, o ${rolled} está no lado ${WIND_NAME.pt[openSide ?? 0]}: esse muro abre.`)
+                  ? t(`Paso 2: los dados suman ${rolled}. En el compass, el ${rolled} está en el lado ${WIND_NAME.es[openSide ?? 0].split(' · ')[0]}: ese es el muro que se abre.`, `Step 2: the dice total ${rolled}. On the compass, ${rolled} is on the ${WIND_NAME.en[openSide ?? 0].split(' · ')[0]} side: that wall is opened.`, `Passo 2: os dados somam ${rolled}. No compass, o ${rolled} está no lado ${WIND_NAME.pt[openSide ?? 0].split(' · ')[0]}: esse muro abre.`)
                   : phase === 'wall'
                     ? t(`Paso 3: en ese muro contamos ${rolled} pilas desde su extremo derecho (${counted}/${rolled}). Ahí se hace el corte.`, `Step 3: on that wall we count ${rolled} stacks from its right end (${counted}/${rolled}). The cut goes there.`, `Passo 3: nesse muro contamos ${rolled} pilhas a partir da extremidade direita (${counted}/${rolled}). O corte fica ali.`)
                     : phase === 'dead'
