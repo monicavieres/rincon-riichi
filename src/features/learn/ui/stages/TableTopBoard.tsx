@@ -86,6 +86,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
   const dieMove = useRef({ from: { x: 50, y: 50 }, to: { x: 50, y: 50 }, start: 0 });
   const [dieShow, setDieShow] = useState(1);
   const [dieReady, setDieReady] = useState(false);
+  const [rivalsGo, setRivalsGo] = useState(false);
 
   const clearTimers = () => { timers.current.forEach((id) => { window.clearInterval(id); window.clearTimeout(id); }); timers.current = []; };
 
@@ -116,10 +117,12 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     later(at + 300, () => setDieReady(true));
   };
 
-  useEffect(() => {
-    if (mode !== 'dealer') return;
-    runDie(400);
-  }, [mode]);
+  /** Nothing moves until the player asks: the rivals roll only after they press start. */
+  const startRivals = () => {
+    if (rivalsGo) return;
+    setRivalsGo(true);
+    runDie(300);
+  };
 
   const rivalsDone = dieReady && seatFaces[1] > 0 && seatFaces[2] > 0 && seatFaces[3] > 0 && !seatRolling.some(Boolean);
   const dealerRoll = seatFaces[0] > 0 && !seatRolling[0] ? seatFaces[0] : null;
@@ -130,7 +133,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     setDieReady(false);
     setDieShow(1);
     dieMove.current = { from: { x: 50, y: 50 }, to: { x: 50, y: 50 }, start: 0 };
-    runDie(300);
+    setRivalsGo(false);
   };
 
   const done = mode === 'dealer' ? dealerRoll !== null : mode === 'compass' ? compassOn && plateOn : phase === 'done';
@@ -611,9 +614,11 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
         <div className="sort-actions deck-actions">
           {mode === 'dealer' ? (
             <>
-              <span>{dealerRoll === null ? (rivalsDone ? t('Te toca', 'Your turn', 'Sua vez') : t('Lanzan los rivales…', 'Rivals are rolling…', 'Os rivais lançam…')) : t('Mayor: 6', 'Highest: 6', 'Maior: 6')}</span>
+              <span>{dealerRoll === null ? (!rivalsGo ? t('Listo para empezar', 'Ready to start', 'Pronto para começar') : rivalsDone ? t('Te toca', 'Your turn', 'Sua vez') : t('Lanzan los rivales…', 'Rivals are rolling…', 'Os rivais lançam…')) : t('Mayor: 6', 'Highest: 6', 'Maior: 6')}</span>
               {dealerRoll === null
-                ? <button type="button" className="sort-button is-primary" onClick={() => rivalsDone && !seatRolling[0] && rollSeat(0, 0)} disabled={!rivalsDone || seatRolling[0]}>{t('Lanzar mi dado', 'Roll my die', 'Lançar meu dado')}</button>
+                ? (!rivalsGo
+                  ? <button type="button" className="sort-button is-primary" onClick={startRivals}>{t('Que lancen los rivales', 'Let the rivals roll', 'Deixar os rivais lançarem')}</button>
+                  : <button type="button" className="sort-button is-primary" onClick={() => rivalsDone && !seatRolling[0] && rollSeat(0, 0)} disabled={!rivalsDone || seatRolling[0]}>{t('Lanzar mi dado', 'Roll my die', 'Lançar meu dado')}</button>)
                 : <button type="button" className="sort-button" onClick={replay}>{t('Repetir', 'Replay', 'Repetir')}</button>}
             </>
           ) : mode === 'compass' ? (
@@ -629,6 +634,15 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
           )}
         </div>
 
+        {mode === 'dealer' && dealerRoll === null && (
+          <p className="deck-guide" role="status">
+            {!rivalsGo
+              ? t('Cada jugador lanza un dado y el número más alto reparte primero. Pulsa «Que lancen los rivales» para empezar.', 'Each player rolls a die and the highest number deals first. Press “Let the rivals roll” to begin.', 'Cada jogador lança um dado e o número mais alto distribui primeiro. Toque em «Deixar os rivais lançarem» para começar.')
+              : !rivalsDone
+                ? t('Primero lanzan tus tres rivales, uno tras otro.', 'Your three rivals roll first, one after another.', 'Primeiro lançam seus três rivais, um após o outro.')
+                : t('Ahora te toca a ti: toca tu dado o pulsa «Lanzar mi dado».', 'Now it is your turn: tap your die or press “Roll my die”.', 'Agora é a sua vez: toque no seu dado ou em «Lançar meu dado».')}
+          </p>
+        )}
         {mode === 'dealer' && dealerRoll !== null && (
           <p className="sort-win is-top" role="status">
             <b>{t('¡Sacaste 6, el más alto: eres el dealer!', 'You rolled a 6, the highest: you are the dealer!', 'Você tirou 6, o mais alto: é o dealer!')}</b>

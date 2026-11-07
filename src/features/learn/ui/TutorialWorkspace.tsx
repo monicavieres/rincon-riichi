@@ -100,9 +100,9 @@ const PRACTICE_COPY = {
     '1. Arraste 17 peças para os encaixes da sua borda. 2. Mais 17 na fileira de trás. 3. Arraste a fileira de trás sobre a da frente. 4. Arraste o muro até o quadro pontilhado. Seus rivais fazem sozinhos. Sem arrastar? Use os botões.',
   ),
   dealer: L(
-    'Espera a que lancen tus tres rivales y luego pulsa «Lanzar mi dado» (o toca tu dado). El número más alto es el dealer.',
-    'Wait for your three rivals to roll, then press “Roll my die” (or tap your die). The highest number is the dealer.',
-    'Espere seus três rivais lançarem e depois toque em «Lançar meu dado» (ou no seu dado). O número mais alto é o dealer.',
+    'Pulsa «Que lancen los rivales», espera a que lancen los tres y luego pulsa «Lanzar mi dado» (o toca tu dado). El número más alto es el dealer.',
+    'Press “Let the rivals roll”, wait for all three, then press “Roll my die” (or tap your die). The highest number is the dealer.',
+    'Toque em «Deixar os rivais lançarem», espere os três e depois toque em «Lançar meu dado» (ou no seu dado). O número mais alto é o dealer.',
   ),
   compass: L(
     'Arrastra el compass al recuadro del centro y la placa naranja al del borde. ¿Sin arrastrar? «Colocar →» pone la siguiente pieza.',
