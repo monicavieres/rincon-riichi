@@ -9,7 +9,7 @@ export type LocalCallout = Omit<TableCallout, 'label'> & { label: LocalizedText 
 
 export type StageSpec =
   | { kind: 'sort' }
-  | { kind: 'deck'; mode: 'intro' | 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' | 'win' | 'yaku' | 'calls' | 'furiten' | 'points' | 'rounds' }
+  | { kind: 'deck'; mode: 'intro' | 'compassTour' | 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' | 'win' | 'yaku' | 'calls' | 'furiten' | 'points' | 'rounds' }
   | { kind: 'table'; focus: TableFocus; callouts: LocalCallout[] }
   | { kind: 'rack'; rows: RackRow[]; footer?: LocalizedText };
 
@@ -31,6 +31,7 @@ export type TutorialStop = {
 
 /** A one-line summary of what each step is about, shown under its name in the lesson rail. */
 export const stepSubtitles: Record<string, LocalizedText> = {
+  compassTour: L('Vientos, números y ranuras', 'Winds, numbers and slots', 'Ventos, números e encaixes'),
   intro: L('Fichas, asientos y rondas', 'Tiles, seats and rounds', 'Peças, assentos e rodadas'),
   shuffle: L('136 fichas boca abajo', 'All 136 tiles face down', 'As 136 peças viradas'),
   walls: L('4 muros de 17 pilas', '4 walls of 17 stacks', '4 muros de 17 pilhas'),
@@ -307,6 +308,25 @@ export const tutorialStops: TutorialStop[] = [
     ],
     remember: L('El compass dice quién es quién; la placa dice en qué ronda están.', 'The compass says who is who; the plate says which round it is.', 'O compass diz quem é quem; a placa diz em que rodada estão.'),
     stage: { kind: 'deck', mode: 'compass' },
+    practice: { href: '../aprender/reglas.html', label: L('Ver reglas especiales', 'See special rules', 'Ver regras especiais') },
+  },
+  {
+    id: 'compass-tour',
+    part: 'discover',
+    short: L('Conoce el compass', 'Meet the compass', 'Conheça o compass'),
+    eyebrow: L('Un vistazo de cerca', 'A close look', 'Um olhar de perto'),
+    title: L('Las partes del compass', 'The parts of the compass', 'As partes do compass'),
+    body: L(
+      'Acabas de poner el compass; veamos qué hay en él.\n- **Los cuatro vientos:** uno por asiento (Este, Sur, Oeste, Norte).\n- **Los numeritos:** bajo cada viento, las sumas de dados que le tocan.\n- **Las ranuras:** una por lado, para el palito de riichi.',
+      'You have just placed the compass; let us see what is on it.\n- **The four winds:** one per seat (East, South, West, North).\n- **The small numbers:** under each wind, the dice totals that belong to it.\n- **The slots:** one per side, for the riichi stick.',
+      'Você acabou de colocar o compass; vejamos o que há nele.\n- **Os quatro ventos:** um por assento (Leste, Sul, Oeste, Norte).\n- **Os números:** sob cada vento, as somas de dados que lhe cabem.\n- **Os encaixes:** um por lado, para o bastão de riichi.',
+    ),
+    bullets: [
+      L('Cada viento mira hacia su asiento.', 'Each wind faces its seat.', 'Cada vento olha para o seu assento.'),
+      L('Los números sirven para saber qué muro abrir con los dados.', 'The numbers tell you which wall to open with the dice.', 'Os números dizem qual muro abrir com os dados.'),
+    ],
+    remember: L('El compass dice quién es quién.', 'The compass says who is who.', 'O compass diz quem é quem.'),
+    stage: { kind: 'deck', mode: 'compassTour' },
     practice: { href: '../aprender/reglas.html', label: L('Ver reglas especiales', 'See special rules', 'Ver regras especiais') },
   },
   {

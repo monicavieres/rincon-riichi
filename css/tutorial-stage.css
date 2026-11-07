@@ -1635,3 +1635,16 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 
 /* Guide line inside the dealer animation: what is happening and what to do next */
 .deck-guide { position: absolute; left: 50%; bottom: 3%; z-index: 460; transform: translateX(-50%); width: min(92%, 560px); margin: 0; padding: 8px 14px; border: 2px solid var(--ink); border-radius: 12px; background: var(--gold, #f2b42c); color: var(--ink); text-align: center; font: 700 max(12px, 1.8cqw) / 1.35 var(--font-sans); box-shadow: var(--shadow-float); }
+
+/* Compass close-up tour */
+.ct-board { display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); grid-template-rows: 1fr auto; gap: 0 4%; padding: 4% 4% 2%; border: 2px solid var(--line, #d9c9b0); border-radius: var(--radius-lg, 20px); background: #2a8f72; color: #fff; overflow: hidden; }
+.ct-art { position: relative; align-self: center; justify-self: center; height: 100%; max-height: 100%; aspect-ratio: 1; }
+.ct-art img, .ct-art svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ct-mark { fill: rgba(255, 214, 90, 0.18); stroke: #fff6c2; stroke-width: 7; animation: ct-pulse 1.2s ease-in-out infinite; filter: drop-shadow(0 0 8px rgba(255, 214, 90, 0.95)); }
+@keyframes ct-pulse { 0%, 100% { stroke-opacity: 1; fill-opacity: 0.12; } 50% { stroke-opacity: 0.45; fill-opacity: 0.32; } }
+.ct-tag { fill: #f2b42c; stroke: #23203f; stroke-width: 3; }
+.ct-tag-text { fill: #23203f; font: 800 20px var(--font-sans); text-transform: uppercase; }
+.ct-copy { align-self: center; display: grid; gap: clamp(6px, 1.4cqw, 12px); animation: intro-in 0.3s ease; }
+.ct-copy h3 { margin: 0; color: #fff; font: 800 max(17px, 2.8cqw) / 1.15 var(--font-display, var(--font-sans)); }
+.ct-copy p { margin: 0; font: 600 max(12px, 1.7cqw) / 1.45 var(--font-sans); color: rgba(255, 255, 255, 0.95); }
+.ct-nav { grid-column: 1 / -1; }
