@@ -1701,3 +1701,8 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .stick-row { justify-content: space-between; }
 .stick-row .point-stick { flex: 1 1 auto; }
 .stick-row b { margin-left: 0; min-width: 4.5em; text-align: right; }
+.stick-sum .stick-row .point-stick { flex: none; width: max(46px, 7cqw) !important; }
+.stick-sum .stick-row small { white-space: nowrap; }
+.stick-sum { gap: 8px; }
+.intro-row.is-big .point-stick { width: max(60px, 14cqw) !important; flex: none; }
+.intro-row.is-big { flex-wrap: wrap; gap: 10px; }
