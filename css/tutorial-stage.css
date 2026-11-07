@@ -1587,3 +1587,37 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .home-hero-actions .big-button { text-decoration: none; }
 .home-hero-art img { display: block; width: 100%; height: auto; }
 @media (max-width: 760px) { .home-hero { grid-template-columns: 1fr; } }
+
+/* Step 0: what mahjong is */
+.intro-board { display: grid; grid-template-rows: 1fr auto; padding: 4% 5% 3%; border: 2px solid var(--line, #d9c9b0); border-radius: var(--radius-lg, 20px); background: #2a8f72; color: #fff; overflow: hidden; }
+.intro-slide { display: grid; align-content: center; justify-items: center; gap: clamp(6px, 1.6cqw, 14px); text-align: center; animation: intro-in 0.3s ease; }
+@keyframes intro-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.intro-slide h3 { margin: 0; color: #fff; font: 800 clamp(16px, 3cqw, 28px) / 1.15 var(--font-display, var(--font-sans)); }
+.intro-note { margin: 0; max-width: 62ch; font: 600 clamp(11px, 1.7cqw, 15px) / 1.4 var(--font-sans); color: rgba(255, 255, 255, 0.92); }
+.intro-row { display: flex; justify-content: center; gap: clamp(2px, 0.5cqw, 6px); }
+.intro-tile { width: clamp(22px, 5cqw, 46px); height: auto; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.35)); }
+.intro-groups { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(8px, 1.8cqw, 18px) clamp(14px, 3cqw, 30px); }
+.intro-groups figure { display: grid; gap: 4px; margin: 0; justify-items: center; }
+.intro-groups figcaption { font: 800 clamp(9px, 1.3cqw, 12px) / 1.2 var(--font-sans); text-transform: uppercase; letter-spacing: 0.08em; }
+.intro-row.is-big .intro-tile { width: clamp(40px, 10cqw, 90px); }
+.intro-row.is-big .intro-tile:nth-child(even) { transform: translateY(-6px) rotate(2deg); }
+.intro-sum { margin: 0; font: 600 clamp(14px, 2.4cqw, 22px) / 1 var(--font-sans); }
+.intro-sum b { display: inline-block; padding: 2px 14px; border-radius: 99px; background: var(--gold, #f2b42c); color: var(--ink); }
+.intro-seats { position: relative; width: min(60%, 380px); aspect-ratio: 16 / 9; }
+.intro-table { position: absolute; inset: 22% 24%; display: grid; place-items: center; border: 2px dashed rgba(255, 255, 255, 0.6); border-radius: 14px; font: 800 clamp(9px, 1.4cqw, 13px) / 1 var(--font-sans); text-transform: uppercase; opacity: 0.8; }
+.intro-seat { position: absolute; display: grid; justify-items: center; gap: 2px; font: 800 clamp(9px, 1.4cqw, 13px) / 1 var(--font-sans); text-transform: uppercase; }
+.intro-seat .intro-tile { width: clamp(20px, 4cqw, 36px); }
+.intro-seat.is-top { top: -4%; left: 50%; transform: translateX(-50%); }
+.intro-seat.is-me { bottom: -4%; left: 50%; transform: translateX(-50%); }
+.intro-seat.is-left { left: 0; top: 50%; transform: translateY(-50%); }
+.intro-seat.is-right { right: 0; top: 50%; transform: translateY(-50%); }
+.intro-seat.is-me span { padding: 1px 8px; border-radius: 99px; background: var(--gold, #f2b42c); color: var(--ink); }
+.intro-compare { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(8px, 2cqw, 20px); }
+.intro-card { display: grid; justify-items: center; gap: 6px; width: min(46%, 260px); padding: clamp(8px, 1.6cqw, 14px); border-radius: 14px; background: rgba(255, 255, 255, 0.14); border: 2px solid rgba(255, 255, 255, 0.45); }
+.intro-card b { font: 800 clamp(11px, 1.8cqw, 16px) / 1.1 var(--font-sans); text-transform: uppercase; }
+.intro-card small { font: 600 clamp(10px, 1.4cqw, 13px) / 1.35 var(--font-sans); opacity: 0.95; }
+.intro-plate { display: grid; place-items: center; width: clamp(34px, 6cqw, 54px); height: clamp(22px, 4cqw, 36px); border: 2px solid var(--ink); border-radius: 6px; background: #f08a30; color: #fff6e5; font: 700 clamp(14px, 2.6cqw, 24px) / 1 'Noto Serif JP', 'Hiragino Mincho ProN', serif; }
+.intro-nav { display: flex; align-items: center; justify-content: center; gap: var(--space-3, 12px); padding-top: 6px; }
+.intro-dots { display: flex; gap: 6px; }
+.intro-dots i { width: 9px; height: 9px; border-radius: 99px; background: rgba(255, 255, 255, 0.4); cursor: pointer; }
+.intro-dots i.is-on { width: 22px; background: var(--gold, #f2b42c); }

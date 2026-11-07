@@ -9,7 +9,7 @@ export type LocalCallout = Omit<TableCallout, 'label'> & { label: LocalizedText 
 
 export type StageSpec =
   | { kind: 'sort' }
-  | { kind: 'deck'; mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' | 'win' | 'yaku' | 'calls' | 'furiten' | 'points' | 'rounds' }
+  | { kind: 'deck'; mode: 'intro' | 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' | 'win' | 'yaku' | 'calls' | 'furiten' | 'points' | 'rounds' }
   | { kind: 'table'; focus: TableFocus; callouts: LocalCallout[] }
   | { kind: 'rack'; rows: RackRow[]; footer?: LocalizedText };
 
@@ -31,6 +31,7 @@ export type TutorialStop = {
 
 /** A one-line summary of what each step is about, shown under its name in the lesson rail. */
 export const stepSubtitles: Record<string, LocalizedText> = {
+  intro: L('Fichas, asientos y rondas', 'Tiles, seats and rounds', 'Peças, assentos e rodadas'),
   shuffle: L('136 fichas boca abajo', 'All 136 tiles face down', 'As 136 peças viradas'),
   walls: L('4 muros de 17 pilas', '4 walls of 17 stacks', '4 muros de 17 pilhas'),
   dealer: L('El dado más alto reparte', 'Highest die deals first', 'O maior dado distribui'),
@@ -210,10 +211,29 @@ const tableCallouts = {
 
 export const tutorialStops: TutorialStop[] = [
   {
+    id: 'intro',
+    part: 'discover',
+    short: L('Qué es el mahjong', 'What mahjong is', 'O que é o mahjong'),
+    eyebrow: L('Empieza aquí', 'Start here', 'Comece aqui'),
+    title: L('Qué es el mahjong riichi', 'What riichi mahjong is', 'O que é o mahjong riichi'),
+    body: L(
+      'Mahjong es un juego de mesa para cuatro personas que se juega con fichas. Antes de tocar la mesa, cuatro ideas:\n- **Fichas:** hay 34 clases y 4 copias de cada una, 136 en total.\n- **Asientos:** cada jugador se sienta en un lado y tiene un **viento de asiento** (Este, Sur, Oeste o Norte).\n- **Ronda:** la partida se juega en rondas; cada ronda tiene un **viento de la ronda** que es igual para todos.\n- Usa las flechas del tablero para ver cada idea.',
+      'Mahjong is a table game for four people played with tiles. Before touching the table, four ideas:\n- **Tiles:** there are 34 kinds with 4 copies of each, 136 in all.\n- **Seats:** each player sits on one side and has a **seat wind** (East, South, West or North).\n- **Round:** the game is played in rounds; each round has a **round wind** that is the same for everyone.\n- Use the board arrows to see each idea.',
+      'Mahjong é um jogo de mesa para quatro pessoas jogado com peças. Antes de tocar na mesa, quatro ideias:\n- **Peças:** há 34 tipos com 4 cópias de cada, 136 no total.\n- **Assentos:** cada jogador senta de um lado e tem um **vento do assento** (Leste, Sul, Oeste ou Norte).\n- **Rodada:** a partida é jogada em rodadas; cada rodada tem um **vento da rodada** igual para todos.\n- Use as setas do quadro para ver cada ideia.',
+    ),
+    bullets: [
+      L('Hay 34 clases de ficha y 4 copias de cada una.', 'There are 34 kinds of tile and 4 copies of each.', 'Há 34 tipos de peça e 4 cópias de cada.'),
+      L('El viento de asiento es de cada jugador; el de la ronda, de todos.', 'The seat wind is each player’s; the round wind belongs to everyone.', 'O vento do assento é de cada jogador; o da rodada, de todos.'),
+    ],
+    remember: L('Fichas, asientos y rondas: con esto ya entiendes la mesa.', 'Tiles, seats and rounds: that is enough to understand the table.', 'Peças, assentos e rodadas: com isso você já entende a mesa.'),
+    stage: { kind: 'deck', mode: 'intro' },
+    practice: { href: '../aprender/tiles.html', label: L('Conocer las fichas', 'Meet the tiles', 'Conhecer as peças') },
+  },
+  {
     id: 'shuffle',
     part: 'discover',
     short: L('Mezclar', 'Shuffle', 'Embaralhar'),
-    eyebrow: L('Empieza aquí', 'Start here', 'Comece aqui'),
+    eyebrow: L('Ahora, la mesa', 'Now, the table', 'Agora, a mesa'),
     title: L('Mezcla las 136 fichas boca abajo', 'Shuffle all 136 tiles face down', 'Embaralhe as 136 peças viradas para baixo'),
     body: L(
       'Toda partida empieza igual: las 136 fichas se ponen boca abajo sobre la mesa y los cuatro jugadores las mezclan con las manos. Tus tres rivales empiezan; luego arrastra tú sobre el montón hasta llegar al 100 %.',

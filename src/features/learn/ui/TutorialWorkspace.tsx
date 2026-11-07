@@ -3,6 +3,7 @@ import { TableStage, ZoneThumb } from '../../../shared/ui/TableStage';
 import { localize, type LocalizedText, type TutorialLanguage } from '../domain/tutorialContent';
 import { stepSubtitles, tutorialParts, tutorialStops, type TutorialStop } from '../domain/tutorialStage';
 import { RackStage } from './stages/RackStage';
+import { IntroBoard } from './stages/IntroBoard';
 import { DeckBoard, TILE_BACK, type DeckStatus } from './stages/DeckBoard';
 import { HandSort } from './stages/HandSort';
 import { DrawBoard } from './stages/DrawBoard';
@@ -47,6 +48,7 @@ const TABS: Array<{ id: Tab; label: LocalizedText }> = [
 ];
 
 const PRACTICE_COPY = {
+  intro: L('Pasa las cuatro láminas con las flechas del tablero y fíjate en la diferencia entre viento de asiento y viento de la ronda.', 'Go through the four slides with the board arrows and notice the difference between seat wind and round wind.', 'Passe pelas quatro lâminas com as setas do quadro e note a diferença entre vento do assento e vento da rodada.'),
   rounds: L(
     'Elige un caso y mira qué pasa con el compass, los vientos de asiento y la placa de la ronda. «Tipos de partida» muestra tonpuusen, hanchan y cómo se decide quién gana.',
     'Pick a case and watch what happens to the compass, the seat winds and the round plate. “Game types” shows tonpuusen, hanchan and how the winner is decided.',
@@ -173,7 +175,7 @@ const chevron = (
 type Piece = [number, number, number?];
 
 /** A small picture of what a step is about, drawn with the site's current style (tile back, emblem, felt, compass). */
-function SceneThumb({ mode }: { mode: 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' }) {
+function SceneThumb({ mode }: { mode: 'intro' | 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' }) {
   const tile = (key: string, [x, y, rot = 0]: Piece, extra = '') => (
     <i key={key} className={`th-tile${extra}`} style={{ left: x, top: y, transform: `rotate(${rot}deg)` }} />
   );
@@ -249,7 +251,7 @@ function TileThumb({ codes, scattered = false }: { codes: string[]; scattered?: 
 function thumbFor(stop: TutorialStop) {
   const spec = stop.stage;
   if (spec.kind === 'table') return spec.focus.boxes.length === 0 ? <TileThumb codes={['1z', '5z', '9m']} /> : <ZoneThumb focus={spec.focus} />;
-  if (spec.kind === 'deck') return spec.mode === 'rounds' ? <TileThumb codes={['1z', '2z', '3z', '4z']} /> : spec.mode === 'points' ? <TileThumb codes={['1p', '1p', '1p']} /> : spec.mode === 'furiten' ? <TileThumb codes={['4p', '7p']} /> : spec.mode === 'calls' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'yaku' ? <TileThumb codes={['2m', '3m', '4m']} /> : spec.mode === 'win' ? <TileThumb codes={['6z', '6z', '6z']} /> : spec.mode === 'draw' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'hand' ? <TileThumb codes={['4p', '1m', '6z']} scattered /> : <SceneThumb mode={spec.mode} />;
+  if (spec.kind === 'deck') return spec.mode === 'intro' ? <TileThumb codes={['1z', '5p', '9m']} /> : spec.mode === 'rounds' ? <TileThumb codes={['1z', '2z', '3z', '4z']} /> : spec.mode === 'points' ? <TileThumb codes={['1p', '1p', '1p']} /> : spec.mode === 'furiten' ? <TileThumb codes={['4p', '7p']} /> : spec.mode === 'calls' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'yaku' ? <TileThumb codes={['2m', '3m', '4m']} /> : spec.mode === 'win' ? <TileThumb codes={['6z', '6z', '6z']} /> : spec.mode === 'draw' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'hand' ? <TileThumb codes={['4p', '1m', '6z']} scattered /> : <SceneThumb mode={spec.mode} />;
   if (spec.kind === 'sort') return <TileThumb codes={['4p', '1m', '6z']} scattered />;
   return <TileThumb codes={spec.rows[0].groups[0].tiles} />;
 }
@@ -356,6 +358,7 @@ export function TutorialWorkspace() {
             <div aria-hidden="true"><i style={{ width: `${((index + 1) / tutorialStops.length) * 100}%` }} /></div>
           </div>
 
+          {spec.kind === 'deck' && spec.mode === 'intro' && <IntroBoard key={language} language={language} />}
           {spec.kind === 'deck' && spec.mode === 'shuffle' && <DeckBoard language={language} onStatus={setDeck} />}
           {spec.kind === 'deck' && spec.mode === 'rounds' && <RoundsBoard key={language} language={language} />}
           {spec.kind === 'deck' && spec.mode === 'points' && <PointsBoard key={language} language={language} />}
