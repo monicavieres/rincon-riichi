@@ -1693,3 +1693,11 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .point-stick.s10000 { background: #fbe08a; }
 .point-stick.s10000 i { background: #8a1f2a; width: 9px; height: 9px; }
 .intro-row.is-big .point-stick { max-width: none; }
+.point-stick { max-width: 210px; height: max(16px, 2.8cqw); }
+.point-stick i { width: 6px; height: 6px; }
+.point-stick.s1000 i { width: 10px; height: 10px; }
+.point-stick.s10000 i { width: 11px; height: 11px; }
+.stick-list { width: min(72%, 400px); }
+.stick-row { justify-content: space-between; }
+.stick-row .point-stick { flex: 1 1 auto; }
+.stick-row b { margin-left: 0; min-width: 4.5em; text-align: right; }
