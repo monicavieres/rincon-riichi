@@ -1706,3 +1706,14 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .stick-sum { gap: 8px; }
 .intro-row.is-big .point-stick { width: max(60px, 14cqw) !important; flex: none; }
 .intro-row.is-big { flex-wrap: wrap; gap: 10px; }
+
+/* Point sticks in the colours of the home table drawer */
+.point-stick { border: 2.5px solid #23203f; border-radius: 5px; box-shadow: 0 3px 0 #23203f; background: #fffdf6; }
+.point-stick i { background: #23203f; width: 5px; height: 10px; border-radius: 50%; }
+.point-stick.s100 { background: repeating-linear-gradient(#fffdf6 0 28%, #23203f 28% 36%, #fffdf6 36% 64%, #23203f 64% 72%, #fffdf6 72% 100%); }
+.point-stick.s500 { background: #37a56e; }
+.point-stick.s500 i, .point-stick.s1000 i, .point-stick.s10000 i { background: #fff; width: 5px; height: 10px; }
+.point-stick.s1000 { background: #3a66d8; }
+.point-stick.s5000 { background: #f2b42c; }
+.point-stick.s5000 i { background: #d9701c; width: 5px; height: 10px; }
+.point-stick.s10000 { background: #e04b45; }

@@ -7,6 +7,7 @@ import { WIDE_VIEW, sleep } from './DrawBoard';
 import { paintDealtTable } from './HandSort';
 import { FELT_Z, IsoCanvas, shade, type IsoHandle, type Painter } from './iso3d';
 import { useGate } from './useGate';
+import { STICK_LOOK, paintStickFace } from './sticks';
 
 type Value = 10000 | 5000 | 1000 | 500 | 100;
 type Wallet = Record<Value, number>;
@@ -156,16 +157,11 @@ export function PointsBoard({ language }: { language: TutorialLanguage }) {
 
     const stick = (value: Value, x: number, y: number, z: number, hop = 0) => {
       g.add(y * 100 + 80 + z, () => {
-        const box = g.box(x, y, z + hop, LEN[value], 1.5, 1.0, 0);
-        const tint = value === 5000 ? '#f3b4a8' : value === 10000 ? '#f5d36a' : '#e9e2d0';
-        box.sides.forEach((face) => g.poly(face.q, tint, p.ink, g.lw));
-        g.poly(box.top, value === 5000 ? '#f9cbc2' : value === 10000 ? '#fbe08a' : '#fbf7ec', p.ink, g.lw * 1.1);
-        g.onQuad(box.top, () => {
-          g.ctx.fillStyle = value === 1000 ? '#d6322b' : value === 500 ? '#2d63c8' : value === 100 ? '#222' : '#8a1f2a';
-          const dots = value === 100 ? 1 : value === 500 ? 5 : value === 5000 ? 5 : 1;
-          const r = value === 1000 ? 0.07 : 0.045;
-          for (let i = 0; i < dots; i += 1) { g.ctx.beginPath(); g.ctx.ellipse(dots === 1 ? 0.5 : 0.2 + (0.6 * i) / (dots - 1), 0.5, r * 0.6, r * 1.9, 0, 0, Math.PI * 2); g.ctx.fill(); }
-        });
+        const look = STICK_LOOK[value];
+        const box = g.box(x, y, z + hop, LEN[value], 1.7, 1.1, 0);
+        box.sides.forEach((face) => g.poly(face.q, look.side, p.ink, g.lw * 1.5));
+        g.poly(box.top, look.top, p.ink, g.lw * 1.7);
+        g.onQuad(box.top, () => paintStickFace(g, value));
       });
     };
 

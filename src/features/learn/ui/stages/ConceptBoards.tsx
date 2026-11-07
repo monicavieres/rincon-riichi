@@ -81,10 +81,10 @@ export function GoalBoard({ language }: { language: TutorialLanguage }) {
 
 const STICKS: Array<{ value: number; label: string; cls: string; dots: number; len: number }> = [
   { value: 100, label: '100', cls: 's100', dots: 1, len: 6.4 },
-  { value: 500, label: '500', cls: 's500', dots: 5, len: 8.4 },
-  { value: 1000, label: '1 000', cls: 's1000', dots: 1, len: 9.6 },
-  { value: 5000, label: '5 000', cls: 's5000', dots: 5, len: 10.4 },
-  { value: 10000, label: '10 000', cls: 's10000', dots: 1, len: 11 },
+  { value: 500, label: '500', cls: 's500', dots: 3, len: 8.4 },
+  { value: 1000, label: '1 000', cls: 's1000', dots: 5, len: 9.6 },
+  { value: 5000, label: '5 000', cls: 's5000', dots: 3, len: 10.4 },
+  { value: 10000, label: '10 000', cls: 's10000', dots: 5, len: 11 },
 ];
 const stick = (s: (typeof STICKS)[number], key?: string | number) => (
   <span key={key ?? s.value} className={`point-stick ${s.cls}`} style={{ width: `${s.len * 9}%` }} aria-hidden="true">

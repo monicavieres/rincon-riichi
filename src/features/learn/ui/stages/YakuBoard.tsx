@@ -7,6 +7,7 @@ import { HAND_VIEW, WIDE_VIEW, HAND_Y, TAG_LOOK, WIDTH, byKey, handX, pondPos, s
 import { paintDealtTable } from './HandSort';
 import { FELT_Z, IsoCanvas, picture, type IsoHandle, type Painter } from './iso3d';
 import { useGate } from './useGate';
+import { STICK_LOOK, paintStickFace } from './sticks';
 
 type Mode = 'tanyao' | 'riichi' | 'yakuhai';
 type Sub = 'yes' | 'no' | 'dragon' | 'wind';
@@ -312,14 +313,10 @@ function TanyaoCard({ t }: { t: (es: string, en: string, pt: string) => string }
 export function drawStick(g: Painter, x: number, y: number, lift: number) {
   const { palette: p } = g;
   g.add(y * 100 + 70, () => {
-    const box = g.box(x, y, FELT_Z + lift, 9.6, 1.4, 1.1, 0);
-    box.sides.forEach((face) => g.poly(face.q, '#e9e2d0', p.ink, g.lw));
-    g.poly(box.top, '#fbf7ec', p.ink, g.lw * 1.2);
-    g.onQuad(box.top, () => {
-      g.ctx.fillStyle = '#d6322b';
-      g.ctx.beginPath();
-      g.ctx.ellipse(0.5, 0.5, 0.05, 0.3, 0, 0, Math.PI * 2);
-      g.ctx.fill();
-    });
+    const look = STICK_LOOK[1000];
+    const box = g.box(x, y, FELT_Z + lift, 9.6, 1.5, 1.1, 0);
+    box.sides.forEach((face) => g.poly(face.q, look.side, p.ink, g.lw * 1.4));
+    g.poly(box.top, look.top, p.ink, g.lw * 1.6);
+    g.onQuad(box.top, () => paintStickFace(g, 1000));
   });
 }
