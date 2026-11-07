@@ -432,6 +432,58 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
       if (!plateOn) g.ghost(PLATE_TARGET.x, PLATE_TARGET.y, 0, FELT_Z, { next: true, hot: hot === 'plate', w: PLATE_W + 2, l: PLATE_H + 2 });
     }
 
+    // a trail of moving dots from each loose piece to its spot, and sparkles on the spot, so the goal reads at a glance
+    if (mode === 'compass') {
+      const guide = (from: Spot, to: Spot, onBoard: boolean, seed: number) => {
+        if (onBoard || grabbing) return;
+        g.needsFrame = true;
+        g.add(99999, () => {
+        const ctx2 = g.ctx;
+        const phase = (g.now / 1400 + seed * 0.3) % 1;
+        const dots = 7;
+        for (let i = 0; i < dots; i += 1) {
+          const u = ((i + phase) / dots);
+          const q = g.project(from.x + (to.x - from.x) * u, from.y + (to.y - from.y) * u, FELT_Z + 5);
+          const size = g.k * (0.35 + 0.45 * Math.sin(u * Math.PI));
+          ctx2.save();
+          ctx2.globalAlpha = 0.35 + 0.65 * Math.sin(u * Math.PI);
+          ctx2.fillStyle = p.gold;
+          ctx2.strokeStyle = p.ink;
+          ctx2.lineWidth = g.lw;
+          ctx2.beginPath();
+          ctx2.arc(q.x, q.y, Math.max(2, size), 0, Math.PI * 2);
+          ctx2.fill();
+          ctx2.stroke();
+          ctx2.restore();
+        }
+        for (let i = 0; i < 6; i += 1) {
+          const ang = i * 1.05 + seed;
+          const reach = 0.5 + ((i * 37) % 10) / 10;
+          const tw = (Math.sin(g.now / 260 + i * 1.7 + seed) + 1) / 2;
+          const q = g.project(to.x + Math.cos(ang) * 5.5 * reach, to.y + Math.sin(ang) * 4.2 * reach, FELT_Z + 6);
+          const r = g.k * (0.4 + tw * 0.9);
+          ctx2.save();
+          ctx2.globalAlpha = 0.25 + tw * 0.75;
+          ctx2.fillStyle = '#fff6c2';
+          ctx2.strokeStyle = p.gold;
+          ctx2.lineWidth = g.lw;
+          ctx2.beginPath();
+          for (let k = 0; k < 8; k += 1) {
+            const a = (k * Math.PI) / 4;
+            const rad = k % 2 === 0 ? r : r * 0.28;
+            ctx2.lineTo(q.x + Math.cos(a) * rad, q.y + Math.sin(a) * rad);
+          }
+          ctx2.closePath();
+          ctx2.fill();
+          ctx2.stroke();
+          ctx2.restore();
+        }
+        });
+      };
+      guide(shown.current.compass, CENTER, compassOn, 0);
+      guide(shown.current.plate, PLATE_TARGET, plateOn, 2);
+    }
+
     // compass and plate ease toward where they belong
     let moving = false;
     (['compass', 'plate'] as const).forEach((item) => {
