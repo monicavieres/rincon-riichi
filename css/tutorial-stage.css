@@ -1569,3 +1569,11 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 #quickPad.is-around .quick-pad-key { min-height: clamp(34px, 5.2cqw, 60px); }
 #quickPad .quick-pad-center img { width: clamp(40px, 8cqw, 90px); max-height: 15vh; width: auto; }
 #quickPad .quick-pad-center { gap: 2px; }
+
+/* Shuffle progress: a big readout that turns green and glows at 100% */
+.deck-percent { display: inline-flex; align-items: baseline; gap: 6px; padding: 4px 14px; border: 2px solid var(--ink); border-radius: 99px; background: var(--card); color: var(--ink); font: 700 clamp(11px, 1.4cqw, 14px) / 1 var(--font-sans); text-transform: uppercase; }
+.deck-percent strong { font: 800 clamp(20px, 3.2cqw, 34px) / 1 var(--font-display, var(--font-sans)); font-variant-numeric: tabular-nums; }
+.deck-percent.is-done { background: #2fb457; border-color: #1c7a39; color: #fff; animation: deck-glow 1.2s ease-in-out infinite; }
+.deck-meter { height: 10px !important; }
+.deck-meter.is-done i { background: #2fb457; box-shadow: 0 0 14px 3px rgba(47, 180, 87, 0.8); }
+@keyframes deck-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(47, 180, 87, 0.7); } 50% { box-shadow: 0 0 0 10px rgba(47, 180, 87, 0); } }

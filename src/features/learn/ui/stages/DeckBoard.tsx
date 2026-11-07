@@ -319,11 +319,11 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
         )}
 
         <div className="sort-actions deck-actions">
-          <span>{Math.round(progress * 100)}% {t('mezclado', 'shuffled', 'embaralhado')}</span>
+          <span className={`deck-percent${done ? ' is-done' : ''}`}><strong>{Math.round(progress * 100)}%</strong> {done ? '✓' : t('mezclado', 'shuffled', 'embaralhado')}</span>
           <button type="button" className="sort-button" onClick={stir}>{t('Revolver', 'Stir', 'Mexer')}</button>
         </div>
 
-        <div className="deck-meter" aria-hidden="true"><i style={{ width: `${progress * 100}%` }} /></div>
+        <div className={`deck-meter${done ? ' is-done' : ''}`} aria-hidden="true"><i style={{ width: `${progress * 100}%` }} /></div>
 
         {done && (
           <p className="sort-win" role="status">

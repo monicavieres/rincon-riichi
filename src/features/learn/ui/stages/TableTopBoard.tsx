@@ -97,7 +97,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
         setDieShow(SEAT_ROLLS[seat]);
         setSeatFaces((now) => now.map((value, index) => (index === seat ? SEAT_ROLLS[seat] : value)));
         setSeatRolling((now) => now.map((value, index) => (index === seat ? false : value)));
-      }, 900);
+      }, 450);
       timers.current.push(stop);
     }, delay);
     timers.current.push(start);
@@ -109,16 +109,16 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     let at = base;
     [1, 2, 3].forEach((seat) => {
       later(at, () => { dieMove.current = { from: dieMove.current.to, to: SEAT_AT[seat], start: performance.now() }; scene.current?.invalidate(); });
-      rollSeat(seat, at + 800);
-      at += 800 + 900 + 700;
+      rollSeat(seat, at + 250);
+      at += 250 + 450 + 250;
     });
     later(at, () => { dieMove.current = { from: dieMove.current.to, to: SEAT_AT[0], start: performance.now() }; scene.current?.invalidate(); });
-    later(at + 800, () => setDieReady(true));
+    later(at + 300, () => setDieReady(true));
   };
 
   useEffect(() => {
     if (mode !== 'dealer') return;
-    runDie(900);
+    runDie(400);
   }, [mode]);
 
   const rivalsDone = dieReady && seatFaces[1] > 0 && seatFaces[2] > 0 && seatFaces[3] > 0 && !seatRolling.some(Boolean);
@@ -130,7 +130,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     setDieReady(false);
     setDieShow(1);
     dieMove.current = { from: { x: 50, y: 50 }, to: { x: 50, y: 50 }, start: 0 };
-    runDie(500);
+    runDie(300);
   };
 
   const done = mode === 'dealer' ? dealerRoll !== null : mode === 'compass' ? compassOn && plateOn : phase === 'done';
@@ -495,6 +495,12 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     }
     g.flush();
 
+    if (mode === 'dice' && rolled === null && !rolling) {
+      const pos = g.project(CENTER.x, CENTER.y + 24, FELT_Z + 6);
+      g.pill(pos.x, pos.y - 34, `${t('Toca los dados para lanzarlos', 'Tap the dice to roll them', 'Toque os dados para lançá-los')} ↓`, { bg: p.gold, fg: p.ink, size: 13 });
+      g.needsFrame = true;
+    }
+
     // compass phase: light the rolled number on the compass and its wind
     if (mode === 'dice' && openSide !== null && rolled !== null && phase === 'compass') {
       const sc = (COMPASS * 1.16) / 700;
@@ -583,8 +589,8 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
         g.pill(pos.x, pos.y, `${t('El compass', 'The compass', 'O compass')} → ${t('al centro', 'to the centre', 'ao centro')}`);
       }
       if (!plateOn) {
-        const pos = g.project(PLATE_TRAY.x - 4, PLATE_TRAY.y + 9, FELT_Z + 4);
-        g.pill(pos.x, pos.y, t('Viento de ronda', 'Round wind', 'Vento da rodada'));
+        const pos = g.project(PLATE_TRAY.x - 4, PLATE_TRAY.y + 14, FELT_Z + 4);
+        g.pill(pos.x, pos.y, t('Indicador de viento de ronda', 'Round-wind indicator', 'Indicador do vento da rodada'));
       } else if (compassOn) {
         // nothing more to place
       }

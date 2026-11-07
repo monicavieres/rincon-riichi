@@ -474,7 +474,26 @@ export class Painter {
     if (opts.next) {
       this.needsFrame = true;
       const pulse = 0.5 + 0.5 * Math.sin(this.now / 260);
-      this.poly(g.top, opts.hot ? 'rgba(255,255,255,0.55)' : `rgba(255,214,90,${0.28 + pulse * 0.3})`, p.gold, this.lw * 1.8);
+      ctx.shadowColor = 'rgba(255,214,90,0.95)';
+      ctx.shadowBlur = this.k * (2.2 + pulse * 3);
+      this.poly(g.top, opts.hot ? 'rgba(255,255,255,0.6)' : `rgba(255,214,90,${0.3 + pulse * 0.35})`, p.gold, this.lw * 2.4);
+      ctx.shadowBlur = 0;
+      // a bobbing arrow above the spot says "put it here"
+      const cx = g.top.reduce((sum, q) => sum + q.x, 0) / g.top.length;
+      const top = Math.min(...g.top.map((q) => q.y));
+      const bob = Math.sin(this.now / 220) * this.k * 0.9;
+      const a = this.k * 1.5;
+      const ay = top - a * 1.3 + bob;
+      ctx.fillStyle = p.gold;
+      ctx.strokeStyle = p.ink;
+      ctx.lineWidth = this.lw * 1.4;
+      ctx.beginPath();
+      ctx.moveTo(cx, ay + a);
+      ctx.lineTo(cx - a * 0.9, ay);
+      ctx.lineTo(cx + a * 0.9, ay);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
     } else {
       ctx.setLineDash([this.k * 0.9, this.k * 0.7]);
       this.poly(g.top, opts.faint ? null : 'rgba(255,255,255,0.1)', opts.faint ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.85)', this.lw * 1.2);
