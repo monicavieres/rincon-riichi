@@ -753,7 +753,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
                       : phase === 'split'
                         ? t('Paso 5: el muro muerto se separa del resto. Son fichas fuera de juego: no se usan salvo en ocasiones especiales.', 'Step 5: the dead wall is set apart from the rest. Those tiles are out of play: not used except on special occasions.', 'Passo 5: o muro morto é separado do resto. São peças fora de jogo: não usadas exceto em ocasiões especiais.')
                         : t(`Paso 6: en la 3ª pila del muro muerto se voltea la ficha de arriba (${doraCount}/3): es el indicador de dora.`, `Step 6: on the 3rd stack of the dead wall the top tile is turned face up (${doraCount}/3): the dora indicator.`, `Passo 6: na 3ª pilha do muro morto vira-se a peça de cima (${doraCount}/3): é o indicador de dora.`)}
-            {waiting ? ` ${t('Pulsa «Siguiente» para continuar.', 'Press “Next” to continue.', 'Toque em «Próximo» para continuar.')}` : ''}
+            {waiting && !(phase === 'dead' && openSide === 0) ? ` ${t('Pulsa «Siguiente» para continuar.', 'Press “Next” to continue.', 'Toque em «Próximo» para continuar.')}` : ''}
           </p>
         )}
         {mode === 'dealer' && dealerRoll === null && (
