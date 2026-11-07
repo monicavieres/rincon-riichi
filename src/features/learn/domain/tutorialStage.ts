@@ -317,13 +317,13 @@ export const tutorialStops: TutorialStop[] = [
     eyebrow: L('Un vistazo de cerca', 'A close look', 'Um olhar de perto'),
     title: L('Las partes del compass', 'The parts of the compass', 'As partes do compass'),
     body: L(
-      'Acabas de poner el compass; veamos qué hay en él.\n- **Los cuatro vientos:** uno por asiento (Este, Sur, Oeste, Norte).\n- **Los numeritos:** bajo cada viento, las sumas de dados que le tocan.\n- **Las ranuras:** una por lado, para el palito de riichi.',
-      'You have just placed the compass; let us see what is on it.\n- **The four winds:** one per seat (East, South, West, North).\n- **The small numbers:** under each wind, the dice totals that belong to it.\n- **The slots:** one per side, for the riichi stick.',
-      'Você acabou de colocar o compass; vejamos o que há nele.\n- **Os quatro ventos:** um por assento (Leste, Sul, Oeste, Norte).\n- **Os números:** sob cada vento, as somas de dados que lhe cabem.\n- **Os encaixes:** um por lado, para o bastão de riichi.',
+      'Acabas de poner el compass; veamos qué hay en él.\n- **Los cuatro vientos:** uno por asiento (Este, Sur, Oeste, Norte).\n- **Los numeritos:** tres por viento, del 1 al 12; los usaremos con los dados.\n- **Las ranuras:** una por lado, para el palito de riichi.',
+      'You have just placed the compass; let us see what is on it.\n- **The four winds:** one per seat (East, South, West, North).\n- **The small numbers:** three per wind, covering 1 to 12; we will use them with the dice.\n- **The slots:** one per side, for the riichi stick.',
+      'Você acabou de colocar o compass; vejamos o que há nele.\n- **Os quatro ventos:** um por assento (Leste, Sul, Oeste, Norte).\n- **Os números:** três por vento, de 1 a 12; vamos usá-los com os dados.\n- **Os encaixes:** um por lado, para o bastão de riichi.',
     ),
     bullets: [
       L('Cada viento mira hacia su asiento.', 'Each wind faces its seat.', 'Cada vento olha para o seu assento.'),
-      L('Los números sirven para saber qué muro abrir con los dados.', 'The numbers tell you which wall to open with the dice.', 'Os números dizem qual muro abrir com os dados.'),
+      L('Los numeritos los usaremos con los dados en el siguiente paso.', 'We will use the small numbers with the dice in the next step.', 'Vamos usar os números com os dados no próximo passo.'),
     ],
     remember: L('El compass dice quién es quién.', 'The compass says who is who.', 'O compass diz quem é quem.'),
     stage: { kind: 'deck', mode: 'compassTour' },

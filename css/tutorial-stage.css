@@ -1670,3 +1670,5 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .ct-count-buttons { grid-column: 1 / -1; }
 .ct-counter { font-size: max(24px, 4.4cqw); }
 .ct-count-buttons .sort-button { padding: 5px 10px; font-size: max(10px, 1.3cqw); }
+.ct-legend li { padding: 2px 6px; border-radius: 10px; cursor: default; transition: background 0.2s ease; }
+.ct-legend li.is-on { background: rgba(255, 214, 90, 0.35); }
