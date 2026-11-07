@@ -1672,3 +1672,24 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .ct-count-buttons .sort-button { padding: 5px 10px; font-size: max(10px, 1.3cqw); }
 .ct-legend li { padding: 2px 6px; border-radius: 10px; cursor: default; transition: background 0.2s ease; }
 .ct-legend li.is-on { background: rgba(255, 214, 90, 0.35); }
+
+/* Concept slides: goal of the hand and the point sticks */
+.goal-hand { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(8px, 1.6cqw, 16px); }
+.goal-group { display: grid; gap: 4px; margin: 0; padding: 6px 8px 4px; border: 2px solid rgba(255, 255, 255, 0.7); border-radius: 12px; background: rgba(255, 255, 255, 0.12); justify-items: center; }
+.goal-group.is-pair { border-color: #ffe27a; background: rgba(255, 226, 122, 0.18); }
+.goal-group figcaption { font: 800 max(9px, 1.3cqw) / 1 var(--font-sans); text-transform: uppercase; letter-spacing: 0.06em; }
+.goal-group .intro-tile { width: max(20px, 3.6cqw); }
+.stick-list { display: grid; gap: clamp(4px, 1cqw, 9px); width: min(86%, 440px); }
+.stick-row { display: flex; align-items: center; gap: 12px; }
+.stick-row b { margin-left: auto; font: 800 max(13px, 2cqw) / 1 var(--font-sans); }
+.stick-row small { font: 700 max(11px, 1.6cqw) / 1 var(--font-sans); margin-left: 8px; }
+.stick-sum { display: grid; gap: 6px; justify-items: start; }
+.point-stick { display: flex; align-items: center; justify-content: space-evenly; flex: none; height: max(12px, 1.9cqw); max-width: 86px; border: 2px solid var(--ink, #23203f); border-radius: 6px; background: #fbf7ec; box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25); }
+.point-stick i { display: block; border-radius: 50%; background: #222; width: 5px; height: 5px; }
+.point-stick.s500 i { background: #2d63c8; }
+.point-stick.s1000 i { background: #d6322b; width: 8px; height: 8px; }
+.point-stick.s5000 { background: #f9cbc2; }
+.point-stick.s5000 i { background: #8a1f2a; }
+.point-stick.s10000 { background: #fbe08a; }
+.point-stick.s10000 i { background: #8a1f2a; width: 9px; height: 9px; }
+.intro-row.is-big .point-stick { max-width: none; }

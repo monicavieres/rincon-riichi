@@ -9,7 +9,7 @@ export type LocalCallout = Omit<TableCallout, 'label'> & { label: LocalizedText 
 
 export type StageSpec =
   | { kind: 'sort' }
-  | { kind: 'deck'; mode: 'intro' | 'compassTour' | 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' | 'win' | 'yaku' | 'calls' | 'furiten' | 'points' | 'rounds' }
+  | { kind: 'deck'; mode: 'intro' | 'goal' | 'sticks' | 'compassTour' | 'shuffle' | 'walls' | 'dealer' | 'compass' | 'dice' | 'deal' | 'hand' | 'draw' | 'win' | 'yaku' | 'calls' | 'furiten' | 'points' | 'rounds' }
   | { kind: 'table'; focus: TableFocus; callouts: LocalCallout[] }
   | { kind: 'rack'; rows: RackRow[]; footer?: LocalizedText };
 
@@ -32,6 +32,8 @@ export type TutorialStop = {
 /** A one-line summary of what each step is about, shown under its name in the lesson rail. */
 export const stepSubtitles: Record<string, LocalizedText> = {
   'compass-tour': L('Vientos, números y ranuras', 'Winds, numbers and slots', 'Ventos, números e encaixes'),
+  goal: L('4 grupos y 1 pareja', '4 sets and 1 pair', '4 grupos e 1 par'),
+  sticks: L('Puntos en palitos de colores', 'Points as coloured sticks', 'Pontos em palitos coloridos'),
   intro: L('Fichas, asientos y rondas', 'Tiles, seats and rounds', 'Peças, assentos e rodadas'),
   shuffle: L('136 fichas boca abajo', 'All 136 tiles face down', 'As 136 peças viradas'),
   walls: L('4 muros de 17 pilas', '4 walls of 17 stacks', '4 muros de 17 pilhas'),
@@ -370,6 +372,25 @@ export const tutorialStops: TutorialStop[] = [
     practice: { href: '../practicar/que-ficha-es.html', label: L('Practicar nombres de fichas', 'Practise tile names', 'Praticar nomes de peças') },
   },
   {
+    id: 'goal',
+    part: 'discover',
+    short: L('Tu objetivo', 'Your goal', 'Seu objetivo'),
+    eyebrow: L('Qué buscas con tu mano', 'What your hand is for', 'Para que serve a sua mão'),
+    title: L('El objetivo: 4 grupos y 1 pareja', 'The goal: 4 sets and 1 pair', 'O objetivo: 4 grupos e 1 par'),
+    body: L(
+      'Antes de ordenar, robar o descartar, hay que saber qué se quiere lograr con las fichas:\n- **Grupo:** tres fichas que van juntas, una **secuencia** (3 números seguidos del mismo palo) o un **trío** (3 iguales).\n- **Pareja:** dos fichas iguales.\n- **Mano completa:** 4 grupos y 1 pareja = 14 fichas.',
+      'Before sorting, drawing or discarding, you need to know what the tiles are for:\n- **Set:** three tiles that go together, a **sequence** (3 consecutive numbers of one suit) or a **triplet** (3 identical).\n- **Pair:** two identical tiles.\n- **Complete hand:** 4 sets and 1 pair = 14 tiles.',
+      'Antes de ordenar, comprar ou descartar, é preciso saber o que se quer com as peças:\n- **Grupo:** três peças que combinam, uma **sequência** (3 números seguidos do mesmo naipe) ou um **trio** (3 iguais).\n- **Par:** duas peças iguais.\n- **Mão completa:** 4 grupos e 1 par = 14 peças.',
+    ),
+    bullets: [
+      L('Un grupo es una secuencia o un trío.', 'A set is a sequence or a triplet.', 'Um grupo é uma sequência ou um trio.'),
+      L('Una mano completa: 4 grupos y 1 pareja.', 'A complete hand: 4 sets and 1 pair.', 'Uma mão completa: 4 grupos e 1 par.'),
+    ],
+    remember: L('Todo lo que hagas con la mano busca 4 grupos y 1 pareja.', 'Everything you do with your hand aims at 4 sets and 1 pair.', 'Tudo o que você faz com a mão busca 4 grupos e 1 par.'),
+    stage: { kind: 'deck', mode: 'goal' },
+    practice: { href: '../aprender/tiles.html', label: L('Conocer las fichas', 'Meet the tiles', 'Conhecer as peças') },
+  },
+  {
     id: 'sort',
     part: 'discover',
     short: L('Ordenar', 'Sorting', 'Ordenar'),
@@ -480,6 +501,23 @@ export const tutorialStops: TutorialStop[] = [
     remember: L('Si tu espera está en tu río, solo tsumo.', 'If your wait is in your river, tsumo only.', 'Se sua espera está no seu rio, só tsumo.'),
     stage: { kind: 'deck', mode: 'furiten' },
     practice: { href: '../practicar/furiten.html', label: L('Practicar furiten', 'Practise furiten', 'Praticar furiten') },
+  },
+  {
+    id: 'sticks', part: 'win', short: L('Puntos y palitos', 'Points and sticks', 'Pontos e palitos'),
+    eyebrow: L('Antes de contar', 'Before counting', 'Antes de contar'),
+    title: L('Los puntos son palitos de colores', 'Points are colour-coded sticks', 'Os pontos são palitos coloridos'),
+    body: L(
+      'En mahjong se juega con puntos, y los puntos se llevan en **palitos** de colores.\n- Cada palito **equivale** a una cantidad: 100, 500, 1 000, 5 000 o 10 000.\n- El color y los puntitos dicen **cuánto vale**.\n- Se combinan para pagar cualquier cantidad.',
+      'Mahjong is played for points, and the points are kept as colour-coded **sticks**.\n- Each stick is **worth** an amount: 100, 500, 1,000, 5,000 or 10,000.\n- The colour and the dots tell you **how much**.\n- They combine to pay any amount.',
+      'No mahjong joga-se por pontos, e os pontos são guardados em **palitos** coloridos.\n- Cada palito **equivale** a uma quantia: 100, 500, 1.000, 5.000 ou 10.000.\n- A cor e os pontinhos dizem **quanto vale**.\n- Combinam-se para pagar qualquer quantia.',
+    ),
+    bullets: [
+      L('Cada palito vale una cantidad fija.', 'Each stick is worth a fixed amount.', 'Cada palito vale uma quantia fixa.'),
+      L('Gana la partida quien termina con más puntos.', 'The game goes to whoever ends with the most points.', 'Ganha a partida quem termina com mais pontos.'),
+    ],
+    remember: L('Los palitos son los puntos: cada color vale una cantidad.', 'The sticks are the points: each colour is worth an amount.', 'Os palitos são os pontos: cada cor vale uma quantia.'),
+    stage: { kind: 'deck', mode: 'sticks' },
+    practice: { href: '../aprender/score.html', label: L('Tablas de puntaje', 'Score tables', 'Tabelas de pontuação') },
   },
   {
     id: 'points', part: 'win', short: L('Puntaje', 'Scoring', 'Pontuação'),

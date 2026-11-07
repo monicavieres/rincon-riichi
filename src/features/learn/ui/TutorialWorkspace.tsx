@@ -3,6 +3,7 @@ import { TableStage, ZoneThumb } from '../../../shared/ui/TableStage';
 import { localize, type LocalizedText, type TutorialLanguage } from '../domain/tutorialContent';
 import { stepSubtitles, tutorialParts, tutorialStops, type TutorialStop } from '../domain/tutorialStage';
 import { RackStage } from './stages/RackStage';
+import { GoalBoard, SticksBoard } from './stages/ConceptBoards';
 import { CompassTourBoard } from './stages/CompassTourBoard';
 import { IntroBoard } from './stages/IntroBoard';
 import { DeckBoard, TILE_BACK, type DeckStatus } from './stages/DeckBoard';
@@ -49,6 +50,8 @@ const TABS: Array<{ id: Tab; label: LocalizedText }> = [
 ];
 
 const PRACTICE_COPY = {
+  goal: L('Recorre las láminas con las flechas del tablero y fíjate en cómo se ven un grupo, una secuencia, un trío y una pareja.', 'Go through the slides with the board arrows and notice what a set, a sequence, a triplet and a pair look like.', 'Passe pelas lâminas com as setas do quadro e veja como são um grupo, uma sequência, um trio e um par.'),
+  sticks: L('Recorre las láminas con las flechas del tablero y mira cuánto vale cada palito.', 'Go through the slides with the board arrows and see what each stick is worth.', 'Passe pelas lâminas com as setas do quadro e veja quanto vale cada palito.'),
   compassTour: L('Recorre las cuatro láminas con las flechas del tablero y fíjate en lo que se ilumina en el compass.', 'Go through the four slides with the board arrows and watch what lights up on the compass.', 'Passe pelas quatro lâminas com as setas do quadro e veja o que acende no compass.'),
   intro: L('Pasa las cuatro láminas con las flechas del tablero y fíjate en la diferencia entre viento de asiento y viento de la ronda.', 'Go through the four slides with the board arrows and notice the difference between seat wind and round wind.', 'Passe pelas quatro lâminas com as setas do quadro e note a diferença entre vento do assento e vento da rodada.'),
   rounds: L(
@@ -253,7 +256,7 @@ function TileThumb({ codes, scattered = false }: { codes: string[]; scattered?: 
 function thumbFor(stop: TutorialStop) {
   const spec = stop.stage;
   if (spec.kind === 'table') return spec.focus.boxes.length === 0 ? <TileThumb codes={['1z', '5z', '9m']} /> : <ZoneThumb focus={spec.focus} />;
-  if (spec.kind === 'deck') return spec.mode === 'intro' ? <TileThumb codes={['1z', '5p', '9m']} /> : spec.mode === 'compassTour' ? <SceneThumb mode="compass" /> : spec.mode === 'rounds' ? <TileThumb codes={['1z', '2z', '3z', '4z']} /> : spec.mode === 'points' ? <TileThumb codes={['1p', '1p', '1p']} /> : spec.mode === 'furiten' ? <TileThumb codes={['4p', '7p']} /> : spec.mode === 'calls' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'yaku' ? <TileThumb codes={['2m', '3m', '4m']} /> : spec.mode === 'win' ? <TileThumb codes={['6z', '6z', '6z']} /> : spec.mode === 'draw' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'hand' ? <TileThumb codes={['4p', '1m', '6z']} scattered /> : <SceneThumb mode={spec.mode} />;
+  if (spec.kind === 'deck') return spec.mode === 'intro' ? <TileThumb codes={['1z', '5p', '9m']} /> : spec.mode === 'compassTour' ? <SceneThumb mode="compass" /> : spec.mode === 'goal' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'sticks' ? <TileThumb codes={['1p', '1p', '1p']} /> : spec.mode === 'rounds' ? <TileThumb codes={['1z', '2z', '3z', '4z']} /> : spec.mode === 'points' ? <TileThumb codes={['1p', '1p', '1p']} /> : spec.mode === 'furiten' ? <TileThumb codes={['4p', '7p']} /> : spec.mode === 'calls' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'yaku' ? <TileThumb codes={['2m', '3m', '4m']} /> : spec.mode === 'win' ? <TileThumb codes={['6z', '6z', '6z']} /> : spec.mode === 'draw' ? <TileThumb codes={['4p', '5p', '6p']} /> : spec.mode === 'hand' ? <TileThumb codes={['4p', '1m', '6z']} scattered /> : <SceneThumb mode={spec.mode} />;
   if (spec.kind === 'sort') return <TileThumb codes={['4p', '1m', '6z']} scattered />;
   return <TileThumb codes={spec.rows[0].groups[0].tiles} />;
 }
@@ -360,6 +363,8 @@ export function TutorialWorkspace() {
             <div aria-hidden="true"><i style={{ width: `${((index + 1) / tutorialStops.length) * 100}%` }} /></div>
           </div>
 
+          {spec.kind === 'deck' && spec.mode === 'goal' && <GoalBoard key={language} language={language} />}
+          {spec.kind === 'deck' && spec.mode === 'sticks' && <SticksBoard key={language} language={language} />}
           {spec.kind === 'deck' && spec.mode === 'compassTour' && <CompassTourBoard key={language} language={language} />}
           {spec.kind === 'deck' && spec.mode === 'intro' && <IntroBoard key={language} language={language} />}
           {spec.kind === 'deck' && spec.mode === 'shuffle' && <DeckBoard language={language} onStatus={setDeck} />}
