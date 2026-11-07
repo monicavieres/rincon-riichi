@@ -1648,3 +1648,7 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .ct-copy h3 { margin: 0; color: #fff; font: 800 max(17px, 2.8cqw) / 1.15 var(--font-display, var(--font-sans)); }
 .ct-copy p { margin: 0; font: 600 max(12px, 1.7cqw) / 1.45 var(--font-sans); color: rgba(255, 255, 255, 0.95); }
 .ct-nav { grid-column: 1 / -1; }
+.ct-legend { display: grid; gap: 6px; margin: 4px 0 0; padding: 0; list-style: none; }
+.ct-legend li { display: flex; align-items: center; gap: 10px; font: 600 max(12px, 1.6cqw) / 1.2 var(--font-sans); }
+.ct-legend b { display: grid; place-items: center; width: 2em; height: 2em; border: 2px solid #fff6c2; border-radius: 50%; background: rgba(255, 255, 255, 0.14); font: 800 max(14px, 2cqw) / 1 'Noto Serif JP', 'Hiragino Mincho ProN', serif; }
+.ct-legend strong { text-transform: uppercase; letter-spacing: 0.04em; }

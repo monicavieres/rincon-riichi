@@ -36,14 +36,16 @@ export function CompassTourBoard({ language }: { language: TutorialLanguage }) {
     { kind: 'rect', x: 236, y: 70, w: 228, h: 40 }, { kind: 'rect', x: 70, y: 236, w: 40, h: 228 },
   ];
 
-  const slides: Array<{ title: string; text: string; marks: Mark[]; tags?: Array<{ x: number; y: number; text: string }> }> = [
+  const slides: Array<{ title: string; text: string; marks: Mark[]; legend?: Array<[string, string, string]> }> = [
     {
       title: t('Los cuatro vientos', 'The four winds', 'Os quatro ventos'),
-      text: t('Cada punta del compass lleva un viento en kanji: 東 Este, 南 Sur, 西 Oeste, 北 Norte. Cada viento mira hacia el asiento que le corresponde. El Este queda frente a ti: tú eres el dealer.', 'Each arm of the compass carries a wind in kanji: 東 East, 南 South, 西 West, 北 North. Each wind faces the seat it belongs to. East is in front of you: you are the dealer.', 'Cada ponta do compass traz um vento em kanji: 東 Leste, 南 Sul, 西 Oeste, 北 Norte. Cada vento olha para o assento a que pertence. O Leste fica à sua frente: você é o dealer.'),
+      text: t('Cada punta del compass lleva un viento en kanji, y cada uno mira hacia el asiento que le corresponde.', 'Each arm of the compass carries a wind in kanji, and each one faces the seat it belongs to.', 'Cada ponta do compass traz um vento em kanji, e cada um olha para o assento a que pertence.'),
       marks: winds,
-      tags: [
-        { x: 350, y: 440, text: t('Este · tú', 'East · you', 'Leste · você') }, { x: 520, y: 350, text: t('Sur', 'South', 'Sul') },
-        { x: 350, y: 275, text: t('Oeste', 'West', 'Oeste') }, { x: 180, y: 350, text: t('Norte', 'North', 'Norte') },
+      legend: [
+        ['東', t('Este', 'East', 'Leste'), t('frente a ti: tú, el dealer', 'in front of you: you, the dealer', 'à sua frente: você, o dealer')],
+        ['南', t('Sur', 'South', 'Sul'), t('a tu derecha', 'on your right', 'à sua direita')],
+        ['西', t('Oeste', 'West', 'Oeste'), t('enfrente de ti', 'across from you', 'em frente a você')],
+        ['北', t('Norte', 'North', 'Norte'), t('a tu izquierda', 'on your left', 'à sua esquerda')],
       ],
     },
     {
@@ -75,17 +77,12 @@ export function CompassTourBoard({ language }: { language: TutorialLanguage }) {
           <img src={`../assets/illustrations/consola-top-${theme}.svg`} alt="" />
           <svg viewBox="0 0 700 700" aria-hidden="true" key={slide}>
             {current.marks.map(pulse)}
-            {current.tags?.map((tag) => (
-              <g key={tag.text}>
-                <rect x={tag.x - 52} y={tag.y - 16} width="104" height="32" rx="16" className="ct-tag" />
-                <text x={tag.x} y={tag.y} textAnchor="middle" dominantBaseline="central" className="ct-tag-text">{tag.text}</text>
-              </g>
-            ))}
           </svg>
         </div>
         <div className="ct-copy" key={`c${slide}`}>
           <h3>{current.title}</h3>
           <p>{current.text}</p>
+          {current.legend && <ul className="ct-legend">{current.legend.map(([kanji, name, where]) => <li key={kanji}><b>{kanji}</b><span><strong>{name}</strong> · {where}</span></li>)}</ul>}
         </div>
         <div className="intro-nav ct-nav">
           <button type="button" className="sort-button" onClick={() => setSlide((s) => Math.max(0, s - 1))} disabled={slide === 0} aria-label={t('Anterior', 'Previous', 'Anterior')}>←</button>
