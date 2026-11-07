@@ -637,7 +637,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
         {mode === 'dealer' && dealerRoll === null && (
           <p className="deck-guide" role="status">
             {!rivalsGo
-              ? t('Cada jugador lanza un dado y el número más alto reparte primero. Pulsa «Que lancen los rivales» para empezar.', 'Each player rolls a die and the highest number deals first. Press “Let the rivals roll” to begin.', 'Cada jogador lança um dado e o número mais alto distribui primeiro. Toque em «Deixar os rivais lançarem» para começar.')
+              ? t('Cada jugador lanza un dado y el número más alto es el dealer, el primero en jugar. Pulsa «Que lancen los rivales» para empezar.', 'Each player rolls a die and the highest number is the dealer, the first to play. Press “Let the rivals roll” to begin.', 'Cada jogador lança um dado e o número mais alto é o dealer, o primeiro a jogar. Toque em «Deixar os rivais lançarem» para começar.')
               : !rivalsDone
                 ? t('Primero lanzan tus tres rivales, uno tras otro.', 'Your three rivals roll first, one after another.', 'Primeiro lançam seus três rivais, um após o outro.')
                 : t('Ahora te toca a ti: toca tu dado o pulsa «Lanzar mi dado».', 'Now it is your turn: tap your die or press “Roll my die”.', 'Agora é a sua vez: toque no seu dado ou em «Lançar meu dado».')}
@@ -646,7 +646,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
         {mode === 'dealer' && dealerRoll !== null && (
           <p className="sort-win is-top" role="status">
             <b>{t('¡Sacaste 6, el más alto: eres el dealer!', 'You rolled a 6, the highest: you are the dealer!', 'Você tirou 6, o mais alto: é o dealer!')}</b>
-            <span>{t('El dealer toma el asiento Este y juega primero.', 'The dealer takes the East seat and plays first.', 'O dealer fica no assento Leste e joga primeiro.')}</span>
+            <span>{t('El dealer es el primero en jugar.', 'The dealer is the first to play.', 'O dealer é o primeiro a jogar.')}</span>
           </p>
         )}
         {mode === 'dice' && rolled !== null && openSide !== null && phase === 'done' && (
