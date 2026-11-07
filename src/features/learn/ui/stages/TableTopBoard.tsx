@@ -31,6 +31,13 @@ const SEAT_NAME = {
   pt: ['Você', 'Rival à direita', 'Rival em frente', 'Rival à esquerda'],
 };
 
+/** Who is in front of each side: they are the one who divides the wall when the dice point there. */
+const WHO = {
+  es: ['tú', 'el rival de tu derecha', 'el rival de enfrente', 'el rival de tu izquierda'],
+  en: ['you', 'the rival on your right', 'the rival across', 'the rival on your left'],
+  pt: ['você', 'o rival à sua direita', 'o rival em frente', 'o rival à sua esquerda'],
+};
+
 const SIDE_LABEL = {
   es: ['Este (tú, el dealer)', 'Sur (a tu derecha)', 'Oeste (enfrente)', 'Norte (a tu izquierda)'],
   en: ['East (you, the dealer)', 'South (on your right)', 'West (across)', 'North (on your left)'],
@@ -88,6 +95,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
   const [dieReady, setDieReady] = useState(false);
   const [rivalsGo, setRivalsGo] = useState(false);
   const [waiting, setWaiting] = useState(false);
+  const rolls = useRef(0);
 
   const clearTimers = () => { timers.current.forEach((id) => { window.clearInterval(id); window.clearTimeout(id); }); timers.current = []; };
 
@@ -151,6 +159,11 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
       return;
     }
     if (mode === 'dice') {
+      if (phase === 'dead' && waiting && openSide === 0) {
+        // the dice landed on your seat: you divide the dead wall by tapping it
+        if (near(point, deadMid) < 16) advance();
+        return;
+      }
       if (near(point, { x: CENTER.x, y: CENTER.y + 24 }) < 10) roll();
       return;
     }
@@ -204,8 +217,10 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     flipStart.current = 0;
     const later = (ms: number, action: () => void) => { timers.current.push(window.setTimeout(action, ms)); };
     later(1100, () => {
-      const a = 1 + Math.floor(Math.random() * 6);
-      const b = 1 + Math.floor(Math.random() * 6);
+      // the first example lands on your own seat (2 + 3 = 5) so you get to divide the wall; later rolls are random
+      const a = rolls.current === 0 ? 2 : 1 + Math.floor(Math.random() * 6);
+      const b = rolls.current === 0 ? 3 : 1 + Math.floor(Math.random() * 6);
+      rolls.current += 1;
       setFaces([a, b]);
       setRolling(false);
       setRolled(a + b);
@@ -624,6 +639,20 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
       }
     }
 
+    // whoever sits in front of the opened side is the one who divides the wall
+    if (mode === 'dice' && openSide !== null && rolled !== null && (phase === 'wall' || phase === 'dead' || phase === 'split')) {
+      const out = OUT[openSide];
+      const mid = wallSlot(openSide, Math.floor(ROW / 2), 0);
+      const pos = g.project(mid.x + out[0] * 9, mid.y + out[1] * 9, FELT_Z + TILE_T * 2 + 6);
+      g.pill(pos.x, pos.y, `✂ ${t('Divide', 'Divides', 'Divide')}: ${SEAT_NAME[language][openSide]}`, { bg: openSide === 0 ? '#2fb457' : 'rgba(10,20,20,0.82)', fg: '#fff', size: 12 });
+    }
+    if (mode === 'dice' && openSide === 0 && phase === 'dead' && waiting) {
+      g.needsFrame = true;
+      const pos = g.project(deadMid.x, deadMid.y, FELT_Z + 12);
+      const bob = Math.sin(g.now / 200) * 4;
+      g.pill(pos.x, pos.y + bob, `👆 ${t('Toca para dividir', 'Tap to divide', 'Toque para dividir')}`, { bg: p.gold, fg: p.ink, size: 14 });
+    }
+
     // after opening: name the dead wall and show where drawing starts
     if (mode === 'dice' && openSide !== null && rolled !== null && eased > 0.6 && phase !== 'dora') {
       const deadList = [...dead].map((key) => key.split(':').map(Number));
@@ -699,7 +728,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
               {rolled !== null && <span>{faces[0]} + {faces[1]} = {rolled}</span>}
               {waiting && phase !== 'done' && (
                 <button type="button" className="sort-button is-primary" onClick={advance} onKeyDown={press(advance)}>
-                  {phase === 'compass' ? t('Siguiente: contar pilas', 'Next: count stacks', 'Próximo: contar pilhas') : phase === 'wall' ? t('Siguiente: muro muerto', 'Next: dead wall', 'Próximo: muro morto') : phase === 'dead' ? t('Siguiente: separar', 'Next: split it off', 'Próximo: separar') : t('Siguiente: indicador de dora', 'Next: dora indicator', 'Próximo: indicador de dora')} →
+                  {phase === 'compass' ? t('Siguiente: contar pilas', 'Next: count stacks', 'Próximo: contar pilhas') : phase === 'wall' ? t('Siguiente: muro muerto', 'Next: dead wall', 'Próximo: muro morto') : phase === 'dead' ? (openSide === 0 ? t('Dividir el muro muerto', 'Divide the dead wall', 'Dividir o muro morto') : t('Siguiente: separar', 'Next: split it off', 'Próximo: separar')) : t('Siguiente: indicador de dora', 'Next: dora indicator', 'Próximo: indicador de dora')} →
                 </button>
               )}
               <button type="button" className={`sort-button${rolled === null ? ' is-primary' : ''}`} onClick={roll} onKeyDown={press(roll)} disabled={rolling}>{rolled === null ? t('Lanzar dados', 'Roll dice', 'Lançar dados') : t('Repetir desde el inicio', 'Start over', 'Recomeçar')}</button>
@@ -714,11 +743,13 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
               : rolled === null
                 ? t('Paso 1: lanza los dos dados. Su suma decide qué muro se abre.', 'Step 1: roll the two dice. Their total decides which wall opens.', 'Passo 1: lance os dois dados. A soma decide qual muro abre.')
                 : phase === 'compass'
-                  ? t(`Paso 2: los dados suman ${rolled}. En el compass, el ${rolled} está en el lado ${WIND_NAME.es[openSide ?? 0].split(' · ')[0]}: ese es el muro que se abre.`, `Step 2: the dice total ${rolled}. On the compass, ${rolled} is on the ${WIND_NAME.en[openSide ?? 0].split(' · ')[0]} side: that wall is opened.`, `Passo 2: os dados somam ${rolled}. No compass, o ${rolled} está no lado ${WIND_NAME.pt[openSide ?? 0].split(' · ')[0]}: esse muro abre.`)
+                  ? t(`Paso 2: los dados suman ${rolled}. En el compass, el ${rolled} está en el lado ${WIND_NAME.es[openSide ?? 0].split(' · ')[0]}, frente a ${WHO.es[openSide ?? 0]}: ${openSide === 0 ? '¡divides tú el muro!' : 'esa persona divide el muro.'}`, `Step 2: the dice total ${rolled}. On the compass, ${rolled} is on the ${WIND_NAME.en[openSide ?? 0].split(' · ')[0]} side, in front of ${WHO.en[openSide ?? 0]}: ${openSide === 0 ? 'you divide the wall!' : 'that player divides the wall.'}`, `Passo 2: os dados somam ${rolled}. No compass, o ${rolled} está no lado ${WIND_NAME.pt[openSide ?? 0].split(' · ')[0]}, em frente a ${WHO.pt[openSide ?? 0]}: ${openSide === 0 ? 'você divide o muro!' : 'esse jogador divide o muro.'}`)
                   : phase === 'wall'
                     ? t(`Paso 3: en ese muro contamos ${rolled} pilas desde su extremo derecho (${counted}/${rolled}). Ahí se corta el muro, que es de todos: desde ese corte se empieza a sacar fichas.`, `Step 3: on that wall we count ${rolled} stacks from its right end (${counted}/${rolled}). There the wall is cut; the wall is shared by everyone, and tiles start being taken from that cut.`, `Passo 3: nesse muro contamos ${rolled} pilhas a partir da extremidade direita (${counted}/${rolled}). Ali o muro é cortado; ele é de todos, e as peças começam a ser tiradas a partir desse corte.`)
                     : phase === 'dead'
-                      ? t(`Paso 4: desde el corte contamos 7 pilas más (${deadCount}/7): son el muro muerto: 14 fichas fuera de juego.`, `Step 4: from the cut we count 7 more stacks (${deadCount}/7): that is the dead wall: 14 tiles out of play.`, `Passo 4: do corte contamos mais 7 pilhas (${deadCount}/7): é o muro morto: 14 peças fora de jogo.`)
+                      ? (waiting && openSide === 0
+                        ? t('Paso 4: son 7 pilas más: el muro muerto, 14 fichas fuera de juego. Como salió tu asiento, lo divides tú: toca el muro muerto resaltado.', 'Step 4: that is 7 more stacks: the dead wall, 14 tiles out of play. Since your seat came up, you divide it: tap the highlighted dead wall.', 'Passo 4: são mais 7 pilhas: o muro morto, 14 peças fora de jogo. Como saiu o seu assento, você o divide: toque no muro morto destacado.')
+                        : t(`Paso 4: desde el corte contamos 7 pilas más (${deadCount}/7): son el muro muerto: 14 fichas fuera de juego. Lo divide ${WHO.es[openSide ?? 0]}.`, `Step 4: from the cut we count 7 more stacks (${deadCount}/7): that is the dead wall: 14 tiles out of play. It is divided by ${WHO.en[openSide ?? 0]}.`, `Passo 4: do corte contamos mais 7 pilhas (${deadCount}/7): é o muro morto: 14 peças fora de jogo. Quem o divide é ${WHO.pt[openSide ?? 0]}.`))
                       : phase === 'split'
                         ? t('Paso 5: el muro muerto se separa del resto. Son fichas fuera de juego: no se usan salvo en ocasiones especiales.', 'Step 5: the dead wall is set apart from the rest. Those tiles are out of play: not used except on special occasions.', 'Passo 5: o muro morto é separado do resto. São peças fora de jogo: não usadas exceto em ocasiões especiais.')
                         : t(`Paso 6: en la 3ª pila del muro muerto se voltea la ficha de arriba (${doraCount}/3): es el indicador de dora.`, `Step 6: on the 3rd stack of the dead wall the top tile is turned face up (${doraCount}/3): the dora indicator.`, `Passo 6: na 3ª pilha do muro morto vira-se a peça de cima (${doraCount}/3): é o indicador de dora.`)}
