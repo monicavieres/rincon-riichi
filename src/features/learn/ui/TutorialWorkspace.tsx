@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { TableStage, ZoneThumb } from '../../../shared/ui/TableStage';
 import { localize, type LocalizedText, type TutorialLanguage } from '../domain/tutorialContent';
 import { GLOSSARY, glossaryIdFor } from '../domain/glossary';
@@ -21,7 +21,6 @@ import { TableTopBoard, type TableTopStatus } from './stages/TableTopBoard';
 import { WallBoard, type WallStatus } from './stages/WallBoard';
 import { SortBoard, tilePath, type SortStatus } from './stages/SortBoard';
 
-type Tab = 'summary' | 'observe' | 'practice';
 
 /** **word** marks a highlighted term. */
 const rich = (text: string) => text.split('**').map((part, i) => {
@@ -51,11 +50,6 @@ function Body({ text }: { text: string }) {
 }
 const L = (es: string, en: string, pt: string): LocalizedText => ({ es, en, pt });
 
-const TABS: Array<{ id: Tab; label: LocalizedText }> = [
-  { id: 'summary', label: L('Resumen', 'Summary', 'Resumo') },
-  { id: 'observe', label: L('Qué mirar', 'What to look at', 'O que olhar') },
-  { id: 'practice', label: L('Pruébalo', 'Try it', 'Experimente') },
-];
 
 const PRACTICE_COPY = {
   goal: L('Recorre las láminas con las flechas del tablero y fíjate en cómo se ven un grupo, una secuencia, un trío y una pareja.', 'Go through the slides with the board arrows and notice what a set, a sequence, a triplet and a pair look like.', 'Passe pelas lâminas com as setas do quadro e veja como são um grupo, uma sequência, um trio e um par.'),
@@ -180,6 +174,9 @@ const UI = {
   remember: L('Qué recordar', 'Remember this', 'O que lembrar'),
   rail: L('Pasos del tutorial', 'Tutorial steps', 'Passos do tutorial'),
   glossary: L('Diccionario', 'Dictionary', 'Dicionário'),
+  howTo: L('Cómo usar este paso', 'How to use this step', 'Como usar este passo'),
+  more: L('Seguir aprendiendo', 'Keep learning', 'Continuar aprendendo'),
+  progress: L('Tu avance', 'Your progress', 'Seu progresso'),
   close: L('Cerrar', 'Close', 'Fechar'),
   tutorial: L('Tutorial de Mahjong Riichi', 'Riichi Mahjong tutorial', 'Tutorial de Mahjong Riichi'),
   tableAlt: L(
@@ -304,7 +301,8 @@ export function TutorialWorkspace() {
       return found >= 0 ? found : 0;
     } catch { return 0; }
   });
-  const [tab, setTab] = useState<Tab>('summary');
+  const [help, setHelp] = useState(false);
+  const [helpSeen, setHelpSeen] = useState<Set<string>>(new Set());
   const [overview, setOverview] = useState(false);
   const [sort, setSort] = useState<SortStatus>({ inRack: 0, total: 13, sorted: false });
   const [deck, setDeck] = useState<DeckStatus>({ progress: 0, done: false });
@@ -339,7 +337,7 @@ export function TutorialWorkspace() {
 
   const open = useCallback((next: number) => {
     setIndex(Math.max(0, Math.min(tutorialStops.length - 1, next)));
-    setTab('summary');
+    setHelp(false);
     setOverview(false);
   }, []);
 
@@ -409,6 +407,14 @@ export function TutorialWorkspace() {
   );
 
   const practiceCopy = spec.kind === 'deck' ? PRACTICE_COPY[(spec.mode === 'hand' ? 'sort' : spec.mode) as keyof typeof PRACTICE_COPY] : spec.kind === 'sort' ? PRACTICE_COPY.sort : spec.kind === 'table' ? PRACTICE_COPY.table : PRACTICE_COPY.rack;
+  const readout: ReactNode = spec.kind === 'deck' && spec.mode === 'shuffle' ? <>{Math.round(deck.progress * 100)}% {t(UI.shuffled)}</>
+    : spec.kind === 'deck' && spec.mode === 'deal' ? (dealt.done ? t(UI.dealDone) : `${Math.max(0, dealt.step + 1)}/17`)
+    : spec.kind === 'deck' && spec.mode === 'dealer' ? (top.dealerRoll ? <>{top.dealerRoll} {t(UI.dealerIs)}</> : t(UI.dealerWait))
+    : spec.kind === 'deck' && spec.mode === 'compass' ? <>{Number(top.compass) + Number(top.plate)}/2 {t(UI.piecesPlaced)}</>
+    : spec.kind === 'deck' && spec.mode === 'dice' ? (top.rolled ? <>{top.rolled} {t(UI.diceTotal)}</> : t(UI.diceWait))
+    : spec.kind === 'deck' && spec.mode === 'walls' ? <>{wall.mine}/34 {t(UI.yourWall)} · {wall.rivals}/102 {t(UI.rivalWalls)}</>
+    : spec.kind === 'sort' || (spec.kind === 'deck' && spec.mode === 'hand') ? <>{sort.inRack}/{sort.total} {t(UI.sortedIn)}{sort.sorted ? ` · ${t(UI.sorted)}` : ''}</>
+    : null;
   const canZoom = spec.kind === 'table' && spec.focus.zoom > 1;
 
   return (
@@ -448,6 +454,7 @@ export function TutorialWorkspace() {
             <span>{t(UI.step)} {index + 1} {t(UI.of)} {tutorialStops.length} · {t(UI.arrows)}</span>
             <button type="button" onClick={() => open(index + 1)} aria-label={t(UI.next)} disabled={index === tutorialStops.length - 1}>→</button>
             <i aria-hidden="true" />
+            <button type="button" className={`help-open${helpSeen.has(stop.id) ? '' : ' is-nudge'}`} onClick={() => { setHelp(true); setHelpSeen((now) => new Set(now).add(stop.id)); }} aria-label={t(UI.howTo)} title={t(UI.howTo)}>?</button>
             <button type="button" className="glossary-open" onClick={() => setGlossary({ focus: null })} aria-label={t(UI.glossary)} title={t(UI.glossary)}>📖</button>
             <button
               type="button"
@@ -464,28 +471,11 @@ export function TutorialWorkspace() {
         </div>
 
         <aside className="table-explorer-inspector" aria-live="polite">
-          <nav className="explorer-tabs" aria-label={t(stop.title)} role="tablist">
-            {TABS.map((item) => (
-              <button type="button" key={item.id} role="tab" aria-selected={tab === item.id} className={tab === item.id ? 'is-active' : ''} onClick={() => setTab(item.id)}>
-                {t(item.label)}
-              </button>
-            ))}
-          </nav>
-
           <div className="explorer-inspector-copy">
             <p className="panel-label">{t(stop.eyebrow)}</p>
             <h2>{t(stop.title)}</h2>
-            {tab === 'summary' && (
-              <>
-                <p className="mode-chip is-real">🀄 {t(UI.real)}</p>
-                <Body text={t(stop.body)} />
-                <div className="mode-box">
-                  <p className="mode-chip is-tutorial">🎓 {t(UI.inTutorial)}</p>
-                  <p>{t(practiceCopy)}</p>
-                  {spec.kind === 'deck' && REAL_DIFF[spec.mode] && <p className="mode-diff">{t(REAL_DIFF[spec.mode])}</p>}
-                </div>
-              </>
-            )}
+            <p className="mode-chip is-real">🀄 {t(UI.real)}</p>
+            <Body text={t(stop.body)} />
             {stop.id === 'yaku' && <div id="yaku-controls" className="yaku-controls" />}
             {stop.id === 'calls' && <div id="calls-controls" className="yaku-controls" />}
             {stop.id === 'furiten' && <div id="furiten-controls" className="yaku-controls" />}
@@ -495,36 +485,6 @@ export function TutorialWorkspace() {
               <div className="yaku-controls finish-buttons">
                 <a className="sort-button is-primary" href="../index.html#practicar">{t(L('Practicar', 'Practise', 'Praticar'))} →</a>
                 <a className="sort-button is-primary" href="../index.html#aprender">{t(L('Aprender', 'Learn', 'Aprender'))} →</a>
-              </div>
-            )}
-            {tab === 'observe' && <ul>{stop.bullets.map((bullet, bulletIndex) => <li key={bulletIndex}>{rich(t(bullet))}</li>)}</ul>}
-            {tab === 'practice' && (
-              <div className="explorer-practice">
-                <p>{t(practiceCopy)}</p>
-                {spec.kind === 'deck' && spec.mode === 'shuffle' && (
-                  <p className={`sort-readout${deck.done ? ' is-done' : ''}`}><b>{Math.round(deck.progress * 100)}%</b> {t(UI.shuffled)}</p>
-                )}
-                {spec.kind === 'deck' && spec.mode === 'deal' && (
-                  <p className={`sort-readout${dealt.done ? ' is-done' : ''}`}>{dealt.done ? t(UI.dealDone) : `${Math.max(0, dealt.step + 1)}/17`}</p>
-                )}
-                {spec.kind === 'deck' && spec.mode === 'dealer' && (
-                  <p className={`sort-readout${top.done ? ' is-done' : ''}`}>{top.dealerRoll ? <><b>{top.dealerRoll}</b> {t(UI.dealerIs)}</> : t(UI.dealerWait)}</p>
-                )}
-                {spec.kind === 'deck' && spec.mode === 'compass' && (
-                  <p className={`sort-readout${top.done ? ' is-done' : ''}`}><b>{Number(top.compass) + Number(top.plate)}/2</b> {t(UI.piecesPlaced)}</p>
-                )}
-                {spec.kind === 'deck' && spec.mode === 'dice' && (
-                  <p className={`sort-readout${top.done ? ' is-done' : ''}`}>{top.rolled ? <><b>{top.rolled}</b> {t(UI.diceTotal)}</> : t(UI.diceWait)}</p>
-                )}
-                {spec.kind === 'deck' && spec.mode === 'walls' && (
-                  <p className={`sort-readout${wall.done ? ' is-done' : ''}`}><b>{wall.mine}/34</b> {t(UI.yourWall)} · <b>{wall.rivals}/102</b> {t(UI.rivalWalls)}</p>
-                )}
-                {(spec.kind === 'sort' || (spec.kind === 'deck' && spec.mode === 'hand')) && (
-                  <p className={`sort-readout${sort.sorted ? ' is-done' : ''}`}>
-                    <b>{sort.inRack}/{sort.total}</b> {t(UI.sortedIn)}{sort.sorted ? ` · ${t(UI.sorted)}` : ''}
-                  </p>
-                )}
-                <a href={stop.practice.href} target="_blank" rel="noopener">{t(stop.practice.label)} <span aria-hidden="true">↗</span></a>
               </div>
             )}
             {spec.kind === 'deck' && spec.mode === 'hand' && (
@@ -539,10 +499,25 @@ export function TutorialWorkspace() {
                 </a>
               </div>
             )}
+            <a className="more-link" href={stop.practice.href} target="_blank" rel="noopener">{t(UI.more)}: {t(stop.practice.label)} <span aria-hidden="true">↗</span></a>
           </div>
 
         </aside>
       </div>
+
+      {help && (
+        <div className="glossary-overlay" role="dialog" aria-modal="true" aria-label={t(UI.howTo)} onClick={() => setHelp(false)}>
+          <div className="glossary-panel help-panel" onClick={(event) => event.stopPropagation()}>
+            <header><h2>? {t(UI.howTo)}</h2><button type="button" onClick={() => setHelp(false)} aria-label={t(UI.close)}>✕</button></header>
+            <div className="help-body">
+              <p className="mode-chip is-tutorial">🎓 {t(UI.inTutorial)}</p>
+              <p>{t(practiceCopy)}</p>
+              {spec.kind === 'deck' && REAL_DIFF[spec.mode] && <p className="mode-diff">{t(REAL_DIFF[spec.mode])}</p>}
+              {readout && <p className="sort-readout"><b>{t(UI.progress)}:</b> {readout}</p>}
+            </div>
+          </div>
+        </div>
+      )}
 
       {glossary && (
         <div className="glossary-overlay" role="dialog" aria-modal="true" aria-label={t(UI.glossary)} onClick={() => setGlossary(null)}>
