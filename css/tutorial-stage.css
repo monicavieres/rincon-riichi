@@ -1789,3 +1789,9 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
     .deck-actions { top: 62px !important; right: 2% !important; }
     .win-shout { transform: scale(0.8); transform-origin: top center; }
 }
+@media (max-width: 760px) {
+    .tutorial-lab .table-explorer-stage { grid-template-rows: auto 1fr auto; }
+    .tutorial-lab .table-explorer-stage .explorer-progress { position: relative; top: auto; left: auto; width: 100%; min-width: 0; box-sizing: border-box; box-shadow: none; }
+    .sort-stage { margin-top: 0; }
+    .deck-actions { top: 8px !important; }
+}
