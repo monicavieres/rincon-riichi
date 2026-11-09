@@ -1858,3 +1858,9 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .at-honors { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 6px clamp(14px, 3cqw, 28px); padding: 6px 10px 4px; border: 2px dashed rgba(255, 255, 255, 0.6); border-radius: 12px; position: relative; }
 .at-title { position: absolute; top: -9px; left: 12px; margin: 0; padding: 0 8px; background: #2a8f72; font: 800 max(9px, 1.25cqw) / 1 var(--font-sans); text-transform: uppercase; letter-spacing: 0.06em; }
 @media (max-width: 760px) { .at-row .intro-tile.sm { width: 8.6vw; max-width: 28px; } }
+@media (min-width: 761px) {
+    .sort-board.intro-board { padding-top: 50px; }
+    .at-row .intro-tile.sm { width: max(16px, 2.7cqw); }
+    .all-tiles { gap: 5px; }
+    .intro-slide h3 { margin-top: 0; }
+}
