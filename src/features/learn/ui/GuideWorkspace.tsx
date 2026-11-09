@@ -4,7 +4,7 @@ import { initialLanguage, usePageChrome } from './usePageChrome';
 
 type Lang = 'es' | 'en' | 'pt';
 type Intro = { short: string; sub: string; title: string; label: string; body: string[]; stageTitle: string; next: string };
-export type GuideConfig = { entries: GuideEntry[]; intro: Record<Lang, Intro>; glyph: string; example: Record<Lang, string[]> };
+export type GuideConfig = { entries: GuideEntry[]; intro: Record<Lang, Intro>; glyph: string; example: Record<Lang, string[]>; vocab?: Record<Lang, Array<[string, string]>> };
 
 const FACE_DIR: Record<string, string> = {
   light: 'tiles-fluffystuff-composite', dark: 'tiles-neon', cute: 'tiles-cute', samurai: 'tiles-samurai',
@@ -118,6 +118,12 @@ export function GuideWorkspace({ config }: { config: GuideConfig }) {
                 <p className="panel-label">{copy.label}</p>
                 <h2>{copy.title}</h2>
                 {copy.body.map((line, i) => <p key={i}>{rich(line)}</p>)}
+                {config.vocab && (
+                  <dl className="guide-vocab">
+                    <p className="panel-label">{({ es: 'Palabras que verás', en: 'Words you will see', pt: 'Palavras que você verá' })[language]}</p>
+                    {config.vocab[language].map(([term, meaning]) => <div key={term}><dt>{term}</dt><dd>{meaning}</dd></div>)}
+                  </dl>
+                )}
                 <div className="yaku-controls"><button type="button" className="sort-button is-primary" onClick={() => open(1)}>{copy.next}</button></div>
               </>
             ) : (

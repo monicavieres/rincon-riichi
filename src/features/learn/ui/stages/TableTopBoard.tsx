@@ -296,6 +296,11 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
   if (rolled !== null) for (let G = firstDead; G <= firstDead + 6; G += 1) { const at = gAt(G); dead.add(`${at.side}:${at.stack}`); }
   const OUT = [[0, 1], [1, 0], [0, -1], [-1, 0]];
   const ALONG = [[1, 0], [0, -1], [-1, 0], [0, 1]];
+  // the dead wall is always 7 stacks, but it can run on from one wall into the next
+  const deadParts = [...dead].reduce<number[]>((acc, key) => { const side = Number(key.split(':')[0]); const slot = side === openSide ? 0 : 1; acc[slot] = (acc[slot] ?? 0) + 1; return acc; }, []).filter(Boolean);
+  const deadNote = deadParts.length > 1
+    ? t(` Siempre son 7 pilas (14 fichas), sea cual sea el número: aquí ${deadParts[0]} caen en este muro y ${deadParts[1]} en el siguiente, porque se sigue contando en el muro de al lado.`, ` It is always 7 stacks (14 tiles), whatever the number: here ${deadParts[0]} fall on this wall and ${deadParts[1]} on the next, because counting carries on to the neighbouring wall.`, ` São sempre 7 pilhas (14 peças), qualquer que seja o número: aqui ${deadParts[0]} caem neste muro e ${deadParts[1]} no seguinte, porque a contagem continua no muro ao lado.`)
+    : t(' Siempre son 7 pilas (14 fichas), sea cual sea el número: aquí caben todas en este muro.', ' It is always 7 stacks (14 tiles), whatever the number: here they all fit on this wall.', ' São sempre 7 pilhas (14 peças), qualquer que seja o número: aqui cabem todas neste muro.');
   const deadMid = (() => {
     if (openSide === null || rolled === null) return { x: 50, y: 50 };
     const list = [...dead].map((key) => key.split(':').map(Number)).map(([sd, st]) => wallSlot(sd, st, 0));
@@ -749,7 +754,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
                     : phase === 'dead'
                       ? (waiting && openSide === 0
                         ? t('Paso 4: son 7 pilas más: el muro muerto, 14 fichas fuera de juego. Como salió tu asiento, lo divides tú: toca el muro muerto resaltado.', 'Step 4: that is 7 more stacks: the dead wall, 14 tiles out of play. Since your seat came up, you divide it: tap the highlighted dead wall.', 'Passo 4: são mais 7 pilhas: o muro morto, 14 peças fora de jogo. Como saiu o seu assento, você o divide: toque no muro morto destacado.')
-                        : t(`Paso 4: desde el corte contamos 7 pilas más (${deadCount}/7): son el muro muerto: 14 fichas fuera de juego. Lo divide ${WHO.es[openSide ?? 0]}.`, `Step 4: from the cut we count 7 more stacks (${deadCount}/7): that is the dead wall: 14 tiles out of play. It is divided by ${WHO.en[openSide ?? 0]}.`, `Passo 4: do corte contamos mais 7 pilhas (${deadCount}/7): é o muro morto: 14 peças fora de jogo. Quem o divide é ${WHO.pt[openSide ?? 0]}.`))
+                        : t(`Paso 4: desde el corte contamos 7 pilas más (${deadCount}/7): son el muro muerto: 14 fichas fuera de juego. Lo divide ${WHO.es[openSide ?? 0]}.${deadNote}`, `Step 4: from the cut we count 7 more stacks (${deadCount}/7): that is the dead wall: 14 tiles out of play. It is divided by ${WHO.en[openSide ?? 0]}.${deadNote}`, `Passo 4: do corte contamos mais 7 pilhas (${deadCount}/7): é o muro morto: 14 peças fora de jogo. Quem o divide é ${WHO.pt[openSide ?? 0]}.${deadNote}`))
                       : phase === 'split'
                         ? t('Paso 5: el muro muerto se separa del resto. Son fichas fuera de juego: no se usan salvo en ocasiones especiales.', 'Step 5: the dead wall is set apart from the rest. Those tiles are out of play: not used except on special occasions.', 'Passo 5: o muro morto é separado do resto. São peças fora de jogo: não usadas exceto em ocasiões especiais.')
                         : t(`Paso 6: en la 3ª pila del muro muerto se voltea la ficha de arriba (${doraCount}/3): es el indicador de dora.`, `Step 6: on the 3rd stack of the dead wall the top tile is turned face up (${doraCount}/3): the dora indicator.`, `Passo 6: na 3ª pilha do muro morto vira-se a peça de cima (${doraCount}/3): é o indicador de dora.`)}

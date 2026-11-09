@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TableStage, ZoneThumb } from '../../../shared/ui/TableStage';
 import { localize, type LocalizedText, type TutorialLanguage } from '../domain/tutorialContent';
+import { GLOSSARY, glossaryIdFor } from '../domain/glossary';
 import { stepSubtitles, tutorialParts, tutorialStops, type TutorialStop } from '../domain/tutorialStage';
 import { RackStage } from './stages/RackStage';
 import { GoalBoard, SticksBoard } from './stages/ConceptBoards';
@@ -23,7 +24,14 @@ import { SortBoard, tilePath, type SortStatus } from './stages/SortBoard';
 type Tab = 'summary' | 'observe' | 'practice';
 
 /** **word** marks a highlighted term. */
-const rich = (text: string) => text.split('**').map((part, i) => (i % 2 ? (/^(yaku|tanyao|riichi|yakuhai)\b/i.test(part) ? <mark key={i} className="term-mark">{part}</mark> : <strong key={i}>{part}</strong>) : part));
+const rich = (text: string) => text.split('**').map((part, i) => {
+  if (i % 2 === 0) return part;
+  const mark = /^(yaku|tanyao|riichi|yakuhai)\b/i.test(part);
+  const inner = mark ? <mark className="term-mark">{part}</mark> : <strong>{part}</strong>;
+  const id = glossaryIdFor(part);
+  if (!id) return <span key={i}>{inner}</span>;
+  return <button type="button" key={i} className="term-link" onClick={() => window.dispatchEvent(new CustomEvent('open-glossary', { detail: id }))}>{inner}</button>;
+});
 /** Plain lines become paragraphs; lines starting with "- " become a bulleted list. */
 function Body({ text }: { text: string }) {
   const blocks: Array<{ list: boolean; lines: string[] }> = [];
@@ -147,6 +155,8 @@ const UI = {
   zoom: L('Acercar a la zona', 'Zoom to the zone', 'Aproximar da zona'),
   remember: L('Qué recordar', 'Remember this', 'O que lembrar'),
   rail: L('Pasos del tutorial', 'Tutorial steps', 'Passos do tutorial'),
+  glossary: L('Diccionario', 'Dictionary', 'Dicionário'),
+  close: L('Cerrar', 'Close', 'Fechar'),
   tutorial: L('Tutorial de Mahjong Riichi', 'Riichi Mahjong tutorial', 'Tutorial de Mahjong Riichi'),
   tableAlt: L(
     'Mesa de riichi en perspectiva, con los cuatro muros, las manos, los descartes y el compass de vientos',
@@ -263,7 +273,13 @@ function thumbFor(stop: TutorialStop) {
 
 export function TutorialWorkspace() {
   const [language, setLanguage] = useState<TutorialLanguage>(initialLanguage);
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(() => {
+    try {
+      const saved = localStorage.getItem('rincon-riichi-tutorial-step');
+      const found = tutorialStops.findIndex((item) => item.id === saved);
+      return found >= 0 ? found : 0;
+    } catch { return 0; }
+  });
   const [tab, setTab] = useState<Tab>('summary');
   const [overview, setOverview] = useState(false);
   const [sort, setSort] = useState<SortStatus>({ inRack: 0, total: 13, sorted: false });
@@ -271,6 +287,7 @@ export function TutorialWorkspace() {
   const [top, setTop] = useState<TableTopStatus>({ compass: false, plate: false, rolled: null, dealerRoll: null, done: false });
   const [dealt, setDealt] = useState<DealStatus>({ done: false, step: -1 });
   const [wall, setWall] = useState<WallStatus>({ mine: 0, rivals: 0, done: false });
+  const [glossary, setGlossary] = useState<{ focus: string | null } | null>(null);
   const railRef = useRef<HTMLElement>(null);
   const t = (value: LocalizedText) => localize(value, language);
 
@@ -278,6 +295,23 @@ export function TutorialWorkspace() {
   const part = tutorialParts.find((item) => item.id === stop.part)!;
   const partNumber = tutorialParts.indexOf(part) + 1;
   const spec = stop.stage;
+
+  useEffect(() => {
+    try { localStorage.setItem('rincon-riichi-tutorial-step', tutorialStops[index].id); } catch { /* storage may be unavailable */ }
+  }, [index]);
+
+  useEffect(() => {
+    const onOpen = (event: Event) => setGlossary({ focus: (event as CustomEvent<string>).detail ?? null });
+    window.addEventListener('open-glossary', onOpen);
+    return () => window.removeEventListener('open-glossary', onOpen);
+  }, []);
+
+  useEffect(() => {
+    if (!glossary) return undefined;
+    const onEsc = (event: KeyboardEvent) => { if (event.key === 'Escape') setGlossary(null); };
+    document.addEventListener('keydown', onEsc);
+    return () => document.removeEventListener('keydown', onEsc);
+  }, [glossary]);
 
   const open = useCallback((next: number) => {
     setIndex(Math.max(0, Math.min(tutorialStops.length - 1, next)));
@@ -390,6 +424,7 @@ export function TutorialWorkspace() {
             <span>{t(UI.step)} {index + 1} {t(UI.of)} {tutorialStops.length} · {t(UI.arrows)}</span>
             <button type="button" onClick={() => open(index + 1)} aria-label={t(UI.next)} disabled={index === tutorialStops.length - 1}>→</button>
             <i aria-hidden="true" />
+            <button type="button" className="glossary-open" onClick={() => setGlossary({ focus: null })} aria-label={t(UI.glossary)} title={t(UI.glossary)}>📖</button>
             <button
               type="button"
               className={overview ? 'is-on' : ''}
@@ -455,7 +490,7 @@ export function TutorialWorkspace() {
                     <b>{sort.inRack}/{sort.total}</b> {t(UI.sortedIn)}{sort.sorted ? ` · ${t(UI.sorted)}` : ''}
                   </p>
                 )}
-                <a href={stop.practice.href}>{t(stop.practice.label)} <span aria-hidden="true">→</span></a>
+                <a href={stop.practice.href} target="_blank" rel="noopener">{t(stop.practice.label)} <span aria-hidden="true">↗</span></a>
               </div>
             )}
             {spec.kind === 'deck' && spec.mode === 'hand' && (
@@ -474,6 +509,22 @@ export function TutorialWorkspace() {
 
         </aside>
       </div>
+
+      {glossary && (
+        <div className="glossary-overlay" role="dialog" aria-modal="true" aria-label={t(UI.glossary)} onClick={() => setGlossary(null)}>
+          <div className="glossary-panel" onClick={(event) => event.stopPropagation()}>
+            <header><h2>📖 {t(UI.glossary)}</h2><button type="button" onClick={() => setGlossary(null)} aria-label={t(UI.close)}>✕</button></header>
+            <dl>
+              {GLOSSARY.map((entry) => (
+                <div key={entry.id} className={entry.id === glossary.focus ? 'is-focus' : ''} ref={(node) => { if (node && entry.id === glossary.focus) node.scrollIntoView({ block: 'center' }); }}>
+                  <dt>{t(entry.term)}</dt>
+                  <dd>{t(entry.meaning)}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
+      )}
 
       <nav className="explorer-lesson-rail tutorial-rail" ref={railRef} aria-label={t(UI.rail)}>
         {tutorialStops.map((item, itemIndex) => (

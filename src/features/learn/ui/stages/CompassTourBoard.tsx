@@ -32,6 +32,7 @@ export function CompassTourBoard({ language }: { language: TutorialLanguage }) {
   const t = (es: string, en: string, pt: string) => ({ es, en, pt }[language]);
   const names = [t('Este', 'East', 'Leste'), t('Sur', 'South', 'Sul'), t('Oeste', 'West', 'Oeste'), t('Norte', 'North', 'Norte')];
   const [slide, setSlide] = useState(0);
+  const [moved, setMoved] = useState(false);
   const [focus, setFocus] = useState(0);
   const [theme, setTheme] = useState(themeNow);
   useEffect(() => {
@@ -104,10 +105,11 @@ export function CompassTourBoard({ language }: { language: TutorialLanguage }) {
             </ul>
           )}
         </div>
+        {!moved && <p className="intro-hint ct-hint">{t('Pulsa la flecha → para seguir', 'Press the arrow → to continue', 'Toque na seta → para continuar')}</p>}
         <div className="intro-nav ct-nav">
           <button type="button" className="sort-button" onClick={() => setSlide((s) => Math.max(0, s - 1))} disabled={slide === 0} aria-label={t('Anterior', 'Previous', 'Anterior')}>←</button>
           <span className="intro-dots">{slides.map((_, i) => <i key={i} className={i === slide ? 'is-on' : ''} onClick={() => setSlide(i)} />)}</span>
-          <button type="button" className="sort-button is-primary" onClick={() => setSlide((s) => Math.min(slides.length - 1, s + 1))} disabled={slide === slides.length - 1} aria-label={t('Siguiente', 'Next', 'Próximo')}>{slide === slides.length - 1 ? '✓' : '→'}</button>
+          <button type="button" className={`sort-button is-primary${moved ? '' : ' is-nudge'}`} onClick={() => { setMoved(true); setSlide((s) => Math.min(slides.length - 1, s + 1)); }} disabled={slide === slides.length - 1} aria-label={t('Siguiente', 'Next', 'Próximo')}>{slide === slides.length - 1 ? '✓' : '→'}</button>
         </div>
       </div>
     </div>

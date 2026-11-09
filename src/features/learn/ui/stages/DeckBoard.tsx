@@ -130,6 +130,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
   const moved = useRef(0);
   const zTop = useRef(DECK_SIZE);
   const [progress, setProgress] = useState(0);
+  const [touched, setTouched] = useState(false);
 
   const scene = useRef<IsoHandle>(null);
 
@@ -304,7 +305,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
         onPointerLeave={() => { last.current = null; pointer.current.down = false; showHands(false); }}
         onPointerEnter={(event) => { moveHand(event.clientX, event.clientY); showHands(true); }}
         onPointerUp={() => { pointer.current.down = false; }}
-        onPointerDown={(event) => { pointer.current.down = true; moveHand(event.clientX, event.clientY); }}
+        onPointerDown={(event) => { pointer.current.down = true; setTouched(true); moveHand(event.clientX, event.clientY); }}
       >
         <IsoCanvas ref={scene} draw={draw} handlers={{ onPointerMove: onSweep, onPointerDown: onSweepDown }} />
         {RIVAL_PAWS.map((paw, hand) => (
@@ -318,6 +319,11 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
           </>
         )}
 
+        {!touched && !done && (
+          <p className="deck-guide" role="status">
+            {t('Haz clic y, sin soltar, arrastra el mouse sobre las fichas, como si las revolvieras con la mano. La barra de abajo sube hasta el 100 %: entonces están bien mezcladas. (Si prefieres, pulsa «Revolver».)', 'Click and, without letting go, drag the mouse over the tiles as if stirring them by hand. The bar below fills up to 100%: then they are well mixed. (Or just press “Stir”.)', 'Clique e, sem soltar, arraste o mouse sobre as peças, como se as misturasse com a mão. A barra abaixo enche até 100%: então estão bem misturadas. (Ou toque em «Mexer».)')}
+          </p>
+        )}
         <div className="sort-actions deck-actions">
           <span className={`deck-percent${done ? ' is-done' : ''}`}><strong>{Math.round(progress * 100)}%</strong> {done ? '✓' : t('mezclado', 'shuffled', 'embaralhado')}</span>
           <button type="button" className="sort-button" onClick={stir}>{t('Revolver', 'Stir', 'Mexer')}</button>

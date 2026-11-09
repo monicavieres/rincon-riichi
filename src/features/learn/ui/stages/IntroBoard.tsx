@@ -9,6 +9,7 @@ import { tilePath } from './SortBoard';
 export function IntroBoard({ language }: { language: TutorialLanguage }) {
   const t = (es: string, en: string, pt: string) => ({ es, en, pt }[language]);
   const [slide, setSlide] = useState(0);
+  const [moved, setMoved] = useState(false);
   const tile = (code: string, className = '') => <img className={`intro-tile ${className}`} src={tilePath(code)} alt="" />;
 
   const slides = [
@@ -70,6 +71,15 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
               <em>{t('Va en el compass, en el centro de la mesa.', 'It goes on the compass, in the centre of the table.', 'Vai no compass, no centro da mesa.')}</em>
             </div>
           </div>
+          <div className="intro-timeline" aria-hidden="true">
+            {[0, 1].map((r) => (
+              <div className="intro-round" key={r}>
+                <span className="intro-plate is-small">{r === 0 ? '東' : '南'}</span>
+                <b>{r === 0 ? t('Ronda Este', 'East round', 'Rodada Leste') : t('Ronda Sur', 'South round', 'Rodada Sul')}</b>
+                <span className="intro-hands">{[1, 2, 3, 4].map((n) => <i key={n}>{n}</i>)}</span>
+              </div>
+            ))}
+          </div>
           <p className="intro-note">{t('Una ronda son cuatro manos, una por cada dealer. Cómo se juega una mano lo veremos más adelante.', 'A round is four hands, one for each dealer. How a hand is played comes later.', 'Uma rodada são quatro mãos, uma para cada dealer. Como se joga uma mão veremos mais adiante.')}</p>
         </>
       ),
@@ -84,10 +94,11 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
           <h3>{current.title}</h3>
           {current.body}
         </div>
+        {!moved && <p className="intro-hint">{t('Pulsa la flecha → para seguir', 'Press the arrow → to continue', 'Toque na seta → para continuar')}</p>}
         <div className="intro-nav">
           <button type="button" className="sort-button" onClick={() => setSlide((s) => Math.max(0, s - 1))} disabled={slide === 0} aria-label={t('Anterior', 'Previous', 'Anterior')}>←</button>
           <span className="intro-dots">{slides.map((_, i) => <i key={i} className={i === slide ? 'is-on' : ''} onClick={() => setSlide(i)} />)}</span>
-          <button type="button" className="sort-button is-primary" onClick={() => setSlide((s) => Math.min(slides.length - 1, s + 1))} disabled={slide === slides.length - 1} aria-label={t('Siguiente', 'Next', 'Próximo')}>{slide === slides.length - 1 ? '✓' : '→'}</button>
+          <button type="button" className={`sort-button is-primary${moved ? '' : ' is-nudge'}`} onClick={() => { setMoved(true); setSlide((s) => Math.min(slides.length - 1, s + 1)); }} disabled={slide === slides.length - 1} aria-label={t('Siguiente', 'Next', 'Próximo')}>{slide === slides.length - 1 ? '✓' : '→'}</button>
         </div>
       </div>
     </div>
