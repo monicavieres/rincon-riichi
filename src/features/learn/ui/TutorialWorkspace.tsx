@@ -485,6 +485,7 @@ export function TutorialWorkspace() {
               <div className="yaku-controls finish-buttons">
                 <a className="sort-button is-primary" href="../index.html#practicar">{t(L('Practicar', 'Practise', 'Praticar'))} →</a>
                 <a className="sort-button is-primary" href="../index.html#aprender">{t(L('Aprender', 'Learn', 'Aprender'))} →</a>
+                <a className="sort-button" href="../assets/docs/aprende-riichi-mahjong-es.pdf" download="Aprende-a-jugar-Riichi-Mahjong.pdf">↓ {t(L('Guía en PDF', 'PDF guide (Spanish)', 'Guia em PDF (espanhol)'))}</a>
               </div>
             )}
             {spec.kind === 'deck' && spec.mode === 'hand' && (

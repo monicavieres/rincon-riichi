@@ -304,6 +304,10 @@ const translations = {
                 title: "Fuentes y Créditos",
                 desc: "Richi Mahjong Wiki y las fuentes usadas para fichas y datos del sitio."
             },
+            guide: {
+                title: "Guía en PDF",
+                desc: "Aprende a jugar paso a paso: la mesa, las fichas, tu turno, ganar y los puntos. Descarga lista para imprimir."
+            },
             communities: {
                 title: "Comunidades",
                 desc: "Foros, Discord y clubes de mahjong de distintos países."
@@ -619,6 +623,10 @@ const translations = {
                 title: "Sources & Credits",
                 desc: "Riichi Mahjong Wiki and the sources used for tiles and site data."
             },
+            guide: {
+                title: "PDF guide",
+                desc: "Learn to play step by step: the table, the tiles, your turn, winning and scoring. Print-ready download (in Spanish)."
+            },
             communities: {
                 title: "Communities",
                 desc: "Forums, Discord servers and mahjong clubs around the world."
@@ -914,6 +922,10 @@ const translations = {
             credits: {
                 title: "Fontes e Créditos",
                 desc: "Riichi Mahjong Wiki e as fontes usadas para peças e dados do site."
+            },
+            guide: {
+                title: "Guia em PDF",
+                desc: "Aprenda a jogar passo a passo: a mesa, as peças, a sua vez, ganhar e pontuar. Download pronto para imprimir (em espanhol)."
             },
             communities: {
                 title: "Comunidades",

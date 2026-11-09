@@ -1620,6 +1620,7 @@ a {
 .icon-comunidades::after { content: "友"; }
 .icon-jugar::after { content: "局"; }
 .icon-bibliotecas::after { content: "蔵"; }
+.icon-guia::after { content: "冊"; }
 .icon-dora::after { content: "宝"; }
 .icon-eficiencia::after { content: "効"; }
 .icon-defensa::after { content: "防"; }
