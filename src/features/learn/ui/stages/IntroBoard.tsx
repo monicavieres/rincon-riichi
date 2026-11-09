@@ -38,7 +38,7 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
           </div>
         </div>
       ),
-      note: t('Se parece a juegos de cartas como el Carioca o el rummy: los jugadores se turnan para sacar una ficha y botar otra, buscando completar su mano. Cada mano da puntos y, al final de varias rondas, gana quien tiene más puntos.', 'It is like card games such as rummy: players take turns drawing a tile and discarding another, trying to complete their hand. Each hand scores points and, after several rounds, whoever has the most points wins.', 'Parece-se com jogos de cartas como o rummy: os jogadores se revezam para comprar uma peça e descartar outra, buscando completar a mão. Cada mão dá pontos e, ao fim de várias rodadas, ganha quem tem mais pontos.'),
+      note: t('Como el Carioca o el rummy: sacas una ficha y botas otra hasta completar tu mano.', 'Like rummy: you draw a tile and discard another until your hand is complete.', 'Como o rummy: você compra uma peça e descarta outra até completar a mão.'),
     },
     {
       title: t('Mahjong es un juego de mesa que se juega con fichas', 'Mahjong is a table game played with tiles', 'Mahjong é um jogo de mesa jogado com peças'),

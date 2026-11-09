@@ -1840,3 +1840,5 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
     .tutorial-lab .sort-stage:has(.intro-board), .tutorial-lab .sort-stage:has(.ct-board) { align-self: stretch; width: 100%; margin: 0; min-height: 0; }
     .tutorial-lab .sort-board.intro-board, .tutorial-lab .sort-board.ct-board { aspect-ratio: auto; height: 100%; min-height: 0; }
 }
+.intro-what { gap: 7px; }
+.intro-turns span, .intro-loop span, .intro-flow span { padding: 3px 10px; }
