@@ -486,7 +486,7 @@ export function TutorialWorkspace() {
                 <a className="sort-button is-primary" href="../index.html#practicar">{t(L('Practicar', 'Practise', 'Praticar'))} →</a>
                 <a className="sort-button is-primary" href="../index.html#aprender">{t(L('Aprender', 'Learn', 'Aprender'))} →</a>
                 <a className="sort-button" href="../assets/docs/aprende-riichi-mahjong-es.pdf" download="Aprende-a-jugar-Riichi-Mahjong.pdf">↓ {t(L('Guía en PDF', 'PDF guide (Spanish)', 'Guia em PDF (espanhol)'))}</a>
-                <a className="sort-button" href="../assets/docs/riichi-mahjong-en-5-minutos-es.pdf" download="Riichi-Mahjong-en-5-minutos.pdf">↓ {t(L('Guía de 1 página', '1-page guide (Spanish)', 'Guia de 1 página (espanhol)'))}</a>
+                <a className="sort-button" href="../assets/docs/guia-rapida-riichi-mahjong-es.pdf" download="Guia-rapida-Riichi-Mahjong.pdf">↓ {t(L('Guía de 1 página', '1-page guide (Spanish)', 'Guia de 1 página (espanhol)'))}</a>
               </div>
             )}
             {spec.kind === 'deck' && spec.mode === 'hand' && (

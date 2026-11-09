@@ -37,10 +37,58 @@ def stick(value):
 def sticks(counts):
     return "".join(stick(v) for v, n in counts for _ in range(n))
 
+# ---------- glossary from the site's own data ----------
+gl = (ROOT / "src/features/learn/domain/glossary.ts").read_text(encoding="utf8")
+entries = []
+for line in gl.splitlines():
+    m = re.search(r"id: '([^']*)', term: L\('([^']*)',[^)]*\)(?:, also: \[([^\]]*)\])?, meaning: L\('((?:[^'\\]|\\.)*)'", line)
+    if m:
+        also = re.findall(r"'([^']*)'", m.group(3) or "")
+        entries.append((m.group(1), m.group(2), m.group(4).replace("\\'", "'"), also))
+# the Spanish words that open a definition: every alias of every entry, longest first
+ALIASES = sorted(((alias, eid) for eid, term, meaning, also in entries for alias in [term] + also), key=lambda x: -len(x[0]))
+SKIP_CLASSES = ("ex-title", "lbl", "leaf", "ord", "sn", "cap", "ribbon", "brand", "plate", "hands", "gcol")
+LETTER = "A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9"
+
+def autolink(html):
+    """Wraps the first mention of each dictionary word on a page in a link to its entry."""
+    parts = re.split(r"(<[^>]+>)", html)
+    done, out, stack = set(), [], []
+    for part in parts:
+        if part.startswith("<"):
+            name = re.match(r"</?([a-zA-Z0-9]+)", part)
+            tag = name.group(1).lower() if name else ""
+            closing = part.startswith("</")
+            selfclose = part.endswith("/>") or tag in ("img", "br", "line", "circle", "path", "rect", "input")
+            if closing:
+                if stack and stack[-1][0] == tag:
+                    stack.pop()
+            elif not selfclose:
+                skip = tag in ("h2", "h3", "dt", "a", "svg", "style", "script", "figcaption") or any(c in part for c in SKIP_CLASSES)
+                stack.append((tag, skip))
+            out.append(part)
+            continue
+        if any(skip for _, skip in stack) or not part.strip():
+            out.append(part)
+            continue
+        text = part
+        for alias, eid in ALIASES:
+            if eid in done:
+                continue
+            m = re.search(rf"(?<![{LETTER}])({re.escape(alias)})(?![{LETTER}])", text, re.I)
+            if m:
+                text = text[:m.start()] + f'<a class="gl-link" href="#g-{eid}">{m.group(1)}</a>' + text[m.end():]
+                done.add(eid)
+        out.append(text)
+    return "".join(out)
+
 pages = []
+NOLINK = ("cover", "gl", "backpage")
 def page(body, num=None, cls=""):
     badge = f'<span class="leaf">{num}</span>' if num else ""
-    pages.append(f'<section class="page {cls}">{body}{badge}</section>')
+    if not any(c in cls for c in NOLINK):
+        body = autolink(body)
+    pages.append(f'<section class="page {cls}" id="p{num or len(pages) + 1}">{body}{badge}</section>')
 
 def groups(items):
     """items: (tiles, label, kind) -> a hand with each group labelled right under its own tiles."""
@@ -54,15 +102,10 @@ def example(title, inner):
 def arrow(cls=""):
     return f'<span class="arr {cls}">➜</span>'
 
-# ---------- glossary from the site's own data ----------
-gl = (ROOT / "src/features/learn/domain/glossary.ts").read_text(encoding="utf8")
-entries = re.findall(r"term: L\('([^']*)',[^)]*\)[^\n]*?meaning: L\('((?:[^'\\]|\\.)*)'", gl)
-entries = [(t, m.replace("\\'", "'")) for t, m in entries]
-
 # ---------- cover ----------
 toc = [("Introducción", 2), ("La mesa", 3), ("Las fichas", 4), ("Preparación", 5), ("Tu turno", 6), ("Grupos y mano completa", 7),
        ("Llamadas: chii, pon y kan", 8), ("Ganar: ron, tsumo y yaku", 9), ("Puntos y palitos", 10), ("Rondas y fin de partida", 11), ("Diccionario", 12)]
-toc_html = "".join(f'<li><span>{t}</span><i></i><b>{n}</b></li>' for t, n in toc)
+toc_html = "".join(f'<li><a href="#p{n}"><span>{t}</span><i></i><b>{n}</b></a></li>' for t, n in toc)
 page(f'''
 <div class="cover-art"><img src="{A}/illustrations/mesa-light.svg" alt=""></div>
 <div class="cover-title"><img class="mark" src="{A}/rincon-mark.svg" alt=""><p class="brand">RINCÓN RIICHI</p>
@@ -73,7 +116,7 @@ page(f'''
 page(f'''
 <h2>Introducción</h2>
 <p>Riichi mahjong es un juego de <b>cuatro jugadores</b> que se juega con <b>fichas</b>, parecido al Carioca o al rummy: los jugadores se turnan para <b>sacar una ficha y botar otra</b>, buscando completar su mano. Cada mano da <b>puntos</b> y, al final de varias rondas, <b>gana quien tiene más puntos</b>.</p>
-{callout("Si prefieres aprender jugando, revisa «La mesa», «Preparación» y «Tu turno» y empieza: el resto lo puedes consultar sobre la marcha.")}
+{callout("Si prefieres aprender jugando, revisa «La mesa», «Preparación» y «Tu turno» y empieza: el resto lo puedes consultar sobre la marcha. Las palabras con <u class='dotted'>subrayado punteado</u> se pueden pulsar: llevan a su definición en el Diccionario (páginas 12 y 13).")}
 <h3>Qué necesitas</h3>
 <ul class="plain"><li><b>136 fichas</b>: 34 clases distintas, 4 copias de cada una.</li><li>Un <b>compass</b> (la pieza del centro) y una <b>placa</b> de viento de ronda.</li><li>Dos <b>dados</b> y <b>palitos</b> de puntos de colores.</li><li>Cuatro jugadores sentados alrededor de una mesa.</li></ul>
 <h3>El objetivo</h3>
@@ -246,7 +289,7 @@ page(f'''
 # ---------- 12-13 Glossary ----------
 half = (len(entries) + 1) // 2
 def gl_page(items, head, num):
-    gl_html = "".join(f"<dt>{t}</dt><dd>{m}</dd>" for t, m in items)
+    gl_html = "".join(f'<dt id="g-{eid}">{t}</dt><dd>{m}<a class="gl-back" href="javascript:history.back()"></a></dd>' for eid, t, m, _ in items)
     page(f'''{head}<dl class="gloss">{gl_html}</dl>''', num, cls="gl")
 gl_page(entries[:half], '<h2>Diccionario</h2><p class="small">Las palabras de esta guía, en lenguaje simple.</p>', 12)
 gl_page(entries[half:], '<h2>Diccionario</h2><p class="small">Continuación.</p>', 13)
@@ -270,6 +313,11 @@ CSS = r"""
 * { box-sizing: border-box }
 html { -webkit-print-color-adjust: exact; print-color-adjust: exact }
 .gloss { column-fill: balance }
+a { color: inherit; text-decoration: none }
+a.gl-link { border-bottom: 1pt dotted #6a4aa8; color: #3a2a7c }
+u.dotted { text-decoration: none; border-bottom: 1pt dotted #6a4aa8 }
+.toc a { display: flex; align-items: baseline; gap: 3pt; width: 100% }
+.gl-back { display: none }
 body { margin: 0; font-family: Palatino, 'Palatino Linotype', Georgia, serif; color: #2b2540; font-size: 10.2pt; line-height: 1.42 }
 .page { position: relative; width: 6.77in; height: 8.03in; overflow: hidden; page-break-after: always; padding: .5in .52in .5in;
   background:

@@ -310,7 +310,7 @@ const translations = {
             },
             onepager: {
                 title: "Guía rápida de 1 página",
-                desc: "Riichi Mahjong en 5 minutos: una hoja horizontal para imprimir y enseñar a alguien en convenciones o en casa."
+                desc: "Cómo se juega Riichi Mahjong en una hoja horizontal para imprimir y enseñar a alguien, en convenciones o en casa."
             },
             communities: {
                 title: "Comunidades",
@@ -633,7 +633,7 @@ const translations = {
             },
             onepager: {
                 title: "1-page quick guide",
-                desc: "Riichi Mahjong in 5 minutes: a landscape sheet to print and teach someone at conventions or at home (in Spanish)."
+                desc: "How Riichi Mahjong is played, on one landscape sheet to print and teach someone, at conventions or at home (in Spanish)."
             },
             communities: {
                 title: "Communities",
@@ -937,7 +937,7 @@ const translations = {
             },
             onepager: {
                 title: "Guia rápido de 1 página",
-                desc: "Riichi Mahjong em 5 minutos: uma folha horizontal para imprimir e ensinar alguém em convenções ou em casa (em espanhol)."
+                desc: "Como se joga Riichi Mahjong numa folha horizontal para imprimir e ensinar alguém, em convenções ou em casa (em espanhol)."
             },
             communities: {
                 title: "Comunidades",
