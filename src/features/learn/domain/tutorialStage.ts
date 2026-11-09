@@ -239,9 +239,9 @@ export const tutorialStops: TutorialStop[] = [
     eyebrow: L('Ahora, la mesa', 'Now, the table', 'Agora, a mesa'),
     title: L('Mezcla las 136 fichas boca abajo', 'Shuffle all 136 tiles face down', 'Embaralhe as 136 peças viradas para baixo'),
     body: L(
-      'Toda partida empieza igual: las 136 fichas se ponen boca abajo sobre la mesa y los cuatro jugadores las mezclan con las manos. Tus tres rivales empiezan; luego arrastra tú sobre el montón hasta llegar al 100 %.',
-      'Every game starts the same way: all 136 tiles go face down on the table and all four players mix them by hand. Your three rivals start; then drag across the heap until it reaches 100%.',
-      'Toda partida começa igual: as 136 peças ficam viradas para baixo na mesa e os quatro jogadores as misturam com as mãos. Seus três rivais começam; depois arraste você sobre o monte até chegar a 100%.',
+      'Toda partida empieza igual: las 136 fichas se ponen boca abajo sobre la mesa y los cuatro jugadores las mezclan con las manos, hasta que nadie sabe dónde está cada ficha.',
+      'Every game starts the same way: all 136 tiles go face down on the table and all four players mix them by hand, until nobody knows where each tile is.',
+      'Toda partida começa igual: as 136 peças ficam viradas para baixo na mesa e os quatro jogadores as misturam com as mãos, até ninguém saber onde está cada peça.',
     ),
     bullets: [
       L('Cada ficha tiene una cara con su dibujo y un dorso de color: boca abajo todas se ven iguales.', 'Each tile has a face with its picture and a coloured back: face down they all look the same.', 'Cada peça tem uma face com o desenho e um verso colorido: viradas para baixo, todas parecem iguais.'),
@@ -259,9 +259,9 @@ export const tutorialStops: TutorialStop[] = [
     eyebrow: L('Siguiente paso', 'Next step', 'Próximo passo'),
     title: L('Cada jugador arma su muro', 'Each player builds their wall', 'Cada jogador monta o seu muro'),
     body: L(
-      'Con las fichas mezcladas, cada jugador arma un muro frente a sí: 17 pilas de dos fichas, 34 en total. Tú armas el tuyo arrastrando las fichas; tus rivales arman los suyos solos. Los cuatro muros juntos forman el cuadrado de la mesa.',
-      'With the tiles mixed, each player builds a wall in front of them: 17 stacks of two tiles, 34 in all. You build yours by dragging the tiles; your rivals build theirs on their own. Together the four walls form the square of the table.',
-      'Com as peças misturadas, cada jogador monta um muro à sua frente: 17 pilhas de duas peças, 34 no total. Você monta o seu arrastando as peças; seus rivais montam os deles sozinhos. Os quatro muros juntos formam o quadrado da mesa.',
+      'Con las fichas mezcladas, cada jugador arma un muro frente a sí: 17 pilas de dos fichas, 34 en total. Cada uno lo arma con las manos. Los cuatro muros juntos forman el cuadrado de la mesa.',
+      'With the tiles mixed, each player builds a wall in front of them: 17 stacks of two tiles, 34 in all. Each builds theirs by hand. Together the four walls form the square of the table.',
+      'Com as peças misturadas, cada jogador monta um muro à sua frente: 17 pilhas de duas peças, 34 no total. Cada um monta o seu com as mãos. Os quatro muros juntos formam o quadrado da mesa.',
     ),
     bullets: [
       L('Cada lado: 17 pilas × 2 fichas = 34 fichas.', 'Each side: 17 stacks × 2 tiles = 34 tiles.', 'Cada lado: 17 pilhas × 2 peças = 34 peças.'),
@@ -279,9 +279,9 @@ export const tutorialStops: TutorialStop[] = [
     eyebrow: L('Quién empieza', 'Who starts', 'Quem começa'),
     title: L('Cada jugador lanza un dado: el mayor es el dealer', 'Each player rolls a die: the highest is the dealer', 'Cada jogador lança um dado: o maior é o dealer'),
     body: L(
-      'Con los muros listos hay que decidir quién es el dealer: el primero en jugar. Cada uno lanza un dado y quien saque el número más alto es el dealer. Primero lanzan tus tres rivales; luego te toca a ti.',
-      'With the walls ready, you decide who the dealer is: the first to play. Everyone rolls one die and the highest number is the dealer. Your three rivals roll first; then it is your turn.',
-      'Com os muros prontos, decide-se quem é o dealer: o primeiro a jogar. Cada um lança um dado e quem tirar o número mais alto é o dealer. Seus três rivais lançam primeiro; depois é a sua vez.',
+      'Con los muros listos hay que decidir quién es el dealer: el primero en jugar. Cada uno lanza un dado y quien saque el número más alto es el dealer.',
+      'With the walls ready, you decide who the dealer is: the first to play. Everyone rolls one die and the highest number is the dealer.',
+      'Com os muros prontos, decide-se quem é o dealer: o primeiro a jogar. Cada um lança um dado e quem tirar o número mais alto é o dealer.',
     ),
     bullets: [
       L('El dealer es el primero en jugar.', 'The dealer is the first to play.', 'O dealer é o primeiro a jogar.'),
@@ -299,9 +299,9 @@ export const tutorialStops: TutorialStop[] = [
     eyebrow: L('Poner la mesa', 'Setting the table', 'Preparar a mesa'),
     title: L('Coloca el compass y el viento de ronda', 'Place the compass and the round wind', 'Coloque o compass e o vento da rodada'),
     body: L(
-      'Como dealer, tú pones lo que falta en la mesa: el compass en el centro, con cada viento hacia su asiento, y la placa del viento de ronda al borde, a la derecha del dealer. Arrastra cada pieza al recuadro que brilla.',
-      'As dealer, you set what is missing on the table: the compass in the centre, each wind facing its seat, and the round-wind plate at the edge, to the right of the dealer. Drag each piece to the glowing spot.',
-      'Como dealer, você coloca o que falta na mesa: o compass no centro, cada vento voltado para seu assento, e a placa do vento da rodada na borda, à direita do dealer. Arraste cada peça ao lugar que brilha.',
+      'Como dealer, tú pones lo que falta en la mesa: el compass en el centro, con cada viento hacia su asiento, y la placa del viento de ronda al borde, a la derecha del dealer.',
+      'As dealer, you set what is missing on the table: the compass in the centre, each wind facing its seat, and the round-wind plate at the edge, to the right of the dealer.',
+      'Como dealer, você coloca o que falta na mesa: o compass no centro, cada vento voltado para seu assento, e a placa do vento da rodada na borda, à direita do dealer.',
     ),
     bullets: [
       L('Cada asiento tiene un viento: tú eres Este (y dealer); Sur está a tu derecha, Oeste enfrente y Norte a tu izquierda.', 'Each seat has a wind: you are East (and dealer); South is on your right, West across and North on your left.', 'Cada assento tem um vento: você é Leste (e dealer); Sul está à sua direita, Oeste em frente e Norte à sua esquerda.'),

@@ -144,7 +144,31 @@ const PRACTICE_COPY = {
   ),
 };
 
+/** What the lesson simplifies compared with a real table, so nobody mistakes the animation for the rules. */
+const REAL_DIFF = {
+  intro: L('Son láminas para explicar: en una mesa real no hay láminas, solo fichas, compass y palitos.', 'These are explanation slides: a real table has no slides, only tiles, a compass and sticks.', 'São lâminas para explicar: numa mesa real não há lâminas, só peças, compass e palitos.'),
+  goal: L('Son láminas para explicar: en una mesa real no hay láminas, solo tus fichas.', 'These are explanation slides: on a real table there are no slides, just your tiles.', 'São lâminas para explicar: numa mesa real não há lâminas, só as suas peças.'),
+  sticks: L('Son láminas para explicar: en una mesa real los palitos se pasan con las manos.', 'These are explanation slides: on a real table sticks are passed by hand.', 'São lâminas para explicar: numa mesa real os palitos passam de mão em mão.'),
+  compassTour: L('Es un acercamiento para explicar: en una mesa real solo ves el compass sobre la mesa.', 'This is a close-up to explain: on a real table you just see the compass on the table.', 'É uma aproximação para explicar: numa mesa real você só vê o compass sobre a mesa.'),
+  shuffle: L('En una mesa real las fichas se revuelven con las manos (o una mesa automática lo hace). Aquí arrastras el mouse para imitarlo.', 'On a real table the tiles are mixed by hand (or an automatic table does it). Here you drag the mouse to imitate it.', 'Numa mesa real as peças são misturadas com as mãos (ou uma mesa automática faz isso). Aqui você arrasta o mouse para imitar.'),
+  walls: L('En una mesa real armas el muro con fichas físicas y las manos. Aquí arrastras con el mouse y tus rivales lo hacen solos.', 'On a real table you build the wall with physical tiles and your hands. Here you drag with the mouse and your rivals do it on their own.', 'Numa mesa real você monta o muro com peças físicas e as mãos. Aqui você arrasta com o mouse e seus rivais fazem sozinhos.'),
+  dealer: L('En una mesa real cada persona lanza su dado a la vez. Aquí los rivales lanzan uno tras otro para que puedas seguirlos.', 'On a real table everyone rolls their die at the same time. Here the rivals roll one after another so you can follow.', 'Numa mesa real cada pessoa lança o seu dado ao mesmo tempo. Aqui os rivais lançam um após o outro para você acompanhar.'),
+  compass: L('En una mesa real colocas las piezas con las manos. Aquí las arrastras o pulsas «Colocar».', 'On a real table you place the pieces by hand. Here you drag them or press “Place”.', 'Numa mesa real você coloca as peças com as mãos. Aqui você as arrasta ou toca em «Colocar».'),
+  dice: L('En una mesa real el dealer tira dos dados y cuenta las pilas con el dedo, sin pausas. Aquí pulsas botones y cada paso se detiene para que leas.', 'On a real table the dealer rolls two dice and counts stacks with a finger, without pauses. Here you press buttons and each step stops so you can read.', 'Numa mesa real o dealer lança dois dados e conta as pilhas com o dedo, sem pausas. Aqui você toca em botões e cada passo para para você ler.'),
+  deal: L('En una mesa real cada jugador toma sus fichas del muro con las manos. Aquí el reparto se anima y avanzas con «Siguiente».', 'On a real table each player takes their tiles from the wall by hand. Here the deal is animated and you move on with “Next”.', 'Numa mesa real cada jogador pega as suas peças do muro com as mãos. Aqui a distribuição é animada e você avança com «Próximo».'),
+  sort: L('En una mesa real ordenas tus fichas de pie frente a ti. Aquí las arrastras con el mouse.', 'On a real table you sort your standing tiles in front of you. Here you drag them with the mouse.', 'Numa mesa real você ordena as suas peças em pé à sua frente. Aqui você as arrasta com o mouse.'),
+  draw: L('En una mesa real robas y botas con las manos. Aquí tocas la ficha y los rivales juegan solos.', 'On a real table you draw and discard by hand. Here you tap the tile and the rivals play on their own.', 'Numa mesa real você compra e descarta com as mãos. Aqui você toca na peça e os rivais jogam sozinhos.'),
+  win: L('En una mesa real declaras «Tsumo» o «Ron» en voz alta y muestras tu mano. Aquí es una simulación narrada.', 'On a real table you say “Tsumo” or “Ron” out loud and show your hand. Here it is a narrated simulation.', 'Numa mesa real você diz «Tsumo» ou «Ron» em voz alta e mostra a mão. Aqui é uma simulação narrada.'),
+  calls: L('En una mesa real dices «Chii», «Pon» o «Kan» en voz alta y colocas las fichas. Aquí es una demostración.', 'On a real table you say “Chii”, “Pon” or “Kan” out loud and lay the tiles down. Here it is a demonstration.', 'Numa mesa real você diz «Chii», «Pon» ou «Kan» em voz alta e coloca as peças. Aqui é uma demonstração.'),
+  yaku: L('En una mesa real los yaku no se «iluminan»: los jugadores los reconocen al contar. Aquí el tutorial los resalta.', 'On a real table yaku do not “light up”: players recognise them when counting. Here the tutorial highlights them.', 'Numa mesa real os yaku não se «iluminam»: os jogadores os reconhecem ao contar. Aqui o tutorial os destaca.'),
+  furiten: L('En una mesa real nadie te avisa que estás en furiten: debes notarlo tú. Aquí la animación te lo muestra.', 'On a real table nobody tells you that you are furiten: you must notice it yourself. Here the animation shows you.', 'Numa mesa real ninguém avisa que você está em furiten: você deve perceber. Aqui a animação mostra.'),
+  points: L('En una mesa real pasas los palitos con las manos. Aquí los mueve la animación.', 'On a real table you pass the sticks by hand. Here the animation moves them.', 'Numa mesa real você passa os palitos com as mãos. Aqui a animação os move.'),
+  rounds: L('En una mesa real giras el compass y la placa con las manos. Aquí lo hace la animación.', 'On a real table you turn the compass and the plate by hand. Here the animation does it.', 'Numa mesa real você gira o compass e a placa com as mãos. Aqui a animação faz isso.'),
+} as Record<string, LocalizedText>;
+
 const UI = {
+  real: L('En una partida real', 'In a real game', 'Numa partida real'),
+  inTutorial: L('En este tutorial', 'In this tutorial', 'Neste tutorial'),
   part: L('Parte', 'Part', 'Parte'),
   prev: L('Paso anterior', 'Previous step', 'Passo anterior'),
   next: L('Paso siguiente', 'Next step', 'Próximo passo'),
@@ -451,7 +475,17 @@ export function TutorialWorkspace() {
           <div className="explorer-inspector-copy">
             <p className="panel-label">{t(stop.eyebrow)}</p>
             <h2>{t(stop.title)}</h2>
-            {tab === 'summary' && <Body text={t(stop.body)} />}
+            {tab === 'summary' && (
+              <>
+                <p className="mode-chip is-real">🀄 {t(UI.real)}</p>
+                <Body text={t(stop.body)} />
+                <div className="mode-box">
+                  <p className="mode-chip is-tutorial">🎓 {t(UI.inTutorial)}</p>
+                  <p>{t(practiceCopy)}</p>
+                  {spec.kind === 'deck' && REAL_DIFF[spec.mode] && <p className="mode-diff">{t(REAL_DIFF[spec.mode])}</p>}
+                </div>
+              </>
+            )}
             {stop.id === 'yaku' && <div id="yaku-controls" className="yaku-controls" />}
             {stop.id === 'calls' && <div id="calls-controls" className="yaku-controls" />}
             {stop.id === 'furiten' && <div id="furiten-controls" className="yaku-controls" />}

@@ -1753,3 +1753,12 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .intro-plate.is-small { width: 26px; height: 18px; font-size: 13px; }
 .intro-hands { display: flex; gap: 3px; }
 .intro-hands i { display: grid; place-items: center; width: 1.7em; height: 1.7em; border-radius: 6px; background: #fff6c2; color: #23203f; font-style: normal; font-size: max(10px, 1.3cqw); }
+
+/* Real game versus this tutorial */
+.mode-chip { display: inline-block; margin: 0 0 4px; padding: 2px 10px; border-radius: 99px; font: 800 11px / 1.4 var(--font-sans); text-transform: uppercase; letter-spacing: 0.06em; }
+.mode-chip.is-real { background: #cdeedd; color: #14683f; border: 2px solid #14683f; }
+.mode-chip.is-tutorial { background: #dbe6ff; color: #1f3f9a; border: 2px solid #1f3f9a; }
+.mode-box { margin-top: 10px; padding: 8px 12px 10px; border: 2px dashed #1f3f9a; border-radius: 12px; background: rgba(219, 230, 255, 0.4); }
+.mode-box p { margin: 4px 0 0; font-size: 13px; line-height: 1.4; }
+.mode-box .mode-chip { margin: 0; }
+.mode-diff { color: var(--ink-soft, #5a5670); font-style: italic; }
