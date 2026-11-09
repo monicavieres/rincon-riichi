@@ -14,6 +14,33 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
 
   const slides = [
     {
+      title: t('Mahjong es un juego de cuatro jugadores', 'Mahjong is a game for four players', 'Mahjong é um jogo para quatro jogadores'),
+      body: (
+        <div className="intro-what">
+          <div className="intro-turns" aria-hidden="true">
+            {[t('Tú', 'You', 'Você'), t('Derecha', 'Right', 'Direita'), t('Enfrente', 'Across', 'Em frente'), t('Izquierda', 'Left', 'Esquerda')].map((name, i) => (
+              <span key={name} className={i === 0 ? 'is-me' : ''}>{name}{i < 3 ? <em>→</em> : <em>↺</em>}</span>
+            ))}
+          </div>
+          <div className="intro-loop" aria-hidden="true">
+            <span><b>1</b>{t('Robas una ficha', 'Draw a tile', 'Compra uma peça')}</span>
+            <em>→</em>
+            <span><b>2</b>{t('Decides', 'Decide', 'Decide')}</span>
+            <em>→</em>
+            <span><b>3</b>{t('Botas una', 'Discard one', 'Descarta uma')}</span>
+          </div>
+          <div className="intro-flow" aria-hidden="true">
+            <span>{t('Completar la mano', 'Complete your hand', 'Completar a mão')}</span>
+            <em>→</em>
+            <span>{t('La mano da puntos', 'The hand scores points', 'A mão dá pontos')}</span>
+            <em>→</em>
+            <span>🏆 {t('Tras varias rondas gana quien tiene más', 'After several rounds, most points wins', 'Após várias rodadas ganha quem tem mais')}</span>
+          </div>
+        </div>
+      ),
+      note: t('Se parece a juegos de cartas como el Carioca o el rummy: los jugadores se turnan para sacar una ficha y botar otra, buscando completar su mano. Cada mano da puntos y, al final de varias rondas, gana quien tiene más puntos.', 'It is like card games such as rummy: players take turns drawing a tile and discarding another, trying to complete their hand. Each hand scores points and, after several rounds, whoever has the most points wins.', 'Parece-se com jogos de cartas como o rummy: os jogadores se revezam para comprar uma peça e descartar outra, buscando completar a mão. Cada mão dá pontos e, ao fim de várias rodadas, ganha quem tem mais pontos.'),
+    },
+    {
       title: t('Mahjong es un juego de mesa que se juega con fichas', 'Mahjong is a table game played with tiles', 'Mahjong é um jogo de mesa jogado com peças'),
       body: (
         <>
