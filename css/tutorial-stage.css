@@ -1762,3 +1762,8 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .mode-box p { margin: 4px 0 0; font-size: 13px; line-height: 1.4; }
 .mode-box .mode-chip { margin: 0; }
 .mode-diff { color: var(--ink-soft, #5a5670); font-style: italic; }
+.tutorial-lab .explorer-inspector-copy { overflow-y: auto; }
+.mode-chip { font-size: 10px; padding: 1px 8px; }
+.mode-box { margin-top: 6px; padding: 6px 10px 8px; }
+.mode-box p { font-size: 12px; line-height: 1.35; margin-top: 3px; }
+.tutorial-lab .explorer-inspector-copy .body-list { margin-block: 4px; }
