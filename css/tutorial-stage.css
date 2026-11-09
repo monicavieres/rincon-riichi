@@ -1795,3 +1795,8 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
     .sort-stage { margin-top: 0; }
     .deck-actions { top: 8px !important; }
 }
+@media (max-width: 760px) {
+    /* boards that zoom onto your hand keep the notes at the top, so the hand stays in view */
+    .deck-board.is-hand .sort-win, .deck-board.is-hand .sort-win.is-top, .deck-board.is-hand .sort-win.is-note { top: 44px !important; bottom: auto !important; max-width: 94%; font-size: 11px; opacity: 0.97; }
+    .deck-board.is-hand .sort-win b { font-size: 13px; }
+}
