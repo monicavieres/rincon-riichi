@@ -1804,3 +1804,13 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
     .sort-board.deck-board.is-hand { aspect-ratio: 1 / 1; }
     .deck-board.is-hand .sort-win, .deck-board.is-hand .sort-win.is-top, .deck-board.is-hand .sort-win.is-note { top: 64px !important; }
 }
+
+/* Phones: the notes sit under the scene instead of on top of it */
+@media (max-width: 760px) {
+    .sort-board.deck-board:not(.intro-board):not(.ct-board) { aspect-ratio: auto !important; display: flex; flex-direction: column; }
+    .deck-board:not(.intro-board) .iso-canvas { position: relative !important; inset: auto !important; width: 100% !important; height: auto !important; aspect-ratio: 1 / 0.95; flex: none; }
+    .deck-board.is-hand .iso-canvas { aspect-ratio: 1 / 0.8; }
+    .deck-board:not(.intro-board) .sort-win, .deck-board:not(.intro-board) .sort-win.is-top, .deck-board:not(.intro-board) .sort-win.is-note,
+    .deck-board:not(.intro-board) .deck-guide { position: static !important; transform: none !important; width: auto !important; max-width: none !important; margin: 8px 8px 10px !important; }
+    .deck-board:not(.intro-board) .deck-caption { display: none; }
+}
