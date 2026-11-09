@@ -1,6 +1,8 @@
 import { useState, type ReactNode } from 'react';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { tilePath } from './SortBoard';
+import { StickSvg } from './StickSvg';
+import { STICK_VALUES, type StickValue } from './sticks';
 
 type Slide = { title: string; body: ReactNode; note: string };
 
@@ -81,18 +83,8 @@ export function GoalBoard({ language }: { language: TutorialLanguage }) {
   );
 }
 
-const STICKS: Array<{ value: number; label: string; cls: string; dots: number; len: number }> = [
-  { value: 100, label: '100', cls: 's100', dots: 1, len: 6.4 },
-  { value: 500, label: '500', cls: 's500', dots: 3, len: 8.4 },
-  { value: 1000, label: '1 000', cls: 's1000', dots: 5, len: 9.6 },
-  { value: 5000, label: '5 000', cls: 's5000', dots: 3, len: 10.4 },
-  { value: 10000, label: '10 000', cls: 's10000', dots: 5, len: 11 },
-];
-const stick = (s: (typeof STICKS)[number], key?: string | number) => (
-  <span key={key ?? s.value} className={`point-stick ${s.cls}`} style={{ width: `${s.len * 9}%` }} aria-hidden="true">
-    {Array.from({ length: s.dots }, (_, i) => <i key={i} />)}
-  </span>
-);
+const stick = (value: StickValue, key?: string | number) => <StickSvg key={key ?? value} value={value} />;
+const LABEL: Record<StickValue, string> = { 10000: '10 000', 5000: '5 000', 1000: '1 000', 500: '500', 100: '100' };
 
 /** Points are kept as colour-coded sticks, each worth a fixed amount. */
 export function SticksBoard({ language }: { language: TutorialLanguage }) {
@@ -126,7 +118,7 @@ export function SticksBoard({ language }: { language: TutorialLanguage }) {
         title: t('Los puntos son palitos de colores', 'Points are colour-coded sticks', 'Os pontos são palitos coloridos'),
         body: (
           <div className="stick-list">
-            {STICKS.map((s) => <div className="stick-row" key={s.value}>{stick(s)}<b>{s.label}</b></div>)}
+            {STICK_VALUES.map((value) => <div className="stick-row" key={value}>{stick(value)}<b>{LABEL[value]}</b></div>)}
           </div>
         ),
         note: t('En vez de anotar números, se juega con palitos. El color y los puntitos dicen cuánto vale cada uno.', 'Instead of writing numbers down, the game uses sticks. The colour and the dots say what each is worth.', 'Em vez de anotar números, joga-se com palitos. A cor e os pontinhos dizem quanto vale cada um.'),
@@ -135,9 +127,9 @@ export function SticksBoard({ language }: { language: TutorialLanguage }) {
         title: t('Se combinan para formar cualquier cantidad', 'They combine into any amount', 'Combinam-se para formar qualquer quantia'),
         body: (
           <div className="stick-sum">
-            <div className="stick-row">{[0, 1, 2].map((i) => stick(STICKS[2], i))}<small>3 × 1 000</small></div>
-            <div className="stick-row">{stick(STICKS[1])}<small>1 × 500</small></div>
-            <div className="stick-row">{[0, 1, 2, 3].map((i) => stick(STICKS[0], i))}<small>4 × 100</small></div>
+            <div className="stick-row">{[0, 1, 2].map((i) => stick(1000, i))}<small>3 × 1 000</small></div>
+            <div className="stick-row">{stick(500)}<small>1 × 500</small></div>
+            <div className="stick-row">{[0, 1, 2, 3].map((i) => stick(100, i))}<small>4 × 100</small></div>
             <p className="intro-sum">= <b>3 900</b></p>
           </div>
         ),
@@ -145,7 +137,7 @@ export function SticksBoard({ language }: { language: TutorialLanguage }) {
       },
       {
         title: t('Cada jugador guarda los suyos', 'Each player keeps their own', 'Cada jogador guarda os seus'),
-        body: <div className="intro-row is-big">{STICKS.map((s) => stick(s))}</div>,
+        body: <div className="intro-row is-big">{STICK_VALUES.map((value) => stick(value))}</div>,
         note: t('Los palitos de cada jugador van en su cajón, bajo su borde de la mesa. Al terminar una mano, quien paga entrega palitos y el ganador los recibe. Lo vemos en el siguiente paso.', 'Each player’s sticks live in their drawer, under their edge of the table. When a hand ends, the payer hands over sticks and the winner receives them. We see it in the next step.', 'Os palitos de cada jogador ficam na gaveta, sob a sua borda da mesa. Ao fim de uma mão, quem paga entrega palitos e o vencedor os recebe. Vemos isso no próximo passo.'),
       },
     ]} />

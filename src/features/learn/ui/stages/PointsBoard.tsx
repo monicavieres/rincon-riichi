@@ -7,7 +7,7 @@ import { WIDE_VIEW, sleep } from './DrawBoard';
 import { paintDealtTable } from './HandSort';
 import { FELT_Z, IsoCanvas, shade, type IsoHandle, type Painter } from './iso3d';
 import { useGate } from './useGate';
-import { STICK_LOOK, paintStickFace } from './sticks';
+import { STICK_LOOK, STICK_LENGTH, STICK_THICK, paintStickFace } from './sticks';
 
 type Value = 10000 | 5000 | 1000 | 500 | 100;
 type Wallet = Record<Value, number>;
@@ -19,7 +19,7 @@ const PRICE: Wallet = { 10000: 0, 5000: 0, 1000: 3, 500: 1, 100: 4 }; // 3 900
 const START: Wallet = { 10000: 0, 5000: 1, 1000: 4, 500: 1, 100: 5 };
 const SEAT_LOOK: PawLook[] = ['white', 'orange', 'grey', 'black'];
 const SEAT_TURN = [0, -90, 180, 90];
-const LEN: Record<Value, number> = { 10000: 11, 5000: 10.4, 1000: 9.6, 500: 8.4, 100: 6.4 };
+const LEN: Record<Value, number> = { 10000: STICK_LENGTH, 5000: STICK_LENGTH, 1000: STICK_LENGTH, 500: STICK_LENGTH, 100: STICK_LENGTH };
 
 const copy = (w: Wallet): Wallet => ({ ...w });
 /** Where a stick lies inside its owner's drawer (own frame: the drawer slides out of the table edge, below your side). */
@@ -158,7 +158,7 @@ export function PointsBoard({ language }: { language: TutorialLanguage }) {
     const stick = (value: Value, x: number, y: number, z: number, hop = 0) => {
       g.add(y * 100 + 80 + z, () => {
         const look = STICK_LOOK[value];
-        const box = g.box(x, y, z + hop, LEN[value], 1.7, 1.1, 0);
+        const box = g.box(x, y, z + hop, LEN[value], STICK_THICK, 1.1, 0);
         box.sides.forEach((face) => g.poly(face.q, look.side, p.ink, g.lw * 1.5));
         g.poly(box.top, look.top, p.ink, g.lw * 1.7);
         g.onQuad(box.top, () => paintStickFace(g, value));

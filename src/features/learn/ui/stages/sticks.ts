@@ -2,32 +2,29 @@ import type { Painter } from './iso3d';
 
 export type StickValue = 100 | 500 | 1000 | 5000 | 10000;
 
-/** One look for every point stick in the lessons: the colours of the drawer on the home table. */
-export const STICK_LOOK: Record<StickValue, { top: string; side: string; dot: string; dots: number; stripes?: boolean }> = {
-  100: { top: '#fffdf6', side: '#d8d6cf', dot: '#23203f', dots: 1, stripes: true },
-  500: { top: '#37a56e', side: '#1f7a4d', dot: '#ffffff', dots: 3 },
-  1000: { top: '#3a66d8', side: '#2447a5', dot: '#ffffff', dots: 5 },
-  5000: { top: '#f2b42c', side: '#c98c14', dot: '#d9701c', dots: 3 },
-  10000: { top: '#e04b45', side: '#b0302c', dot: '#ffffff', dots: 5 },
-};
+type Look = { top: string; side: string; dot: string; r: number; dots: Array<[number, number]> };
+const grid = (us: number[], vs: number[]): Array<[number, number]> => vs.flatMap((v) => us.map((u): [number, number] => [u, v]));
 
-/** Paints a stick's top face: the dots along its middle, and two stripes on the plain white one. */
+/** One look for every point stick: the drawer's colours, the same size for all, only the colour and the dots change. */
+export const STICK_LOOK: Record<StickValue, Look> = {
+  10000: { top: '#e85a52', side: '#b0302c', dot: '#ffffff', r: 2.1, dots: [[0.5, 0.5], [0.34, 0.5], [0.42, 0.5], [0.58, 0.5], [0.66, 0.5], [0.45, 0.3], [0.55, 0.3], [0.45, 0.7], [0.55, 0.7]] },
+  5000: { top: '#f6c340', side: '#c98c14', dot: '#d9331f', r: 2.4, dots: [[0.46, 0.3], [0.54, 0.3], [0.5, 0.5], [0.46, 0.7], [0.54, 0.7]] },
+  1000: { top: '#4a78e8', side: '#2447a5', dot: '#ffffff', r: 3.2, dots: [[0.5, 0.5]] },
+  500: { top: '#2fae86', side: '#1c7a5c', dot: '#ffffff', r: 1.9, dots: grid([0.4, 0.47, 0.54, 0.61], [0.32, 0.68]) },
+  100: { top: '#fffdf6', side: '#cfcbbf', dot: '#23203f', r: 1.9, dots: grid([0.4, 0.47, 0.54, 0.61], [0.32, 0.68]) },
+};
+export const STICK_VALUES: StickValue[] = [10000, 5000, 1000, 500, 100];
+export const STICK_LENGTH = 10;
+export const STICK_THICK = 1.8;
+
+/** Paints a stick's top face: its dots, sized so they stay round on the stretched face. */
 export function paintStickFace(g: Painter, value: StickValue) {
   const look = STICK_LOOK[value];
   const ctx = g.ctx;
-  if (look.stripes) {
-    ctx.strokeStyle = look.dot;
-    ctx.lineWidth = 0.09;
-    ctx.beginPath();
-    ctx.moveTo(0.08, 0.2); ctx.lineTo(0.92, 0.2);
-    ctx.moveTo(0.08, 0.8); ctx.lineTo(0.92, 0.8);
-    ctx.stroke();
-  }
   ctx.fillStyle = look.dot;
-  for (let i = 0; i < look.dots; i += 1) {
-    const x = look.dots === 1 ? 0.5 : 0.22 + (0.56 * i) / (look.dots - 1);
+  look.dots.forEach(([u, v]) => {
     ctx.beginPath();
-    ctx.ellipse(x, 0.5, 0.032, 0.2, 0, 0, Math.PI * 2);
+    ctx.ellipse(u, v, look.r / 150, look.r / 28, 0, 0, Math.PI * 2);
     ctx.fill();
-  }
+  });
 }

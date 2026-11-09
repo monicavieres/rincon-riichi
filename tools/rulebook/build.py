@@ -30,20 +30,8 @@ def tiles(spec, cls=""):
         out.append(f'<img class="{c}" src="{TILES}/{code}.svg" alt="{code}">')
     return f'<span class="tiles {cls}">' + "".join(out) + "</span>"
 
-STICK = {
-    100: ("#fffdf6", "#23203f", 1, True),
-    500: ("#37a56e", "#ffffff", 3, False),
-    1000: ("#3a66d8", "#ffffff", 5, False),
-    5000: ("#f2b42c", "#d9701c", 3, False),
-    10000: ("#e04b45", "#ffffff", 5, False),
-}
-LEN = {100: 64, 500: 84, 1000: 96, 5000: 104, 10000: 112}
-def stick(value):
-    top, dot, n, stripes = STICK[value]
-    w = LEN[value]
-    dots = "".join(f'<ellipse cx="{(w*0.22 + (w*0.56*i/(n-1) if n>1 else w*0.28)):.1f}" cy="11" rx="2.6" ry="4.6" fill="{dot}"/>' for i in range(n))
-    bars = f'<path d="M6 5H{w-6}M6 17H{w-6}" stroke="#23203f" stroke-width="2"/>' if stripes else ""
-    return (f'<svg class="stick" viewBox="0 0 {w} 22" width="{w*0.62:.0f}" height="14"><rect x="1.5" y="1.5" width="{w-3}" height="19" rx="5" fill="{top}" stroke="#23203f" stroke-width="2.6"/>{bars}{dots}</svg>')
+sys.path.insert(0, str(pathlib.Path(__file__).parent))
+from stick_svg import stick
 
 def sticks(counts):
     return "".join(stick(v) for v, n in counts for _ in range(n))
@@ -288,7 +276,7 @@ page(f'''
 <div class="srow">{stick(5000)}<b>5 000</b><span>{tr("amarillo", "yellow", "amarelo")}</span></div>
 <div class="srow">{stick(1000)}<b>1 000</b><span>{tr("azul", "blue", "azul")}</span></div>
 <div class="srow">{stick(500)}<b>500</b><span>{tr("verde", "green", "verde")}</span></div>
-<div class="srow">{stick(100)}<b>100</b><span>{tr("blanco con rayas", "white with stripes", "branco com listras")}</span></div>
+<div class="srow">{stick(100)}<b>100</b><span>{tr("blanco", "white", "branco")}</span></div>
 </div>
 <h3>{tr("Contar la mano", "Counting the hand", "Contar a mão")}</h3>
 <p>{tr("Al ganar se cuenta el valor de la mano con <b>han</b> (yaku y dora) y <b>fu</b> (minipuntos). Juntos dan los puntos; en la sección de puntajes del sitio hay tablas completas.", "When you win, the hand’s value is counted with <b>han</b> (yaku and dora) and <b>fu</b> (mini points). Together they give the points; the site’s scoring section has full tables.", "Ao ganhar, conta-se o valor da mão com <b>han</b> (yaku e dora) e <b>fu</b> (minipontos). Juntos dão os pontos; na seção de pontuação do site há tabelas completas.")}</p>
@@ -407,8 +395,8 @@ p { margin: 0 0 7pt } ul, ol { margin: 0 0 7pt }
 .tcard.wide { text-align: left } .two { display: flex; gap: 8pt; margin: 6pt 0 }
 .sum { text-align: center; font-size: 17pt; font-family: Cochin, Georgia, serif; margin: 2pt 0 } .sum b { color: #a8322b }
 /* sticks */
-.sticks { display: grid; gap: 3pt; margin: 4pt 0 } .srow { display: grid; grid-template-columns: 1.6in 0.8in 1fr; align-items: center; gap: 8pt; font-size: 9.6pt } .srow b { text-align: right; font-size: 11pt } .srow span { font-style: italic; color: #6b5b3a } .stick { display: block }
-.pay { display: flex; align-items: center; justify-content: center; gap: 8pt; font-size: 8.8pt } .pg { display: flex; flex-direction: column; align-items: center; gap: 2pt } .pg > div { display: flex; flex-direction: column; gap: 2.5pt; align-items: flex-start } .pay > b { font-family: Cochin, Georgia, serif; font-size: 16pt; color: #4a3a8c } .pay .tot { color: #a8322b }
+.sticks { display: grid; gap: 3pt; margin: 4pt 0 } .srow { display: grid; grid-template-columns: 1.6in 0.8in 1fr; align-items: center; gap: 8pt; font-size: 9.6pt } .srow b { text-align: right; font-size: 11pt } .srow span { font-style: italic; color: #6b5b3a } .stick { display: block } .sticks .stick { width: 1.5in; height: auto } .pay .stick { width: .9in; height: auto }
+.pay { display: flex; align-items: center; justify-content: center; gap: 8pt; font-size: 8.8pt } .pg { display: flex; flex-direction: column; align-items: center; gap: 2pt } .pg > div { display: flex; flex-direction: column; gap: 2.5pt; align-items: flex-start } .pay > b { white-space: nowrap; font-family: Cochin, Georgia, serif; font-size: 16pt; color: #4a3a8c } .pay .tot { color: #a8322b }
 /* rounds */
 .rounds { display: flex; gap: 10pt; justify-content: center; margin: 6pt 0 } .rcard { display: flex; align-items: center; gap: 7pt; padding: 6pt 10pt; border: 1pt solid #4a3a8c; border-radius: 12pt; background: rgba(255,255,255,.55) } .plate { display: grid; place-items: center; width: 24pt; height: 17pt; border: 1.4pt solid #2b2540; border-radius: 4pt; background: #f08a30; color: #fff6e5; font: 700 13pt 'Hiragino Mincho ProN', serif } .hands { display: flex; gap: 2pt } .hands i { display: grid; place-items: center; width: 13pt; height: 13pt; border-radius: 3pt; background: #f2b42c; font-style: normal; font-size: 8pt; font-weight: 700 }
 .podium { display: flex; gap: 8pt; align-items: center; margin-top: 8pt; padding: 7pt 10pt; border: 1.4pt solid #2b2540; border-radius: 10pt; background: #f9d77a } .podium span { font-size: 22pt } .podium p { margin: 0 }

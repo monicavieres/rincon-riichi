@@ -1684,39 +1684,14 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .stick-row b { margin-left: auto; font: 800 max(13px, 2cqw) / 1 var(--font-sans); }
 .stick-row small { font: 700 max(11px, 1.6cqw) / 1 var(--font-sans); margin-left: 8px; }
 .stick-sum { display: grid; gap: 6px; justify-items: start; }
-.point-stick { display: flex; align-items: center; justify-content: space-evenly; flex: none; height: max(12px, 1.9cqw); max-width: 86px; border: 2px solid var(--ink, #23203f); border-radius: 6px; background: #fbf7ec; box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25); }
-.point-stick i { display: block; border-radius: 50%; background: #222; width: 5px; height: 5px; }
-.point-stick.s500 i { background: #2d63c8; }
-.point-stick.s1000 i { background: #d6322b; width: 8px; height: 8px; }
-.point-stick.s5000 { background: #f9cbc2; }
-.point-stick.s5000 i { background: #8a1f2a; }
-.point-stick.s10000 { background: #fbe08a; }
-.point-stick.s10000 i { background: #8a1f2a; width: 9px; height: 9px; }
-.intro-row.is-big .point-stick { max-width: none; }
-.point-stick { max-width: 210px; height: max(16px, 2.8cqw); }
-.point-stick i { width: 6px; height: 6px; }
-.point-stick.s1000 i { width: 10px; height: 10px; }
-.point-stick.s10000 i { width: 11px; height: 11px; }
-.stick-list { width: min(72%, 400px); }
+.intro-row.is-big .stick-list { width: min(72%, 400px); }
 .stick-row { justify-content: space-between; }
-.stick-row .point-stick { flex: 1 1 auto; }
-.stick-row b { margin-left: 0; min-width: 4.5em; text-align: right; }
-.stick-sum .stick-row .point-stick { flex: none; width: max(46px, 7cqw) !important; }
-.stick-sum .stick-row small { white-space: nowrap; }
+.stick-row .stick-row b { margin-left: 0; min-width: 4.5em; text-align: right; }
+.stick-sum .stick-row .stick-sum .stick-row small { white-space: nowrap; }
 .stick-sum { gap: 8px; }
-.intro-row.is-big .point-stick { width: max(60px, 14cqw) !important; flex: none; }
-.intro-row.is-big { flex-wrap: wrap; gap: 10px; }
+.intro-row.is-big .intro-row.is-big { flex-wrap: wrap; gap: 10px; }
 
 /* Point sticks in the colours of the home table drawer */
-.point-stick { border: 2.5px solid #23203f; border-radius: 5px; box-shadow: 0 3px 0 #23203f; background: #fffdf6; }
-.point-stick i { background: #23203f; width: 5px; height: 10px; border-radius: 50%; }
-.point-stick.s100 { background: repeating-linear-gradient(#fffdf6 0 28%, #23203f 28% 36%, #fffdf6 36% 64%, #23203f 64% 72%, #fffdf6 72% 100%); }
-.point-stick.s500 { background: #37a56e; }
-.point-stick.s500 i, .point-stick.s1000 i, .point-stick.s10000 i { background: #fff; width: 5px; height: 10px; }
-.point-stick.s1000 { background: #3a66d8; }
-.point-stick.s5000 { background: #f2b42c; }
-.point-stick.s5000 i { background: #d9701c; width: 5px; height: 10px; }
-.point-stick.s10000 { background: #e04b45; }
 .score-flow { display: grid; gap: clamp(8px, 1.6cqw, 14px); justify-items: center; width: min(84%, 440px); }
 .score-hands { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
 .score-hands span { padding: 3px 10px; border: 2px solid rgba(255, 255, 255, 0.7); border-radius: 99px; background: rgba(255, 255, 255, 0.12); font: 800 max(10px, 1.4cqw) / 1.2 var(--font-sans); text-transform: uppercase; }
@@ -1864,3 +1839,8 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
     .all-tiles { gap: 5px; }
     .intro-slide h3 { margin-top: 0; }
 }
+
+/* Flat point sticks (same size for every value) */
+.stick-svg { display: block; width: min(100%, 190px); height: auto; flex: 1 1 auto; max-width: 190px; }
+.intro-row.is-big .stick-svg { width: max(70px, 15cqw); flex: none; }
+.stick-sum .stick-row .stick-svg { width: max(54px, 8cqw); flex: none; }
