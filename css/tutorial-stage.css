@@ -1842,3 +1842,5 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 }
 .intro-what { gap: 7px; }
 .intro-turns span, .intro-loop span, .intro-flow span { padding: 3px 10px; }
+.intro-what { gap: 5px; }
+.intro-turns span, .intro-loop span, .intro-flow span { font-size: max(10px, 1.3cqw); padding: 2px 9px; }

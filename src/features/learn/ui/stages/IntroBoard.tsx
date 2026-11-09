@@ -30,11 +30,11 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
             <span><b>3</b>{t('Botas una', 'Discard one', 'Descarta uma')}</span>
           </div>
           <div className="intro-flow" aria-hidden="true">
-            <span>{t('Completar la mano', 'Complete your hand', 'Completar a mão')}</span>
+            <span>{t('Completar la mano', 'Complete the hand', 'Completar a mão')}</span>
             <em>→</em>
-            <span>{t('La mano da puntos', 'The hand scores points', 'A mão dá pontos')}</span>
+            <span>{t('Da puntos', 'Scores points', 'Dá pontos')}</span>
             <em>→</em>
-            <span>🏆 {t('Tras varias rondas gana quien tiene más', 'After several rounds, most points wins', 'Após várias rodadas ganha quem tem mais')}</span>
+            <span>🏆 {t('Gana quien tiene más', 'Most points wins', 'Ganha quem tem mais')}</span>
           </div>
         </div>
       ),
