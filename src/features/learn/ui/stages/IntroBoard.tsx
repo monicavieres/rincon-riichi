@@ -36,9 +36,9 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
             <em>→</em>
             <span>🏆 {t('Gana quien tiene más', 'Most points wins', 'Ganha quem tem mais')}</span>
           </div>
+          <p className="intro-note">{t('Como el Carioca o el rummy: sacas una ficha y botas otra hasta completar tu mano.', 'Like rummy: you draw a tile and discard another until your hand is complete.', 'Como o rummy: você compra uma peça e descarta outra até completar a mão.')}</p>
         </div>
       ),
-      note: t('Como el Carioca o el rummy: sacas una ficha y botas otra hasta completar tu mano.', 'Like rummy: you draw a tile and discard another until your hand is complete.', 'Como o rummy: você compra uma peça e descarta outra até completar a mão.'),
     },
     {
       title: t('Mahjong es un juego de mesa que se juega con fichas', 'Mahjong is a table game played with tiles', 'Mahjong é um jogo de mesa jogado com peças'),
