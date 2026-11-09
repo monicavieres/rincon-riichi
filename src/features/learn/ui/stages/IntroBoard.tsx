@@ -41,18 +41,31 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
       ),
     },
     {
-      title: t('Mahjong es un juego de mesa que se juega con fichas', 'Mahjong is a table game played with tiles', 'Mahjong é um jogo de mesa jogado com peças'),
+      title: t('Las 34 clases de ficha', 'The 34 kinds of tile', 'Os 34 tipos de peça'),
       body: (
-        <>
-          <div className="intro-groups">
-            <figure><div className="intro-row">{['1m', '5m', '9m'].map((c) => tile(c))}</div><figcaption>{t('Manzu · números', 'Manzu · numbers', 'Manzu · números')}</figcaption></figure>
-            <figure><div className="intro-row">{['1p', '5p', '9p'].map((c) => tile(c))}</div><figcaption>{t('Pinzu · círculos', 'Pinzu · circles', 'Pinzu · círculos')}</figcaption></figure>
-            <figure><div className="intro-row">{['1s', '5s', '9s'].map((c) => tile(c))}</div><figcaption>{t('Souzu · bambúes', 'Souzu · bamboo', 'Souzu · bambus')}</figcaption></figure>
-            <figure><div className="intro-row">{['1z', '2z', '3z', '4z'].map((c) => tile(c))}</div><figcaption>{t('Vientos', 'Winds', 'Ventos')}</figcaption></figure>
-            <figure><div className="intro-row">{['5z', '6z', '7z'].map((c) => tile(c))}</div><figcaption>{t('Dragones', 'Dragons', 'Dragões')}</figcaption></figure>
+        <div className="all-tiles">
+          <div className="at-suits">
+            {([['m', t('Manzu · números', 'Manzu · numbers', 'Manzu · números')], ['p', t('Pinzu · círculos', 'Pinzu · circles', 'Pinzu · círculos')], ['s', t('Souzu · bambúes', 'Souzu · bamboo', 'Souzu · bambus')]] as const).map(([suit, name]) => (
+              <figure key={suit}><div className="at-row">{[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => tile(`${n}${suit}`, 'sm'))}</div><figcaption>{name} · 1–9</figcaption></figure>
+            ))}
           </div>
-          <p className="intro-note">{t('Hay 34 clases de ficha: tres palos del 1 al 9, 4 vientos y 3 dragones.', 'There are 34 kinds of tile: three suits from 1 to 9, 4 winds and 3 dragons.', 'Há 34 tipos de peça: três naipes de 1 a 9, 4 ventos e 3 dragões.')}</p>
-        </>
+          <div className="at-honors">
+            <p className="at-title">{t('Honores: fichas sin número', 'Honors: tiles with no number', 'Honras: peças sem número')}</p>
+            <figure>
+              <div className="at-row is-named">
+                {([['1z', t('Este', 'East', 'Leste')], ['2z', t('Sur', 'South', 'Sul')], ['3z', t('Oeste', 'West', 'Oeste')], ['4z', t('Norte', 'North', 'Norte')]] as const).map(([c, n]) => <span key={c}>{tile(c, 'sm')}<em>{n}</em></span>)}
+              </div>
+              <figcaption>{t('Vientos', 'Winds', 'Ventos')}</figcaption>
+            </figure>
+            <figure>
+              <div className="at-row is-named">
+                {([['7z', t('Haku · blanco', 'Haku · white', 'Haku · branco')], ['5z', t('Hatsu · verde', 'Hatsu · green', 'Hatsu · verde')], ['6z', t('Chun · rojo', 'Chun · red', 'Chun · vermelho')]] as const).map(([c, n]) => <span key={c}>{tile(c, 'sm')}<em>{n}</em></span>)}
+              </div>
+              <figcaption>{t('Dragones', 'Dragons', 'Dragões')}</figcaption>
+            </figure>
+          </div>
+          <p className="intro-note">{t('27 fichas numeradas (3 palos × 9) + 7 honores (4 vientos y 3 dragones) = 34 clases.', '27 numbered tiles (3 suits × 9) + 7 honors (4 winds and 3 dragons) = 34 kinds.', '27 peças numeradas (3 naipes × 9) + 7 honras (4 ventos e 3 dragões) = 34 tipos.')}</p>
+        </div>
       ),
     },
     {

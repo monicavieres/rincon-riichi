@@ -1844,3 +1844,17 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .intro-turns span, .intro-loop span, .intro-flow span { padding: 3px 10px; }
 .intro-what { gap: 5px; }
 .intro-turns span, .intro-loop span, .intro-flow span { font-size: max(10px, 1.3cqw); padding: 2px 9px; }
+
+/* All 34 tiles: three suits, then honors split into winds and dragons */
+.all-tiles { display: grid; gap: clamp(6px, 1.2cqw, 10px); width: min(96%, 720px); justify-items: center; }
+.at-suits { display: grid; gap: 4px; }
+.at-suits figure, .at-honors figure { margin: 0; display: grid; gap: 2px; justify-items: center; }
+.at-row { display: flex; gap: 2px; justify-content: center; }
+.at-row .intro-tile.sm { width: max(17px, 3.1cqw); }
+.at-row.is-named { gap: clamp(4px, 1cqw, 10px); }
+.at-row.is-named span { display: grid; justify-items: center; gap: 1px; }
+.at-row.is-named em { font: 700 max(8px, 1.15cqw) / 1.1 var(--font-sans); font-style: normal; text-transform: uppercase; letter-spacing: 0.03em; }
+.at-suits figcaption, .at-honors figcaption { font: 800 max(8px, 1.15cqw) / 1 var(--font-sans); text-transform: uppercase; letter-spacing: 0.06em; color: #ffe27a; }
+.at-honors { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 6px clamp(14px, 3cqw, 28px); padding: 6px 10px 4px; border: 2px dashed rgba(255, 255, 255, 0.6); border-radius: 12px; position: relative; }
+.at-title { position: absolute; top: -9px; left: 12px; margin: 0; padding: 0 8px; background: #2a8f72; font: 800 max(9px, 1.25cqw) / 1 var(--font-sans); text-transform: uppercase; letter-spacing: 0.06em; }
+@media (max-width: 760px) { .at-row .intro-tile.sm { width: 8.6vw; max-width: 28px; } }

@@ -308,6 +308,10 @@ const translations = {
                 title: "Guía en PDF",
                 desc: "Aprende a jugar paso a paso: la mesa, las fichas, tu turno, ganar y los puntos. Descarga lista para imprimir."
             },
+            onepager: {
+                title: "Guía rápida de 1 página",
+                desc: "Riichi Mahjong en 5 minutos: una hoja horizontal para imprimir y enseñar a alguien en convenciones o en casa."
+            },
             communities: {
                 title: "Comunidades",
                 desc: "Foros, Discord y clubes de mahjong de distintos países."
@@ -627,6 +631,10 @@ const translations = {
                 title: "PDF guide",
                 desc: "Learn to play step by step: the table, the tiles, your turn, winning and scoring. Print-ready download (in Spanish)."
             },
+            onepager: {
+                title: "1-page quick guide",
+                desc: "Riichi Mahjong in 5 minutes: a landscape sheet to print and teach someone at conventions or at home (in Spanish)."
+            },
             communities: {
                 title: "Communities",
                 desc: "Forums, Discord servers and mahjong clubs around the world."
@@ -926,6 +934,10 @@ const translations = {
             guide: {
                 title: "Guia em PDF",
                 desc: "Aprenda a jogar passo a passo: a mesa, as peças, a sua vez, ganhar e pontuar. Download pronto para imprimir (em espanhol)."
+            },
+            onepager: {
+                title: "Guia rápido de 1 página",
+                desc: "Riichi Mahjong em 5 minutos: uma folha horizontal para imprimir e ensinar alguém em convenções ou em casa (em espanhol)."
             },
             communities: {
                 title: "Comunidades",
