@@ -1785,3 +1785,7 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
     .guide-vocab > div { grid-template-columns: 1fr; }
     .home-hero { padding: 16px; }
 }
+@media (max-width: 760px) {
+    .deck-actions { top: 62px !important; right: 2% !important; }
+    .win-shout { transform: scale(0.8); transform-origin: top center; }
+}
