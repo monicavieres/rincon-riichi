@@ -15,7 +15,7 @@
 
   // Face-down tiles: each theme has its own back with its emblem; the light theme keeps the Rincón back.
   const TILE_BACK = /assets\/tile-back-[a-z]+\.svg/;
-  const backFor = (theme) => `assets/tile-back-${THEME_TILES[theme] ? theme : "rincon"}.svg`;
+  const backFor = (theme) => `assets/tile-back-${THEME_TILES[theme] ? theme : "default"}.svg`;
 
   const syncTile = (img) => {
     const src = img.getAttribute("src") || "";

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { TableStage, ZoneThumb } from '../../../shared/ui/TableStage';
 import { localize, type LocalizedText, type TutorialLanguage } from '../domain/tutorialContent';
 import { GLOSSARY, glossaryIdFor } from '../domain/glossary';
+import { docHref } from '../../../shared/docs';
 import { stepSubtitles, tutorialParts, tutorialStops, type TutorialStop } from '../domain/tutorialStage';
 import { RackStage } from './stages/RackStage';
 import { GoalBoard, SticksBoard } from './stages/ConceptBoards';
@@ -485,8 +486,8 @@ export function TutorialWorkspace() {
               <div className="yaku-controls finish-buttons">
                 <a className="sort-button is-primary" href="../index.html#practicar">{t(L('Practicar', 'Practise', 'Praticar'))} →</a>
                 <a className="sort-button is-primary" href="../index.html#aprender">{t(L('Aprender', 'Learn', 'Aprender'))} →</a>
-                <a className="sort-button" href="../assets/docs/aprende-riichi-mahjong-es.pdf" download="Aprende-a-jugar-Riichi-Mahjong.pdf">↓ {t(L('Guía en PDF', 'PDF guide (Spanish)', 'Guia em PDF (espanhol)'))}</a>
-                <a className="sort-button" href="../assets/docs/guia-rapida-riichi-mahjong-es.pdf" download="Guia-rapida-Riichi-Mahjong.pdf">↓ {t(L('Guía de 1 página', '1-page guide (Spanish)', 'Guia de 1 página (espanhol)'))}</a>
+                <a className="sort-button" href={docHref('guide', language, '../')} download>↓ {t(L('Guía completa (PDF)', 'Full guide (PDF)', 'Guia completo (PDF)'))}</a>
+                <a className="sort-button" href={docHref('quick', language, '../')} download>↓ {t(L('Guía rápida para imprimir', 'Quick guide to print', 'Guia rápido para imprimir'))}</a>
               </div>
             )}
             {spec.kind === 'deck' && spec.mode === 'hand' && (

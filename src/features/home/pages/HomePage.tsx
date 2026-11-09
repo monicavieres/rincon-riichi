@@ -3,6 +3,7 @@ import { SoftBackground } from '../../../shared/ui/SoftBackground';
 import { learnModules, practiceModules } from '../domain/moduleCatalog';
 import { ModuleGrid } from '../ui/ModuleGrid';
 import { ThemedArt } from '../../../shared/ui/TableStage';
+import { docHref, LANGUAGES, type DocKind } from '../../../shared/docs';
 import { pick, useLanguage } from '../../../shared/i18n/useLanguage';
 
 const hero = {
@@ -16,6 +17,36 @@ const hero = {
   start: { es: 'Empezar el tutorial', en: 'Start the tutorial', pt: 'Começar o tutorial' },
   practice: { es: 'Ir a practicar', en: 'Go practise', pt: 'Ir praticar' },
 };
+
+const downloads: Record<DocKind, { title: Record<'es' | 'en' | 'pt', string>; desc: Record<'es' | 'en' | 'pt', string>; name: Record<'es' | 'en' | 'pt', string> }> = {
+  guide: {
+    title: { es: 'Guía completa en PDF', en: 'Full PDF guide', pt: 'Guia completo em PDF' },
+    desc: { es: 'Aprende a jugar paso a paso: la mesa, las fichas, tu turno, ganar y los puntos. Con diccionario clicable.', en: 'Learn to play step by step: the table, the tiles, your turn, winning and scoring. With a clickable dictionary.', pt: 'Aprenda a jogar passo a passo: a mesa, as peças, a sua vez, ganhar e pontuar. Com dicionário clicável.' },
+    name: { es: 'Aprende-a-jugar-Riichi-Mahjong.pdf', en: 'Learn-to-play-Riichi-Mahjong.pdf', pt: 'Aprenda-a-jogar-Riichi-Mahjong.pdf' },
+  },
+  quick: {
+    title: { es: 'Guía rápida para imprimir', en: 'Quick guide to print', pt: 'Guia rápido para imprimir' },
+    desc: { es: 'Una hoja horizontal de dos caras: la 1 para sentarse a jugar, la 2 con las reglas que se suman después.', en: 'A landscape sheet with two sides: side 1 to sit down and play, side 2 with the rules that come next.', pt: 'Uma folha horizontal de dois lados: o 1 para sentar e jogar, o 2 com as regras que vêm depois.' },
+    name: { es: 'Guia-rapida-Riichi-Mahjong.pdf', en: 'Quick-guide-Riichi-Mahjong.pdf', pt: 'Guia-rapido-Riichi-Mahjong.pdf' },
+  },
+};
+
+function DownloadCard({ kind }: { kind: DocKind }) {
+  const language = useLanguage();
+  const doc = downloads[kind];
+  return (
+    <div className="resource-card download-card">
+      <span className="module-icon icon-guia" aria-hidden="true" />
+      <h3>{doc.title[language]}</h3>
+      <p>{doc.desc[language]}</p>
+      <div className="download-links">
+        {[language, ...LANGUAGES.filter((item) => item !== language)].map((item) => (
+          <a key={item} className={item === language ? 'is-main' : ''} href={docHref(kind, item)} download={downloads[kind].name[item]}>↓ {item.toUpperCase()}</a>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function HomeHero() {
   const language = useLanguage();
@@ -48,8 +79,8 @@ export function HomePage() {
         <ModuleGrid modules={practiceModules} className="minigame-grid" />
         <section className="section-heading" id="recursos" data-home-section><h2 data-i18n="resources.title">Recursos y relacionados</h2><p data-i18n="resources.subtitle">Fuentes, comunidades y lugares para seguir aprendiendo.</p></section>
         <section className="module-grid resources-grid" aria-label="Recursos externos">
-          <a className="resource-card" href="assets/docs/aprende-riichi-mahjong-es.pdf" download="Aprende-a-jugar-Riichi-Mahjong.pdf"><span className="module-icon icon-guia" aria-hidden="true" /><h3 data-i18n="resources.guide.title">Guía en PDF</h3><p data-i18n="resources.guide.desc">Aprende a jugar paso a paso. Descarga lista para imprimir.</p><span className="card-arrow">↓</span></a>
-          <a className="resource-card" href="assets/docs/guia-rapida-riichi-mahjong-es.pdf" download="Guia-rapida-Riichi-Mahjong.pdf"><span className="module-icon icon-guia" aria-hidden="true" /><h3 data-i18n="resources.onepager.title">Guía rápida de 1 página</h3><p data-i18n="resources.onepager.desc">Cómo se juega, en una hoja para imprimir.</p><span className="card-arrow">↓</span></a>
+          <DownloadCard kind="guide" />
+          <DownloadCard kind="quick" />
           <a className="resource-card" href="recursos/fuentes.html"><span className="module-icon icon-fuentes" aria-hidden="true" /><h3 data-i18n="resources.credits.title">Fuentes y créditos</h3><p data-i18n="resources.credits.desc">Fuentes y datos usados en el sitio.</p><span className="card-arrow">→</span></a>
           <a className="resource-card" href="recursos/comunidades.html"><span className="module-icon icon-comunidades" aria-hidden="true" /><h3 data-i18n="resources.communities.title">Comunidades</h3><p data-i18n="resources.communities.desc">Foros, Discord y clubes.</p><span className="card-arrow">→</span></a>
           <a className="resource-card" href="recursos/jugar.html"><span className="module-icon icon-jugar" aria-hidden="true" /><h3 data-i18n="resources.play.title">Jugar online</h3><p data-i18n="resources.play.desc">Servidores y clientes de Riichi.</p><span className="card-arrow">→</span></a>

@@ -419,7 +419,7 @@ function tileImage(tile) {
     if (typeof tile !== "string" && tile.back) tileWrap.classList.add("is-back");
 
     const img = document.createElement("img");
-    img.src = tileId === "back" ? "../assets/tile-back-rincon.svg" : `${tileBasePath}${tileId}.svg`;
+    img.src = tileId === "back" ? "../assets/tile-back-default.svg" : `${tileBasePath}${tileId}.svg`;
     img.alt = tileId;
     tileWrap.append(img);
     return tileWrap;

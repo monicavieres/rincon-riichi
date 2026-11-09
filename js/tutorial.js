@@ -3,7 +3,7 @@
   const supportedLanguages = ["es", "en", "pt"];
   const languageStorageKey = "rincon-riichi-language";
   const tileBasePath = "../assets/tiles-fluffystuff-composite/";
-  const tileBack = "../assets/tile-back-rincon.svg";
+  const tileBack = "../assets/tile-back-default.svg";
 
   const steps = [
     {

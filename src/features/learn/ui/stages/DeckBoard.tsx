@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { FELT_Z, IsoCanvas, TILE_T, type IsoHandle, type Painter } from './iso3d';
 
-export const TILE_BACK = '../assets/tile-back-rincon.svg';
+export const TILE_BACK = '../assets/tile-back-default.svg';
 export const DECK_SIZE = 136;
 export const SIDE_SIZE = 34;
 

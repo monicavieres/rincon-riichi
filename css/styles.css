@@ -2523,3 +2523,10 @@ a {
         width: 0.3rem;
     }
 }
+
+/* Downloadable guides: one card per document, one button per language */
+.download-card { display: flex; flex-direction: column; gap: 6px; cursor: default; }
+.download-card .download-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 6px; }
+.download-card .download-links a { padding: 4px 12px; border: 2px solid var(--ink, #23203f); border-radius: 99px; background: var(--card, #fff); color: var(--ink, #23203f); font: 800 12px / 1.2 var(--font-sans, inherit); text-decoration: none; box-shadow: 0 2px 0 var(--ink, #23203f); }
+.download-card .download-links a.is-main { background: var(--gold, #f2b42c); }
+.download-card .download-links a:hover { transform: translateY(-1px); }
