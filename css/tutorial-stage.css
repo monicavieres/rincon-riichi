@@ -1936,3 +1936,7 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .pt-gl-grid p { margin: 0; font: 500 clamp(11px, 1.9vmin, 16px) / 1.3 Palatino, Georgia, serif; } .pt-gl-grid b { font-weight: 800; }
 .pt-plate.is-static { position: static; width: clamp(40px, 8vmin, 64px); }
 @media (max-width: 760px) { .pt-gl-grid { grid-template-columns: repeat(2, 1fr); gap: 6px 10px; } .pt-gl-pic { min-height: 30px; } .pt-gl-pic img { height: 30px; } .pt-gl-grid p { font-size: 10px; } }
+
+.play-hand.is-hidden { display: none; }
+.pt-compass { width: clamp(70px, 12vmin, 120px); border: 0; background: transparent; text-shadow: none; }
+.pt-compass img { display: block; width: 100%; height: auto; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.35)); }

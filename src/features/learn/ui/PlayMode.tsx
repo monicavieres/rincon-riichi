@@ -20,6 +20,9 @@ const ME = { fur: '#fff6e5', shade: '#e3d2b4', eye: '#2b2540', name: { es: 'Niev
 const WIND_CHAR = ['東', '南', '西', '北'];
 const WIND_NAME = { es: ['Este', 'Sur', 'Oeste', 'Norte'], en: ['East', 'South', 'West', 'North'], pt: ['Leste', 'Sul', 'Oeste', 'Norte'] };
 
+const THEMES = ['light', 'dark', 'cute', 'samurai', 'cyberpunk', 'vaquero', 'frutiger', 'fox'];
+const themeNow = () => { const theme = document.documentElement.getAttribute('data-theme') || 'light'; return THEMES.includes(theme) ? theme : 'light'; };
+
 function CatFace({ fur, shade, eye }: { fur: string; shade: string; eye: string }) {
   return (
     <svg className="pt-cat" viewBox="0 0 64 56" aria-hidden="true">
@@ -193,7 +196,7 @@ export function PlayMode({ language, onClose }: { language: TutorialLanguage; on
                 {phase === 'draw' && <strong>{t('↑ Toca para robar', '↑ Tap to draw', '↑ Toque para comprar')}</strong>}
               </button>
               <div className={`pt-compass${phase === 'tour' && tour === 1 ? ' is-spot' : ''}`} aria-label="compass">
-                <span className="w-s">{WIND_CHAR[1]}</span><span className="w-w">{WIND_CHAR[2]}</span><span className="w-n">{WIND_CHAR[3]}</span><span className="w-e">{WIND_CHAR[0]}</span><i>✦</i>
+                <img src={`../assets/illustrations/consola-top-${themeNow()}.svg`} alt="" />
               </div>
               <div className="pt-inner">
                 {coach && !(phase === 'tour' && tour === 0) && (
@@ -235,7 +238,7 @@ export function PlayMode({ language, onClose }: { language: TutorialLanguage; on
             )}
           </div>
 
-          <div className={`play-hand${phase === 'won' ? ' is-won' : ''}`}>
+          <div className={`play-hand${phase === 'won' ? ' is-won' : ''}${phase === 'tour' ? ' is-hidden' : ''}`}>
             {finalHand
               ? finalHand.map((p) => <img key={p.id} className={p.id === drawn?.id ? 'is-drawn' : ''} src={tileSrc(p.code)} alt={p.code} />)
               : (
