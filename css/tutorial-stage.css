@@ -1940,3 +1940,17 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .play-hand.is-hidden { display: none; }
 .pt-compass { width: clamp(70px, 12vmin, 120px); border: 0; background: transparent; text-shadow: none; }
 .pt-compass img { display: block; width: 100%; height: auto; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.35)); }
+
+/* Piece close-ups */
+.pt-gl-grid > div.is-click { cursor: pointer; padding: 6px; border-radius: 12px; transition: background 0.15s ease, transform 0.15s ease; }
+.pt-gl-grid > div.is-click:hover, .pt-gl-grid > div.is-click:focus-visible { background: rgba(74, 58, 140, 0.1); transform: translateY(-2px); outline: none; }
+.pt-gl-grid em { font: 800 11px / 1 var(--font-sans); font-style: normal; text-transform: uppercase; letter-spacing: 0.06em; color: #4a3a8c; }
+.pt-detail { position: absolute; inset: 0; z-index: 2; display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto; gap: 10px; justify-items: center; padding: 14px 18px; background: #f1e4c6; border-radius: 14px; overflow: auto; }
+.pt-detail h4 { margin: 0; font: 400 clamp(22px, 4vmin, 36px) / 1 Cochin, 'Hoefler Text', Georgia, serif; color: #4a3a8c; }
+.pt-detail-pic { display: grid; gap: 6px; justify-items: center; align-content: center; min-height: 0; }
+.pt-big-row { display: flex; gap: 3px; } .pt-big-row img { width: clamp(20px, 5.6vmin, 50px); height: auto; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3)); }
+.pt-big-img { width: clamp(120px, 30vmin, 260px); height: auto; }
+.pt-plate.is-huge { width: clamp(90px, 20vmin, 170px); font-size: clamp(40px, 9vmin, 80px); border-width: 4px; border-radius: 10px; }
+.pt-big-sticks { display: grid; gap: 4px; } .pt-big-sticks > span { display: flex; align-items: center; gap: 12px; } .pt-big-sticks .stick-svg { width: clamp(120px, 24vmin, 220px); } .pt-big-sticks b { font: 800 clamp(13px, 2.4vmin, 20px) / 1 var(--font-sans); min-width: 4.5em; }
+.pt-detail ul { margin: 0; padding: 0 0 0 18px; width: min(100%, 680px); display: grid; gap: 4px; font: 500 clamp(12px, 2vmin, 17px) / 1.35 Palatino, Georgia, serif; }
+.pt-detail-nav { display: flex; gap: 8px; }
