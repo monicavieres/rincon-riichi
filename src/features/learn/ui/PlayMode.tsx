@@ -200,7 +200,7 @@ export function PlayMode({ language, onClose }: { language: TutorialLanguage; on
                     <b>{coach.title}</b>
                     <p>{coach.body}</p>
                     {phase === 'draw' && waitsText && draws > 0 && <p className="play-wait">{t('Te sirve:', 'You need:', 'Você precisa de:')} {waits.map((code) => <img key={code} src={tileSrc(code)} alt={code} />)}</p>}
-                    {coach.button && <button type="button" className="sort-button is-primary" onClick={() => { if (phase === 'tour' && tour < 3) setTour(tour + 1); else { seenTour.current = true; setPhase(phase === 'tour' ? 'intro' : 'draw'); } }}>{coach.button} →</button>}
+                    {'button' in coach && <button type="button" className="sort-button is-primary" onClick={() => { if (phase === 'tour' && tour < 3) setTour(tour + 1); else { seenTour.current = true; setPhase(phase === 'tour' ? 'intro' : 'draw'); } }}>{(coach as { button: string }).button} →</button>}
                     {phase === 'choose' && <button type="button" className="sort-button" onClick={() => setHint(true)}>{t('Pista', 'Hint', 'Dica')}</button>}
                     {phase === 'won' && (
                       <div className="play-end">
