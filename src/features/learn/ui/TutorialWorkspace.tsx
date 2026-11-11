@@ -458,7 +458,6 @@ export function TutorialWorkspace() {
             <span>{t(UI.step)} {index + 1} {t(UI.of)} {tutorialStops.length} · {t(UI.arrows)}</span>
             <button type="button" onClick={() => open(index + 1)} aria-label={t(UI.next)} disabled={index === tutorialStops.length - 1}>→</button>
             <i aria-hidden="true" />
-            <button type="button" className="play-open" onClick={() => setPlay(true)} aria-label={t(UI.play)} title={t(UI.play)}>🎮</button>
             <button type="button" className={`help-open${helpSeen.has(stop.id) ? '' : ' is-nudge'}`} onClick={() => { setHelp(true); setHelpSeen((now) => new Set(now).add(stop.id)); }} aria-label={t(UI.howTo)} title={t(UI.howTo)}>?</button>
             <button type="button" className="glossary-open" onClick={() => setGlossary({ focus: null })} aria-label={t(UI.glossary)} title={t(UI.glossary)}>📖</button>
             <button
@@ -488,7 +487,6 @@ export function TutorialWorkspace() {
             {stop.id === 'rounds' && <div id="rounds-controls" className="yaku-controls" />}
             {stop.id === 'finish' && (
               <div className="yaku-controls finish-buttons">
-                <button type="button" className="sort-button is-primary" onClick={() => setPlay(true)}>🎮 {t(L('Jugar una mano', 'Play a hand', 'Jogar uma mão'))}</button>
                 <a className="sort-button is-primary" href="../index.html#practicar">{t(L('Practicar', 'Practise', 'Praticar'))} →</a>
                 <a className="sort-button is-primary" href="../index.html#aprender">{t(L('Aprender', 'Learn', 'Aprender'))} →</a>
                 <a className="sort-button" href={docHref('guide', language, '../')} download>↓ {t(L('Guía completa (PDF)', 'Full guide (PDF)', 'Guia completo (PDF)'))}</a>

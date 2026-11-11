@@ -59,7 +59,6 @@ function HomeHero() {
         <p className="home-hero-goal">{pick(hero.goal, language)}</p>
         <div className="home-hero-actions">
           <a className="big-button green" href="aprender/tutorial.html">{pick(hero.start, language)}</a>
-          <a className="big-button" href="aprender/tutorial.html?play=1">🎮 {pick(hero.play, language)}</a>
           <a className="big-button pink" href="#practicar">{pick(hero.practice, language)}</a>
         </div>
       </div>
