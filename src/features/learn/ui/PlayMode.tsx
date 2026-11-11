@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { TutorialLanguage } from '../domain/tutorialContent';
+import { StickSvg } from './stages/StickSvg';
 import { ALL_TILES, isComplete, startingHand, toCounts, waitsOf } from '../domain/playRules';
 
 const tileSrc = (code: string) => `../assets/tiles-fluffystuff-composite/${code}.svg`;
@@ -195,7 +196,7 @@ export function PlayMode({ language, onClose }: { language: TutorialLanguage; on
                 <span className="w-s">{WIND_CHAR[1]}</span><span className="w-w">{WIND_CHAR[2]}</span><span className="w-n">{WIND_CHAR[3]}</span><span className="w-e">{WIND_CHAR[0]}</span><i>✦</i>
               </div>
               <div className="pt-inner">
-                {coach && (
+                {coach && !(phase === 'tour' && tour === 0) && (
                   <div className={`play-coach${phase === 'won' ? ' is-won' : ''}`} key={`${phase}-${shake}-${tour}`}>
                     <b>{coach.title}</b>
                     <p>{coach.body}</p>
@@ -219,12 +220,17 @@ export function PlayMode({ language, onClose }: { language: TutorialLanguage; on
             </div>
             <div className="pt-me"><CatFace fur={ME.fur} shade={ME.shade} eye={ME.eye} /><span><b>{ME.name[language]}</b><small>{WIND_CHAR[0]} {WIND_NAME[language][0]} · dealer</small></span></div>
             {phase === 'tour' && tour === 0 && (
-              <div className="pt-tiles-panel">
-                <div className="pt-tiles-grid">
-                  {(['m', 'p', 's'] as const).map((suit) => <div key={suit}>{[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => <img key={n} src={tileSrc(`${n}${suit}`)} alt="" />)}</div>)}
-                  <div>{['1z', '2z', '3z', '4z', '5z', '6z', '7z'].map((c) => <img key={c} src={tileSrc(c)} alt="" />)}</div>
+              <div className="pt-glossary">
+                <h3>{t('Glosario de piezas', 'Piece glossary', 'Glossário de peças')}</h3>
+                <div className="pt-gl-grid">
+                  <div><span className="pt-gl-pic">{['1m', '5p', '9s', '1z'].map((c) => <img key={c} src={tileSrc(c)} alt="" />)}</span><p><b>{t('Fichas', 'Tiles', 'Peças')}</b>{t(', que forman tu mano. Hay 136: 34 clases con 4 copias de cada una.', ', which make up your hand. There are 136: 34 kinds with 4 copies of each.', ', que formam a sua mão. São 136: 34 tipos com 4 cópias de cada.')}</p></div>
+                  <div><span className="pt-gl-pic">{[0, 1, 2].map((i) => <img key={i} src={BACK} alt="" />)}</span><p><b>{t('El muro', 'The wall', 'O muro')}</b>{t(', las fichas boca abajo de donde se roba, en cuatro lados.', ', the face-down tiles you draw from, in four sides.', ', as peças viradas para baixo de onde se compra, em quatro lados.')}</p></div>
+                  <div><span className="pt-gl-pic"><img className="is-wide" src="../assets/illustrations/consola-top-light.svg" alt="" /></span><p><b>{t('El compass', 'The compass', 'O compass')}</b>{t(', en el centro: muestra el viento de cada asiento y los numeritos de los dados.', ', in the centre: it shows each seat’s wind and the dice numbers.', ', no centro: mostra o vento de cada assento e os números dos dados.')}</p></div>
+                  <div><span className="pt-gl-pic"><span className="pt-plate is-static">{WIND_CHAR[0]}</span></span><p><b>{t('La placa', 'The plate', 'A placa')}</b>{t(', que marca el viento de la ronda; va al borde, a la derecha del dealer.', ', which shows the round wind; it sits at the edge, to the dealer’s right.', ', que marca o vento da rodada; fica na borda, à direita do dealer.')}</p></div>
+                  <div><span className="pt-gl-pic is-sticks">{([10000, 1000, 100] as const).map((v) => <StickSvg key={v} value={v} />)}</span><p><b>{t('Los palitos', 'The sticks', 'Os palitos')}</b>{t(', que llevan los puntos. Cada color vale una cantidad.', ', which carry the points. Each colour is worth an amount.', ', que guardam os pontos. Cada cor vale uma quantia.')}</p></div>
+                  <div><span className="pt-gl-pic"><img className="is-wide" src="../assets/illustrations/dados-light.svg" alt="" /></span><p><b>{t('Los dados', 'The dice', 'Os dados')}</b>{t(', que se tiran al empezar para decidir por dónde se abre el muro.', ', rolled at the start to decide where the wall opens.', ', lançados no início para decidir por onde se abre o muro.')}</p></div>
                 </div>
-                <small>{t('Manzu · Pinzu · Souzu · Honores (vientos y dragones)', 'Manzu · Pinzu · Souzu · Honors (winds and dragons)', 'Manzu · Pinzu · Souzu · Honras (ventos e dragões)')}</small>
+                <button type="button" className="sort-button is-primary" onClick={() => setTour(1)}>{t('Siguiente', 'Next', 'Próximo')} →</button>
               </div>
             )}
           </div>

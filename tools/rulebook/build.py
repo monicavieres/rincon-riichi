@@ -120,10 +120,10 @@ def arrow(cls=""):
     return f'<span class="arr {cls}">➜</span>'
 
 # ---------- cover ----------
-toc = [(tr("Introducción", "Introduction", "Introdução"), 2), (tr("La mesa", "The table", "A mesa"), 3), (tr("Las fichas", "The tiles", "As peças"), 4),
-       (tr("Preparación", "Setup", "Preparação"), 5), (tr("Tu turno", "Your turn", "A sua vez"), 6), (tr("Grupos y mano completa", "Sets and a complete hand", "Grupos e mão completa"), 7),
-       (tr("Llamadas: chii, pon y kan", "Calls: chii, pon and kan", "Chamadas: chii, pon e kan"), 8), (tr("Ganar: ron, tsumo y yaku", "Winning: ron, tsumo and yaku", "Ganhar: ron, tsumo e yaku"), 9),
-       (tr("Puntos y palitos", "Points and sticks", "Pontos e palitos"), 10), (tr("Rondas y fin de partida", "Rounds and the end of the game", "Rodadas e fim da partida"), 11), (tr("Diccionario", "Dictionary", "Dicionário"), 12)]
+toc = [(tr("Introducción", "Introduction", "Introdução"), 2), (tr("La mesa", "The table", "A mesa"), 3), (tr("Glosario de piezas", "Piece glossary", "Glossário de peças"), 4), (tr("Las fichas", "The tiles", "As peças"), 5),
+       (tr("Preparación", "Setup", "Preparação"), 6), (tr("Tu turno", "Your turn", "A sua vez"), 7), (tr("Grupos y mano completa", "Sets and a complete hand", "Grupos e mão completa"), 8),
+       (tr("Llamadas: chii, pon y kan", "Calls: chii, pon and kan", "Chamadas: chii, pon e kan"), 9), (tr("Ganar: ron, tsumo y yaku", "Winning: ron, tsumo and yaku", "Ganhar: ron, tsumo e yaku"), 10),
+       (tr("Puntos y palitos", "Points and sticks", "Pontos e palitos"), 11), (tr("Rondas y fin de partida", "Rounds and the end of the game", "Rodadas e fim da partida"), 12), (tr("Diccionario", "Dictionary", "Dicionário"), 13)]
 toc_html = "".join(f'<li><a href="#p{n}"><span>{t}</span><i></i><b>{n}</b></a></li>' for t, n in toc)
 page(f'''
 <div class="cover-art"><img src="{A}/illustrations/mesa-light.svg" alt=""></div>
@@ -138,9 +138,9 @@ page(f'''
 <p>{tr("Riichi mahjong es un juego de <b>cuatro jugadores</b> que se juega con <b>fichas</b>, parecido al Carioca o al rummy: los jugadores se turnan para <b>sacar una ficha y botar otra</b>, buscando completar su mano. Cada mano da <b>puntos</b> y, al final de varias rondas, <b>gana quien tiene más puntos</b>.",
  "Riichi mahjong is a game for <b>four players</b> played with <b>tiles</b>, a bit like rummy: players take turns to <b>draw a tile and discard another</b>, trying to complete their hand. Each hand scores <b>points</b> and, after several rounds, <b>whoever has the most points wins</b>.",
  "Riichi mahjong é um jogo para <b>quatro jogadores</b> jogado com <b>peças</b>, parecido com o rummy: os jogadores se revezam para <b>comprar uma peça e descartar outra</b>, buscando completar a mão. Cada mão dá <b>pontos</b> e, ao fim de várias rodadas, <b>ganha quem tem mais pontos</b>.")}</p>
-{callout(tr("Si prefieres aprender jugando, revisa «La mesa», «Preparación» y «Tu turno» y empieza: el resto lo puedes consultar sobre la marcha. Las palabras con <u class='dotted'>subrayado punteado</u> se pueden pulsar: llevan a su definición en el Diccionario (páginas 12 y 13).",
- "If you would rather learn by playing, read “The table”, “Setup” and “Your turn” and start: you can look up the rest as you go. Words with a <u class='dotted'>dotted underline</u> can be clicked: they jump to their definition in the Dictionary (pages 12 and 13).",
- "Se preferir aprender jogando, leia «A mesa», «Preparação» e «A sua vez» e comece: o resto você consulta pelo caminho. As palavras com <u class='dotted'>sublinhado pontilhado</u> podem ser clicadas: levam à definição no Dicionário (páginas 12 e 13)."))}
+{callout(tr("Si prefieres aprender jugando, revisa «La mesa», «Preparación» y «Tu turno» y empieza: el resto lo puedes consultar sobre la marcha. Las palabras con <u class='dotted'>subrayado punteado</u> se pueden pulsar: llevan a su definición en el Diccionario (páginas 13 y 14).",
+ "If you would rather learn by playing, read “The table”, “Setup” and “Your turn” and start: you can look up the rest as you go. Words with a <u class='dotted'>dotted underline</u> can be clicked: they jump to their definition in the Dictionary (pages 13 and 14).",
+ "Se preferir aprender jogando, leia «A mesa», «Preparação» e «A sua vez» e comece: o resto você consulta pelo caminho. As palavras com <u class='dotted'>sublinhado pontilhado</u> podem ser clicadas: levam à definição no Dicionário (páginas 13 e 14)."))}
 <h3>{tr("Qué necesitas", "What you need", "O que você precisa")}</h3>
 <ul class="plain"><li>{tr("<b>136 fichas</b>: 34 clases distintas, 4 copias de cada una.", "<b>136 tiles</b>: 34 different kinds, 4 copies of each.", "<b>136 peças</b>: 34 tipos diferentes, 4 cópias de cada.")}</li><li>{tr("Un <b>compass</b> (la pieza del centro) y una <b>placa</b> de viento de ronda.", "A <b>compass</b> (the piece in the centre) and a round-wind <b>plate</b>.", "Um <b>compass</b> (a peça do centro) e uma <b>placa</b> de vento da rodada.")}</li><li>{tr("Dos <b>dados</b> y <b>palitos</b> de puntos de colores.", "Two <b>dice</b> and colour-coded point <b>sticks</b>.", "Dois <b>dados</b> e <b>palitos</b> de pontos coloridos.")}</li><li>{tr("Cuatro jugadores sentados alrededor de una mesa.", "Four players sitting around a table.", "Quatro jogadores sentados ao redor de uma mesa.")}</li></ul>
 <h3>{tr("El objetivo", "The goal", "O objetivo")}</h3>
@@ -173,6 +173,29 @@ page(f'''
 {callout(tr("<b>Asientos y vientos.</b> Cada asiento tiene un viento: Este (tú, el dealer), Sur (a tu derecha), Oeste (enfrente) y Norte (a tu izquierda). Los turnos van en este orden, en sentido antihorario.", "<b>Seats and winds.</b> Each seat has a wind: East (you, the dealer), South (on your right), West (across) and North (on your left). Turns go in this order, counter-clockwise.", "<b>Assentos e ventos.</b> Cada assento tem um vento: Leste (você, o dealer), Sul (à sua direita), Oeste (em frente) e Norte (à sua esquerda). Os turnos seguem nesta ordem, no sentido anti-horário."))}
 ''', 3)
 
+# ---------- 4 Piece glossary ----------
+def piece(pic, term, text):
+    return f'<div class="pcell"><div class="ppic">{pic}</div><p><b>{term}</b>{text}</p></div>'
+BACKT = f"{A}/tile-back-default.svg"
+page(f'''
+<h2 class="center">{tr("Glosario de piezas", "Piece glossary", "Glossário de peças")}</h2>
+<div class="pgrid">
+{piece(tiles("1m 5p 9s 1z"), tr("Fichas", "Tiles", "Peças"), tr(", que forman tu mano. Hay 136: 34 clases con 4 copias de cada una.", ", which make up your hand. There are 136: 34 kinds with 4 copies of each.", ", que formam a sua mão. São 136: 34 tipos com 4 cópias de cada."))}
+{piece('<span class="tiles">' + "".join(f'<img class="tl" src="{BACKT}" alt="">' for _ in range(3)) + '</span>', tr("El muro", "The wall", "O muro"), tr(", las fichas boca abajo de donde se roba. Se arma en cuatro lados de 17 pilas.", ", the face-down tiles you draw from. It is built in four sides of 17 stacks.", ", as peças viradas para baixo de onde se compra. Monta-se em quatro lados de 17 pilhas."))}
+{piece(f'<img class="pwide" src="{A}/illustrations/consola-top-light.svg" alt="">', tr("El compass", "The compass", "O compass"), tr(", en el centro de la mesa: muestra el viento de cada asiento y los numeritos que se usan con los dados.", ", in the centre of the table: it shows each seat’s wind and the small numbers used with the dice.", ", no centro da mesa: mostra o vento de cada assento e os números usados com os dados."))}
+{piece('<span class="plate big">東</span>', tr("La placa", "The plate", "A placa"), tr(", que marca el viento de la ronda. Va en el borde, a la derecha del dealer.", ", which shows the round wind. It sits at the edge, to the dealer’s right.", ", que marca o vento da rodada. Fica na borda, à direita do dealer."))}
+{piece('<span class="pst">' + stick(10000) + stick(1000) + stick(100) + '</span>', tr("Los palitos", "The sticks", "Os palitos"), tr(", que llevan los puntos. Cada color vale una cantidad fija.", ", which carry the points. Each colour is worth a fixed amount.", ", que guardam os pontos. Cada cor vale uma quantia fixa."))}
+{piece(f'<img class="pwide" src="{A}/illustrations/dados-light.svg" alt="">', tr("Los dados", "The dice", "Os dados"), tr(", que se tiran al empezar para decidir por dónde se abre el muro.", ", rolled at the start to decide where the wall is opened.", ", lançados no início para decidir por onde se abre o muro."))}
+</div>
+<div class="example"><span class="ex-title">{tr("Los cuatro asientos", "The four seats", "Os quatro assentos")}</span>
+<div class="seats4">
+<div>{tiles("1z")}<span><b>{tr("Este", "East", "Leste")}</b> {tr("tú, el dealer", "you, the dealer", "você, o dealer")}</span></div>
+<div>{tiles("2z")}<span><b>{tr("Sur", "South", "Sul")}</b> {tr("a tu derecha", "on your right", "à sua direita")}</span></div>
+<div>{tiles("3z")}<span><b>{tr("Oeste", "West", "Oeste")}</b> {tr("enfrente", "across", "em frente")}</span></div>
+<div>{tiles("4z")}<span><b>{tr("Norte", "North", "Norte")}</b> {tr("a tu izquierda", "on your left", "à sua esquerda")}</span></div>
+</div></div>
+''', 4)
+
 # ---------- 4 Tiles ----------
 suit = lambda c: tiles(" ".join(f"{n}{c}" for n in range(1, 10)))
 page(f'''
@@ -189,7 +212,7 @@ page(f'''
 <div class="suitrow"><span class="sn">Aka</span>{tiles("0m 0p 0s")}<span class="cap">{tr("Cada uno vale un bonus", "Each one is worth a bonus", "Cada um vale um bônus")}</span></div>
 {callout(tr("Los cinco rojos (<i>aka</i>) cuentan como un 5 normal, pero cada uno que tengas en tu mano suma <b>1 han</b> (punto de valor) al ganar. Aparecen junto a los demás cincos, no en lugar de ellos.", "The red fives (<i>aka</i>) count as a normal 5, but each one in your hand adds <b>1 han</b> (a value point) when you win. They come along with the other fives, not instead of them.", "Os cincos vermelhos (<i>aka</i>) contam como um 5 normal, mas cada um na sua mão soma <b>1 han</b> (ponto de valor) ao ganhar. Aparecem junto com os outros cincos, não no lugar deles."))}
 {example(tr("Cuatro copias", "Four copies", "Quatro cópias"), f'<div class="hand">{tiles("5p 5p 5p 5p")}</div><p class="ex-note">{tr("Hay cuatro 5 de círculos idénticos: así puedes ir contando cuántos quedan.", "There are four identical 5 of circles: that is how you can keep track of how many are left.", "Há quatro 5 de círculos idênticos: assim você pode contar quantos restam.")}</p>')}
-''', 4)
+''', 5)
 
 # ---------- 5 Setup ----------
 ORD = [tr("1<sup>ª</sup>", "1<sup>st</sup>", "1<sup>º</sup>"), tr("2<sup>ª</sup>", "2<sup>nd</sup>", "2<sup>º</sup>"), tr("3<sup>ª</sup>", "3<sup>rd</sup>", "3<sup>º</sup>"), tr("4<sup>ª</sup>", "4<sup>th</sup>", "4<sup>º</sup>"), tr("5<sup>ª</sup>", "5<sup>th</sup>", "5<sup>º</sup>"), tr("6<sup>ª</sup>", "6<sup>th</sup>", "6<sup>º</sup>")]
@@ -207,7 +230,7 @@ page(f'''
 <img class="compassimg" src="{A}/illustrations/consola-top-light.svg" alt="">
 <div class="side-text">{callout(tr("<b>El muro muerto.</b> Desde el corte se apartan <b>siempre 7 pilas (14 fichas)</b>: son el muro muerto, fuera de juego salvo en ocasiones especiales. Si el corte cae cerca del final de un muro, se sigue contando en el muro de al lado.", "<b>The dead wall.</b> From the cut, <b>always 7 stacks (14 tiles)</b> are put aside: that is the dead wall, out of play except on special occasions. If the cut falls near the end of a wall, the count carries on into the next wall.", "<b>O muro morto.</b> A partir do corte separam-se <b>sempre 7 pilhas (14 peças)</b>: é o muro morto, fora de jogo exceto em ocasiões especiais. Se o corte cai perto do fim de um muro, a contagem continua no muro ao lado."))}
 {callout(tr("<b>La dora.</b> En la 3ª pila del muro muerto se voltea la ficha de arriba: es el <b>indicador de dora</b>. La ficha siguiente a esa vale un bonus para quien la tenga en su mano.", "<b>The dora.</b> On the 3rd stack of the dead wall the top tile is turned face up: that is the <b>dora indicator</b>. The tile that follows it is worth a bonus to whoever holds it.", "<b>A dora.</b> Na 3ª pilha do muro morto vira-se a peça de cima: é o <b>indicador de dora</b>. A peça seguinte a essa vale um bônus para quem a tiver na mão."))}</div></div>
-''', 5)
+''', 6)
 
 # ---------- 6 Turn ----------
 page(f'''
@@ -222,7 +245,7 @@ page(f'''
 <p>{tr("Ordenar sirve para ver tus grupos de un vistazo: junta cada palo (manzu, pinzu, souzu) y deja los honores juntos, con los iguales pegados. Puedes reordenarla como quieras mientras sea fácil ver lo que tienes.", "Sorting lets you see your sets at a glance: keep each suit (manzu, pinzu, souzu) together and the honors together, with identical tiles side by side. You can arrange it however you like as long as it is easy to see what you have.", "Ordenar serve para ver seus grupos de relance: junte cada naipe (manzu, pinzu, souzu) e deixe as honras juntas, com as iguais coladas. Você pode reordenar como quiser, desde que seja fácil ver o que tem.")}</p>
 {example(tr("Ejemplo de turno", "Example turn", "Exemplo de vez"), f'<p class="ex-text">{tr("Tu mano tiene tres grupos, dos parejas… y una ficha suelta, el 9 de círculos. Es la que botas.", "Your hand has three sets, two pairs… and one loose tile, the 9 of circles. That is the one you discard.", "Sua mão tem três grupos, dois pares… e uma peça solta, o 9 de círculos. É a que você descarta.")}</p>' + groups([("1m 2m 3m", G, "gr"), ("4p 5p 6p", G, "gr"), ("3s 4s 5s", G, "gr"), ("6z 6z", PR, "pl"), ("1z 1z", PR, "pl"), ("9p!", tr("Sobra", "Spare", "Sobra"), "sp")]) + f'<p class="ex-text">{tr("Ahora robas un Chun (中): con tus dos Chun forma un trío y la mano se completa.", "Now you draw a Chun (中): with your two Chun it makes a triplet and the hand is complete.", "Agora você compra um Chun (中): com os seus dois Chun forma um trio e a mão se completa.")}</p>')}
 {callout(tr("Los descartes son <b>información</b>: miras lo que botan los demás para saber qué fichas ya no quedan y qué están buscando.", "Discards are <b>information</b>: watch what the others throw to know which tiles are gone and what they are looking for.", "Os descartes são <b>informação</b>: observe o que os outros descartam para saber quais peças já não restam e o que estão buscando."))}
-''', 6)
+''', 7)
 
 # ---------- 7 Sets ----------
 page(f'''
@@ -239,7 +262,7 @@ page(f'''
 <div class="hand">{tiles("1z 1z")}<span class="gap"></span>{tiles("5m 5m")}</div>
 {example(tr("Las cuentas", "The count", "A conta"), f'<p class="sum">4 × 3 + 2 = <b>14</b></p><p class="ex-note">{tr("13 fichas en la mano más la que robas: 14. Los grupos y la pareja usan las 14.", "13 tiles in hand plus the one you draw: 14. The sets and the pair use all 14.", "13 peças na mão mais a que você compra: 14. Os grupos e o par usam as 14.")}</p>')}
 {callout(tr("<b>Tenpai</b> es estar a <b>una sola ficha</b> de ganar. <b>Noten</b> es lo contrario. Ambos importan cuando el muro se agota sin ganador: quienes están en tenpai cobran de los noten (3 000 puntos en total).", "<b>Tenpai</b> means being <b>one tile</b> away from winning. <b>Noten</b> is the opposite. Both matter when the wall runs out with no winner: those in tenpai collect from the noten ones (3,000 points in total).", "<b>Tenpai</b> é estar a <b>uma só peça</b> de ganhar. <b>Noten</b> é o contrário. Ambos importam quando o muro acaba sem vencedor: quem está em tenpai recebe dos noten (3.000 pontos no total)."))}
-''', 7)
+''', 8)
 
 # ---------- 8 Calls ----------
 page(f'''
@@ -249,7 +272,7 @@ page(f'''
 {example(tr("Pon · un trío", "Pon · a triplet", "Pon · um trio"), f'<div class="hand">{tiles("6z 6z")}{arrow("small")}{tiles("6z~")}<span class="eq">=</span>{tiles("6z 6z~ 6z")}</div><p class="ex-note">{tr("Con dos fichas iguales puedes tomar la tercera que bote <b>cualquier</b> jugador. El turno salta a ti.", "With two identical tiles you can take the third one that <b>any</b> player throws. The turn jumps to you.", "Com duas peças iguais você pode pegar a terceira que <b>qualquer</b> jogador descartar. A vez pula para você.")}</p>')}
 {example(tr("Kan · un cuarteto", "Kan · a quad", "Kan · uma quadra"), f'<div class="hand">{tiles("3s 3s 3s")}{arrow("small")}{tiles("3s~")}<span class="eq">=</span>{tiles("3s 3s 3s 3s~")}</div><p class="ex-note">{tr("Con tres iguales tomas la cuarta. Un kan agrega una ficha extra: robas una de reposición del muro muerto y se revela otro indicador de dora.", "With three identical tiles you take the fourth. A kan adds an extra tile: you draw a replacement from the dead wall and another dora indicator is revealed.", "Com três iguais você pega a quarta. Um kan acrescenta uma peça extra: você compra uma de reposição do muro morto e outro indicador de dora é revelado.")}</p>')}
 {callout(tr("Al hacer una llamada tu mano pasa de <b>cerrada</b> a <b>abierta</b>: ya no puedes declarar riichi y algunos yaku valen menos o no cuentan. A cambio, avanzas más rápido.", "Making a call turns your hand from <b>closed</b> to <b>open</b>: you can no longer declare riichi and some yaku are worth less or do not count. In return, you move faster.", "Ao fazer uma chamada sua mão passa de <b>fechada</b> a <b>aberta</b>: você não pode mais declarar riichi e alguns yaku valem menos ou não contam. Em troca, avança mais rápido."))}
-''', 8)
+''', 9)
 
 # ---------- 9 Winning ----------
 page(f'''
@@ -265,7 +288,7 @@ page(f'''
 {example("Yakuhai", f'<div class="hand">{tiles("6z 6z 6z")}<span class="gap"></span>{tiles("1z 1z 1z")}</div><p class="ex-note">{tr("Un trío de dragones, del viento de la ronda o de tu viento de asiento.", "A triplet of dragons, of the round wind or of your seat wind.", "Um trio de dragões, do vento da rodada ou do seu vento do assento.")}</p>')}
 <p>{tr("<b>Riichi.</b> Con la mano cerrada y a una ficha de ganar (tenpai), puedes declarar «Riichi»: botas la ficha <b>acostada de lado</b> y pones un <b>palito de 1 000</b> en la ranura del compass. Desde entonces no cambias tu mano: solo robas y botas lo que robas.", "<b>Riichi.</b> With a closed hand one tile from winning (tenpai), you may declare “Riichi”: you throw the tile <b>lying on its side</b> and put a <b>1,000-point stick</b> in the compass slot. From then on you do not change your hand: you only draw and throw what you draw.", "<b>Riichi.</b> Com a mão fechada e a uma peça de ganhar (tenpai), você pode declarar «Riichi»: descarta a peça <b>deitada de lado</b> e põe um <b>palito de 1.000</b> no encaixe do compass. Daí em diante você não muda a mão: só compra e descarta o que comprou.")}</p>
 {callout(tr("<b>Furiten.</b> Si ya botaste alguna de las fichas con las que ganarías, no puedes ganar por ron, solo por tsumo. Nadie te avisa: tienes que darte cuenta tú.", "<b>Furiten.</b> If you have already thrown any of the tiles you would win on, you cannot win by ron, only by tsumo. Nobody warns you: you have to notice it yourself.", "<b>Furiten.</b> Se você já descartou alguma das peças com que ganharia, não pode ganhar por ron, só por tsumo. Ninguém avisa: você tem que perceber."))}
-''', 9)
+''', 10)
 
 # ---------- 10 Points ----------
 page(f'''
@@ -283,7 +306,7 @@ page(f'''
 {example(tr("Pagar 3 900 puntos", "Paying 3,900 points", "Pagar 3.900 pontos"), f'<div class="pay"><div class="pg"><div>{sticks([(1000,3)])}</div><span>3 × 1 000</span></div><b>+</b><div class="pg"><div>{sticks([(500,1)])}</div><span>1 × 500</span></div><b>+</b><div class="pg"><div>{sticks([(100,4)])}</div><span>4 × 100</span></div><b class="tot">= 3 900</b></div><p class="ex-note">{tr("Quien paga deja los palitos <b>sobre la mesa</b> y el ganador los <b>toma</b>.", "The payer leaves the sticks <b>on the table</b> and the winner <b>takes</b> them.", "Quem paga deixa os palitos <b>sobre a mesa</b> e o vencedor os <b>pega</b>.")}</p>')}
 <ul class="plain"><li>{tr("<b>Ron:</b> paga quien botó la ficha ganadora.", "<b>Ron:</b> the one who threw the winning tile pays.", "<b>Ron:</b> paga quem descartou a peça vencedora.")}</li><li>{tr("<b>Tsumo:</b> pagan los tres rivales.", "<b>Tsumo:</b> all three rivals pay.", "<b>Tsumo:</b> os três rivais pagam.")}</li><li>{tr("El <b>dealer</b> cobra y paga más que los demás.", "The <b>dealer</b> collects and pays more than the others.", "O <b>dealer</b> recebe e paga mais que os demais.")}</li></ul>
 {callout(tr("Los puntos son lo que decide la partida: cuando termina, se comparan y <b>gana quien tiene más</b>.", "Points decide the game: when it ends they are compared and <b>whoever has the most wins</b>.", "Os pontos decidem a partida: quando termina, são comparados e <b>ganha quem tem mais</b>."))}
-''', 10)
+''', 11)
 
 # ---------- 11 Rounds ----------
 page(f'''
@@ -303,15 +326,15 @@ page(f'''
 <h3>{tr("Largo de la partida", "Length of the game", "Duração da partida")}</h3>
 {example("Tonpuusen / Hanchan", f'<div class="two"><div class="tcard wide"><b>Tonpuusen</b><p>{tr("Partida corta: solo la ronda Este.", "Short game: East round only.", "Partida curta: só a rodada Leste.")}</p></div><div class="tcard wide"><b>Hanchan</b><p>{tr("Partida normal: rondas Este y Sur.", "Standard game: East and South rounds.", "Partida normal: rodadas Leste e Sul.")}</p></div></div>')}
 <div class="podium"><img class="mark" src="{A}/rincon-mark.svg" alt=""><p>{tr("Al final se cuentan los palitos de cada jugador. <b>Gana quien tiene más puntos.</b>", "At the end each player’s sticks are counted. <b>Whoever has the most points wins.</b>", "No fim contam-se os palitos de cada jogador. <b>Ganha quem tem mais pontos.</b>")}</p></div>
-''', 11)
+''', 12)
 
 # ---------- 12-13 Glossary ----------
 half = (len(entries) + 1) // 2
 def gl_page(items, head, num):
     gl_html = "".join(f'<dt id="g-{eid}">{t}</dt><dd>{m}</dd>' for eid, t, m, _ in items)
     page(f'''{head}<dl class="gloss">{gl_html}</dl>''', num, cls="gl")
-gl_page(entries[:half], f'<h2>{tr("Diccionario", "Dictionary", "Dicionário")}</h2><p class="small">{tr("Las palabras de esta guía, en lenguaje simple.", "The words of this guide, in plain language.", "As palavras deste guia, em linguagem simples.")}</p>', 12)
-gl_page(entries[half:], f'<h2>{tr("Diccionario", "Dictionary", "Dicionário")}</h2><p class="small">{tr("Continuación.", "Continued.", "Continuação.")}</p>', 13)
+gl_page(entries[:half], f'<h2>{tr("Diccionario", "Dictionary", "Dicionário")}</h2><p class="small">{tr("Las palabras de esta guía, en lenguaje simple.", "The words of this guide, in plain language.", "As palavras deste guia, em linguagem simples.")}</p>', 13)
+gl_page(entries[half:], f'<h2>{tr("Diccionario", "Dictionary", "Dicionário")}</h2><p class="small">{tr("Continuación.", "Continued.", "Continuação.")}</p>', 14)
 
 # ---------- 14 Back ----------
 page(f'''
@@ -325,14 +348,20 @@ page(f'''
 <li>{tr("<b>Practicar</b> — reconocer fichas, contar puntos y más, con modo rápido.", "<b>Practise</b> — recognise tiles, count points and more, with a quick mode.", "<b>Praticar</b> — reconhecer peças, contar pontos e mais, com modo rápido.")}</li>
 </ul>
 <p class="url">rincon-riichi.vercel.app</p>
-</div>''', 14, cls="backpage")
+</div>''', 15, cls="backpage")
 
 CSS = r"""
 @page { size: 6.77in 8.03in; margin: 0 }
 * { box-sizing: border-box }
 html { -webkit-print-color-adjust: exact; print-color-adjust: exact }
 .gloss { column-fill: balance }
-#p4 h3 { margin: 7pt 0 3pt } #p4 .callout { margin: 5pt auto } #p4 .example { margin: 11pt 0 4pt; padding: 10pt 12pt 5pt } #p4 .suitrow .tl { height: .38in } #p4 > p { margin-bottom: 4pt }
+.center { text-align: center; font-size: 34pt }
+.pgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14pt 18pt; margin-top: 8pt }
+.pcell { text-align: center } .ppic { height: .62in; display: flex; align-items: center; justify-content: center; gap: 2pt; margin-bottom: 4pt }
+.pcell p { margin: 0; font-size: 9.6pt; line-height: 1.32 } .pwide { height: .7in; width: auto } .plate.big { width: 40pt; height: 27pt; font-size: 20pt }
+.pst { display: flex; flex-direction: column; gap: 2.5pt; align-items: center } .pst .stick { width: 1in; height: auto }
+.seats4 { display: grid; grid-template-columns: 1fr 1fr; gap: 6pt 14pt } .seats4 > div { display: flex; align-items: center; gap: 6pt; font-size: 9pt } .seats4 .tl { height: .42in }
+#p5 h3 { margin: 7pt 0 3pt } #p5 .callout { margin: 5pt auto } #p5 .example { margin: 11pt 0 4pt; padding: 10pt 12pt 5pt } #p5 .suitrow .tl { height: .38in } #p5 > p { margin-bottom: 4pt }
 a { color: inherit; text-decoration: none }
 a.gl-link { border-bottom: 1pt dotted #6a4aa8; color: #3a2a7c }
 u.dotted { text-decoration: none; border-bottom: 1pt dotted #6a4aa8 }
