@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { TableStage, ZoneThumb } from '../../../shared/ui/TableStage';
 import { localize, type LocalizedText, type TutorialLanguage } from '../domain/tutorialContent';
 import { GLOSSARY, glossaryIdFor } from '../domain/glossary';
+import { PlayMode } from './PlayMode';
 import { docHref } from '../../../shared/docs';
 import { stepSubtitles, tutorialParts, tutorialStops, type TutorialStop } from '../domain/tutorialStage';
 import { RackStage } from './stages/RackStage';
@@ -174,6 +175,7 @@ const UI = {
   zoom: L('Acercar a la zona', 'Zoom to the zone', 'Aproximar da zona'),
   remember: L('Qué recordar', 'Remember this', 'O que lembrar'),
   rail: L('Pasos del tutorial', 'Tutorial steps', 'Passos do tutorial'),
+  play: L('Jugar una mano (pantalla completa)', 'Play a hand (full screen)', 'Jogar uma mão (tela cheia)'),
   glossary: L('Diccionario', 'Dictionary', 'Dicionário'),
   howTo: L('Cómo usar este paso', 'How to use this step', 'Como usar este passo'),
   more: L('Seguir aprendiendo', 'Keep learning', 'Continuar aprendendo'),
@@ -303,6 +305,7 @@ export function TutorialWorkspace() {
     } catch { return 0; }
   });
   const [help, setHelp] = useState(false);
+  const [play, setPlay] = useState(() => new URLSearchParams(window.location.search).has('play'));
   const [helpSeen, setHelpSeen] = useState<Set<string>>(new Set());
   const [overview, setOverview] = useState(false);
   const [sort, setSort] = useState<SortStatus>({ inRack: 0, total: 13, sorted: false });
@@ -455,6 +458,7 @@ export function TutorialWorkspace() {
             <span>{t(UI.step)} {index + 1} {t(UI.of)} {tutorialStops.length} · {t(UI.arrows)}</span>
             <button type="button" onClick={() => open(index + 1)} aria-label={t(UI.next)} disabled={index === tutorialStops.length - 1}>→</button>
             <i aria-hidden="true" />
+            <button type="button" className="play-open" onClick={() => setPlay(true)} aria-label={t(UI.play)} title={t(UI.play)}>🎮</button>
             <button type="button" className={`help-open${helpSeen.has(stop.id) ? '' : ' is-nudge'}`} onClick={() => { setHelp(true); setHelpSeen((now) => new Set(now).add(stop.id)); }} aria-label={t(UI.howTo)} title={t(UI.howTo)}>?</button>
             <button type="button" className="glossary-open" onClick={() => setGlossary({ focus: null })} aria-label={t(UI.glossary)} title={t(UI.glossary)}>📖</button>
             <button
@@ -484,6 +488,7 @@ export function TutorialWorkspace() {
             {stop.id === 'rounds' && <div id="rounds-controls" className="yaku-controls" />}
             {stop.id === 'finish' && (
               <div className="yaku-controls finish-buttons">
+                <button type="button" className="sort-button is-primary" onClick={() => setPlay(true)}>🎮 {t(L('Jugar una mano', 'Play a hand', 'Jogar uma mão'))}</button>
                 <a className="sort-button is-primary" href="../index.html#practicar">{t(L('Practicar', 'Practise', 'Praticar'))} →</a>
                 <a className="sort-button is-primary" href="../index.html#aprender">{t(L('Aprender', 'Learn', 'Aprender'))} →</a>
                 <a className="sort-button" href={docHref('guide', language, '../')} download>↓ {t(L('Guía completa (PDF)', 'Full guide (PDF)', 'Guia completo (PDF)'))}</a>
@@ -507,6 +512,8 @@ export function TutorialWorkspace() {
 
         </aside>
       </div>
+
+      {play && <PlayMode language={language} onClose={() => setPlay(false)} />}
 
       {help && (
         <div className="glossary-overlay" role="dialog" aria-modal="true" aria-label={t(UI.howTo)} onClick={() => setHelp(false)}>

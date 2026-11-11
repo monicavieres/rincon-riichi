@@ -15,6 +15,7 @@ const hero = {
     pt: 'Um lugar para entender o mahjong japonês do zero: a mesa, as peças e as regras, e depois praticar com exercícios curtos.',
   },
   start: { es: 'Empezar el tutorial', en: 'Start the tutorial', pt: 'Começar o tutorial' },
+  play: { es: 'Jugar una mano', en: 'Play a hand', pt: 'Jogar uma mão' },
   practice: { es: 'Ir a practicar', en: 'Go practise', pt: 'Ir praticar' },
 };
 
@@ -58,6 +59,7 @@ function HomeHero() {
         <p className="home-hero-goal">{pick(hero.goal, language)}</p>
         <div className="home-hero-actions">
           <a className="big-button green" href="aprender/tutorial.html">{pick(hero.start, language)}</a>
+          <a className="big-button" href="aprender/tutorial.html?play=1">🎮 {pick(hero.play, language)}</a>
           <a className="big-button pink" href="#practicar">{pick(hero.practice, language)}</a>
         </div>
       </div>
