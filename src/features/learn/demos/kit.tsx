@@ -101,7 +101,7 @@ const VOICE_KEY = 'rincon-riichi-demo-voice';
 const VOICE_LANG: Record<Lang, string> = { es: 'es-ES', en: 'en-US', pt: 'pt-BR' };
 
 /** Reads text aloud when the voice is on. The choice is remembered per viewer. */
-export function useVoice(language: Lang) {
+export function useVoice(language: Lang, rate = 0.98) {
   const supported = typeof window !== 'undefined' && 'speechSynthesis' in window;
   const [on, setOn] = useState(() => { try { return localStorage.getItem(VOICE_KEY) === 'on'; } catch { return false; } });
   const say = useCallback((text: string, force = false) => {
@@ -112,9 +112,9 @@ export function useVoice(language: Lang) {
     line.lang = VOICE_LANG[language];
     const voice = synth.getVoices().find((v) => v.lang.toLowerCase().startsWith(language));
     if (voice) line.voice = voice;
-    line.rate = 0.98;
+    line.rate = rate;
     synth.speak(line);
-  }, [language, on, supported]);
+  }, [language, on, rate, supported]);
   const toggle = useCallback(() => {
     setOn((now) => {
       const next = !now;
