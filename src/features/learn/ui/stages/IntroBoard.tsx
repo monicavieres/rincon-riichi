@@ -93,13 +93,13 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
       body: (
         <>
           <div className="intro-seats">
-            <div className="intro-seat is-top"><img className="seat-cat" src={cat('grey')} alt="" />{tile('3z')}<span>{t('Oeste', 'West', 'Oeste')}</span></div>
-            <div className="intro-seat is-left"><img className="seat-cat" src={cat('black')} alt="" />{tile('4z')}<span>{t('Norte', 'North', 'Norte')}</span></div>
-            <div className="intro-seat is-right"><img className="seat-cat" src={cat('orange')} alt="" />{tile('2z')}<span>{t('Sur', 'South', 'Sul')}</span></div>
-            <div className="intro-seat is-me"><img className="seat-cat" src={cat('white')} alt="" />{tile('1z')}<span>{t('Tú · Este', 'You · East', 'Você · Leste')}</span></div>
-            <div className="intro-table"><b>{t('Compass', 'Compass', 'Compass')}</b><small>{t('cada viento mira a su asiento', 'each wind faces its seat', 'cada vento olha para o seu assento')}</small></div>
+            <div className="intro-seat is-top"><img className="seat-cat" src={cat('grey')} alt="" /><span><i className="seat-kanji">西</i>{t('Oeste', 'West', 'Oeste')}</span></div>
+            <div className="intro-seat is-left"><img className="seat-cat" src={cat('black')} alt="" /><span><i className="seat-kanji">北</i>{t('Norte', 'North', 'Norte')}</span></div>
+            <div className="intro-seat is-right"><img className="seat-cat" src={cat('orange')} alt="" /><span><i className="seat-kanji">南</i>{t('Sur', 'South', 'Sul')}</span></div>
+            <div className="intro-seat is-me"><img className="seat-cat" src={cat('white')} alt="" /><span><i className="seat-kanji">東</i>{t('Tú · Este', 'You · East', 'Você · Leste')}</span></div>
+            <div className="intro-table"><img className="seat-compass" src={`../assets/illustrations/consola-top-${theme}.svg`} alt="" /><small>{t('El compass del centro', 'The compass in the middle', 'O compass do centro')}</small></div>
           </div>
-          <p className="intro-note">{t('Cada gato tiene el viento de su asiento. El turno gira: Este → Sur → Oeste → Norte.', 'Each cat has its seat’s wind. Turns go round: East → South → West → North.', 'Cada gato tem o vento do seu assento. A vez gira: Leste → Sul → Oeste → Norte.')}</p>
+          <p className="intro-note">{t('El viento de asiento no es una ficha que te dan: es el nombre de tu lugar en la mesa, y lo muestra el compass. El turno gira: Este → Sur → Oeste → Norte.', 'The seat wind is not a tile you get: it is the name of your place at the table, shown on the compass. Turns go round: East → South → West → North.', 'O vento do assento não é uma peça que você recebe: é o nome do seu lugar na mesa, mostrado no compass. A vez gira: Leste → Sul → Oeste → Norte.')}</p>
         </>
       ),
     },
