@@ -157,11 +157,11 @@ def kitten_side(theme, fur_key, outfit, expr="calm", uid=None):
         G.append(f'<circle cx="36" cy="180" r="7.5" fill="{white}"/>')
     pc = white if pat in ("blaze", "tuxedo") else fur
     # the far front leg reaches for the table: it starts behind the chest, so the body hides its shoulder
-    G.append(f'<path d="M136 166 C160 172 182 188 198 204 L186 222 C172 208 156 198 138 196 Z"{ST} fill="{sh(fur, .93)}"/>')
+    G.append(f'<path d="M136 166 C160 168 184 178 202 190 L192 210 C176 200 158 194 138 196 Z"{ST} fill="{sh(fur, .93)}"/>')
     if pat == "tabby":
-        G.append(f'<path d="M166 184 l-7 11 M178 194 l-7 11" stroke="{stripe}" stroke-width="3.5" stroke-linecap="round" opacity=".7"/>')
-    G.append(f'<ellipse cx="196" cy="214" rx="15" ry="10.5"{ST} fill="{pc}" transform="rotate(-35 196 214)"/>')
-    G.append(f'<path d="M200 222 l3 4 M206 216 l4 3" {thin}/>')
+        G.append(f'<path d="M168 176 l-6 12 M182 182 l-6 12" stroke="{stripe}" stroke-width="3.5" stroke-linecap="round" opacity=".7"/>')
+    G.append(f'<ellipse cx="202" cy="200" rx="15" ry="10.5"{ST} fill="{pc}" transform="rotate(-20 202 200)"/>')
+    G.append(f'<path d="M207 207 l3 4 M213 200 l4 2" {thin}/>')
     G.append(f'<path d="{body}"{ST} fill="{fur}"/>')
     G.append(f'<g clip-path="url(#b{uid})">')
     if pat == "tabby":
@@ -174,16 +174,14 @@ def kitten_side(theme, fur_key, outfit, expr="calm", uid=None):
     # hind paw peeking out at the front of the haunch
     G.append(f'<ellipse cx="108" cy="252" rx="15" ry="7"{ST} fill="{pc}"/>')
     G.append(f'<path d="M104 254 v3 M112 254 v3" {thin}/>')
-    # near front leg standing straight under the chest, paw on the ground
-    leg = "M128 176 C125 206 126 234 129 251 L154 251 C155 232 156 202 152 172 Z"
-    G.append(f'<path d="{leg}" fill="{fur}"/>')
-    if pat in ("blaze", "tuxedo"):
-        G.append(f'<path d="M127 232 C134 226 148 226 155 232 L154 251 L129 251 Z" fill="{white}"/>')
+    # near front leg also raised, stirring the tiles: it starts under the chest ruff, so no cut shows
+    arm = "M120 170 C148 176 174 190 194 208 L184 226 C166 212 146 206 124 202 Z"
+    G.append(f'<path d="{arm}" fill="{fur}"/>')
+    G.append(f'<path d="M136 174 C158 180 178 192 194 208" fill="none"{ST}/><path d="M184 226 C170 214 154 208 140 206" fill="none"{ST}/>')
     if pat == "tabby":
-        G.append(f'<path d="M128 206 q12 4 26 0 M128 222 q12 4 26 0" stroke="{stripe}" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".7"/>')
-    G.append(f'<path d="M127 190 C125 210 126 234 129 251" fill="none"{ST}/><path d="M152 172 C156 202 155 232 154 251" fill="none"{ST}/>')
-    G.append(f'<path d="M126 251 C126 244 157 244 157 251 C157 256 126 256 126 251 Z"{ST} fill="{pc}"/>')
-    G.append(f'<path d="M136 252 v3 M146 252 v3" {thin}/>')
+        G.append(f'<path d="M158 184 l-6 12 M172 192 l-6 12" stroke="{stripe}" stroke-width="3.5" stroke-linecap="round" opacity=".7"/>')
+    G.append(f'<ellipse cx="194" cy="220" rx="16" ry="11"{ST} fill="{pc}" transform="rotate(-25 194 220)"/>')
+    G.append(f'<path d="M198 228 l3 4 M205 222 l4 3" {thin}/>')
     # fluffy chest ruff under the chin (no hard edges)
     import math as _m
     pts = [(138 + 24 * _m.cos(_m.radians(t)), 168 + 22 * _m.sin(_m.radians(t))) for t in range(0, 361, 30)]
