@@ -140,6 +140,8 @@ def cat_sprite(theme, fur, outfit, ink, back=False, glasses=False, eye=None, til
             o.append(f'<path d="M{sx*44 - 6} -8 v-6 M{sx*44} -7 v-7 M{sx*44 + 6} -8 v-6" stroke="{shade(paw, 0.75)}" stroke-width="1.4" stroke-linecap="round"/>')
     return "".join(o)
 
+from kitten import sprite as kitten_sprite
+
 def scene(theme):
     t = g["THEMES"][theme]
     s = Scene(t)
@@ -159,7 +161,8 @@ def scene(theme):
         k = 1.15 if back else 1.1
         flip = -1 if (x < 300 and not back) or (y > 300 and back) else 1
         s.pts += [(sx - 110 * k, sy - 250 * k), (sx + 130 * k, sy + 10 * k)]
-        s.raw((key, 0), f'<g transform="translate({sx:.1f} {sy:.1f}) scale({k * flip} {k})">{cat_sprite(theme, fur, outfit, ink, back, glasses, eye, t["back"])}</g>')
+        expr = {"grey": "calm", "black": "smile"}.get(fur, "calm")
+        s.raw((key, 0), f'<g transform="translate({sx:.1f} {sy:.1f}) scale({k * flip} {k})">{kitten_sprite(theme, fur, outfit, expr, back, f"t{theme}{fur}")}</g>')
     # a hanging lamp over the middle of the table
     lx, ly = P(300, 300, 520)
     top = P(300, 300, 760)

@@ -17,7 +17,7 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
     watch.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     return () => watch.disconnect();
   }, []);
-  const cat = (fur: string) => `../assets/illustrations/cats/${theme}-${fur}.svg`;
+  const cat = (fur: string, expr?: string) => `../assets/illustrations/cats/${theme}-${fur}${expr ? `-${expr}` : ''}.svg`;
   const tile = (code: string, className = '') => <img className={`intro-tile ${className}`} src={tilePath(code)} alt="" />;
 
   const slides = [
@@ -40,7 +40,7 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
             <svg className="cr-arrows" viewBox="0 0 100 100"><path d="M64 80 Q84 76 82 58 M82 38 Q80 20 62 18 M38 18 Q20 20 18 38 M18 60 Q20 78 36 82" fill="none" stroke="#ffe27a" strokeWidth="3.4" strokeLinecap="round" markerEnd="url(#crhead)" /><defs><marker id="crhead" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#ffe27a" /></marker></defs></svg>
           </div>
           <div className="cat-turn" aria-hidden="true">
-            <img className="ct-me" src={cat('white')} alt="" />
+            <img className="ct-me" src={cat('white', 'thinking')} alt="" />
             <span className="ct-step"><b>1</b><img className="intro-tile" src="../assets/tile-back-default.svg" alt="" /><em>→</em>{tile('6p')}<small>{t('Roba', 'Draw', 'Compra')}</small></span>
             <span className="ct-step"><b>2</b>{tile('4p')}{tile('5p')}{tile('9s', 'is-pick')}<small>{t('Elige', 'Choose', 'Escolhe')}</small></span>
             <span className="ct-step"><b>3</b>{tile('9s')}<em>↓</em><small>{t('Bota', 'Discard', 'Descarta')}</small></span>
@@ -73,7 +73,7 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
               <figcaption>{t('Dragones', 'Dragons', 'Dragões')}</figcaption>
             </figure>
           </div>
-          <img className="tiles-cat" src={cat('orange')} alt="" />
+          <img className="tiles-cat" src={cat('orange', 'surprised')} alt="" />
           <p className="intro-note">{t('27 fichas numeradas (3 palos × 9) + 7 honores (4 vientos y 3 dragones) = 34 clases.', '27 numbered tiles (3 suits × 9) + 7 honors (4 winds and 3 dragons) = 34 kinds.', '27 peças numeradas (3 naipes × 9) + 7 honras (4 ventos e 3 dragões) = 34 tipos.')}</p>
         </div>
       ),
@@ -83,7 +83,7 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
       body: (
         <>
           <div className="intro-row is-big">{[0, 1, 2, 3].map((n) => tile('5p', `n${n}`))}</div>
-          <p className="intro-sum"><img className="sum-cat" src={cat('grey')} alt="" />34 × 4 = <b>136</b></p>
+          <p className="intro-sum"><img className="sum-cat" src={cat('grey', 'wink')} alt="" />34 × 4 = <b>136</b></p>
           <p className="intro-note">{t('Cuatro 5 de círculos idénticos: por eso se puede ir contando cuántas quedan.', 'Four identical 5 of circles: that is how you can keep track of how many are left.', 'Quatro 5 de círculos idênticos: assim dá para contar quantas restam.')}</p>
         </>
       ),
