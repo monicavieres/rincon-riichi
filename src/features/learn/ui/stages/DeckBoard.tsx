@@ -227,6 +227,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
 
   // After the opening shuffle, each rival keeps its own edge clear: it reaches for the tiles piled there and pushes them back.
   const chores = useRef<Chore[]>(RIVAL_CATS.map(() => ({ phase: 'idle', t0: 0, from: { x: 0, y: 0 }, to: { x: 0, y: 0 }, rest: 0 })));
+  const lastPush = useRef(0);
   const tend = useCallback((now: number) => {
     if (rivalClock.current.active) return false;
     let busy = false;
@@ -255,7 +256,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
       const k = Math.min(1, (now - chore.t0) / span);
       const e = k * k * (3 - 2 * k);
       const target = { x: chore.from.x + (chore.to.x - chore.from.x) * e, y: chore.from.y + (chore.to.y - chore.from.y) * e };
-      if (chore.phase === 'push') sweep(target, target.x - pos.x, target.y - pos.y, 0.9);
+      if (chore.phase === 'push') { sweep(target, target.x - pos.x, target.y - pos.y, 0.9); lastPush.current = now; }
       rivalAt.current[rival * 2] = target;
       if (el) {
         el.style.opacity = '1';
@@ -301,7 +302,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
     });
     scene.current?.invalidate();
     if (energy > 0) {
-      moved.current += rivalClock.current.active ? energy * 0.2 : tending && !pointer.current.down ? 0 : energy;
+      moved.current += rivalClock.current.active ? energy * 0.2 : !pointer.current.down && (performance.now() - lastPush.current < 2500 || performance.now() - rivalClock.current.start < RIVAL_MS + 2500) ? 0 : energy;
       setProgress(Math.min(1, moved.current / 2700));
     }
     // the second hand trails the first, so the pair feels like two palms mixing
