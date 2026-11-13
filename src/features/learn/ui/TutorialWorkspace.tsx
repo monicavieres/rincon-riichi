@@ -422,7 +422,7 @@ export function TutorialWorkspace() {
   const canZoom = spec.kind === 'table' && spec.focus.zoom > 1;
 
   return (
-    <section className="table-explorer tutorial-lab" aria-label={t(UI.tutorial)}>
+    <section className="table-explorer tutorial-lab is-tutorial" aria-label={t(UI.tutorial)}>
       <div className="table-explorer-workspace">
         <div className="table-explorer-stage" aria-label={t(stop.title)}>
           <div className="explorer-progress" aria-label={`${t(UI.step)} ${index + 1} ${t(UI.of)} ${tutorialStops.length}`}>
