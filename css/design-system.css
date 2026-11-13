@@ -2090,3 +2090,6 @@ body:has(.side-rail) {
 .side-rail-tilelabel[aria-pressed="true"] svg rect { fill: var(--gold, #f2b42c); fill-opacity: .35; }
 .side-rail-tilelabel[aria-pressed="false"] svg path { opacity: .35; }
 .side-rail-tilelabel .side-rail-label { font: 600 12px/1.2 var(--font-sans); }
+/* the toggle's label only takes room when the rail is open, so the icon stays centred in the closed rail */
+.side-rail:not(.menu-open) .side-rail-tilelabel .side-rail-label { display: none; }
+.side-rail.menu-open .side-rail-tilelabel { justify-content: flex-start; padding-left: 20px; }
