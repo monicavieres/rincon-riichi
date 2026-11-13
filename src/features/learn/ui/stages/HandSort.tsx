@@ -3,7 +3,7 @@ import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { DEALT_HAND } from '../../domain/dealtHand';
 import { wallSlot } from './DeckBoard';
 import { ALONG, FIRST_DEAD, OPENED_SIDE, OUT, dealAssignments, gAt, handSlot } from './DealBoard';
-import { FELT_Z, IsoCanvas, TILE_T, mix, picture, shade, type IsoHandle, type Painter } from './iso3d';
+import { FELT_Z, IsoCanvas, TILE_T, mix, picture, shade, type IsoHandle, type Painter, drawPlateLetter } from './iso3d';
 
 const ROW = 17;
 const WIDTH = 3.6;
@@ -56,6 +56,7 @@ export function paintDealtTable(g: Painter, assignments: ReturnType<typeof dealA
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(extra.plateChar ?? '東', 4, 2.9 + 0.2);
+      drawPlateLetter(ctx, extra.plateChar ?? '東', 8, 5.8);
       ctx.restore();
     });
   });

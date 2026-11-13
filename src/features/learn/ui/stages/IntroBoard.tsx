@@ -99,7 +99,7 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
         <>
           <div className="intro-compare">
             <div className="intro-card">
-              <span className="intro-plate">東</span>
+              <span className="intro-plate" data-wind="east">東</span>
               <b>{t('Viento de la ronda', 'Round wind', 'Vento da rodada')}</b>
               <small>{t('Es el mismo para los cuatro: Este primero, luego Sur.', 'The same for all four: East first, then South.', 'É o mesmo para os quatro: Leste primeiro, depois Sul.')}</small>
               <em>{t('Va en la placa, en el borde de la mesa, a la derecha del dealer.', 'It goes on the plate, at the table edge, to the dealer’s right.', 'Vai na placa, na borda da mesa, à direita do dealer.')}</em>
@@ -114,7 +114,7 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
           <div className="intro-timeline" aria-hidden="true">
             {[0, 1].map((r) => (
               <div className="intro-round" key={r}>
-                <span className="intro-plate is-small">{r === 0 ? '東' : '南'}</span>
+                <span className="intro-plate is-small" data-wind={r === 0 ? 'east' : 'south'}>{r === 0 ? '東' : '南'}</span>
                 <b>{r === 0 ? t('Ronda Este', 'East round', 'Rodada Leste') : t('Ronda Sur', 'South round', 'Rodada Sul')}</b>
                 <span className="intro-hands">{[1, 2, 3, 4].map((n) => <i key={n}>{n}</i>)}</span>
               </div>

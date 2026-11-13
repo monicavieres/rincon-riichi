@@ -21,6 +21,7 @@
   // The choice lives on <html data-tile-labels="on|off" data-tile-lang="es|en|pt"> and is remembered.
   const LABELED = /assets\/tiles-labeled\/[a-z-]+\/(?:(?:es|en|pt)\/)?([^/?#]+\.svg)/;
   const LABEL_KEY = "rincon-riichi-tile-labels";
+  const COMPASS = /assets\/illustrations\/(?:labeled\/(?:es|en|pt)\/)?(consola-top-[a-z]+\.svg)/;
   const root = document.documentElement;
   const readStored = (key, fallback) => { try { return localStorage.getItem(key) || fallback; } catch (error) { return fallback; } };
   root.dataset.tileLabels = readStored(LABEL_KEY, "on") === "off" ? "off" : "on";
@@ -32,6 +33,13 @@
     if (TILE_BACK.test(src)) {
       const nextBack = src.replace(TILE_BACK, backFor(root.getAttribute("data-theme")));
       if (nextBack !== src) img.setAttribute("src", nextBack);
+      return;
+    }
+    const compass = COMPASS.exec(src);
+    if (compass) {
+      const plain = src.replace(COMPASS, "assets/illustrations/$1");
+      const next = root.dataset.tileLabels !== "off" ? plain.replace(/assets\/illustrations\/(consola-top-[a-z]+\.svg)/, `assets/illustrations/labeled/${root.dataset.tileLang}/$1`) : plain;
+      if (next !== src) img.setAttribute("src", next);
       return;
     }
     const labeled = LABELED.test(src);

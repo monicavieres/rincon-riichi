@@ -61,10 +61,39 @@ let onImage: (() => void) | null = null;
 function labeledPath(path: string) {
   const root = document.documentElement;
   if (root.dataset.tileLabels === 'off') return path;
+  const compass = /assets\/illustrations\/(consola-top-[a-z]+\.svg)$/.exec(path);
+  if (compass) return path.replace(compass[0], `assets/illustrations/labeled/${root.dataset.tileLang || 'en'}/${compass[1]}`);
   const m = /assets\/(tiles-[a-z-]+)\/([0-9][mpsz])\.svg$/.exec(path);
   if (!m || m[1] === 'tiles-labeled') return path;
   const set = m[1] === 'tiles' ? 'tiles-fluffystuff-composite' : m[1];
   return path.replace(m[0], `assets/tiles-labeled/${set}/${m[2].endsWith('z') ? `${root.dataset.tileLang || 'en'}/` : ''}${m[2]}.svg`);
+}
+
+const PLATE_LETTERS: Record<string, Record<string, string>> = { es: { 東: 'E', 南: 'S', 西: 'O', 北: 'N' }, en: { 東: 'E', 南: 'S', 西: 'W', 北: 'N' }, pt: { 東: 'L', 南: 'S', 西: 'O', 北: 'N' } };
+
+/** With labels on, the round-wind plate shows its wind's initial in a little tag in the top-right corner (plate units). */
+export function drawPlateLetter(ctx: CanvasRenderingContext2D, char: string, w: number, h: number) {
+  const root = document.documentElement;
+  if (root.dataset.tileLabels === 'off') return;
+  const letter = (PLATE_LETTERS[root.dataset.tileLang || 'en'] ?? PLATE_LETTERS.en)[char];
+  if (!letter) return;
+  const s = h * 0.36;
+  const x = w - s - h * 0.08;
+  const y = h * 0.08;
+  ctx.save();
+  ctx.fillStyle = '#fff8ed';
+  ctx.strokeStyle = '#23203f';
+  ctx.lineWidth = h * 0.035;
+  ctx.beginPath();
+  ctx.roundRect(x, y, s, s, s * 0.25);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = '#171513';
+  ctx.font = `800 ${s * 0.72}px 'Helvetica Neue', Helvetica, Arial, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(letter, x + s / 2, y + s / 2 + s * 0.04);
+  ctx.restore();
 }
 
 export function picture(source: string): HTMLCanvasElement | null {

@@ -1957,3 +1957,37 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 
 /* A tile picture inside a sentence, as tall as the letters around it */
 .inline-tile { display: inline-block; height: 1.35em; width: auto; vertical-align: -0.32em; margin: 0 0.08em; filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.25)); }
+
+/* Labels on: the compass with letters, and the round-wind plate with its initial in the top-right corner */
+:root[data-tile-labels="on"][data-tile-lang="es"][data-theme="light"] { --compass-top: url('../assets/illustrations/labeled/es/consola-top-light.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="es"][data-theme="dark"] { --compass-top: url('../assets/illustrations/labeled/es/consola-top-dark.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="es"][data-theme="cute"] { --compass-top: url('../assets/illustrations/labeled/es/consola-top-cute.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="es"][data-theme="samurai"] { --compass-top: url('../assets/illustrations/labeled/es/consola-top-samurai.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="es"][data-theme="cyberpunk"] { --compass-top: url('../assets/illustrations/labeled/es/consola-top-cyberpunk.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="es"][data-theme="vaquero"] { --compass-top: url('../assets/illustrations/labeled/es/consola-top-vaquero.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="es"][data-theme="frutiger"] { --compass-top: url('../assets/illustrations/labeled/es/consola-top-frutiger.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="es"][data-theme="fox"] { --compass-top: url('../assets/illustrations/labeled/es/consola-top-fox.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="en"][data-theme="light"] { --compass-top: url('../assets/illustrations/labeled/en/consola-top-light.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="en"][data-theme="dark"] { --compass-top: url('../assets/illustrations/labeled/en/consola-top-dark.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="en"][data-theme="cute"] { --compass-top: url('../assets/illustrations/labeled/en/consola-top-cute.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="en"][data-theme="samurai"] { --compass-top: url('../assets/illustrations/labeled/en/consola-top-samurai.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="en"][data-theme="cyberpunk"] { --compass-top: url('../assets/illustrations/labeled/en/consola-top-cyberpunk.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="en"][data-theme="vaquero"] { --compass-top: url('../assets/illustrations/labeled/en/consola-top-vaquero.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="en"][data-theme="frutiger"] { --compass-top: url('../assets/illustrations/labeled/en/consola-top-frutiger.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="en"][data-theme="fox"] { --compass-top: url('../assets/illustrations/labeled/en/consola-top-fox.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="pt"][data-theme="light"] { --compass-top: url('../assets/illustrations/labeled/pt/consola-top-light.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="pt"][data-theme="dark"] { --compass-top: url('../assets/illustrations/labeled/pt/consola-top-dark.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="pt"][data-theme="cute"] { --compass-top: url('../assets/illustrations/labeled/pt/consola-top-cute.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="pt"][data-theme="samurai"] { --compass-top: url('../assets/illustrations/labeled/pt/consola-top-samurai.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="pt"][data-theme="cyberpunk"] { --compass-top: url('../assets/illustrations/labeled/pt/consola-top-cyberpunk.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="pt"][data-theme="vaquero"] { --compass-top: url('../assets/illustrations/labeled/pt/consola-top-vaquero.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="pt"][data-theme="frutiger"] { --compass-top: url('../assets/illustrations/labeled/pt/consola-top-frutiger.svg'); }
+:root[data-tile-labels="on"][data-tile-lang="pt"][data-theme="fox"] { --compass-top: url('../assets/illustrations/labeled/pt/consola-top-fox.svg'); }
+.intro-plate[data-wind], .pt-plate.is-static[data-wind] { position: relative; }
+:root[data-tile-labels="on"] [data-wind]::after { position: absolute; top: 7%; right: 5%; display: grid; place-items: center; min-width: 1.15em; height: 1.15em; padding: 0 .12em; border: max(1px, .06em) solid #23203f; border-radius: .25em; background: #fff8ed; color: #171513; font: 800 .34em/1 "Helvetica Neue", Helvetica, Arial, sans-serif; }
+:root[data-tile-labels="on"][data-tile-lang="es"] [data-wind="east"]::after { content: "E"; }
+:root[data-tile-labels="on"][data-tile-lang="es"] [data-wind="south"]::after { content: "S"; }
+:root[data-tile-labels="on"][data-tile-lang="en"] [data-wind="east"]::after { content: "E"; }
+:root[data-tile-labels="on"][data-tile-lang="en"] [data-wind="south"]::after { content: "S"; }
+:root[data-tile-labels="on"][data-tile-lang="pt"] [data-wind="east"]::after { content: "L"; }
+:root[data-tile-labels="on"][data-tile-lang="pt"] [data-wind="south"]::after { content: "S"; }

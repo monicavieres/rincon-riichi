@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { clamp, wallSlot } from './DeckBoard';
-import { FELT_Z, IsoCanvas, TILE_T, mix, picture, shade, type IsoHandle, type Painter } from './iso3d';
+import { FELT_Z, IsoCanvas, TILE_T, mix, picture, shade, type IsoHandle, type Painter, drawPlateLetter } from './iso3d';
 
 const ROW = 17;
 const CENTER = { x: 50, y: 50 };
@@ -538,6 +538,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText('東', PLATE_W / 2, PLATE_H / 2 + 0.2);
+          drawPlateLetter(ctx, '東', PLATE_W, PLATE_H);
           ctx.restore();
         });
       });
