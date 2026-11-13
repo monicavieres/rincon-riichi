@@ -2037,3 +2037,9 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .intro-hands i { display: grid; justify-items: center; width: auto; height: auto; padding: 2px; background: transparent; }
 .intro-hands i img { width: max(28px, 3.8cqw); }
 .intro-hands i small { font: 800 9px/1 var(--font-sans); color: #fff; }
+/* seats slide laid out as a grid so nothing overlaps the title or the note */
+.intro-seats { position: static; display: grid; width: min(80%, 520px); aspect-ratio: auto; grid-template-columns: 1fr 1.4fr 1fr; grid-template-rows: auto auto auto; grid-template-areas: ". top ." "left table right" ". me ."; align-items: center; justify-items: center; gap: 4px 10px; }
+.intro-seats .intro-seat { position: static; transform: none; }
+.intro-seat.is-top { grid-area: top; } .intro-seat.is-left { grid-area: left; } .intro-seat.is-right { grid-area: right; } .intro-seat.is-me { grid-area: me; }
+.intro-seats .intro-table { position: static; grid-area: table; width: 100%; min-height: 60px; padding: 8px; }
+.intro-seat .seat-cat { width: clamp(38px, 6cqw, 62px); }
