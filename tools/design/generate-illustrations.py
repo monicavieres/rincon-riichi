@@ -113,7 +113,7 @@ class Scene:
         pts = [tuple(c[i] + r * (math.cos(2 * math.pi * k / n) * a1[i] + math.sin(2 * math.pi * k / n) * a2[i]) for i in range(3)) for k in range(n)]
         return self.poly(pts, fill, stroke, sw)
 
-    def box(self, x, y, z, w, d, h, top, left=None, right=None, bands=None, deco=(), key=None, sw=1.6):
+    def box(self, x, y, z, w, d, h, top, left=None, right=None, bands=None, deco=(), key=None, sw=1.6, outline=True):
         """bands: list of (fraction_from_bottom, colour) splitting the side faces."""
         left = left or shade(top, 0.86)
         right = right or shade(top, 0.72)
@@ -124,10 +124,15 @@ class Scene:
             z1 = z + h * frac
             lc = shade(col, 0.9) if col else left
             rc = shade(col, 0.76) if col else right
-            out.append(self.poly([(x, y + d, z0), (x + w, y + d, z0), (x + w, y + d, z1), (x, y + d, z1)], lc, sw=sw))
-            out.append(self.poly([(x + w, y, z0), (x + w, y + d, z0), (x + w, y + d, z1), (x + w, y, z1)], rc, sw=sw))
+            # band fills carry no outline of their own: a white body and its coloured back layer are one tile
+            banded = len(sides) > 1 or not outline
+            out.append(self.poly([(x, y + d, z0), (x + w, y + d, z0), (x + w, y + d, z1), (x, y + d, z1)], lc, stroke=not banded, sw=sw))
+            out.append(self.poly([(x + w, y, z0), (x + w, y + d, z0), (x + w, y + d, z1), (x + w, y, z1)], rc, stroke=not banded, sw=sw))
             z0 = z1
-        out.append(self.poly([(x, y, z + h), (x + w, y, z + h), (x + w, y + d, z + h), (x, y + d, z + h)], top, sw=sw))
+        if len(sides) > 1 and outline:  # one outline around each whole side face
+            out.append(self.poly([(x, y + d, z), (x + w, y + d, z), (x + w, y + d, z + h), (x, y + d, z + h)], 'none', sw=sw))
+            out.append(self.poly([(x + w, y, z), (x + w, y + d, z), (x + w, y + d, z + h), (x + w, y, z + h)], 'none', sw=sw))
+        out.append(self.poly([(x, y, z + h), (x + w, y, z + h), (x + w, y + d, z + h), (x, y + d, z + h)], top, stroke=outline, sw=sw))
         for f in deco:
             out.append(f(self, x, y, z, w, d, h))
         self.items.append(((key if key is not None else (x + y + w / 2 + d / 2, z)), ''.join(out)))
@@ -594,19 +599,22 @@ def tile_standing(s, x, y, z, code, seat):
     side, bside = shade(cream, 0.8), shade(back, 0.8)
     F, B = 9, 6  # thickness of the white body and of the back layer (15 in total)
     if seat == 'S':  # face toward the viewer (+y): back layer first, then the body in front of it
-        s.box(x, y, z, 20, B, 27, back, left=back, right=bside, sw=1.1)
+        s.box(x, y, z, 20, B, 27, back, left=back, right=bside, sw=1.1, outline=False)
         s.box(x, y + B, z, 20, F, 27, cream, left=face, right=side, sw=1.1,
               deco=[lambda s_, *a: face_glyph(s_, code, (x + 1, y + 15, z + 25.5), (18, 0, 0), (0, 0, -24))])
     elif seat == 'E':  # face toward the viewer (+x)
-        s.box(x, y, z, B, 20, 27, back, left=bside, right=back, sw=1.1)
+        s.box(x, y, z, B, 20, 27, back, left=bside, right=back, sw=1.1, outline=False)
         s.box(x + B, y, z, F, 20, 27, cream, left=side, right=face, sw=1.1,
               deco=[lambda s_, *a: face_glyph(s_, code, (x + 15, y + 19, z + 25.5), (0, -18, 0), (0, 0, -24))])
     elif seat == 'N':  # back toward the viewer (+y): body first, back layer in front
-        s.box(x, y, z, 20, F, 27, cream, left=face, right=side, sw=1.1)
-        s.box(x, y + F, z, 20, B, 27, back, left=back, right=bside, deco=[emblem_side('y', 15)], sw=1.1)
+        s.box(x, y, z, 20, F, 27, cream, left=face, right=side, sw=1.1, outline=False)
+        s.box(x, y + F, z, 20, B, 27, back, left=back, right=bside, deco=[emblem_side('y', 15)], sw=1.1, outline=False)
     else:
-        s.box(x, y, z, F, 20, 27, cream, left=side, right=face, sw=1.1)
-        s.box(x + F, y, z, B, 20, 27, back, left=bside, right=back, deco=[emblem_side('x', 15)], sw=1.1)
+        s.box(x, y, z, F, 20, 27, cream, left=side, right=face, sw=1.1, outline=False)
+        s.box(x + F, y, z, B, 20, 27, back, left=bside, right=back, deco=[emblem_side('x', 15)], sw=1.1, outline=False)
+    # a single outline around the whole tile, drawn after both parts, so body and back layer read as one piece
+    w, d = (20, 15) if seat in ('S', 'N') else (15, 20)
+    s.box(x, y, z, w, d, 27, 'none', left='none', right='none', sw=1.1, key=(x + y + w / 2 + d / 2 + 12, z))
 
 
 def hand(s, seat, codes, z):
