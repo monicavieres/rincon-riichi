@@ -383,7 +383,7 @@ def text_top(char, colour, size):
 def tile_lying(s, x, y, z, along_x=True, emblem=False):
     w, d = (20, 27) if along_x else (27, 20)
     t = s.t
-    s.box(x, y, z, w, d, 15, t['back'], bands=[(0.5, t['cream']), (1.0, t['back'])], deco=[emblem_top(12)] if emblem else (), sw=1.2)
+    s.box(x, y, z, w, d, 15, t['back'], bands=[(0.6, t['cream']), (1.0, t['back'])], deco=[emblem_top(12)] if emblem else (), sw=1.2)
 
 
 def wall(s, x, y, n, along_x, z, gaps=(), face_up=None, split=()):
@@ -586,19 +586,27 @@ def tile_face_up(s, x, y, z, code, seat):
 
 
 def tile_standing(s, x, y, z, code, seat):
-    """Hand tile on its edge. S and E faces point at the viewer; N and W show their backs."""
+    """Hand tile on its edge. S and E faces point at the viewer; N and W show their backs.
+    Like a real tile it is a white body (60% of the thickness, on the face side) plus a coloured back layer (40%),
+    so its top edge and sides show both colours, the same way the tutorial's canvas draws them."""
     t = s.t
-    back, face, side = t['back'], t['white'], shade(t['cream'], 0.8)
-    if seat == 'S':
-        s.box(x, y, z, 20, 15, 27, t['cream'], left=face, right=side, sw=1.1,
+    back, face, cream = t['back'], t['white'], t['cream']
+    side, bside = shade(cream, 0.8), shade(back, 0.8)
+    F, B = 9, 6  # thickness of the white body and of the back layer (15 in total)
+    if seat == 'S':  # face toward the viewer (+y): back layer first, then the body in front of it
+        s.box(x, y, z, 20, B, 27, back, left=back, right=bside, sw=1.1)
+        s.box(x, y + B, z, 20, F, 27, cream, left=face, right=side, sw=1.1,
               deco=[lambda s_, *a: face_glyph(s_, code, (x + 1, y + 15, z + 25.5), (18, 0, 0), (0, 0, -24))])
-    elif seat == 'E':
-        s.box(x, y, z, 15, 20, 27, t['cream'], left=side, right=face, sw=1.1,
+    elif seat == 'E':  # face toward the viewer (+x)
+        s.box(x, y, z, B, 20, 27, back, left=bside, right=back, sw=1.1)
+        s.box(x + B, y, z, F, 20, 27, cream, left=side, right=face, sw=1.1,
               deco=[lambda s_, *a: face_glyph(s_, code, (x + 15, y + 19, z + 25.5), (0, -18, 0), (0, 0, -24))])
-    elif seat == 'N':
-        s.box(x, y, z, 20, 15, 27, t['cream'], left=back, right=side, deco=[emblem_side('y', 15)], sw=1.1)
+    elif seat == 'N':  # back toward the viewer (+y): body first, back layer in front
+        s.box(x, y, z, 20, F, 27, cream, left=face, right=side, sw=1.1)
+        s.box(x, y + F, z, 20, B, 27, back, left=back, right=bside, deco=[emblem_side('y', 15)], sw=1.1)
     else:
-        s.box(x, y, z, 15, 20, 27, t['cream'], left=side, right=back, deco=[emblem_side('x', 15)], sw=1.1)
+        s.box(x, y, z, F, 20, 27, cream, left=side, right=face, sw=1.1)
+        s.box(x + F, y, z, B, 20, 27, back, left=bside, right=back, deco=[emblem_side('x', 15)], sw=1.1)
 
 
 def hand(s, seat, codes, z):
