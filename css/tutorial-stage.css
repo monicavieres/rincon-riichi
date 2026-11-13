@@ -1996,3 +1996,23 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .intro-board:has(.intro-cats) .intro-slide { display: flex; flex-direction: column; align-items: center; min-height: 0; overflow: hidden; }
 .intro-board:has(.intro-cats) .intro-cats { flex: 1 1 0; min-height: 0; max-height: none; width: 100%; height: 0; object-fit: contain; border: 0; background: transparent; }
 .intro-board:has(.intro-cats) { grid-template-rows: minmax(0, 1fr) auto auto; }
+
+/* Flow slide with the cats: who plays when, and what a turn is */
+.cat-flow { display: grid; grid-template-columns: auto auto; grid-template-rows: auto auto; align-items: center; justify-content: center; gap: 4px clamp(14px, 4cqw, 40px); }
+.cat-flow .intro-note { grid-column: 1 / -1; }
+.cat-ring { position: relative; width: clamp(170px, 30cqw, 280px); aspect-ratio: 1; }
+.cat-ring figure { position: absolute; margin: 0; display: grid; justify-items: center; width: 34%; }
+.cat-ring img { width: 100%; height: auto; }
+.cat-ring figcaption { margin-top: -4px; padding: 1px 8px; border-radius: 99px; background: rgba(10, 30, 26, 0.55); font: 800 max(9px, 1.2cqw) / 1.2 var(--font-sans); text-transform: uppercase; }
+.cat-ring .is-me figcaption { background: #f2b42c; color: #23203f; }
+.cr-top { top: -4%; left: 33%; } .cr-bottom { bottom: -6%; left: 33%; } .cr-left { left: -4%; top: 30%; } .cr-right { right: -4%; top: 30%; }
+.cr-arrows { position: absolute; inset: 14%; width: 72%; height: 72%; }
+.cat-turn { display: grid; grid-template-columns: auto; gap: 6px; justify-items: start; position: relative; padding-left: clamp(54px, 9cqw, 90px); }
+.cat-turn .ct-me { position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: clamp(52px, 8.6cqw, 86px); }
+.ct-step { display: flex; align-items: center; gap: 4px; padding: 4px 10px 4px 4px; border-radius: 12px; background: rgba(255, 255, 255, 0.14); border: 2px solid rgba(255, 255, 255, 0.45); }
+.ct-step b { display: grid; place-items: center; width: 1.6em; height: 1.6em; border-radius: 50%; background: #f2b42c; color: #23203f; font: 800 max(11px, 1.4cqw) / 1 var(--font-sans); }
+.ct-step .intro-tile { width: max(20px, 3.4cqw); }
+.ct-step .intro-tile.is-pick { outline: 3px solid #f2b42c; border-radius: 4px; transform: translateY(-4px); }
+.ct-step em { font-style: normal; font-weight: 800; color: #ffe27a; font-size: 1.2em; }
+.ct-step small { margin-left: 6px; font: 800 max(11px, 1.5cqw) / 1 var(--font-sans); text-transform: uppercase; letter-spacing: .04em; }
+@media (max-width: 760px) { .cat-flow { grid-template-columns: 1fr; justify-items: center; } }

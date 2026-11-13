@@ -17,6 +17,7 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
     watch.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     return () => watch.disconnect();
   }, []);
+  const cat = (fur: string) => `../assets/illustrations/cats/${theme}-${fur}.svg`;
   const tile = (code: string, className = '') => <img className={`intro-tile ${className}`} src={tilePath(code)} alt="" />;
 
   const slides = [
@@ -26,29 +27,25 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
       note: t('Cuatro jugadores se sientan alrededor de una mesa, cada uno con sus fichas. Por turnos roban y botan fichas para armar su mano. Vamos paso a paso.', 'Four players sit around a table, each with their own tiles. Taking turns, they draw and discard tiles to build their hand. Let us go step by step.', 'Quatro jogadores sentam ao redor de uma mesa, cada um com suas peças. Na sua vez, compram e descartam peças para montar a mão. Vamos passo a passo.'),
     },
     {
-      title: t('Mahjong es un juego de cuatro jugadores', 'Mahjong is a game for four players', 'Mahjong é um jogo para quatro jogadores'),
+      title: t('Así se juega', 'How it plays', 'Assim se joga'),
       body: (
-        <div className="intro-what">
-          <div className="intro-turns" aria-hidden="true">
-            {[t('Tú', 'You', 'Você'), t('Derecha', 'Right', 'Direita'), t('Enfrente', 'Across', 'Em frente'), t('Izquierda', 'Left', 'Esquerda')].map((name, i) => (
-              <span key={name} className={i === 0 ? 'is-me' : ''}>{name}{i < 3 ? <em>→</em> : <em>↺</em>}</span>
+        <div className="cat-flow">
+          <div className="cat-ring" aria-hidden="true">
+            {(['grey', 'black', 'orange', 'white'] as const).map((fur, i) => (
+              <figure key={fur} className={`cr-${['top', 'left', 'right', 'bottom'][i]}${fur === 'white' ? ' is-me' : ''}`}>
+                <img src={cat(fur)} alt="" />
+                <figcaption>{[t('Enfrente', 'Across', 'Em frente'), t('Izquierda', 'Left', 'Esquerda'), t('Derecha', 'Right', 'Direita'), t('Tú', 'You', 'Você')][i]}</figcaption>
+              </figure>
             ))}
+            <svg className="cr-arrows" viewBox="0 0 100 100"><path d="M64 80 Q84 76 82 58 M82 38 Q80 20 62 18 M38 18 Q20 20 18 38 M18 60 Q20 78 36 82" fill="none" stroke="#ffe27a" strokeWidth="3.4" strokeLinecap="round" markerEnd="url(#crhead)" /><defs><marker id="crhead" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#ffe27a" /></marker></defs></svg>
           </div>
-          <div className="intro-loop" aria-hidden="true">
-            <span><b>1</b>{t('Robas una ficha', 'Draw a tile', 'Compra uma peça')}</span>
-            <em>→</em>
-            <span><b>2</b>{t('Decides', 'Decide', 'Decide')}</span>
-            <em>→</em>
-            <span><b>3</b>{t('Botas una', 'Discard one', 'Descarta uma')}</span>
+          <div className="cat-turn" aria-hidden="true">
+            <img className="ct-me" src={cat('white')} alt="" />
+            <span className="ct-step"><b>1</b><img className="intro-tile" src="../assets/tile-back-default.svg" alt="" /><em>→</em>{tile('6p')}<small>{t('Roba', 'Draw', 'Compra')}</small></span>
+            <span className="ct-step"><b>2</b>{tile('4p')}{tile('5p')}{tile('9s', 'is-pick')}<small>{t('Elige', 'Choose', 'Escolhe')}</small></span>
+            <span className="ct-step"><b>3</b>{tile('9s')}<em>↓</em><small>{t('Bota', 'Discard', 'Descarta')}</small></span>
           </div>
-          <div className="intro-flow" aria-hidden="true">
-            <span>{t('Completar la mano', 'Complete the hand', 'Completar a mão')}</span>
-            <em>→</em>
-            <span>{t('Da puntos', 'Scores points', 'Dá pontos')}</span>
-            <em>→</em>
-            <span>🏆 {t('Gana quien tiene más', 'Most points wins', 'Ganha quem tem mais')}</span>
-          </div>
-          <p className="intro-note">{t('Como el Carioca o el rummy: sacas una ficha y botas otra hasta completar tu mano.', 'Like rummy: you draw a tile and discard another until your hand is complete.', 'Como o rummy: você compra uma peça e descarta outra até completar a mão.')}</p>
+          <p className="intro-note">{t('Por turnos, hasta que alguien completa su mano.', 'Taking turns, until someone completes their hand.', 'Por turnos, até alguém completar a mão.')}</p>
         </div>
       ),
     },
