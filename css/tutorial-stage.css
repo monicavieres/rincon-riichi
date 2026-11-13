@@ -1991,3 +1991,5 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 :root[data-tile-labels="on"][data-tile-lang="en"] [data-wind="south"]::after { content: "S"; }
 :root[data-tile-labels="on"][data-tile-lang="pt"] [data-wind="east"]::after { content: "L"; }
 :root[data-tile-labels="on"][data-tile-lang="pt"] [data-wind="south"]::after { content: "S"; }
+.intro-cats { display: block; width: auto; max-width: 100%; max-height: min(52vh, 360px); height: auto; min-height: 0; border-radius: 12px; background: #faf3e6; border: 3px solid #23203f; }
+@media (min-width: 761px) { .intro-slide:has(.intro-cats) { grid-template-rows: auto minmax(0, 1fr) auto; height: 100%; } .intro-slide:has(.intro-cats) .intro-cats { max-height: 100%; } }

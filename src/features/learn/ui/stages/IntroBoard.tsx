@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { tilePath } from './SortBoard';
 
@@ -10,9 +10,21 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
   const t = (es: string, en: string, pt: string) => ({ es, en, pt }[language]);
   const [slide, setSlide] = useState(0);
   const [moved, setMoved] = useState(false);
+  const themeNow = () => { const th = document.documentElement.getAttribute('data-theme') || 'light'; return ['light', 'dark', 'cute', 'samurai', 'cyberpunk', 'vaquero', 'frutiger', 'fox'].includes(th) ? th : 'light'; };
+  const [theme, setTheme] = useState(themeNow);
+  useEffect(() => {
+    const watch = new MutationObserver(() => setTheme(themeNow()));
+    watch.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => watch.disconnect();
+  }, []);
   const tile = (code: string, className = '') => <img className={`intro-tile ${className}`} src={tilePath(code)} alt="" />;
 
   const slides = [
+    {
+      title: t('Bienvenido al mahjong', 'Welcome to mahjong', 'Bem-vindo ao mahjong'),
+      body: <img className="intro-cats" src={`../assets/illustrations/gatos-${theme}.svg`} alt={t('Cuatro gatos jugando mahjong alrededor de una mesa', 'Four cats playing mahjong around a table', 'Quatro gatos jogando mahjong ao redor de uma mesa')} />,
+      note: t('Cuatro jugadores se sientan alrededor de una mesa, cada uno con sus fichas. Por turnos roban y botan fichas para armar su mano. Vamos paso a paso.', 'Four players sit around a table, each with their own tiles. Taking turns, they draw and discard tiles to build their hand. Let us go step by step.', 'Quatro jogadores sentam ao redor de uma mesa, cada um com suas peças. Na sua vez, compram e descartam peças para montar a mão. Vamos passo a passo.'),
+    },
     {
       title: t('Mahjong es un juego de cuatro jugadores', 'Mahjong is a game for four players', 'Mahjong é um jogo para quatro jogadores'),
       body: (
@@ -133,6 +145,7 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
         <div className="intro-slide" key={slide}>
           <h3>{current.title}</h3>
           {current.body}
+          {'note' in current && current.note && <p className="intro-note">{current.note}</p>}
         </div>
         {!moved && <p className="intro-hint">{t('Pulsa la flecha → para seguir', 'Press the arrow → to continue', 'Toque na seta → para continuar')}</p>}
         <div className="intro-nav">
