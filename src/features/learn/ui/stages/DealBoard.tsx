@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { sfx } from './boardSfx';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { DEALT_HAND } from '../../domain/dealtHand';
 import { wallSlot } from './DeckBoard';
@@ -132,6 +133,7 @@ export function DealBoard({ language, onStatus }: { language: TutorialLanguage; 
             const slot = counts.current[take.player];
             counts.current[take.player] += 1;
             flights.current.set(tile, { player: take.player, slot, start: performance.now() + i * 110, extra: !!take.extra });
+            sfx.play('draw', i * 110 + 380);
           });
           scene.current?.invalidate();
         });

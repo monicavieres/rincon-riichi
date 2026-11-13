@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { landSfx } from './boardSfx';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { FLOW_SCRIPTS, type Act } from '../../domain/yakuFlowScripts';
 import { FIRST_DEAD, OUT, ROT, around, dealAssignments, drawOrder, gAt, handSlot } from './DealBoard';
@@ -48,6 +49,7 @@ export function YakuFlowBoard({ flowId, language, replayLabel }: { flowId: strin
 
   const fly = useCallback((entry: Omit<Fly, 'start'>) => {
     flights.current = [...flights.current.filter((f) => f.key !== entry.key), { ...entry, start: performance.now() }];
+    landSfx(entry);
     scene.current?.invalidate();
     window.setTimeout(() => { flights.current = flights.current.filter((f) => f.key !== entry.key); scene.current?.invalidate(); }, entry.dur + 50);
   }, []);

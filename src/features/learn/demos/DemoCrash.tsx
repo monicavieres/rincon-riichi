@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
-import { Burst, Cat, codes, DemoFrame, L, nextTile, Rich, shuffle, Tile, TileRow, useDemo, useStored, useVoice, type Expr, type Fur, type Lang, type Tx } from './kit';
+import { Burst, Cat, codes, DemoFrame, L, nextTile, Rich, sfx, shuffle, Tile, TileRow, useDemo, useStored, type Expr, type Fur, type Lang, type Tx } from './kit';
 import { SLOT, StopBody, StopBoard, stopById } from './syllabus';
 import { StickSvg } from '../ui/stages/StickSvg';
 import { PlayMode } from '../ui/PlayMode';
@@ -99,7 +99,6 @@ const UI = {
   next: L('Siguiente', 'Next', 'Próximo'),
   chapter: L('Capítulo', 'Chapter', 'Capítulo'),
   repeat: L('Repetir', 'Again', 'Repetir'),
-  hear: L('Escuchar', 'Listen', 'Ouvir'),
   more: L('Explicación completa', 'Full explanation', 'Explicação completa'),
   less: L('Ocultar explicación', 'Hide explanation', 'Ocultar explicação'),
 };
@@ -162,7 +161,7 @@ function GoalScene({ t }: { t: (v: Tx) => string }) {
         })}
       </div>
       <div className="ca-count">{grouped ? <><b>4</b> {t(L('grupos', 'sets', 'grupos'))} + <b>1</b> {t(L('pareja', 'pair', 'par'))} = <b>14</b></> : <><b>14</b> {t(L('fichas', 'tiles', 'peças'))}</>}</div>
-      <button type="button" className="demo-btn is-primary" onClick={() => setGrouped((g) => !g)}>{grouped ? t(L('Mezclar', 'Mix', 'Misturar')) : t(L('Agrupar ✨', 'Group ✨', 'Agrupar ✨'))}</button>
+      <button type="button" className="demo-btn is-primary" onClick={() => { sfx.play(grouped ? 'shuffle' : 'wall'); setGrouped((g) => !g); }}>{grouped ? t(L('Mezclar', 'Mix', 'Misturar')) : t(L('Agrupar ✨', 'Group ✨', 'Agrupar ✨'))}</button>
     </div>
   );
 }
@@ -245,7 +244,7 @@ function WallsScene({ theme, language, t }: { theme: string; language: Lang; t: 
           {!built && <div className="ca-heap">{Array.from({ length: 22 }, (_, i) => <i key={i} style={{ transform: `translate(${(i * 37) % 90 - 45}px, ${(i * 23) % 60 - 30}px) rotate(${(i * 47) % 90 - 45}deg)` }} />)}</div>}
         </div>
       </TableTop>
-      <button type="button" className="demo-btn is-primary ca-float" onClick={() => setBuilt((b) => !b)}>{built ? t(UI.repeat) : t(L('Armar muros', 'Build walls', 'Montar muros'))}</button>
+      <button type="button" className="demo-btn is-primary ca-float" onClick={() => { sfx.play(built ? 'shuffle' : 'wall'); setBuilt((b) => !b); }}>{built ? t(UI.repeat) : t(L('Armar muros', 'Build walls', 'Montar muros'))}</button>
     </div>
   );
 }
@@ -268,6 +267,7 @@ function TurnScene({ t }: { t: (v: Tx) => string }) {
   const phase = drawn ? 'discard' : pond.length ? 'done' : 'draw';
   const discard = (i: number | 'drawn') => {
     if (!drawn) return;
+    sfx.play('discard');
     if (i === 'drawn') { setPond([drawn]); setDrawn(null); return; }
     const next = [...hand];
     const [out] = next.splice(i, 1);
@@ -291,7 +291,7 @@ function TurnScene({ t }: { t: (v: Tx) => string }) {
         {drawn && <Tile code={drawn} className="is-drawn is-pickable" onClick={() => discard('drawn')} />}
       </div>
       <div className="ca-turn-actions">
-        {phase === 'draw' && <button type="button" className="demo-btn is-primary" onClick={() => setDrawn(TURN_DRAW)}>{t(L('Robar 1', 'Draw 1', 'Comprar 1'))}</button>}
+        {phase === 'draw' && <button type="button" className="demo-btn is-primary" onClick={() => { sfx.play('draw'); setDrawn(TURN_DRAW); }}>{t(L('Robar 1', 'Draw 1', 'Comprar 1'))}</button>}
         {phase === 'discard' && <span className="ca-hint">{t(L('Ahora tienes 14. Toca una ficha para botarla.', 'Now you have 14. Tap a tile to discard it.', 'Agora você tem 14. Toque numa peça para descartar.'))}</span>}
         {phase === 'done' && <><span className="ca-hint">{t(L('¡Listo! Vuelves a tener 13. Así es cada turno.', 'Done! Back to 13. That is every turn.', 'Pronto! De volta a 13. Assim é cada vez.'))}</span><button type="button" className="demo-btn" onClick={reset}>{t(UI.repeat)}</button></>}
       </div>
@@ -313,7 +313,7 @@ function OrderScene({ theme, language, t }: { theme: string; language: Lang; t: 
         </svg>
         <div className="ca-turn-count">{t(L('Turno', 'Turn', 'Vez'))} {turn + 1}</div>
       </TableTop>
-      <button type="button" className="demo-btn is-primary ca-float" onClick={() => setTurn((n) => n + 1)}>{t(L('Siguiente turno ↺', 'Next turn ↺', 'Próxima vez ↺'))}</button>
+      <button type="button" className="demo-btn is-primary ca-float" onClick={() => { sfx.play('discard'); setTurn((n) => n + 1); }}>{t(L('Siguiente turno ↺', 'Next turn ↺', 'Próxima vez ↺'))}</button>
     </div>
   );
 }
@@ -350,7 +350,7 @@ function RiichiScene({ t }: { t: (v: Tx) => string }) {
       <p className="ca-small">{declared
         ? t(L('Ficha girada + palito de 1000: todos saben que esperas 5s o 8s.', 'Sideways tile + 1,000 stick: everyone knows you are waiting for 5s or 8s.', 'Peça deitada + palito de 1000: todos sabem que você espera 5s ou 8s.'))
         : t(L('Te sobra el 4z: bótalo girado y declara riichi.', 'The 4z is spare: discard it sideways and declare riichi.', 'O 4z sobra: descarte-o deitado e declare riichi.'))}</p>
-      <button type="button" className="demo-btn is-primary" onClick={() => setDeclared((d) => !d)}>{declared ? t(UI.repeat) : t(L('¡Riichi!', 'Riichi!', 'Riichi!'))}</button>
+      <button type="button" className="demo-btn is-primary" onClick={() => { if (!declared) { sfx.play('discard'); sfx.play('stick', 350); } setDeclared((d) => !d); }}>{declared ? t(UI.repeat) : t(L('¡Riichi!', 'Riichi!', 'Riichi!'))}</button>
     </div>
   );
 }
@@ -373,7 +373,7 @@ function DoraScene({ t }: { t: (v: Tx) => string }) {
       </div>
       <p className="ca-ask">{t(L('¿Cuál es el dora?', 'Which tile is the dora?', 'Qual é o dora?'))}</p>
       <div className="ca-options">
-        {options.map((code) => <Tile key={code} code={code} onClick={() => setPick(code)} className={pick === code ? (code === answer ? 'is-right' : 'is-wrong') : ''} />)}
+        {options.map((code) => <Tile key={code} code={code} onClick={() => { sfx.play(code === answer ? 'ok' : 'oops'); setPick(code); }} className={pick === code ? (code === answer ? 'is-right' : 'is-wrong') : ''} />)}
         <Burst show={right} />
       </div>
       {pick && <p className="ca-small">{right
@@ -404,7 +404,7 @@ function SafeScene({ theme, t }: { theme: string; t: (v: Tx) => string }) {
       </div>
       <p className="ca-ask">{t(L('¿Qué ficha de tu mano es segura?', 'Which tile in your hand is safe?', 'Qual peça da sua mão é segura?'))}</p>
       <div className="ca-options">
-        {mine.map((code) => <Tile key={code} code={code} onClick={() => setPick(code)} className={pick === code ? (code === safe ? 'is-right' : 'is-wrong') : ''} />)}
+        {mine.map((code) => <Tile key={code} code={code} onClick={() => { sfx.play(code === safe ? 'ok' : 'oops'); setPick(code); }} className={pick === code ? (code === safe ? 'is-right' : 'is-wrong') : ''} />)}
         <Burst show={pick === safe} />
       </div>
       {pick && <p className="ca-small">{pick === safe
@@ -425,7 +425,7 @@ function ExhaustScene({ theme, language, t }: { theme: string; language: Lang; t
           {shown && tenpai.map((v, i) => <span key={i} className={`ca-ten t${i} ${v ? 'is-yes' : 'is-no'}`}>{v ? `Tenpai +1500` : `Noten −1500`}</span>)}
         </div>
       </TableTop>
-      <button type="button" className="demo-btn is-primary ca-float" onClick={() => setShown((s) => !s)}>{shown ? t(UI.repeat) : t(L('Mostrar manos', 'Show hands', 'Mostrar mãos'))}</button>
+      <button type="button" className="demo-btn is-primary ca-float" onClick={() => { if (!shown) sfx.play('flip'); setShown((v) => !v); }}>{shown ? t(UI.repeat) : t(L('Mostrar manos', 'Show hands', 'Mostrar mãos'))}</button>
     </div>
   );
 }
@@ -452,7 +452,6 @@ function FinaleScene({ theme, t, onPlay }: { theme: string; t: (v: Tx) => string
 
 export function DemoCrash() {
   const { language, theme, t } = useDemo();
-  const voice = useVoice(language);
   const [at, setAt] = useStored('rincon-riichi-demo-a', 0);
   const [playing, setPlaying] = useState(false);
   const [more, setMore] = useState(false);
@@ -460,7 +459,6 @@ export function DemoCrash() {
   const beat = FLAT[index];
   const go = (next: number) => { setMore(false); setAt(Math.min(Math.max(0, next), FLAT.length - 1)); };
 
-  useEffect(() => { voice.say(t(beat.cap)); }, [index, language]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -499,7 +497,7 @@ export function DemoCrash() {
   const detail = beat.stop ?? beat.ref;
 
   return (
-    <DemoFrame className="demo-a" title={<><b>DEMO A</b> · {t(UI.title)}</>} t={t} voice={voice}>
+    <DemoFrame className="demo-a" title={<><b>DEMO A</b> · {t(UI.title)}</>} t={t}>
       <nav className="ca-timeline" aria-label={t(UI.chapter)}>
         {CHAPTERS.map((chapter, c) => {
           const first = FLAT.findIndex((x) => x.c === c);
@@ -527,7 +525,6 @@ export function DemoCrash() {
           {detail && <button type="button" className="ca-more" onClick={() => setMore((m) => !m)} aria-expanded={more}>📖 {more ? t(UI.less) : t(UI.more)}</button>}
           {detail && more && <div className="ca-detail"><strong>{t(stopById(detail).title)}</strong><StopBody text={t(stopById(detail).body)} /></div>}
         </div>
-        {voice.supported && <button type="button" className="ca-hear" onClick={() => voice.say(t(beat.cap), true)} aria-label={t(UI.hear)} title={t(UI.hear)}>🔊</button>}
         <button type="button" className="ca-nav is-next" onClick={() => go(index + 1)} disabled={index === FLAT.length - 1} aria-label={t(UI.next)}>→</button>
       </footer>
 

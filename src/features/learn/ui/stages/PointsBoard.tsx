@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { sfx } from './boardSfx';
 import { createPortal } from 'react-dom';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { Palm, type PawLook } from './DeckBoard';
@@ -66,6 +67,7 @@ export function PointsBoard({ language }: { language: TutorialLanguage }) {
 
   const flyStick = useCallback((f: Omit<Flight, 'start'>) => {
     flights.current = [...flights.current, { ...f, start: performance.now() }];
+    sfx.play('stick', f.dur * 0.85);
     scene.current?.invalidate();
     window.setTimeout(() => { flights.current = flights.current.filter((x) => x.key !== f.key); scene.current?.invalidate(); }, f.dur + 40);
   }, []);

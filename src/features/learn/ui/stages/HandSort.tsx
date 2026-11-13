@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
+import { sfx } from './boardSfx';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { DEALT_HAND } from '../../domain/dealtHand';
 import { wallSlot } from './DeckBoard';
@@ -144,6 +145,7 @@ export function HandSort({ language, onStatus }: { language: TutorialLanguage; o
 
   const onUp = () => {
     const current = drag.current;
+    if (current) sfx.play('place');
     drag.current = null;
     setGrabbing(false);
     if (!current) return;
@@ -157,8 +159,8 @@ export function HandSort({ language, onStatus }: { language: TutorialLanguage; o
     });
   };
 
-  const autoSort = useCallback(() => setRack((now) => [...now].sort((a, b) => sortKey(a.code) - sortKey(b.code) || a.id - b.id)), []);
-  const shuffle = useCallback(() => setRack((now) => [...now].sort(() => Math.random() - 0.5)), []);
+  const autoSort = useCallback(() => { sfx.play('wall'); return setRack((now) => [...now].sort((a, b) => sortKey(a.code) - sortKey(b.code) || a.id - b.id)); }, []);
+  const shuffle = useCallback(() => { sfx.play('shuffle'); setRack((now) => [...now].sort(() => Math.random() - 0.5)); }, []);
 
   const draw = (g: Painter) => {
     g.tilt = 38;

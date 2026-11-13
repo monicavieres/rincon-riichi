@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
+import { landSfx } from './boardSfx';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { DEALT_HAND } from '../../domain/dealtHand';
 import { ROT, around, dealAssignments, drawOrder, handSlot, turn } from './DealBoard';
@@ -120,6 +121,7 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
 
   const fly = useCallback((entry: Omit<Fly, 'start'>) => {
     flights.current = [...flights.current.filter((f) => f.key !== entry.key), { ...entry, start: performance.now() }];
+    landSfx(entry);
     scene.current?.invalidate();
     window.setTimeout(() => { flights.current = flights.current.filter((f) => f.key !== entry.key); scene.current?.invalidate(); }, entry.dur + 50);
   }, []);

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
+import { sfx } from './boardSfx';
 import { localize, type TutorialLanguage } from '../../domain/tutorialContent';
 import { DEALT_HAND } from '../../domain/dealtHand';
 
@@ -124,6 +125,7 @@ export function SortBoard({ language, onStatus }: { language: TutorialLanguage; 
 
   const onUp = () => {
     const current = drag.current;
+    if (current) sfx.play('place');
     drag.current = null;
     setDragging(null);
     if (!current) return;

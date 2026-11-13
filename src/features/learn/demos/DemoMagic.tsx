@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Burst, Cat, codes, DemoFrame, L, Rich, shuffle, Tile, useDemo, useStored, useVoice, type Expr, type Tx } from './kit';
+import { Burst, Cat, codes, DemoFrame, L, Rich, sfx, shuffle, Tile, useDemo, useStored, type Expr, type Tx } from './kit';
 import { waitsOf } from '../domain/playRules';
 import { BaseLesson, FlowBar, Quiz, QUIZ, STOP_STAGE, type FlowStage, type QuizItem } from './syllabus';
 
@@ -166,7 +166,6 @@ const UI = {
   again: L('Jugar otra vez', 'Play again', 'Jogar de novo'),
   done: L('¡Escenario completo!', 'Place complete!', 'Cenário completo!'),
   welcome: L('¡Hola! Soy Mandarina, tu guía. Elige un lugar del mapa. Te recomiendo empezar por la casa de las fichas.', 'Hi! I am Tangerine, your guide. Pick a place on the map. I suggest starting with the house of tiles.', 'Oi! Eu sou a Tangerina, sua guia. Escolha um lugar no mapa. Sugiro começar pela casa das peças.'),
-  hear: L('Escuchar', 'Listen', 'Ouvir'),
 };
 
 type View = { kind: 'map' } | { kind: 'intro'; room: number } | { kind: 'lesson'; room: number; k: number } | { kind: 'ex'; room: number; ex: number; item: number } | { kind: 'done'; room: number } | { kind: 'memo' };
@@ -174,13 +173,12 @@ type View = { kind: 'map' } | { kind: 'intro'; room: number } | { kind: 'lesson'
 function stars(mistakes: number) { return mistakes === 0 ? 3 : mistakes <= 2 ? 2 : 1; }
 
 /** The guide cat with her speech bubble. */
-function Guide({ theme, expr, text, onHear, hearLabel }: { theme: string; expr: Expr; text: string; onHear?: () => void; hearLabel: string }) {
+function Guide({ theme, expr, text }: { theme: string; expr: Expr; text: string }) {
   return (
     <div className="mb-guide">
       <Cat theme={theme} fur="orange" expr={expr} className="mb-guide-cat" />
       <div className="mb-bubble" aria-live="polite">
         <p><Rich text={text} /></p>
-        {onHear && <button type="button" className="mb-hear" onClick={onHear} aria-label={hearLabel} title={hearLabel}>🔊</button>}
       </div>
     </div>
   );
@@ -268,7 +266,7 @@ function Odd({ item, onRight, onWrong, done }: { item: Extract<Item, { kind: 'od
 
 const MEMO_FACES = ['1z', '5z', '6z', '7z', '9m', '1s', '5p', '8s', '3m', '2z'];
 
-function Memo({ theme, t, say }: { theme: string; t: (v: Tx) => string; say: (text: string) => void }) {
+function Memo({ theme, t }: { theme: string; t: (v: Tx) => string }) {
   const [round, setRound] = useState(0);
   const deck = useMemo(() => shuffle(shuffle(MEMO_FACES).slice(0, 6).flatMap((c) => [c, c])), [round]); // eslint-disable-line react-hooks/exhaustive-deps
   const [open, setOpen] = useState<number[]>([]);
@@ -278,6 +276,7 @@ function Memo({ theme, t, say }: { theme: string; t: (v: Tx) => string; say: (te
   useEffect(() => { setOpen([]); setWon(new Set()); setMoves(0); }, [round]);
   const flip = (i: number) => {
     if (lock.current || open.includes(i) || won.has(i)) return;
+    sfx.play('flip');
     const next = [...open, i];
     setOpen(next);
     if (next.length === 2) {
@@ -285,14 +284,14 @@ function Memo({ theme, t, say }: { theme: string; t: (v: Tx) => string; say: (te
       lock.current = true;
       const match = deck[next[0]] === deck[next[1]];
       window.setTimeout(() => {
-        if (match) { setWon((w) => new Set(w).add(next[0]).add(next[1])); }
+        if (match) { sfx.play('ok'); setWon((w) => new Set(w).add(next[0]).add(next[1])); }
         setOpen([]);
         lock.current = false;
       }, match ? 450 : 900);
     }
   };
   const finished = won.size === deck.length;
-  useEffect(() => { if (finished) say(t(RIGHT[2])); }, [finished]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (finished) sfx.play('win'); }, [finished]);
   return (
     <div className="mb-memo">
       <div className="mb-memo-head">
@@ -318,7 +317,6 @@ function Memo({ theme, t, say }: { theme: string; t: (v: Tx) => string; say: (te
 
 export function DemoMagic() {
   const { language, theme, t } = useDemo();
-  const voice = useVoice(language);
   const [view, setView] = useState<View>({ kind: 'map' });
   const [best, setBest] = useStored<Record<string, number>>('rincon-riichi-demo-b', {});
   const [mood, setMood] = useState<Expr>('smile');
@@ -342,25 +340,23 @@ export function DemoMagic() {
     return exercise ? t(exercise.instr) : '';
   })();
 
-  // speak each new instruction (only when the voice is on)
-  useEffect(() => { voice.say(line); }, [JSON.stringify(view), language]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const react = (expr: Expr, text: string | null) => {
     window.clearTimeout(moodTimer.current);
     setMood(expr);
     setNote(text);
-    if (text) voice.say(text);
     moodTimer.current = window.setTimeout(() => setMood('thinking'), 1400);
   };
 
   const onRight = (finished: boolean) => {
+    sfx.play('ok');
     if (!finished) { react('happy', null); return; }
     setSolved(true);
     const isLast = view.kind === 'ex' && exercise && view.item === exercise.items.length - 1;
     const last = isLast && exercise ? ` ${t(exercise.explain)}` : '';
     react('excited', `${t(RIGHT[Math.floor(Math.random() * RIGHT.length)])}${last}`);
   };
-  const onWrong = () => { mistakes.current += 1; react('sad', t(WRONG[Math.floor(Math.random() * WRONG.length)])); };
+  const onWrong = () => { sfx.play('oops'); mistakes.current += 1; react('sad', t(WRONG[Math.floor(Math.random() * WRONG.length)])); };
 
   const advance = () => {
     if (view.kind !== 'ex' || !room || !exercise) return;
@@ -372,11 +368,12 @@ export function DemoMagic() {
       setBest((now) => ({ ...now, [room.id]: Math.max(now[room.id] ?? 0, got) }));
       setView({ kind: 'done', room: view.room });
       setMood('excited');
+      sfx.play('win');
     }
   };
 
   const enter = (r: number) => { mistakes.current = 0; setSolved(false); setNote(null); setMood('smile'); setView({ kind: 'intro', room: r }); };
-  const repeat = () => { setSolved(false); setNote(null); setMood('thinking'); setNonce((n) => n + 1); if (exercise) voice.say(t(exercise.instr), true); };
+  const repeat = () => { setSolved(false); setNote(null); setMood('thinking'); setNonce((n) => n + 1); };
 
   const flowStage: FlowStage | null = !room ? null : view.kind === 'lesson' ? STOP_STAGE[room.lessons[view.k]] : room.stage;
   const progress = view.kind === 'ex' && room ? (() => {
@@ -389,7 +386,6 @@ export function DemoMagic() {
       className={`demo-b${room ? ` is-room-${room.id}` : ''}`}
       title={<><b>DEMO B</b> · {t(UI.title)}</>}
       t={t}
-      voice={voice}
       extra={view.kind !== 'map' && <button type="button" className="demo-btn is-small" onClick={() => { setView({ kind: 'map' }); setMood('smile'); }}>🗺 {t(UI.map)}</button>}
     >
       {room && <FlowBar stage={flowStage} t={t} className="mb-flow" />}
@@ -400,8 +396,6 @@ export function DemoMagic() {
           theme={theme}
           expr={view.kind === 'map' ? 'smile' : view.kind === 'done' ? 'excited' : view.kind === 'intro' ? 'happy' : mood}
           text={line}
-          onHear={voice.supported ? () => voice.say(line, true) : undefined}
-          hearLabel={t(UI.hear)}
         />}
 
         <div className="mb-play">
@@ -478,7 +472,7 @@ export function DemoMagic() {
             </div>
           )}
 
-          {view.kind === 'memo' && <Memo theme={theme} t={t} say={(text) => voice.say(text)} />}
+          {view.kind === 'memo' && <Memo theme={theme} t={t} />}
         </div>
       </div>
     </DemoFrame>

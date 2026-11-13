@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
+import { sfx } from './boardSfx';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { DECK_SIZE, FELT, Palm, RIVAL_LOOKS, RIVAL_PAWS, RivalCats, SIDE_SIZE, TILE_H, TILE_W, clamp, deckPoses, placeRivalCats, useThemeName, wallSlot, type Pose } from './DeckBoard';
 import { FELT_Z, IsoCanvas, TILE_T, type IsoHandle, type Painter } from './iso3d';
@@ -100,6 +101,7 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
 
   const setStage = useCallback((side: number, stage: Stage) => {
     stages.current[side] = stage;
+    if (stage >= 3) sfx.play('wall');
     repaint();
     rerender();
   }, []);
@@ -116,6 +118,7 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
   const putInWall = useCallback((index: number, side: number) => {
     if (slotOf.current[index] || counts.current[side] >= SIDE_SIZE) return;
     slotOf.current[index] = { side, k: counts.current[side] };
+    if (side === 0) sfx.play('place'); else if (Math.random() < 0.5) sfx.play('pick');
     counts.current[side] += 1;
     const count = counts.current[side];
     if (side === 0) {
