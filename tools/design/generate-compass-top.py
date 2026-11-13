@@ -63,6 +63,10 @@ def build(name, t):
         out.append(f'<text transform="rotate({rot} {nu} {nv})" x="{nu}" y="{nv}" font-family="{NUM}" font-weight="800" font-size="{size}" fill="{t["cnum"]}" stroke="{t["cnumline"]}" stroke-width="6" paint-order="stroke" stroke-linejoin="round" text-anchor="middle" dominant-baseline="central">{nums}</text>')
         fill = t['man'] if seat == 'E' else '#111111'
         out.append(f'<text transform="rotate({rot} {ku} {kv})" x="{ku}" y="{kv}" font-family="{KANJI}" font-weight="800" font-size="{56 if seat == "E" else 50}" fill="{fill}" stroke="#fff8ed" stroke-width="7" paint-order="stroke" stroke-linejoin="round" text-anchor="middle" dominant-baseline="central">{ch}</text>')
+    # the brand in the two free corners, the way real compasses carry their maker's name: katakana over the word
+    for (bx, by), kana, word in (((134, 566), 'リンコン', 'RINCÓN'), ((566, 134), 'リーチ', 'RIICHI')):
+        out.append(f'<text x="{bx}" y="{by - 22}" font-family="{KANJI}" font-weight="800" font-size="20" fill="{t["cnum"]}" stroke="{t["cnumline"]}" stroke-width="4" paint-order="stroke" stroke-linejoin="round" text-anchor="middle" dominant-baseline="central">{kana}</text>')
+        out.append(f'<text x="{bx}" y="{by + 6}" font-family="{NUM}" font-weight="800" font-size="30" letter-spacing="1" fill="{t["cnum"]}" stroke="{t["cnumline"]}" stroke-width="6" paint-order="stroke" stroke-linejoin="round" text-anchor="middle" dominant-baseline="central">{word}</text>')
     out.append('</svg>')
     return '\n'.join(out)
 
