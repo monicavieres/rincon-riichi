@@ -246,6 +246,11 @@ const translations = {
                 desc: "Paso a paso, sin apuro: letra grande, voz pausada y una hoja para imprimir.",
                 message: "Tutorial DEMO D"
             },
+            demoE: {
+                title: "Tutorial DEMO E",
+                desc: "Para niños y niñas: misiones con gatitos, sonidos, stickers y un diploma.",
+                message: "Tutorial DEMO E"
+            },
             descarte: {
                 title: "¿Qué descartas?",
                 desc: "Eficiencia, ukeire y lectura de forma.",
@@ -588,6 +593,11 @@ const translations = {
                 title: "Tutorial DEMO D",
                 desc: "Step by step, no hurry: large text, a slower voice and a sheet to print.",
                 message: "Tutorial DEMO D"
+            },
+            demoE: {
+                title: "Tutorial DEMO E",
+                desc: "For kids: kitten missions, sounds, stickers and a diploma.",
+                message: "Tutorial DEMO E"
             },
             descarte: {
                 title: "What Do You Discard?",
@@ -932,6 +942,11 @@ const translations = {
                 desc: "Passo a passo, sem pressa: letra grande, voz pausada e uma folha para imprimir.",
                 message: "Tutorial DEMO D"
             },
+            demoE: {
+                title: "Tutorial DEMO E",
+                desc: "Para crianças: missões com gatinhos, sons, adesivos e um diploma.",
+                message: "Tutorial DEMO E"
+            },
             descarte: {
                 title: "O que descartar?",
                 desc: "Eficiência, ukeire e leitura da forma.",
@@ -1080,6 +1095,7 @@ document.addEventListener("rincon:mounted", () => {
                 "demo-b": "aprender/demo-b.html",
                 "demo-c": "aprender/demo-c.html",
                 "demo-d": "aprender/demo-d.html",
+                "demo-e": "aprender/demo-e.html",
                 machi: "aprender/machi.html",
                 "yaku-ref": "aprender/yaku-reference.html",
                 dora: "aprender/dora.html",

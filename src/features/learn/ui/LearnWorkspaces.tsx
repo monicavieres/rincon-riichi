@@ -10,6 +10,7 @@ import { DemoCrash } from '../demos/DemoCrash';
 import { DemoMagic } from '../demos/DemoMagic';
 import { DemoVoyage } from '../demos/DemoVoyage';
 import { DemoSenior } from '../demos/DemoSenior';
+import { DemoKids } from '../demos/DemoKids';
 import { DEFENSA_GUIDE, REGLAS_GUIDE } from './guideConfigs';
 
 export function LearnWorkspace({ kind }: { kind: LearnKind }) {
@@ -25,5 +26,6 @@ export function LearnWorkspace({ kind }: { kind: LearnKind }) {
   if (kind === 'demoB') return <DemoMagic />;
   if (kind === 'demoC') return <DemoVoyage />;
   if (kind === 'demoD') return <DemoSenior />;
+  if (kind === 'demoE') return <DemoKids />;
   return <section className="ref-grid" id="refGrid" aria-label="Referencia" />;
 }
