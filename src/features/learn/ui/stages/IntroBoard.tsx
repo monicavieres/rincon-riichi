@@ -96,10 +96,11 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
             <div className="intro-seat is-top"><img className="seat-cat" src={cat('grey')} alt="" /><span><i className="seat-kanji">西</i>{t('Oeste', 'West', 'Oeste')}</span></div>
             <div className="intro-seat is-left"><img className="seat-cat" src={cat('black')} alt="" /><span><i className="seat-kanji">北</i>{t('Norte', 'North', 'Norte')}</span></div>
             <div className="intro-seat is-right"><img className="seat-cat" src={cat('orange')} alt="" /><span><i className="seat-kanji">南</i>{t('Sur', 'South', 'Sul')}</span></div>
-            <div className="intro-seat is-me"><img className="seat-cat" src={cat('white')} alt="" /><span><i className="seat-kanji">東</i>{t('Tú · Este', 'You · East', 'Você · Leste')}</span></div>
+            <div className="intro-seat is-me"><img className="seat-cat" src={cat('white')} alt="" /><span><i className="seat-kanji">東</i>{t('Tú · Este · dealer', 'You · East · dealer', 'Você · Leste · dealer')}</span></div>
             <div className="intro-table"><img className="seat-compass" src={`../assets/illustrations/consola-top-${theme}.svg`} alt="" /><small>{t('El compass del centro', 'The compass in the middle', 'O compass do centro')}</small></div>
           </div>
           <p className="intro-note">{t('El viento de asiento no es una ficha que te dan: es el nombre de tu lugar en la mesa, y lo muestra el compass. El turno gira: Este → Sur → Oeste → Norte.', 'The seat wind is not a tile you get: it is the name of your place at the table, shown on the compass. Turns go round: East → South → West → North.', 'O vento do assento não é uma peça que você recebe: é o nome do seu lugar na mesa, mostrado no compass. A vez gira: Leste → Sul → Oeste → Norte.')}</p>
+          <p className="intro-dealer">{t('Quien se sienta en el Este juega primero. A ese jugador lo llamaremos **dealer**: en esta mano, el dealer eres tú.', 'Whoever sits in the East plays first. We will call that player the **dealer**: in this hand, the dealer is you.', 'Quem senta no Leste joga primeiro. Esse jogador chamaremos de **dealer**: nesta mão, o dealer é você.').split('**').map((part, i) => (i % 2 ? <b key={i}>{part}</b> : part))}</p>
         </>
       ),
     },

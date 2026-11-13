@@ -2059,3 +2059,4 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .seat-kanji { display: grid; place-items: center; width: 1.6em; height: 1.6em; border-radius: 50%; background: #fff6e5; color: #1f3f9a; border: 2px solid #23203f; font: 700 1.05em/1 'Hiragino Mincho ProN', 'Noto Serif JP', serif; font-style: normal; }
 .intro-seats .intro-table { border: 0; display: grid; justify-items: center; gap: 2px; }
 .seat-compass { width: clamp(70px, 12cqw, 130px); height: auto; filter: drop-shadow(0 3px 3px rgba(0,0,0,.3)); }
+.intro-dealer { margin: 0; padding: 4px 12px; border-radius: 10px; background: #f2b42c; color: #23203f; font: 700 max(11px, 1.5cqw) / 1.35 var(--font-sans); max-width: 62ch; }
