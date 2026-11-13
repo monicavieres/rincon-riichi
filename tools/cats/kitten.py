@@ -144,7 +144,7 @@ def kitten_side(theme, fur_key, outfit, expr="calm", uid=None):
     W2 = f' stroke="{INK}" fill="none" stroke-linecap="round" stroke-linejoin="round"'
     body = "M100 138 C68 150 52 194 56 228 C58 250 80 256 112 254 L158 254 C164 232 160 196 150 158 Z"
     # head turned ~32° towards the table: features sit on a sphere, so they bunch up towards the right contour
-    head = ("M60 98 C58 60 90 38 124 38 C160 38 188 60 188 96 C190 104 196 112 196 120 C196 130 188 138 176 142 "
+    head = ("M60 98 C58 60 90 38 124 38 C160 38 188 60 188 96 C190 104 196 112 196 120 C196 128 192 134 186 138 L192 144 L180 144 L184 150 L170 148 "
             "C164 150 144 156 124 156 C102 156 82 150 72 142 L62 140 L68 134 L54 128 L64 123 L52 115 L62 111 C59 106 59 102 60 98 Z")
     D = [f'<clipPath id="h{uid}"><path d="{head}"/></clipPath>', f'<clipPath id="b{uid}"><path d="{body}"/></clipPath>']
     G = ['<ellipse cx="112" cy="256" rx="76" ry="9" fill="#000" opacity=".14" filter="url(#blur3)"/>']
@@ -159,10 +159,6 @@ def kitten_side(theme, fur_key, outfit, expr="calm", uid=None):
     G.append(f'<path d="M150 170 C168 184 186 200 198 214 L186 226 C174 214 158 200 146 192 Z"{ST} fill="{shade}"/>')
     G.append(f'<path d="{body}"{ST} fill="{fur}"/>')
     G.append(f'<g clip-path="url(#b{uid})">')
-    if pat in ("blaze", "tuxedo"):
-        G.append(f'<path d="M126 140 C150 150 166 200 160 254 L132 254 C140 210 132 170 118 146Z" fill="{white}"/>')
-    else:
-        G.append(f'<path d="M126 140 C150 150 166 200 160 254 L136 254 C142 210 136 170 120 146Z" fill="{white}" opacity=".5" filter="url(#blur3)"/>')
     if pat == "tabby":
         for k in range(4):
             G.append(f'<path d="M{66 + k*4} {176 + k*16} q18 -8 36 -2" stroke="{stripe}" stroke-width="4.5" fill="none" stroke-linecap="round" opacity=".65"/>')
@@ -180,6 +176,15 @@ def kitten_side(theme, fur_key, outfit, expr="calm", uid=None):
     pc = white if pat in ("blaze", "tuxedo") else fur
     G.append(f'<ellipse cx="190" cy="232" rx="16" ry="11"{ST} fill="{pc}" transform="rotate(-30 190 232)"/>')
     G.append(f'<path d="M194 240 l3 4 M200 235 l4 3" {thin}/>')
+    # fluffy chest ruff under the chin (no hard edges)
+    import math as _m
+    pts = [(138 + 24 * _m.cos(_m.radians(t)), 168 + 22 * _m.sin(_m.radians(t))) for t in range(0, 361, 30)]
+    ruff = f"M{pts[0][0]:.1f} {pts[0][1]:.1f}" + "".join(
+        f" Q{138 + 31 * _m.cos(_m.radians(t + 15)):.1f} {168 + 29 * _m.sin(_m.radians(t + 15)):.1f} {x:.1f} {y:.1f}"
+        for t, (x, y) in zip(range(0, 361, 30), pts[1:])) + "Z"
+    rc = white if pat != "tabby" else sh(white, .98)
+    G.append(f'<path d="{ruff}" fill="{rc}" opacity="{1 if pat != "tabby" else .85}" filter="url(#blur1)"/>')
+    G.append(f'<path d="M130 182 q2 6 0 10 M140 186 q1 6 -1 10 M149 182 q0 6 -2 9" stroke="{sh(rc, .8)}" stroke-width="1.4" fill="none" stroke-linecap="round"/>')
     # scarf around the neck, knot at the front
     G.append(f'<path d="M92 144 Q122 160 150 148 L148 158 Q120 170 94 156 Z"{ST} fill="{scarf}"/>')
     G.append(f'<path d="M146 154 L156 182 L140 174 Z"{ST} fill="{sh(scarf, .88)}"/><circle cx="146" cy="154" r="5"{ST} fill="{sh(scarf, .82)}"/>')
@@ -190,11 +195,11 @@ def kitten_side(theme, fur_key, outfit, expr="calm", uid=None):
     exl, exr = px(-27), px(27)      # near eye (full) and far eye (foreshortened, close to the contour)
     kr = math.cos(TH + math.radians(27))
     # ears: near ear seen from the front with its pink inside; far ear seen edge-on at the contour
-    G.append(f'<path d="M154 48 C166 34 180 20 192 12 C194 32 190 52 182 70 Z"{ST} fill="{shade}"/>')
-    G.append(f'<path d="M168 42 C176 34 184 27 189 22 C189 34 187 46 184 56 Z" fill="{PINK}" opacity=".55"/>')
-    G.append(f'<path d="M80 72 C77 50 79 28 87 8 C103 18 117 32 126 48 Z"{ST} fill="{fur}"/>')
-    G.append(f'<path d="M88 62 C86 46 87 32 91 20 C101 28 109 36 116 48 Z" fill="{PINK}" opacity=".9"/>')
-    G.append(f'<path d="M96 54 q-1 -10 2 -16 M102 56 q0 -9 4 -13 M91 56 q-2 -8 -1 -12" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round"/>')
+    G.append(f'<path d="M144 48 C156 32 170 18 184 8 C189 26 188 46 182 64 Z"{ST} fill="{shade}"/>')
+    G.append(f'<path d="M160 42 C168 32 176 24 182 18 C184 32 183 44 180 54 Z" fill="{PINK}" opacity=".6"/>')
+    G.append(f'<path d="M72 78 C66 54 68 28 78 4 C98 14 116 30 128 48 Z"{ST} fill="{fur}"/>')
+    G.append(f'<path d="M80 66 C77 48 78 30 83 16 C97 26 109 36 118 48 Z" fill="{PINK}" opacity=".9"/>')
+    G.append(f'<path d="M90 56 q-1 -12 2 -18 M97 58 q0 -10 4 -15 M84 58 q-2 -9 -1 -14" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round"/>')
     G.append(f'<path d="{head}"{ST} fill="{fur}"/>')
     G.append(f'<g clip-path="url(#h{uid})">')
     if pat == "tabby":
@@ -202,7 +207,7 @@ def kitten_side(theme, fur_key, outfit, expr="calm", uid=None):
         G.append(f'<path d="M60 100 q10 1 18 5 M62 112 q10 0 16 4" stroke="{stripe}" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/>')
         G.append(f'<ellipse cx="{fx+4}" cy="128" rx="28" ry="19" fill="{white}" opacity=".85" filter="url(#blur3)"/>')
     else:
-        G.append(f'<path d="M{fx-2} 62 C{fx+6} 86 {fx+42} 98 {fx+44} 162 L{fx-34} 162 C{fx-36} 104 {fx-8} 88 {fx-2} 62 Z" fill="{white}"/>')
+        G.append(f'<path d="M{fx-2} 62 C{fx+2} 80 {fx+8} 90 {fx+18} 98 C{fx+30} 106 198 112 198 128 C194 146 160 158 128 158 C106 158 94 150 96 136 C98 122 {fx-30} 106 {fx-17} 97 C{fx-8} 90 {fx-4} 80 {fx-2} 62 Z" fill="{white}" filter="url(#blur1)"/>')
     G.append(f'<ellipse cx="104" cy="60" rx="36" ry="15" fill="{light}" opacity=".55" filter="url(#blur4)"/>')
     G.append(f'<ellipse cx="96" cy="120" rx="30" ry="30" fill="{shade}" opacity=".25" filter="url(#blur4)"/>')
     G.append(f'<ellipse cx="124" cy="152" rx="70" ry="14" fill="{shade}" opacity=".5" filter="url(#blur4)"/>')
