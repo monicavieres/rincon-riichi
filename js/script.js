@@ -241,6 +241,11 @@ const translations = {
                 desc: "Viaje al Riichi: 8 islas de desafíos. Primero juegas, después entiendes.",
                 message: "Tutorial DEMO C"
             },
+            demoD: {
+                title: "Tutorial DEMO D",
+                desc: "Paso a paso, sin apuro: letra grande, voz pausada y una hoja para imprimir.",
+                message: "Tutorial DEMO D"
+            },
             descarte: {
                 title: "¿Qué descartas?",
                 desc: "Eficiencia, ukeire y lectura de forma.",
@@ -578,6 +583,11 @@ const translations = {
                 title: "Tutorial DEMO C",
                 desc: "Journey to Riichi: 8 islands of challenges. Play first, understand after.",
                 message: "Tutorial DEMO C"
+            },
+            demoD: {
+                title: "Tutorial DEMO D",
+                desc: "Step by step, no hurry: large text, a slower voice and a sheet to print.",
+                message: "Tutorial DEMO D"
             },
             descarte: {
                 title: "What Do You Discard?",
@@ -917,6 +927,11 @@ const translations = {
                 desc: "Viagem ao Riichi: 8 ilhas de desafios. Primeiro você joga, depois entende.",
                 message: "Tutorial DEMO C"
             },
+            demoD: {
+                title: "Tutorial DEMO D",
+                desc: "Passo a passo, sem pressa: letra grande, voz pausada e uma folha para imprimir.",
+                message: "Tutorial DEMO D"
+            },
             descarte: {
                 title: "O que descartar?",
                 desc: "Eficiência, ukeire e leitura da forma.",
@@ -1064,6 +1079,7 @@ document.addEventListener("rincon:mounted", () => {
                 "demo-a": "aprender/demo-a.html",
                 "demo-b": "aprender/demo-b.html",
                 "demo-c": "aprender/demo-c.html",
+                "demo-d": "aprender/demo-d.html",
                 machi: "aprender/machi.html",
                 "yaku-ref": "aprender/yaku-reference.html",
                 dora: "aprender/dora.html",

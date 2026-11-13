@@ -1604,6 +1604,7 @@ a {
 .icon-demo-a::after { content: "映"; }
 .icon-demo-b::after { content: "魔"; }
 .icon-demo-c::after { content: "旅"; }
+.icon-demo-d::after { content: "易"; }
 .icon-tile-name::after { content: "名"; }
 .icon-concepts::after { content: "学"; }
 .icon-yaku::after { content: "役"; }

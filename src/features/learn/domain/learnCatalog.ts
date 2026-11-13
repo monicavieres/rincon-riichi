@@ -1,4 +1,4 @@
-export type LearnKind = 'tutorial' | 'tiles' | 'machi' | 'dora' | 'defensa' | 'reglas' | 'yakuReference' | 'score' | 'demoA' | 'demoB' | 'demoC' | 'reference';
+export type LearnKind = 'tutorial' | 'tiles' | 'machi' | 'dora' | 'defensa' | 'reglas' | 'yakuReference' | 'score' | 'demoA' | 'demoB' | 'demoC' | 'demoD' | 'reference';
 export type LearnDefinition = { kind: LearnKind; title: string; bodyClass: string; shellClass: string };
 
 const byFile: Record<string, LearnDefinition> = {
@@ -13,6 +13,7 @@ const byFile: Record<string, LearnDefinition> = {
   'demo-a.html': { kind: 'demoA', title: 'Tutorial DEMO A', bodyClass: 'ref-body demo-body', shellClass: 'demo-shell' },
   'demo-b.html': { kind: 'demoB', title: 'Tutorial DEMO B', bodyClass: 'ref-body demo-body', shellClass: 'demo-shell' },
   'demo-c.html': { kind: 'demoC', title: 'Tutorial DEMO C', bodyClass: 'ref-body demo-body', shellClass: 'demo-shell' },
+  'demo-d.html': { kind: 'demoD', title: 'Tutorial DEMO D', bodyClass: 'ref-body demo-body', shellClass: 'demo-shell' },
 };
 
 export function getLearnDefinition(pathname: string): LearnDefinition {
