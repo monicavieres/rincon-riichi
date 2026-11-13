@@ -10,6 +10,7 @@
 @import '../../../css/design-system.css';
 @import '../../../css/tutorial-stage.css';
 @import '../../../css/design-system-pages.css';
+@import '../../../css/tutorial-demos.css';
 
 #root { min-height: 100vh; }
 

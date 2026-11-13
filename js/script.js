@@ -226,6 +226,21 @@ const translations = {
                 desc: "Guía paso a paso: mesa, muro, fichas y yakus.",
                 message: "Tutorial: ruta guiada para principiantes."
             },
+            demoA: {
+                title: "Tutorial DEMO A",
+                desc: "Curso relámpago: el juego completo en 6 capítulos, como un video que tú controlas.",
+                message: "Tutorial DEMO A"
+            },
+            demoB: {
+                title: "Tutorial DEMO B",
+                desc: "La magia del mahjong: una gata guía, escenarios y minijuegos con voz.",
+                message: "Tutorial DEMO B"
+            },
+            demoC: {
+                title: "Tutorial DEMO C",
+                desc: "Viaje al Riichi: 8 islas de desafíos. Primero juegas, después entiendes.",
+                message: "Tutorial DEMO C"
+            },
             descarte: {
                 title: "¿Qué descartas?",
                 desc: "Eficiencia, ukeire y lectura de forma.",
@@ -548,6 +563,21 @@ const translations = {
                 title: "Tutorial",
                 desc: "Step-by-step guide: table, wall, tiles and yaku.",
                 message: "Tutorial: guided path for beginners."
+            },
+            demoA: {
+                title: "Tutorial DEMO A",
+                desc: "Crash course: the whole game in 6 chapters, like a video you control.",
+                message: "Tutorial DEMO A"
+            },
+            demoB: {
+                title: "Tutorial DEMO B",
+                desc: "The magic of mahjong: a guide cat, scenes and mini-games with voice.",
+                message: "Tutorial DEMO B"
+            },
+            demoC: {
+                title: "Tutorial DEMO C",
+                desc: "Journey to Riichi: 8 islands of challenges. Play first, understand after.",
+                message: "Tutorial DEMO C"
             },
             descarte: {
                 title: "What Do You Discard?",
@@ -872,6 +902,21 @@ const translations = {
                 desc: "Guia passo a passo: mesa, muro, peças e yaku.",
                 message: "Tutorial: caminho guiado para iniciantes."
             },
+            demoA: {
+                title: "Tutorial DEMO A",
+                desc: "Curso relâmpago: o jogo completo em 6 capítulos, como um vídeo que você controla.",
+                message: "Tutorial DEMO A"
+            },
+            demoB: {
+                title: "Tutorial DEMO B",
+                desc: "A magia do mahjong: uma gata guia, cenários e minijogos com voz.",
+                message: "Tutorial DEMO B"
+            },
+            demoC: {
+                title: "Tutorial DEMO C",
+                desc: "Viagem ao Riichi: 8 ilhas de desafios. Primeiro você joga, depois entende.",
+                message: "Tutorial DEMO C"
+            },
             descarte: {
                 title: "O que descartar?",
                 desc: "Eficiência, ukeire e leitura da forma.",
@@ -1016,6 +1061,9 @@ document.addEventListener("rincon:mounted", () => {
 
             const moduleRoutes = {
                 tutorial: "aprender/tutorial.html",
+                "demo-a": "aprender/demo-a.html",
+                "demo-b": "aprender/demo-b.html",
+                "demo-c": "aprender/demo-c.html",
                 machi: "aprender/machi.html",
                 "yaku-ref": "aprender/yaku-reference.html",
                 dora: "aprender/dora.html",

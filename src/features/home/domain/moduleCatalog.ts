@@ -14,6 +14,9 @@ export type ModuleCard = {
 
 export const learnModules: ModuleCard[] = [
   { id: 'tutorial', title: 'Tutorial', description: 'Guía paso a paso: mesa, muro, fichas y yakus.', route: 'aprender/tutorial.html', icon: 'icon-tutorial', tone: 'pink', translationBase: 'module.tutorial', status: 'v1.0' },
+  { id: 'demo-a', title: 'Tutorial DEMO A', description: 'Curso relámpago: el juego completo en 6 capítulos, como un video que tú controlas.', route: 'aprender/demo-a.html', icon: 'icon-demo-a', tone: 'blue', translationBase: 'module.demoA', status: 'DEMO' },
+  { id: 'demo-b', title: 'Tutorial DEMO B', description: 'La magia del mahjong: una gata guía, escenarios y minijuegos con voz.', route: 'aprender/demo-b.html', icon: 'icon-demo-b', tone: 'purple', translationBase: 'module.demoB', status: 'DEMO' },
+  { id: 'demo-c', title: 'Tutorial DEMO C', description: 'Viaje al Riichi: 8 islas de desafíos. Primero juegas, después entiendes.', route: 'aprender/demo-c.html', icon: 'icon-demo-c', tone: 'orange', translationBase: 'module.demoC', status: 'DEMO' },
   { id: 'fichas', title: 'Fichas', description: 'Manzu, pinzu, souzu, vientos, dragones y aka dora.', route: 'aprender/tiles.html', icon: 'icon-tiles', tone: 'green', translationBase: 'module.fichas', status: 'v1.0' },
   { id: 'machi', title: 'Tipos de Espera', description: 'Ryanmen, kanchan, penchan, tanki, nobetan y más esperas.', route: 'aprender/machi.html', icon: 'icon-machi', tone: 'yellow', translationBase: 'module.machi', status: 'v1.0' },
   { id: 'yaku-ref', title: 'Guía de Yakus', description: 'Todos los yaku con su valor y ejemplo de fichas.', route: 'aprender/yaku-reference.html', icon: 'icon-yaku', tone: 'green', translationBase: 'module.yakuRef', status: 'v1.0' },

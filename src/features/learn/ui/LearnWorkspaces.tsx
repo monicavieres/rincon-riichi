@@ -6,6 +6,9 @@ import { YakuRefWorkspace } from './YakuRefWorkspace';
 import { DoraWorkspace } from './DoraWorkspace';
 import { ScoreWorkspace } from './ScoreWorkspace';
 import { GuideWorkspace } from './GuideWorkspace';
+import { DemoCrash } from '../demos/DemoCrash';
+import { DemoMagic } from '../demos/DemoMagic';
+import { DemoVoyage } from '../demos/DemoVoyage';
 import { DEFENSA_GUIDE, REGLAS_GUIDE } from './guideConfigs';
 
 export function LearnWorkspace({ kind }: { kind: LearnKind }) {
@@ -17,5 +20,8 @@ export function LearnWorkspace({ kind }: { kind: LearnKind }) {
   if (kind === 'reglas') return <GuideWorkspace config={REGLAS_GUIDE} />;
   if (kind === 'yakuReference') return <YakuRefWorkspace />;
   if (kind === 'score') return <ScoreWorkspace />;
+  if (kind === 'demoA') return <DemoCrash />;
+  if (kind === 'demoB') return <DemoMagic />;
+  if (kind === 'demoC') return <DemoVoyage />;
   return <section className="ref-grid" id="refGrid" aria-label="Referencia" />;
 }
