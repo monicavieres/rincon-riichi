@@ -2016,3 +2016,4 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .ct-step em { font-style: normal; font-weight: 800; color: #ffe27a; font-size: 1.2em; }
 .ct-step small { margin-left: 6px; font: 800 max(11px, 1.5cqw) / 1 var(--font-sans); text-transform: uppercase; letter-spacing: .04em; }
 @media (max-width: 760px) { .cat-flow { grid-template-columns: 1fr; justify-items: center; } }
+.cat-flow .intro-note { margin-top: 18px; }
