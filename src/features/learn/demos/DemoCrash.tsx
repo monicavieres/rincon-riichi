@@ -1,11 +1,6 @@
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
 import { Burst, Cat, codes, DemoFrame, L, nextTile, Rich, shuffle, Tile, TileRow, useDemo, useStored, useVoice, type Expr, type Fur, type Lang, type Tx } from './kit';
-import { DealBoard } from '../ui/stages/DealBoard';
-import { DrawBoard } from '../ui/stages/DrawBoard';
-import { CallsBoard } from '../ui/stages/CallsBoard';
-import { WinBoard } from '../ui/stages/WinBoard';
-import { YakuBoard } from '../ui/stages/YakuBoard';
-import { FuritenBoard } from '../ui/stages/FuritenBoard';
+import { SLOT, StopBody, StopBoard, stopById } from './syllabus';
 import { StickSvg } from '../ui/stages/StickSvg';
 import { PlayMode } from '../ui/PlayMode';
 
@@ -15,9 +10,9 @@ import { PlayMode } from '../ui/PlayMode';
  * beat, a short subtitle at the bottom, and nothing moves until you press a button.
  */
 
-type Board = 'deal' | 'draw' | 'calls' | 'win' | 'yaku' | 'furiten';
 type SceneId = 'players' | 'goal' | 'groups' | 'yaku' | 'points' | 'tileset' | 'walls' | 'seats' | 'turn' | 'order' | 'callCards' | 'riichi' | 'dora' | 'safe' | 'exhaust' | 'finale';
-type Beat = { cap: Tx; scene?: SceneId; board?: Board };
+/** `stop` shows the base tutorial's scene for that step; `ref` only links its full explanation. */
+type Beat = { cap: Tx; scene?: SceneId; stop?: string; ref?: string };
 type Chapter = { id: string; title: Tx; beats: Beat[] };
 
 const CHAPTERS: Chapter[] = [
@@ -26,7 +21,8 @@ const CHAPTERS: Chapter[] = [
     title: L('Qué es y cómo se gana', 'What it is and how to win', 'O que é e como se ganha'),
     beats: [
       { scene: 'players', cap: L('El mahjong riichi se juega entre **4 jugadores** alrededor de una mesa. Tú eres la gatita de abajo.', 'Riichi mahjong is played by **4 players** around a table. You are the kitten at the bottom.', 'O mahjong riichi é jogado por **4 jogadores** ao redor de uma mesa. Você é a gatinha de baixo.') },
-      { scene: 'goal', cap: L('Cada uno tiene una mano de fichas. Gana quien primero junta **4 grupos y 1 pareja**: 14 fichas. Pulsa «Agrupar».', 'Each player holds a hand of tiles. The first to make **4 sets and 1 pair** (14 tiles) wins. Press “Group”.', 'Cada um tem uma mão de peças. Ganha quem primeiro junta **4 grupos e 1 par**: 14 peças. Toque em «Agrupar».') },
+      { stop: 'intro', cap: L('Tres cosas para entender la mesa: las **fichas**, el **viento de tu asiento** y el **viento de la ronda**. Pasa las láminas con las flechas del tablero.', 'Three things explain the table: the **tiles**, your **seat wind** and the **round wind**. Go through the slides with the board arrows.', 'Três coisas explicam a mesa: as **peças**, o **vento do seu assento** e o **vento da rodada**. Passe as lâminas com as setas do quadro.') },
+      { scene: 'goal', ref: 'goal', cap: L('Cada uno tiene una mano de fichas. Gana quien primero junta **4 grupos y 1 pareja**: 14 fichas. Pulsa «Agrupar».', 'Each player holds a hand of tiles. The first to make **4 sets and 1 pair** (14 tiles) wins. Press “Group”.', 'Cada um tem uma mão de peças. Ganha quem primeiro junta **4 grupos e 1 par**: 14 peças. Toque em «Agrupar».') },
       { scene: 'groups', cap: L('Un grupo es una **secuencia** (3 números seguidos del mismo palo) o un **trío** (3 fichas iguales). La **pareja** son 2 iguales.', 'A set is a **sequence** (3 numbers in a row of the same suit) or a **triplet** (3 identical tiles). The **pair** is 2 identical tiles.', 'Um grupo é uma **sequência** (3 números seguidos do mesmo naipe) ou um **trio** (3 peças iguais). O **par** são 2 iguais.') },
       { scene: 'yaku', cap: L('El truco del riichi: además necesitas al menos **1 yaku**, una condición extra que le da valor a tu mano. Los verás en el capítulo 5.', 'The riichi twist: you also need at least **1 yaku**, an extra condition that gives your hand value. You will see them in chapter 5.', 'O truque do riichi: você também precisa de pelo menos **1 yaku**, uma condição extra que dá valor à mão. Você vai vê-los no capítulo 5.') },
       { scene: 'points', cap: L('Todos empiezan con **25 000 puntos**, en palitos de colores. Quien gana una mano cobra; al final gana quien tiene más.', 'Everyone starts with **25,000 points**, as coloured sticks. Whoever wins a hand collects; at the end, the most points wins.', 'Todos começam com **25 000 pontos**, em palitos coloridos. Quem ganha uma mão recebe; no final ganha quem tiver mais.') },
@@ -37,39 +33,53 @@ const CHAPTERS: Chapter[] = [
     title: L('Preparación', 'Setup', 'Preparação'),
     beats: [
       { scene: 'tileset', cap: L('Hay **136 fichas**: 34 tipos con 4 copias de cada uno. Tres palos numerados del 1 al 9 y los honores: vientos y dragones.', 'There are **136 tiles**: 34 kinds, 4 copies of each. Three suits numbered 1 to 9, plus the honors: winds and dragons.', 'São **136 peças**: 34 tipos com 4 cópias de cada. Três naipes numerados de 1 a 9 e as honras: ventos e dragões.') },
-      { scene: 'walls', cap: L('Se ponen boca abajo, se revuelven y cada uno arma un **muro** de 17 pilas de 2 fichas frente a sí. Pulsa «Armar muros».', 'They go face down, get mixed, and each player builds a **wall** of 17 stacks of 2 in front of them. Press “Build walls”.', 'Ficam viradas para baixo, são misturadas e cada um monta um **muro** de 17 pilhas de 2 à sua frente. Toque em «Montar muros».') },
-      { scene: 'seats', cap: L('Cada asiento tiene un viento. El **dealer** es quien se sienta en **Este** y juega primero. En esta mano eres tú.', 'Each seat has a wind. The **dealer** is whoever sits **East** and plays first. In this hand, that is you.', 'Cada assento tem um vento. O **dealer** é quem se senta no **Leste** e joga primeiro. Nesta mão é você.') },
-      { board: 'deal', cap: L('Se abre el muro y cada uno toma **13 fichas**; el dealer toma una más. Pulsa el botón de la mesa para ver el reparto.', 'The wall is opened and everyone takes **13 tiles**; the dealer takes one more. Press the button on the table to watch the deal.', 'O muro é aberto e cada um pega **13 peças**; o dealer pega uma a mais. Toque no botão da mesa para ver a distribuição.') },
+      { stop: 'shuffle', cap: L('Primero se **revuelven** las 136 fichas boca abajo. Barre el montón con el mouse o el dedo.', 'First the 136 tiles are **mixed** face down. Sweep the heap with the mouse or your finger.', 'Primeiro as 136 peças são **misturadas** viradas para baixo. Varra o monte com o mouse ou o dedo.') },
+      { scene: 'walls', ref: 'walls', cap: L('Se ponen boca abajo, se revuelven y cada uno arma un **muro** de 17 pilas de 2 fichas frente a sí. Pulsa «Armar muros».', 'They go face down, get mixed, and each player builds a **wall** of 17 stacks of 2 in front of them. Press “Build walls”.', 'Ficam viradas para baixo, são misturadas e cada um monta um **muro** de 17 pilhas de 2 à sua frente. Toque em «Montar muros».') },
+      { stop: 'dealer', cap: L('¿Quién empieza? Cada uno lanza un dado: el número más alto es el **dealer**.', 'Who starts? Everyone rolls a die: the highest number is the **dealer**.', 'Quem começa? Cada um lança um dado: o número mais alto é o **dealer**.') },
+      { scene: 'seats', ref: 'compass', cap: L('Cada asiento tiene un viento. El **dealer** es quien se sienta en **Este** y juega primero. En esta mano eres tú.', 'Each seat has a wind. The **dealer** is whoever sits **East** and plays first. In this hand, that is you.', 'Cada assento tem um vento. O **dealer** é quem se senta no **Leste** e joga primeiro. Nesta mão é você.') },
+      { stop: 'compass-tour', cap: L('El **compass** del centro dice quién es quién: el viento de cada asiento, la ronda y dónde va el palito de riichi.', 'The **compass** in the middle tells who is who: each seat’s wind, the round, and where the riichi stick goes.', 'O **compass** do centro diz quem é quem: o vento de cada assento, a rodada e onde fica o palito de riichi.') },
+      { stop: 'dice', cap: L('El dealer lanza **dos dados**: la suma dice por dónde se **abre el muro**. Las 14 fichas de al lado quedan apartadas: el **muro muerto**.', 'The dealer rolls **two dice**: the total says where the **wall opens**. The 14 tiles beside it are set apart: the **dead wall**.', 'O dealer lança **dois dados**: a soma diz onde o **muro abre**. As 14 peças ao lado ficam separadas: o **muro morto**.') },
+      { stop: 'deal-draw', cap: L('Se abre el muro y cada uno toma **13 fichas**; el dealer toma una más. Pulsa el botón de la mesa para ver el reparto.', 'The wall is opened and everyone takes **13 tiles**; the dealer takes one more. Press the button on the table to watch the deal.', 'O muro é aberto e cada um pega **13 peças**; o dealer pega uma a mais. Toque no botão da mesa para ver a distribuição.') },
     ],
   },
   {
     id: 'turn',
-    title: L('Tu turno', 'Your turn', 'Sua vez'),
+    title: L('Tu mano y tu turno', 'Your hand and turn', 'Sua mão e sua vez'),
     beats: [
-      { scene: 'turn', cap: L('Un turno es simple: **robas 1** ficha del muro y **botas 1** al centro, frente a ti. Pruébalo: roba y luego toca la ficha que no quieres.', 'A turn is simple: **draw 1** tile from the wall and **discard 1** to the middle, in front of you. Try it: draw, then tap the tile you do not want.', 'Uma vez é simples: **compre 1** peça do muro e **descarte 1** no centro, à sua frente. Experimente: compre e toque na peça que não quer.') },
+      { stop: 'sort', cap: L('Al recibir tus fichas, **ordénalas**: junta cada palo y los honores para ver tus grupos de un vistazo.', 'When you get your tiles, **sort** them: gather each suit and the honors to see your sets at a glance.', 'Ao receber suas peças, **organize-as**: junte cada naipe e as honras para ver seus grupos num relance.') },
+      { scene: 'turn', ref: 'draw', cap: L('Un turno es simple: **robas 1** ficha del muro y **botas 1** al centro, frente a ti. Pruébalo: roba y luego toca la ficha que no quieres.', 'A turn is simple: **draw 1** tile from the wall and **discard 1** to the middle, in front of you. Try it: draw, then tap the tile you do not want.', 'Uma vez é simples: **compre 1** peça do muro e **descarte 1** no centro, à sua frente. Experimente: compre e toque na peça que não quer.') },
       { scene: 'order', cap: L('Se juega en sentido **antihorario**: Este, Sur, Oeste, Norte… y otra vez Este. Pulsa «Siguiente turno».', 'Play goes **counter-clockwise**: East, South, West, North… and East again. Press “Next turn”.', 'Joga-se no sentido **anti-horário**: Leste, Sul, Oeste, Norte… e de novo Leste. Toque em «Próxima vez».') },
-      { board: 'draw', cap: L('Ahora en la mesa: bota siempre la ficha que no ayuda a formar grupos. Si te equivocas, la escena te avisa.', 'Now at the table: always discard the tile that does not help make sets. If you slip, the scene tells you.', 'Agora na mesa: descarte sempre a peça que não ajuda a formar grupos. Se errar, a cena avisa.') },
+      { stop: 'draw', cap: L('Ahora en la mesa: bota siempre la ficha que no ayuda a formar grupos. Si te equivocas, la escena te avisa.', 'Now at the table: always discard the tile that does not help make sets. If you slip, the scene tells you.', 'Agora na mesa: descarte sempre a peça que não ajuda a formar grupos. Se errar, a cena avisa.') },
     ],
   },
   {
     id: 'actions',
     title: L('Acciones', 'Actions', 'Ações'),
     beats: [
-      { scene: 'callCards', cap: L('Puedes **tomar la ficha que otro bota** para completar un grupo: **pon** (trío), **chii** (secuencia, solo del jugador a tu izquierda) o **kan** (4 iguales).', 'You can **take a tile someone discards** to finish a set: **pon** (triplet), **chii** (sequence, only from the player on your left) or **kan** (4 of a kind).', 'Você pode **pegar a peça que outro descarta** para completar um grupo: **pon** (trio), **chii** (sequência, só do jogador à sua esquerda) ou **kan** (4 iguais).') },
-      { board: 'calls', cap: L('Míralo en la mesa. Ojo: al tomar una ficha ajena tu mano queda **abierta** y algunos yaku dejan de valer.', 'Watch it at the table. Careful: taking someone else’s tile makes your hand **open**, and some yaku no longer count.', 'Veja na mesa. Atenção: ao pegar a peça de outro sua mão fica **aberta** e alguns yaku deixam de valer.') },
+      { scene: 'callCards', ref: 'calls', cap: L('Puedes **tomar la ficha que otro bota** para completar un grupo: **pon** (trío), **chii** (secuencia, solo del jugador a tu izquierda) o **kan** (4 iguales).', 'You can **take a tile someone discards** to finish a set: **pon** (triplet), **chii** (sequence, only from the player on your left) or **kan** (4 of a kind).', 'Você pode **pegar a peça que outro descarta** para completar um grupo: **pon** (trio), **chii** (sequência, só do jogador à sua esquerda) ou **kan** (4 iguais).') },
+      { stop: 'calls', cap: L('Míralo en la mesa. Ojo: al tomar una ficha ajena tu mano queda **abierta** y algunos yaku dejan de valer.', 'Watch it at the table. Careful: taking someone else’s tile makes your hand **open**, and some yaku no longer count.', 'Veja na mesa. Atenção: ao pegar a peça de outro sua mão fica **aberta** e alguns yaku deixam de valer.') },
       { scene: 'riichi', cap: L('Si te falta 1 ficha para ganar estás en **tenpai**. Con la mano cerrada puedes declarar **riichi**: apuestas 1000 y ya no cambias tu mano. ¡Es un yaku!', 'One tile from winning means you are **tenpai**. With a closed hand you can declare **riichi**: bet 1,000 and stop changing your hand. It is a yaku!', 'Faltando 1 peça para ganhar você está em **tenpai**. Com a mão fechada pode declarar **riichi**: aposta 1000 e não muda mais a mão. É um yaku!') },
-      { board: 'win', cap: L('Ganas con **tsumo** si robas tú la ficha que te falta, o con **ron** si otro jugador la bota.', 'You win by **tsumo** if you draw the missing tile yourself, or by **ron** if another player discards it.', 'Você ganha com **tsumo** se comprar a peça que falta, ou com **ron** se outro jogador a descartar.') },
+      { stop: 'ron-tsumo', cap: L('Ganas con **tsumo** si robas tú la ficha que te falta, o con **ron** si otro jugador la bota.', 'You win by **tsumo** if you draw the missing tile yourself, or by **ron** if another player discards it.', 'Você ganha com **tsumo** se comprar a peça que falta, ou com **ron** se outro jogador a descartar.') },
     ],
   },
   {
     id: 'rules',
     title: L('Reglas extra', 'Extra rules', 'Regras extras'),
     beats: [
-      { board: 'yaku', cap: L('Tres yaku fáciles para empezar: **riichi**, **tanyao** (solo fichas del 2 al 8) y **yakuhai** (un trío de dragones o de tu viento).', 'Three easy yaku to start: **riichi**, **tanyao** (only tiles 2 to 8) and **yakuhai** (a triplet of dragons or of your wind).', 'Três yaku fáceis para começar: **riichi**, **tanyao** (só peças de 2 a 8) e **yakuhai** (um trio de dragões ou do seu vento).') },
+      { stop: 'yaku', cap: L('Tres yaku fáciles para empezar: **riichi**, **tanyao** (solo fichas del 2 al 8) y **yakuhai** (un trío de dragones o de tu viento).', 'Three easy yaku to start: **riichi**, **tanyao** (only tiles 2 to 8) and **yakuhai** (a triplet of dragons or of your wind).', 'Três yaku fáceis para começar: **riichi**, **tanyao** (só peças de 2 a 8) e **yakuhai** (um trio de dragões ou do seu vento).') },
       { scene: 'dora', cap: L('El **dora** es una ficha de premio: la que sigue al **indicador** que se da vuelta en el muro. Cada dora suma valor, pero no cuenta como yaku.', 'The **dora** is a bonus tile: the one after the **indicator** turned face up on the wall. Each dora adds value, but it does not count as a yaku.', 'O **dora** é uma peça de prêmio: a que vem depois do **indicador** virado no muro. Cada dora soma valor, mas não conta como yaku.') },
-      { board: 'furiten', cap: L('**Furiten**: si ya botaste una de las fichas con las que ganarías, no puedes ganar por ron. Solo te queda el tsumo.', '**Furiten**: if you already discarded one of your winning tiles, you cannot win by ron. Only tsumo is left.', '**Furiten**: se você já descartou uma das peças com que ganharia, não pode ganhar por ron. Só resta o tsumo.') },
+      { stop: 'furiten', cap: L('**Furiten**: si ya botaste una de las fichas con las que ganarías, no puedes ganar por ron. Solo te queda el tsumo.', '**Furiten**: if you already discarded one of your winning tiles, you cannot win by ron. Only tsumo is left.', '**Furiten**: se você já descartou uma das peças com que ganharia, não pode ganhar por ron. Só resta o tsumo.') },
       { scene: 'safe', cap: L('Defensa básica: si un rival declara riichi, las fichas que **él mismo ya botó** son seguras: no puede ganar con ellas.', 'Basic defence: when a rival declares riichi, the tiles **they already discarded** are safe: they cannot win on them.', 'Defesa básica: se um rival declara riichi, as peças que **ele mesmo já descartou** são seguras: ele não pode ganhar com elas.') },
       { scene: 'exhaust', cap: L('Si el muro se acaba y nadie gana, la mano termina en **empate**. Quienes no estaban en tenpai pagan 3000 puntos a los que sí.', 'If the wall runs out and nobody wins, the hand is a **draw**. Players who were not tenpai pay 3,000 points to those who were.', 'Se o muro acaba e ninguém ganha, a mão termina **empatada**. Quem não estava em tenpai paga 3000 pontos a quem estava.') },
+    ],
+  },
+  {
+    id: 'score',
+    title: L('Puntos y rondas', 'Points and rounds', 'Pontos e rodadas'),
+    beats: [
+      { stop: 'sticks', cap: L('Los puntos se llevan en **palitos** de colores. Mira cuánto vale cada uno.', 'Points are kept as coloured **sticks**. See what each one is worth.', 'Os pontos ficam em **palitos** coloridos. Veja quanto vale cada um.') },
+      { stop: 'points', cap: L('Al ganar, los demás te **pagan** con palitos. El dealer cobra y paga más. Cambia entre «Cobras» y «Pagas».', 'When you win, the others **pay** you in sticks. The dealer collects and pays more. Switch between “You collect” and “You pay”.', 'Ao ganhar, os outros te **pagam** com palitos. O dealer recebe e paga mais. Alterne entre «Você recebe» e «Você paga».') },
+      { stop: 'rounds', cap: L('Si el dealer no gana, el puesto pasa al siguiente. Tras cuatro dealers termina la **ronda Este** y viene la **Sur**.', 'If the dealer does not win, the seat passes on. After four dealers the **East round** ends and **South** begins.', 'Se o dealer não ganha, o posto passa adiante. Depois de quatro dealers termina a **rodada Leste** e vem a **Sul**.') },
     ],
   },
   {
@@ -90,6 +100,8 @@ const UI = {
   chapter: L('Capítulo', 'Chapter', 'Capítulo'),
   repeat: L('Repetir', 'Again', 'Repetir'),
   hear: L('Escuchar', 'Listen', 'Ouvir'),
+  more: L('Explicación completa', 'Full explanation', 'Explicação completa'),
+  less: L('Ocultar explicación', 'Hide explanation', 'Ocultar explicação'),
 };
 
 /* ── Scenes ───────────────────────────────────────────────────────────────── */
@@ -425,7 +437,7 @@ function FinaleScene({ theme, t, onPlay }: { theme: string; t: (v: Tx) => string
         {(['orange', 'white', 'grey', 'black'] as Fur[]).map((fur, i) => <Cat key={fur} theme={theme} fur={fur} expr={i % 2 ? 'excited' : 'happy'} style={{ animationDelay: `${i * 120}ms` }} />)}
       </div>
       <ul className="ca-recap">
-        {CHAPTERS.slice(0, 5).map((chapter) => <li key={chapter.id}>✓ {t(chapter.title)}</li>)}
+        {CHAPTERS.slice(0, -1).map((chapter) => <li key={chapter.id}>✓ {t(chapter.title)}</li>)}
       </ul>
       <div className="ca-finale-actions">
         <button type="button" className="demo-btn is-primary is-big" onClick={onPlay}>{t(L('Jugar una mano', 'Play a hand', 'Jogar uma mão'))} ▶</button>
@@ -437,16 +449,16 @@ function FinaleScene({ theme, t, onPlay }: { theme: string; t: (v: Tx) => string
   );
 }
 
-const SLOT: Partial<Record<Board, string>> = { calls: 'calls-controls', yaku: 'yaku-controls', furiten: 'furiten-controls' };
 
 export function DemoCrash() {
   const { language, theme, t } = useDemo();
   const voice = useVoice(language);
   const [at, setAt] = useStored('rincon-riichi-demo-a', 0);
   const [playing, setPlaying] = useState(false);
+  const [more, setMore] = useState(false);
   const index = Math.min(Math.max(0, at), FLAT.length - 1);
   const beat = FLAT[index];
-  const go = (next: number) => setAt(Math.min(Math.max(0, next), FLAT.length - 1));
+  const go = (next: number) => { setMore(false); setAt(Math.min(Math.max(0, next), FLAT.length - 1)); };
 
   useEffect(() => { voice.say(t(beat.cap)); }, [index, language]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -461,12 +473,7 @@ export function DemoCrash() {
   });
 
   const stage = (() => {
-    if (beat.board === 'deal') return <DealBoard key={language} language={language} />;
-    if (beat.board === 'draw') return <DrawBoard key={language} language={language} />;
-    if (beat.board === 'calls') return <CallsBoard key={language} language={language} />;
-    if (beat.board === 'win') return <WinBoard key={language} language={language} />;
-    if (beat.board === 'yaku') return <YakuBoard key={language} language={language} />;
-    if (beat.board === 'furiten') return <FuritenBoard key={language} language={language} />;
+    if (beat.stop) return <StopBoard key={beat.stop} stop={stopById(beat.stop)} language={language} />;
     switch (beat.scene) {
       case 'players': return <TableTop theme={theme} language={language} moods={['happy', 'smile', 'smile', 'smile'] as Expr[]}><span className="ca-felt-mark">{t(L('mesa', 'table', 'mesa'))}</span></TableTop>;
       case 'goal': return <GoalScene t={t} />;
@@ -488,7 +495,8 @@ export function DemoCrash() {
     }
   })();
 
-  const slot = beat.board ? SLOT[beat.board] : undefined;
+  const slot = beat.stop ? SLOT[beat.stop] : undefined;
+  const detail = beat.stop ?? beat.ref;
 
   return (
     <DemoFrame className="demo-a" title={<><b>DEMO A</b> · {t(UI.title)}</>} t={t} voice={voice}>
@@ -506,7 +514,7 @@ export function DemoCrash() {
         })}
       </nav>
 
-      <div className={`ca-stage${beat.board ? ' has-board' : ''}`} key={`${index}-${language}`}>
+      <div className={`ca-stage${beat.stop ? ' has-board' : ''}`} key={`${index}-${language}`}>
         {stage}
       </div>
 
@@ -516,6 +524,8 @@ export function DemoCrash() {
           <span className="ca-caption-kicker">{t(UI.chapter)} {beat.c + 1} · {beat.b + 1}/{CHAPTERS[beat.c].beats.length}</span>
           <p><Rich text={t(beat.cap)} /></p>
           {slot && <div id={slot} className="yaku-controls ca-slot" />}
+          {detail && <button type="button" className="ca-more" onClick={() => setMore((m) => !m)} aria-expanded={more}>📖 {more ? t(UI.less) : t(UI.more)}</button>}
+          {detail && more && <div className="ca-detail"><strong>{t(stopById(detail).title)}</strong><StopBody text={t(stopById(detail).body)} /></div>}
         </div>
         {voice.supported && <button type="button" className="ca-hear" onClick={() => voice.say(t(beat.cap), true)} aria-label={t(UI.hear)} title={t(UI.hear)}>🔊</button>}
         <button type="button" className="ca-nav is-next" onClick={() => go(index + 1)} disabled={index === FLAT.length - 1} aria-label={t(UI.next)}>→</button>
