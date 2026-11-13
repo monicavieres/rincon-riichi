@@ -53,7 +53,7 @@ export function wallSlot(side: number, stack: number, level: number): Pose {
 }
 
 /** Every rival cat shuffles with two paws, entering side by side from its own edge. */
-const RIVAL_PAWS = [
+export const RIVAL_PAWS = [
   { rival: 0, second: false, x: 96, y: 43, turn: -90 }, { rival: 0, second: true, x: 96, y: 57, turn: -90 },
   { rival: 1, second: false, x: 43, y: 4, turn: 180 }, { rival: 1, second: true, x: 57, y: 4, turn: 180 },
   { rival: 2, second: false, x: 4, y: 57, turn: 90 }, { rival: 2, second: true, x: 4, y: 43, turn: 90 },
@@ -114,10 +114,10 @@ export function Palm({ look = 'white' }: { look?: PawLook }) {
   );
 }
 
-const RIVAL_LOOKS: PawLook[] = ['orange', 'grey', 'black'];
+export const RIVAL_LOOKS: PawLook[] = ['orange', 'grey', 'black'];
 
 /** The three rival cats around the table: right and left are seen side-on, the far one faces us. */
-const RIVAL_CATS = [
+export const RIVAL_CATS = [
   { fur: 'orange', x: 105, y: 54, view: 'side', mirror: true },
   { fur: 'grey', x: 50, y: 9, view: 'front', mirror: false },
   { fur: 'black', x: -5, y: 54, view: 'side', mirror: false },
@@ -134,6 +134,54 @@ const ownerOf = (pose: Pose): number => {
 type Chore = { phase: 'idle' | 'go' | 'push' | 'back'; t0: number; from: { x: number; y: number }; to: { x: number; y: number }; rest: number };
 const THEMES = ['light', 'dark', 'cute', 'samurai', 'cyberpunk', 'vaquero', 'frutiger', 'fox'];
 const themeNow = () => { const th = document.documentElement.getAttribute('data-theme') || 'light'; return THEMES.includes(th) ? th : 'light'; };
+
+/** The current theme name, kept in sync with the <html data-theme> switch. */
+export function useThemeName(): string {
+  const [theme, setTheme] = useState(themeNow);
+  useEffect(() => {
+    const watch = new MutationObserver(() => setTheme(themeNow()));
+    watch.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => watch.disconnect();
+  }, []);
+  return theme;
+}
+
+/** Places the three rival cat images around the table; call it at the end of a scene's draw. */
+export function placeRivalCats(g: Painter, els: Array<HTMLImageElement | null>) {
+  const a = g.project(35, 50, FELT_Z);
+  const b = g.project(65, 50, FELT_Z);
+  const unit = Math.abs(b.x - a.x) / 30;
+  RIVAL_CATS.forEach((seat, i) => {
+    const el = els[i];
+    if (!el) return;
+    const at = g.project(seat.x, seat.y, FELT_Z);
+    const w = (seat.view === 'front' ? 30 : 33) * unit * at.f / (a.f || 1);
+    el.style.width = `${w}px`;
+    el.style.left = `${at.x}px`;
+    el.style.top = `${at.y}px`;
+    el.style.transform = `translate(-50%, -${seat.view === 'front' ? 92 : 88}%)${seat.mirror ? ' scaleX(-1)' : ''}`;
+  });
+}
+
+/** The rival cat images (render them before the IsoCanvas). `mood[i]` picks each cat's face. */
+export function RivalCats({ theme, mood, refs }: { theme: string; mood: Array<'calm' | 'happy' | 'excited'>; refs: { current: Array<HTMLImageElement | null> } }) {
+  return (
+    <>
+      {RIVAL_CATS.map((seat, i) => {
+        const face = seat.view === 'side' ? mood[i] : ({ calm: 'smile', happy: 'happy', excited: 'excited' } as const)[mood[i]];
+        return (
+          <img
+            key={seat.fur}
+            className={`deck-cat is-${seat.view}`}
+            ref={(el) => { refs.current[i] = el; }}
+            src={`../assets/illustrations/cats/${theme}-${seat.fur}${seat.view === 'side' ? '-side' : ''}-${face}.svg`}
+            alt=""
+          />
+        );
+      })}
+    </>
+  );
+}
 
 
 /**
@@ -154,12 +202,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
 
   const scene = useRef<IsoHandle>(null);
   const catEls = useRef<Array<HTMLImageElement | null>>([]);
-  const [theme, setTheme] = useState(themeNow);
-  useEffect(() => {
-    const watch = new MutationObserver(() => setTheme(themeNow()));
-    watch.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-    return () => watch.disconnect();
-  }, []);
+  const theme = useThemeName();
 
   useEffect(() => {
     onStatus?.({ progress, done: progress >= 1 });
@@ -365,20 +408,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
       g.tile(pose.x, pose.y, pose.rot, FELT_Z + (pose.h ?? 0) * TILE_T, { order: pose.y * 100 + (pose.z % 1000) * 0.01 });
     });
     g.flush();
-    // the rival cats sit just past each edge, under the canvas so the table hides their laps
-    const a = g.project(35, 50, FELT_Z);
-    const b = g.project(65, 50, FELT_Z);
-    const unit = Math.abs(b.x - a.x) / 30;
-    RIVAL_CATS.forEach((seat, i) => {
-      const el = catEls.current[i];
-      if (!el) return;
-      const at = g.project(seat.x, seat.y, FELT_Z);
-      const w = (seat.view === 'front' ? 30 : 33) * unit * at.f / (a.f || 1);
-      el.style.width = `${w}px`;
-      el.style.left = `${at.x}px`;
-      el.style.top = `${at.y}px`;
-      el.style.transform = `translate(-50%, -${seat.view === 'front' ? 92 : 88}%)${seat.mirror ? ' scaleX(-1)' : ''}`;
-    });
+    placeRivalCats(g, catEls.current);
   }, []);
 
   // Keyboard- and tap-friendly alternative to sweeping: one shove across the whole felt.
@@ -405,15 +435,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
         onPointerUp={() => { pointer.current.down = false; }}
         onPointerDown={(event) => { pointer.current.down = true; setTouched(true); moveHand(event.clientX, event.clientY); }}
       >
-        {RIVAL_CATS.map((seat, i) => (
-          <img
-            key={seat.fur}
-            className={`deck-cat is-${seat.view}`}
-            ref={(el) => { catEls.current[i] = el; }}
-            src={`../assets/illustrations/cats/${theme}-${seat.fur}${seat.view === 'side' ? '-side' : ''}-${done ? (seat.view === 'side' ? 'excited' : 'excited') : seat.view === 'side' ? 'calm' : 'smile'}.svg`}
-            alt=""
-          />
-        ))}
+        <RivalCats theme={theme} mood={done ? ['excited', 'excited', 'excited'] : ['calm', 'calm', 'calm']} refs={catEls} />
         <IsoCanvas ref={scene} draw={draw} handlers={{ onPointerMove: onSweep, onPointerDown: onSweepDown }} />
         {RIVAL_PAWS.map((paw, hand) => (
           <span key={`rival-${hand}`} className="deck-rival-hand" ref={(el) => { rivalHands.current[hand] = el; }} style={{ opacity: 0 }}><Palm look={RIVAL_LOOKS[paw.rival]} /></span>

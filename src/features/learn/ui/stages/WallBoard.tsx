@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
-import { DECK_SIZE, FELT, SIDE_SIZE, TILE_H, TILE_W, clamp, deckPoses, wallSlot, type Pose } from './DeckBoard';
+import { DECK_SIZE, FELT, Palm, RIVAL_LOOKS, RIVAL_PAWS, RivalCats, SIDE_SIZE, TILE_H, TILE_W, clamp, deckPoses, placeRivalCats, useThemeName, wallSlot, type Pose } from './DeckBoard';
 import { FELT_Z, IsoCanvas, TILE_T, type IsoHandle, type Painter } from './iso3d';
 
 const ROW = 17;
 const SNAP = 9;
 const GRAB = TILE_W * 1.6;
 const BOT_DELAY = [150, 250, 350];
-const BOT_TICK = 42;
+const BOT_TICK = 72;
 /** Walls are built at the table edge (row A, then row B just inside it), stacked, then slid in to the square. */
 const EDGE_Y = 95.4;
 const ROW_GAP = TILE_H * 1.15;
@@ -74,6 +74,12 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
   const [hot, setHot] = useState(false);
   const [grabbing, setGrabbing] = useState(false);
   const [runKey, setRunKey] = useState(0);
+  const theme = useThemeName();
+  const catEls = useRef<Array<HTMLImageElement | null>>([]);
+  // Each rival's paw follows the tiles it lines up, then pushes its finished wall in.
+  const pawEls = useRef<Array<HTMLSpanElement | null>>([]);
+  const pawAt = useRef<Array<{ x: number; y: number } | null>>([null, null, null]);
+  const pawHide = useRef<number[]>([0, 0, 0]);
 
   const rerender = () => setVersion((value) => value + 1);
   const repaint = () => scene.current?.invalidate();
@@ -251,6 +257,7 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
     counts.current = [0, 0, 0, 0];
     stages.current = [0, 0, 0, 0];
     pull.current = null;
+    pawHide.current = [0, 0, 0];
     setRunKey((key) => key + 1);
     repaint();
   };
@@ -300,8 +307,33 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
       else { cur.x = goal.x; cur.y = goal.y; cur.rot = goal.rot; cur.h = gh; }
       g.tile(cur.x, cur.y, cur.rot, FELT_Z + cur.h * TILE_T, { order: cur.y * 100 + cur.h * TILE_T + (goal.z % 1000) * 0.001 });
     });
+    // rival paws: glide along the row being built, then push the wall in, then leave
+    const now = performance.now();
+    [1, 2, 3].forEach((side) => {
+      const el = pawEls.current[side - 1];
+      if (!el) return;
+      const count = counts.current[side];
+      const st = stages.current[side];
+      if (st === 4 && !pawHide.current[side - 1]) pawHide.current[side - 1] = now + 650;
+      const gone = count === 0 || (pawHide.current[side - 1] && now > pawHide.current[side - 1]);
+      if (gone) { el.style.opacity = '0'; pawAt.current[side - 1] = null; return; }
+      const goal = st >= 2
+        ? (() => { const w = wallSlot(side, 8, 0); const o = around({ x: 50, y: st >= 4 ? 82 : 100 }, side); return { x: (w.x + o.x) / 2, y: (w.y + o.y) / 2 }; })()
+        : edgePose(side, count - 1, false);
+      const cur = pawAt.current[side - 1] ?? { ...around({ x: 50, y: 104 }, side) };
+      cur.x += (goal.x - cur.x) * 0.3;
+      cur.y += (goal.y - cur.y) * 0.3;
+      pawAt.current[side - 1] = cur;
+      if (Math.abs(goal.x - cur.x) + Math.abs(goal.y - cur.y) > 0.05 || st === 4) g.needsFrame = true;
+      const p = g.project(cur.x, cur.y, FELT_Z + TILE_T + 6);
+      el.style.opacity = '1';
+      el.style.left = `${p.x}px`;
+      el.style.top = `${p.y}px`;
+      el.style.transform = `translate(-50%, -50%) rotate(${RIVAL_PAWS[(side - 1) * 2].turn}deg) scale(${p.f})`;
+    });
     if (moving) g.needsFrame = true;
     g.flush();
+    placeRivalCats(g, catEls.current);
 
     if (hint) {
       const p = g.project(50, 68, FELT_Z + 6);
@@ -309,7 +341,7 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
     }
     [1, 2, 3].forEach((side) => {
       const slot = wallSlot(side, 8, 0);
-      const out = side === 2 ? { dx: 0, dy: -10 } : side === 1 ? { dx: 12, dy: 0 } : { dx: -12, dy: 0 };
+      const out = side === 2 ? { dx: 0, dy: -10 } : side === 1 ? { dx: -9, dy: 0 } : { dx: 9, dy: 0 };
       const p = g.project(slot.x + out.dx, slot.y + out.dy, FELT_Z + 4);
       g.pill(p.x, p.y, `${RIVAL_NAME[language][side - 1]} · ${counts.current[side]}/${SIDE_SIZE}`, { bg: stages.current[side] === 4 ? 'rgba(34,140,90,0.85)' : 'rgba(10,20,20,0.6)', size: 10 });
     });
@@ -318,7 +350,11 @@ export function WallBoard({ language, onStatus }: { language: TutorialLanguage; 
   return (
     <div className="sort-stage deck-stage">
       <div className={`sort-board deck-board is-walls${grabbing ? ' is-grabbing' : ''}${done ? ' is-sorted' : ''}`}>
+        <RivalCats theme={theme} mood={[1, 2, 3].map((side) => (stages.current[side] === 4 ? 'happy' : 'calm')) as Array<'calm' | 'happy'>} refs={catEls} />
         <IsoCanvas ref={scene} draw={draw} handlers={{ onPointerDown: onDown, onPointerMove: onMove, onPointerUp: onUp, onPointerCancel: onUp }} />
+        {[0, 1, 2].map((rival) => (
+          <span key={`paw-${rival}`} className="deck-rival-hand" ref={(el) => { pawEls.current[rival] = el; }} style={{ opacity: 0 }}><Palm look={RIVAL_LOOKS[rival]} /></span>
+        ))}
 
         <div className="sort-actions deck-actions">
           <span>{t('Tú', 'You', 'Você')} {mine}/{SIDE_SIZE}</span>
