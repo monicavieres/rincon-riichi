@@ -41,8 +41,11 @@
     if (!labeled && !THEMED_TILE.test(src)) img.dataset.rinconTileSrc = src;
     let original = img.dataset.rinconTileSrc;
     if (!original) {
+      // the first path we saw was already themed or labelled: work back to the plain tile and remember it
       if (THEMED_TILE.test(src)) original = src.replace(THEMED_TILE, "assets/tiles-fluffystuff-composite/$1");
+      else if (labeled) original = src.replace(LABELED, "assets/tiles-fluffystuff-composite/$1");
       else return;
+      img.dataset.rinconTileSrc = original;
     }
     const file = (original.match(NORMAL_TILE) || [])[1];
     if (!file) return;
