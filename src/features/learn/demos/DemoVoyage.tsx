@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Burst, Cat, codes, DemoFrame, groupKind, L, Rich, shuffle, Tile, useDemo, useStored, useVoice, type Expr, type Tx } from './kit';
+import { Burst, Cat, codes, DemoFrame, groupKind, L, Rich, sfx, shuffle, Tile, useDemo, useStored, type Expr, type Tx } from './kit';
 import { ALL_TILES, isComplete, sortHand, startingHand, waitsOf } from '../domain/playRules';
 import { PlayMode } from '../ui/PlayMode';
 import { BaseLesson, FlowBar, QuizRun, QUIZ, STOP_STAGE, type FlowStage } from './syllabus';
@@ -218,12 +218,14 @@ function DrawDiscard({ t, miss, hit, win, hint }: Play) {
   const good = drawn ? discardHint(all) : [];
   const draw = () => {
     const tile = DRAWS[turn];
+    sfx.play('draw');
     if (isComplete([...hand, tile])) { setDrawn(tile); setWon(true); hit(); window.setTimeout(win, 1200); return; }
     setDrawn(tile);
   };
   const discard = (i: number) => {
     if (!drawn || won) return;
     if (!good.includes(i)) { setShake(i); window.setTimeout(() => setShake(null), 450); miss(); return; }
+    sfx.play('discard', 60);
     const next = [...all];
     const [out] = next.splice(i, 1);
     setPond([...pond, out]);
@@ -359,7 +361,6 @@ const starsFor = (misses: number) => (misses === 0 ? 3 : misses <= 2 ? 2 : 1);
 
 export function DemoVoyage() {
   const { language, theme, t } = useDemo();
-  const voice = useVoice(language);
   const [best, setBest] = useStored<Progress>('rincon-riichi-demo-c', {});
   const [open, setOpen] = useState<number | null>(null);
   const [phase, setPhase] = useState<'learn' | 'play' | 'learned'>('play');
@@ -374,18 +375,14 @@ export function DemoVoyage() {
   const current = ISLANDS.findIndex((_, i) => !(best[ISLANDS[i].id] ?? 0));
   const island = open === null ? null : ISLANDS[open];
 
-  useEffect(() => {
-    if (!island) voice.say(t(UI.intro));
-    else if (phase !== 'learn') voice.say(phase === 'play' ? t(island.goal) : `${t(UI.learned)}. ${t(island.learned)}`);
-  }, [open, phase, language]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const start = (i: number) => { setOpen(i); setLesson(0); setPhase(ISLANDS[i].lessons.length ? 'learn' : 'play'); setMisses(0); setRoundMisses(0); setMood('smile'); setNonce((n) => n + 1); };
-  const miss = () => { setMisses((m) => m + 1); setRoundMisses((m) => m + 1); setMood('surprised'); window.setTimeout(() => setMood('thinking'), 900); };
-  const hit = () => { setRoundMisses(0); setMood('happy'); };
+  const miss = () => { sfx.play('oops'); setMisses((m) => m + 1); setRoundMisses((m) => m + 1); setMood('surprised'); window.setTimeout(() => setMood('thinking'), 900); };
+  const hit = () => { sfx.play('ok'); setRoundMisses(0); setMood('happy'); };
   const win = () => {
     if (!island) return;
     setBest((now) => ({ ...now, [island.id]: Math.max(now[island.id] ?? 0, starsFor(misses)) }));
-    setPhase('learned'); setMood('excited');
+    setPhase('learned'); setMood('excited'); sfx.play('win');
   };
   const play: Play = { t, miss, hit, win, hint: roundMisses >= 2 };
   const flowStage: FlowStage | null = island ? (phase === 'learn' ? STOP_STAGE[island.lessons[lesson]] : island.stage) : null;
@@ -395,7 +392,6 @@ export function DemoVoyage() {
       className="demo-c"
       title={<><b>DEMO C</b> · {t(UI.title)}</>}
       t={t}
-      voice={voice}
       extra={island && <button type="button" className="demo-btn is-small" onClick={() => setOpen(null)}>🗺 {t(UI.map)}</button>}
     >
       {!island && (

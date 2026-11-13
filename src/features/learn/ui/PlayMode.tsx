@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { TutorialLanguage } from '../domain/tutorialContent';
 import { StickSvg } from './stages/StickSvg';
 import { ALL_TILES, isComplete, startingHand, toCounts, waitsOf } from '../domain/playRules';
+import { sfx } from '../../../shared/sound/tileSfx';
 
 const tileSrc = (code: string) => `../assets/tiles-fluffystuff-composite/${code}.svg`;
 const BACK = '../assets/tile-back-default.svg';
@@ -109,7 +110,8 @@ export function PlayMode({ language, onClose }: { language: TutorialLanguage; on
     }
     const tile = piece(code);
     setDraws(next); setWallLeft((n) => n - 1); setHint(false); setNote(null);
-    if (isComplete([...handCodes, code])) { setDrawn(tile); setPhase('won'); } else { setDrawn(tile); setPhase('choose'); }
+    sfx.play('draw');
+    if (isComplete([...handCodes, code])) { setDrawn(tile); setPhase('won'); sfx.play('win', 300); } else { setDrawn(tile); setPhase('choose'); }
   };
 
   const discard = (target: Piece) => {
@@ -121,6 +123,7 @@ export function PlayMode({ language, onClose }: { language: TutorialLanguage; on
       setShake((n) => n + 1);
       return;
     }
+    sfx.play('discard');
     setPond((list) => [...list, target.code]);
     setHand(rest.slice().sort((a, b) => ALL_TILES.indexOf(a.code) - ALL_TILES.indexOf(b.code)));
     setDrawn(null); setHint(false); setNote(null);

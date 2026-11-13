@@ -1,11 +1,11 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Cat, codes, DemoFrame, L, Rich, Tile, TileRow, useDemo, useStored, useVoice, type Fur, type Tx } from './kit';
+import { Cat, codes, DemoFrame, L, Rich, sfx, Tile, TileRow, useDemo, useStored, type Fur, type Tx } from './kit';
 import { BaseLesson, FlowBar, Quiz, QUIZ, STOP_STAGE, stopById, type FlowStage, type QuizItem } from './syllabus';
 
 /**
  * DEMO D · "Step by step, no hurry". For someone who has never played and may be older: very large text (with a size
  * control), an optional high-contrast mode, one idea per screen, tap only (nothing to drag), no timers and no score,
- * labelled "Back"/"Next" buttons always in the same place, a slower reading voice, the familiar Carioca/rummy
+ * labelled "Back"/"Next" buttons always in the same place, tile sounds that can be muted, the familiar Carioca/rummy
  * comparison, and a summary sheet to print at the end.
  */
 
@@ -49,9 +49,9 @@ const SCREENS = (theme: string, t: (v: Tx) => string): Screen[] => [
     kind: 'text', lesson: 0,
     title: L('Bienvenido', 'Welcome', 'Bem-vindo'),
     body: L(
-      'Aquí aprenderá a jugar mahjong desde cero, **sin apuro**. Avance con el botón grande **«Siguiente»**. Si quiere oír el texto, pulse **«Escuchar»**.',
-      'Here you will learn to play mahjong from scratch, **at your own pace**. Move on with the big **“Next”** button. To hear the text, press **“Listen”**.',
-      'Aqui você vai aprender a jogar mahjong do zero, **sem pressa**. Avance com o botão grande **«Próximo»**. Para ouvir o texto, toque em **«Ouvir»**.',
+      'Aquí aprenderá a jugar mahjong desde cero, **sin apuro**. Avance con el botón grande **«Siguiente»**. Oirá el sonido de las fichas; si prefiere silencio, use la campanita 🔔 de arriba.',
+      'Here you will learn to play mahjong from scratch, **at your own pace**. Move on with the big **“Next”** button. You will hear the tiles; for silence, use the little bell 🔔 at the top.',
+      'Aqui você vai aprender a jogar mahjong do zero, **sem pressa**. Avance com o botão grande **«Próximo»**. Você vai ouvir as peças; para silêncio, use o sininho 🔔 lá em cima.',
     ),
     visual: () => <Cat theme={theme} fur="orange" expr="happy" className="sd-hero-cat" />,
   },
@@ -204,7 +204,6 @@ const UI = {
   title: L('Paso a paso, sin apuro', 'Step by step, no hurry', 'Passo a passo, sem pressa'),
   prev: L('Anterior', 'Back', 'Anterior'),
   next: L('Siguiente', 'Next', 'Próximo'),
-  listen: L('Escuchar', 'Listen', 'Ouvir'),
   lesson: L('Lección', 'Lesson', 'Lição'),
   of: L('de', 'of', 'de'),
   size: L('Tamaño de letra', 'Text size', 'Tamanho da letra'),
@@ -236,7 +235,6 @@ function Goal({ t }: { t: (v: Tx) => string }) {
 
 export function DemoSenior() {
   const { language, theme, t } = useDemo();
-  const voice = useVoice(language, 0.85);
   const screens = SCREENS(theme, t);
   const [at, setAt] = useStored('rincon-riichi-demo-d', 0);
   const [size, setSize] = useStored('rincon-riichi-demo-d-size', 1);
@@ -251,8 +249,8 @@ export function DemoSenior() {
   const head = s.kind === 'lesson' ? { title: stopById(s.stop).title, body: stopById(s.stop).body } : s.kind === 'quiz' ? { title: L('Repaso', 'Review', 'Revisão'), body: s.quiz.q } : { title: s.title, body: s.body };
   const said = `${t(head.title)}. ${t(head.body)}`;
   const flowStage: FlowStage = s.kind === 'lesson' ? STOP_STAGE[s.stop] : s.kind === 'quiz' ? s.stage : LESSON_STAGE[s.lesson];
-  useEffect(() => { voice.say(said); }, [index, language]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (solved && 'right' in s) voice.say(t(s.right)); }, [solved]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (solved) sfx.play(s.kind === 'odd' ? 'discard' : 'ok'); }, [solved]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (picked !== null && !solved) sfx.play('oops'); }, [picked]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const tools = (
     <>
@@ -264,7 +262,7 @@ export function DemoSenior() {
   );
 
   return (
-    <DemoFrame className={`demo-d sd-size-${size}${contrast ? ' is-contrast' : ''}`} title={<><b>DEMO D</b> · {t(UI.title)}</>} t={t} voice={voice} extra={tools}>
+    <DemoFrame className={`demo-d sd-size-${size}${contrast ? ' is-contrast' : ''}`} title={<><b>DEMO D</b> · {t(UI.title)}</>} t={t} extra={tools}>
       <div className="sd-progress" aria-label={`${t(UI.lesson)} ${s.lesson + 1} ${t(UI.of)} ${LESSONS.length}`}>
         <span>{t(UI.lesson)} {s.lesson + 1} {t(UI.of)} {LESSONS.length} · <b>{t(LESSONS[s.lesson])}</b></span>
         <div className="sd-bar"><i style={{ width: `${((index + 1) / screens.length) * 100}%` }} /></div>
@@ -275,7 +273,7 @@ export function DemoSenior() {
         {s.kind === 'lesson' && <BaseLesson stopId={s.stop} language={language} t={t} className="is-senior" />}
         {s.kind !== 'lesson' && <h1 className="sd-title">{t(head.title)}</h1>}
         {s.kind !== 'lesson' && s.kind !== 'quiz' && <p className="sd-body"><Rich text={t(head.body)} /></p>}
-        {s.kind === 'quiz' && <Quiz item={s.quiz} t={t} className="is-senior" onRight={() => setPicked('ok')} />}
+        {s.kind === 'quiz' && <Quiz item={s.quiz} t={t} className="is-senior" onRight={() => setPicked('ok')} onWrong={() => sfx.play('oops')} />}
 
         {s.kind !== 'lesson' && s.kind !== 'quiz' && <div className="sd-visual">
           {s.kind === 'text' && s.visual?.()}
@@ -317,7 +315,6 @@ export function DemoSenior() {
 
       <footer className="sd-nav">
         <button type="button" className="sd-btn" onClick={() => go(index - 1)} disabled={index === 0}>← {t(UI.prev)}</button>
-        {voice.supported && <button type="button" className="sd-btn is-listen" onClick={() => voice.say(said, true)}>🔊 {t(UI.listen)}</button>}
         <button type="button" className={`sd-btn is-next${solved ? ' is-ready' : ''}`} onClick={() => go(index + 1)} disabled={index === screens.length - 1}>{t(UI.next)} →</button>
       </footer>
     </DemoFrame>

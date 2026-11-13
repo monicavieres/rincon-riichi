@@ -3,10 +3,10 @@ import { initialLanguage, usePageChrome } from '../ui/usePageChrome';
 import { tilePath } from '../ui/stages/SortBoard';
 import { TILE_BACK } from '../ui/stages/DeckBoard';
 import { withTiles } from '../ui/stages/TileText';
+import { sfx, useSfxMuted } from '../../../shared/sound/tileSfx';
 
 /**
- * Shared pieces for the three full-screen tutorial demos: language and theme, tiles, cats, the narrator voice and
- * small helpers. Tile codes written inside a sentence ("4p 5p 6p") become tile pictures, never letters on screen.
+ * Shared pieces for the full-screen tutorial demos: language and theme, tiles, cats, tile sounds and small helpers. Tile codes written inside a sentence ("4p 5p 6p") become tile pictures, never letters on screen.
  */
 
 export type Lang = 'es' | 'en' | 'pt';
@@ -51,7 +51,7 @@ export function Tile({ code, back = false, className = '', style, onClick, label
   const src = back || !code ? TILE_BACK : tilePath(code);
   const img = <img src={src} alt={onClick ? '' : (label ?? '')} draggable={false} />;
   if (!onClick) return <span className={`demo-tile ${className}`} style={style}>{img}</span>;
-  return <button type="button" className={`demo-tile is-button ${className}`} style={style} onClick={onClick} aria-label={label ?? code} disabled={disabled}>{img}</button>;
+  return <button type="button" className={`demo-tile is-button ${className}`} style={style} onClick={() => { sfx.play('pick'); onClick(); }} aria-label={label ?? code} disabled={disabled}>{img}</button>;
 }
 
 /** A row of tiles from a list of codes. Spaces in a string list group them: "1m 2m 3m | 4p 4p". */
@@ -65,6 +65,8 @@ export function TileRow({ codes, className = '' }: { codes: string[]; className?
 
 export const codes = (text: string) => text.trim().split(/\s+/);
 
+export { sfx };
+
 /** **word** is highlighted; tile codes become tile pictures. */
 export function Rich({ text }: { text: string }) {
   return (
@@ -72,59 +74,6 @@ export function Rich({ text }: { text: string }) {
       {text.split('**').map((part, i) => (i % 2 ? <strong key={i}>{withTiles(part)}</strong> : <span key={i}>{withTiles(part)}</span>))}
     </>
   );
-}
-
-/* ── The narrator voice (the browser's own speech, off unless the person turns it on) ───────────── */
-
-const SUIT_NAME: Record<Lang, Record<string, string>> = {
-  es: { m: 'de caracteres', p: 'de círculos', s: 'de bambú' },
-  en: { m: 'of characters', p: 'of circles', s: 'of bamboo' },
-  pt: { m: 'de caracteres', p: 'de círculos', s: 'de bambu' },
-};
-const HONOR_NAME: Record<Lang, string[]> = {
-  es: ['Este', 'Sur', 'Oeste', 'Norte', 'dragón verde', 'dragón rojo', 'dragón blanco'],
-  en: ['East', 'South', 'West', 'North', 'green dragon', 'red dragon', 'white dragon'],
-  pt: ['Leste', 'Sul', 'Oeste', 'Norte', 'dragão verde', 'dragão vermelho', 'dragão branco'],
-};
-
-/** How a tile is said out loud: "4p" → "4 de círculos". */
-export const sayTile = (code: string, language: Lang) => (code[1] === 'z'
-  ? HONOR_NAME[language][Number(code[0]) - 1]
-  : `${code[0] === '0' ? '5' : code[0]} ${SUIT_NAME[language][code[1]]}`);
-
-const spoken = (text: string, language: Lang) => text
-  .replace(/\*\*/g, '')
-  .replace(/(?<![\w])([0-9][mpsz])(?![\w])/g, (_, code: string) => sayTile(code, language))
-  .replace(/[«»“”]/g, '');
-
-const VOICE_KEY = 'rincon-riichi-demo-voice';
-const VOICE_LANG: Record<Lang, string> = { es: 'es-ES', en: 'en-US', pt: 'pt-BR' };
-
-/** Reads text aloud when the voice is on. The choice is remembered per viewer. */
-export function useVoice(language: Lang, rate = 0.98) {
-  const supported = typeof window !== 'undefined' && 'speechSynthesis' in window;
-  const [on, setOn] = useState(() => { try { return localStorage.getItem(VOICE_KEY) === 'on'; } catch { return false; } });
-  const say = useCallback((text: string, force = false) => {
-    if (!supported || (!on && !force)) return;
-    const synth = window.speechSynthesis;
-    synth.cancel();
-    const line = new SpeechSynthesisUtterance(spoken(text, language));
-    line.lang = VOICE_LANG[language];
-    const voice = synth.getVoices().find((v) => v.lang.toLowerCase().startsWith(language));
-    if (voice) line.voice = voice;
-    line.rate = rate;
-    synth.speak(line);
-  }, [language, on, rate, supported]);
-  const toggle = useCallback(() => {
-    setOn((now) => {
-      const next = !now;
-      try { localStorage.setItem(VOICE_KEY, next ? 'on' : 'off'); } catch { /* storage may be blocked */ }
-      if (!next && supported) window.speechSynthesis.cancel();
-      return next;
-    });
-  }, [supported]);
-  useEffect(() => () => { if (supported) window.speechSynthesis.cancel(); }, [supported]);
-  return { on, supported, say, toggle };
 }
 
 /* ── Frame ─────────────────────────────────────────────────────────────────── */
@@ -141,12 +90,13 @@ export function useStored<T>(key: string, initial: T) {
 const UI = {
   back: L('Volver a Aprender', 'Back to Learn', 'Voltar para Aprender'),
   full: L('Pantalla completa', 'Full screen', 'Tela cheia'),
-  voiceOn: L('Voz activada', 'Voice on', 'Voz ligada'),
-  voiceOff: L('Activar voz', 'Turn voice on', 'Ligar voz'),
+  soundOn: L('Sonidos activados', 'Sounds on', 'Sons ligados'),
+  soundOff: L('Sonidos apagados', 'Sounds off', 'Sons desligados'),
 };
 
 /** The full-screen frame every demo sits in: a slim top bar and the stage. */
-export function DemoFrame({ className, title, t, voice, extra, children }: { className: string; title: ReactNode; t: (v: Tx) => string; voice?: ReturnType<typeof useVoice>; extra?: ReactNode; children: ReactNode }) {
+export function DemoFrame({ className, title, t, extra, children }: { className: string; title: ReactNode; t: (v: Tx) => string; extra?: ReactNode; children: ReactNode }) {
+  const [muted, toggleSound] = useSfxMuted();
   const root = useRef<HTMLElement>(null);
   const [full, setFull] = useState(false);
   useEffect(() => {
@@ -165,11 +115,9 @@ export function DemoFrame({ className, title, t, voice, extra, children }: { cla
         <div className="demo-title">{title}</div>
         <div className="demo-bar-tools">
           {extra}
-          {voice?.supported && (
-            <button type="button" className={`demo-icon${voice.on ? ' is-on' : ''}`} onClick={voice.toggle} aria-pressed={voice.on} title={voice.on ? t(UI.voiceOn) : t(UI.voiceOff)} aria-label={voice.on ? t(UI.voiceOn) : t(UI.voiceOff)}>
-              {voice.on ? '🔊' : '🔈'}
-            </button>
-          )}
+          <button type="button" className={`demo-icon${muted ? '' : ' is-on'}`} onClick={toggleSound} aria-pressed={!muted} title={muted ? t(UI.soundOff) : t(UI.soundOn)} aria-label={muted ? t(UI.soundOff) : t(UI.soundOn)}>
+            {muted ? '🔕' : '🔔'}
+          </button>
           <button type="button" className={`demo-icon${full ? ' is-on' : ''}`} onClick={toggleFull} title={t(UI.full)} aria-label={t(UI.full)} aria-pressed={full}>⛶</button>
         </div>
       </header>

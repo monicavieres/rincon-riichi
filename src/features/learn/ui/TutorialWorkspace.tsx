@@ -5,6 +5,7 @@ import { GLOSSARY, glossaryIdFor } from '../domain/glossary';
 import { PlayMode } from './PlayMode';
 import { withTiles } from './stages/TileText';
 import { docHref } from '../../../shared/docs';
+import { useSfxMuted } from '../../../shared/sound/tileSfx';
 import { stepSubtitles, tutorialParts, tutorialStops, type TutorialStop } from '../domain/tutorialStage';
 import { RackStage } from './stages/RackStage';
 import { GoalBoard, SticksBoard } from './stages/ConceptBoards';
@@ -179,6 +180,8 @@ const UI = {
   rail: L('Pasos del tutorial', 'Tutorial steps', 'Passos do tutorial'),
   play: L('Jugar una mano (pantalla completa)', 'Play a hand (full screen)', 'Jogar uma mão (tela cheia)'),
   glossary: L('Diccionario', 'Dictionary', 'Dicionário'),
+  soundOn: L('Sonidos de fichas activados', 'Tile sounds on', 'Sons das peças ligados'),
+  soundOff: L('Sonidos de fichas apagados', 'Tile sounds off', 'Sons das peças desligados'),
   howTo: L('Cómo usar este paso', 'How to use this step', 'Como usar este passo'),
   more: L('Seguir aprendiendo', 'Keep learning', 'Continuar aprendendo'),
   progress: L('Tu avance', 'Your progress', 'Seu progresso'),
@@ -316,6 +319,7 @@ export function TutorialWorkspace() {
   const [dealt, setDealt] = useState<DealStatus>({ done: false, step: -1 });
   const [wall, setWall] = useState<WallStatus>({ mine: 0, rivals: 0, done: false });
   const [glossary, setGlossary] = useState<{ focus: string | null } | null>(null);
+  const [muted, toggleSound] = useSfxMuted();
   const railRef = useRef<HTMLElement>(null);
   const t = (value: LocalizedText) => localize(value, language);
 
@@ -462,6 +466,7 @@ export function TutorialWorkspace() {
             <i aria-hidden="true" />
             <button type="button" className={`help-open${helpSeen.has(stop.id) ? '' : ' is-nudge'}`} onClick={() => { setHelp(true); setHelpSeen((now) => new Set(now).add(stop.id)); }} aria-label={t(UI.howTo)} title={t(UI.howTo)}>?</button>
             <button type="button" className="glossary-open" onClick={() => setGlossary({ focus: null })} aria-label={t(UI.glossary)} title={t(UI.glossary)}>📖</button>
+            <button type="button" className={`sound-toggle${muted ? '' : ' is-on'}`} onClick={toggleSound} aria-pressed={!muted} aria-label={muted ? t(UI.soundOff) : t(UI.soundOn)} title={muted ? t(UI.soundOff) : t(UI.soundOn)}>{muted ? '🔕' : '🔔'}</button>
             <button
               type="button"
               className={overview ? 'is-on' : ''}

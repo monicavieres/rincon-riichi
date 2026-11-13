@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { landSfx } from './boardSfx';
 import { createPortal } from 'react-dom';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { dealAssignments, drawOrder, handSlot } from './DealBoard';
@@ -50,6 +51,7 @@ export function FuritenBoard({ language }: { language: TutorialLanguage }) {
 
   const fly = useCallback((entry: Omit<Fly, 'start'>) => {
     flights.current = [...flights.current.filter((f) => f.key !== entry.key), { ...entry, start: performance.now() }];
+    landSfx(entry);
     scene.current?.invalidate();
     window.setTimeout(() => { flights.current = flights.current.filter((f) => f.key !== entry.key); scene.current?.invalidate(); }, entry.dur + 50);
   }, []);

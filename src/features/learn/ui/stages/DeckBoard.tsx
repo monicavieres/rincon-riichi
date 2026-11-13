@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
+import { sfx } from './boardSfx';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { FELT_Z, IsoCanvas, TILE_T, type IsoHandle, type Painter } from './iso3d';
 
@@ -347,6 +348,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
     if (energy > 0) {
       moved.current += rivalClock.current.active ? energy * 0.2 : !pointer.current.down && (performance.now() - lastPush.current < 2500 || performance.now() - rivalClock.current.start < RIVAL_MS + 2500) ? 0 : energy;
       setProgress(Math.min(1, moved.current / 2700));
+      if (pointer.current.down) sfx.rattle(energy);
     }
     // the second hand trails the first, so the pair feels like two palms mixing
     const hand2 = hand2Ref.current;
@@ -413,6 +415,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
 
   // Keyboard- and tap-friendly alternative to sweeping: one shove across the whole felt.
   const stir = useCallback(() => {
+    sfx.play('shuffle');
     const v = vel.current;
     for (let index = 0; index < DECK_SIZE; index += 1) {
       v[index * 3] += rand(-1.6, 1.6);

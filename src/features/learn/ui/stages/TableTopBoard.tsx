@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react';
+import { sfx } from './boardSfx';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { clamp, wallSlot } from './DeckBoard';
 import { FELT_Z, IsoCanvas, TILE_T, mix, picture, shade, type IsoHandle, type Painter, drawPlateLetter } from './iso3d';
@@ -102,6 +103,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
   const rollSeat = (seat: number, delay: number) => {
     const start = window.setTimeout(() => {
       spinStart.current = performance.now();
+      sfx.play('dice');
       setSeatRolling((now) => now.map((value, index) => (index === seat ? true : value)));
       const stop = window.setTimeout(() => {
         setDieShow(SEAT_ROLLS[seat]);
@@ -193,13 +195,13 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     setHot(null);
     if (!current) return;
     if (current.item === 'compass') {
-      if (near(compassAt, CENTER) < SNAP) { setCompassAt(CENTER); setCompassOn(true); }
-    } else if (near(plateAt, PLATE_TARGET) < SNAP) { setPlateAt(PLATE_TARGET); setPlateOn(true); }
+      if (near(compassAt, CENTER) < SNAP) { setCompassAt(CENTER); setCompassOn(true); sfx.play('place'); }
+    } else if (near(plateAt, PLATE_TARGET) < SNAP) { setPlateAt(PLATE_TARGET); setPlateOn(true); sfx.play('place'); }
   };
 
   // Click alternative: put the next missing piece in its place.
   const placeNext = () => {
-    if (!compassOn) { setCompassAt(CENTER); setCompassOn(true); } else if (!plateOn) { setPlateAt(PLATE_TARGET); setPlateOn(true); }
+    if (!compassOn) { setCompassAt(CENTER); setCompassOn(true); sfx.play('place'); } else if (!plateOn) { setPlateAt(PLATE_TARGET); setPlateOn(true); sfx.play('place'); }
   };
 
   /** The dice roll is the only automatic part; every later phase waits for the player to press Next. */
@@ -207,6 +209,7 @@ export function TableTopBoard({ mode, language, onStatus }: { mode: 'dealer' | '
     if (rolling) return;
     clearTimers();
     spinStart.current = performance.now();
+    sfx.play('dice'); sfx.play('dice', 90);
     setRolling(true);
     setRolled(null);
     setCounted(0);

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { Burst, Cat, codes, DemoFrame, L, Rich, Tile, useDemo, useStored, useVoice, type Expr, type Fur, type Tx } from './kit';
+import { Burst, Cat, codes, DemoFrame, L, Rich, sfx, Tile, useDemo, useStored, type Expr, type Fur, type Tx } from './kit';
 import { isComplete, sortHand } from '../domain/playRules';
 import { discardHint } from './DemoVoyage';
 import { BaseLesson, FlowBar, QuizRun, QUIZ, STOP_STAGE, type FlowStage, type QuizItem } from './syllabus';
@@ -11,35 +11,17 @@ import { BaseLesson, FlowBar, QuizRun, QUIZ, STOP_STAGE, type FlowStage, type Qu
  * when the child presses "Play!", and the rival kittens never take more than about 3 seconds.
  */
 
-/* ── Little sounds ─────────────────────────────────────────────────────── */
+/* ── Sounds: the shared tile sounds, with the cheerful ones for right and wrong ── */
 
 function useSfx() {
-  const [muted, setMuted] = useStored('rincon-riichi-demo-e-mute', false);
-  const ctx = useRef<AudioContext | null>(null);
-  const tone = useCallback((freq: number, at: number, dur: number, type: OscillatorType = 'triangle', gain = 0.12) => {
-    if (muted) return;
-    try {
-      ctx.current ??= new AudioContext();
-      const c = ctx.current;
-      const o = c.createOscillator();
-      const g = c.createGain();
-      o.type = type;
-      o.frequency.value = freq;
-      g.gain.setValueAtTime(gain, c.currentTime + at);
-      g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + at + dur);
-      o.connect(g).connect(c.destination);
-      o.start(c.currentTime + at);
-      o.stop(c.currentTime + at + dur + 0.02);
-    } catch { /* audio not available */ }
-  }, [muted]);
   return {
-    muted,
-    toggle: () => setMuted((m) => !m),
-    pop: () => { tone(660, 0, 0.09); tone(990, 0.07, 0.12); },
-    oops: () => { tone(260, 0, 0.14, 'sine', 0.1); tone(200, 0.12, 0.18, 'sine', 0.1); },
-    tap: () => tone(520, 0, 0.05, 'square', 0.04),
-    whoosh: () => { tone(300, 0, 0.18, 'sawtooth', 0.03); tone(500, 0.08, 0.18, 'sawtooth', 0.03); },
-    win: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.11, 0.22, 'triangle', 0.13)),
+    pop: () => sfx.play('ok'),
+    oops: () => sfx.play('oops'),
+    tap: () => sfx.play('pick'),
+    whoosh: () => sfx.play('shuffle'),
+    win: () => sfx.play('win'),
+    draw: () => sfx.play('draw'),
+    discard: () => sfx.play('discard'),
   };
 }
 type Sfx = ReturnType<typeof useSfx>;
@@ -294,7 +276,7 @@ function PlayGame({ t, sfx, theme, good, bad, done }: Play) {
   const draw = () => {
     if (drawn || busy || won) return;
     const tile = DRAWS[turn];
-    sfx.tap();
+    sfx.draw();
     setDrawn(tile);
     if (isComplete([...hand, tile])) { setWon(true); sfx.win(); window.setTimeout(done, 2600); }
   };
@@ -302,7 +284,7 @@ function PlayGame({ t, sfx, theme, good, bad, done }: Play) {
     // each kitten throws one tile, 0.8 s apart: under 3 seconds in all
     KITTENS.forEach((kit, i) => {
       window.setTimeout(() => {
-        setActive(i); sfx.tap();
+        setActive(i); sfx.discard();
         setPonds((now) => now.map((p, j) => (j === i ? [...p, kit.throws[n]] : p)));
       }, 350 + i * 800);
     });
@@ -311,7 +293,7 @@ function PlayGame({ t, sfx, theme, good, bad, done }: Play) {
   const throwTile = (i: number) => {
     if (!drawn || busy || won) return;
     if (!lonely.includes(i)) { setShake(i); setMisses((m) => m + 1); window.setTimeout(() => setShake(null), 450); bad(); return; }
-    good();
+    good(); sfx.discard();
     const next = [...all];
     const [out] = next.splice(i, 1);
     setMine((m) => [...m, out]);
@@ -381,7 +363,6 @@ function Diploma({ t, theme, stickers }: { t: (v: Tx) => string; theme: string; 
 
 export function DemoKids() {
   const { language, theme, t } = useDemo();
-  const voice = useVoice(language, 1.05);
   const sfx = useSfx();
   const [done, setDone] = useStored<string[]>('rincon-riichi-demo-e', []);
   const [open, setOpen] = useState<number | null>(null);
@@ -394,11 +375,6 @@ export function DemoKids() {
   const toastTimer = useRef(0);
   const mission = open === null ? null : MISSIONS[open];
 
-  useEffect(() => {
-    if (!mission) voice.say(t(UI.hello));
-    else if (phase === 'intro') voice.say(t(mission.intro));
-    else if (phase === 'win') voice.say(t(mission.learned));
-  }, [open, phase, language]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const say = (text: string) => { window.clearTimeout(toastTimer.current); setToast(text); toastTimer.current = window.setTimeout(() => setToast(null), 1100); };
   const good = () => {
@@ -421,15 +397,13 @@ export function DemoKids() {
   const earned = MISSIONS.filter((m) => done.includes(m.id) && m.id !== 'diploma');
   const play: Play = { t, sfx, theme, good, bad, done: finish };
 
-  const soundBtn = <button type="button" className={`demo-icon${sfx.muted ? '' : ' is-on'}`} onClick={sfx.toggle} aria-pressed={!sfx.muted} title={t(UI.sound)} aria-label={t(UI.sound)}>{sfx.muted ? '🔇' : '🎵'}</button>;
 
   return (
     <DemoFrame
       className="demo-e"
       title={<><b>DEMO E</b> · {t(UI.title)}</>}
       t={t}
-      voice={voice}
-      extra={<>{mission && <button type="button" className="demo-btn is-small" onClick={() => setOpen(null)}>🗺 {t(UI.map)}</button>}{soundBtn}</>}
+      extra={<>{mission && <button type="button" className="demo-btn is-small" onClick={() => setOpen(null)}>🗺 {t(UI.map)}</button>}</>}
     >
       <div className="ke-sky" aria-hidden="true">{Array.from({ length: 10 }, (_, i) => <i key={i} className={`ke-blob k${i}`} />)}</div>
 

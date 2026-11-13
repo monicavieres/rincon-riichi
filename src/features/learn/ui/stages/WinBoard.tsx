@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { landSfx } from './boardSfx';
 import type { TutorialLanguage } from '../../domain/tutorialContent';
 import { ROT, dealAssignments, drawOrder, handSlot } from './DealBoard';
 import { DEALT, HAND_VIEW, HAND_Y, WIDE_VIEW, WIDTH, byKey, handX, pondPos, sleep, startHand, tileName, tagsOf, TAG_LOOK, wallPos, type Fly, type Piece } from './DrawBoard';
@@ -56,6 +57,7 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
 
   const fly = useCallback((entry: Omit<Fly, 'start'>) => {
     flights.current = [...flights.current.filter((f) => f.key !== entry.key), { ...entry, start: performance.now() }];
+    landSfx(entry);
     scene.current?.invalidate();
     window.setTimeout(() => { flights.current = flights.current.filter((f) => f.key !== entry.key); scene.current?.invalidate(); }, entry.dur + 50);
   }, []);

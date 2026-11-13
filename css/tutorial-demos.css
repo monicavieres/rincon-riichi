@@ -960,7 +960,7 @@
 
 .sd-nav {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 12px;
     padding: 12px clamp(16px, 4vw, 48px) 16px;
     border-top: 2px solid var(--line-soft);
@@ -995,7 +995,6 @@
     .demo-d .demo-title { font-size: 13px; }
     .sd-sizes button { min-width: 30px; padding: 0 5px; }
     .sd-nav { grid-template-columns: 1fr 1fr; padding: 10px 12px; gap: 8px; }
-    .sd-btn.is-listen { grid-column: 1 / -1; grid-row: 1; min-height: 46px; }
     .sd-btn { min-height: 56px; padding: 0 0.8em; }
     .sd-btn.is-next { min-width: 0; }
     .sd-hand { --tile: calc(clamp(30px, 11.5vw, 48px) * var(--sd-k)); gap: 4px; }
