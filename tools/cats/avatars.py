@@ -4,7 +4,7 @@ Writes assets/illustrations/cats/<theme>-<fur>.svg (default face) and <theme>-<f
 import pathlib, sys
 HERE = pathlib.Path(__file__).parent
 sys.path.insert(0, str(HERE))
-from kitten import sprite, EXPRS  # noqa: E402
+from kitten import sprite, sprite_side, EXPRS  # noqa: E402
 
 OUTFITS = {
     "light": ["#e0457f", "#55bdeb", "#7b5cc4", "#f2b42c"], "dark": ["#ff2d95", "#00e5ff", "#9d4edd", "#ffd400"],
@@ -22,4 +22,8 @@ for theme, outfits in OUTFITS.items():
             body = sprite(theme, fur, outfit, expr or DEFAULT[fur], False, f"a{theme}{fur}{expr}")
             svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="-104 -252 208 260">{body}</svg>'
             (OUT / (f"{theme}-{fur}.svg" if expr is None else f"{theme}-{fur}-{expr}.svg")).write_text(svg, encoding="utf8")
+        for expr in ("calm", "happy", "excited"):  # three-quarter view, facing right, for the shuffle step
+            body = sprite_side(theme, fur, outfit, expr, f"s{theme}{fur}{expr}")
+            svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="-104 -252 208 260">{body}</svg>'
+            (OUT / f"{theme}-{fur}-side-{expr}.svg").write_text(svg, encoding="utf8")
 print("ok", len(list(OUT.glob("*.svg"))))

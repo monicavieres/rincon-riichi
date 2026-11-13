@@ -116,6 +116,26 @@ export function Palm({ look = 'white' }: { look?: PawLook }) {
 
 const RIVAL_LOOKS: PawLook[] = ['orange', 'grey', 'black'];
 
+/** The three rival cats around the table: right and left are seen side-on, the far one faces us. */
+const RIVAL_CATS = [
+  { fur: 'orange', x: 109, y: 50, view: 'side', mirror: true },
+  { fur: 'grey', x: 50, y: 9, view: 'front', mirror: false },
+  { fur: 'black', x: -9, y: 50, view: 'side', mirror: false },
+] as const;
+/** Tiles that drift into a rival's edge band get pushed back towards the middle by that cat. */
+const EDGE = 4.5;
+const ownerOf = (pose: Pose): number => {
+  if (pose.x > FELT.x1 - EDGE) return 0;
+  if (pose.x < FELT.x0 + EDGE) return 2;
+  if (pose.y < FELT.y0 + EDGE) return 1;
+  if (pose.y > FELT.y1 - EDGE) return pose.x < 50 ? 2 : 0;
+  return -1;
+};
+type Chore = { phase: 'idle' | 'go' | 'push' | 'back'; t0: number; from: { x: number; y: number }; to: { x: number; y: number }; rest: number };
+const THEMES = ['light', 'dark', 'cute', 'samurai', 'cyberpunk', 'vaquero', 'frutiger', 'fox'];
+const themeNow = () => { const th = document.documentElement.getAttribute('data-theme') || 'light'; return THEMES.includes(th) ? th : 'light'; };
+
+
 /**
  * The whole deck face down: the pointer is a pair of hands that sweep the tiles around the felt.
  * Positions are kept in `deckPoses`, so the next step (building the walls) starts from this mix.
@@ -133,6 +153,13 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
   const [touched, setTouched] = useState(false);
 
   const scene = useRef<IsoHandle>(null);
+  const catEls = useRef<Array<HTMLImageElement | null>>([]);
+  const [theme, setTheme] = useState(themeNow);
+  useEffect(() => {
+    const watch = new MutationObserver(() => setTheme(themeNow()));
+    watch.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => watch.disconnect();
+  }, []);
 
   useEffect(() => {
     onStatus?.({ progress, done: progress >= 1 });
@@ -198,10 +225,66 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
     if (done) clock.active = false;
   }, [sweep]);
 
+  // After the opening shuffle, each rival keeps its own edge clear: it reaches for the tiles piled there and pushes them back.
+  const chores = useRef<Chore[]>(RIVAL_CATS.map(() => ({ phase: 'idle', t0: 0, from: { x: 0, y: 0 }, to: { x: 0, y: 0 }, rest: 0 })));
+  const tend = useCallback((now: number) => {
+    if (rivalClock.current.active) return false;
+    let busy = false;
+    chores.current.forEach((chore, rival) => {
+      const el = rivalHands.current[rival * 2];
+      const home = { x: RIVAL_PAWS[rival * 2].x, y: RIVAL_PAWS[rival * 2].y };
+      const pos = rivalAt.current[rival * 2];
+      if (chore.phase === 'idle') {
+        if (now < chore.rest) { busy = true; return; }
+        let pick: Pose | null = null;
+        let depth = 0;
+        poses.current.forEach((pose) => {
+          if (ownerOf(pose) !== rival) return;
+          const d = Math.max(pose.x - (FELT.x1 - EDGE), FELT.x0 + EDGE - pose.x, FELT.y0 + EDGE - pose.y, pose.y - (FELT.y1 - EDGE));
+          if (d > depth || !pick) { depth = d; pick = pose; }
+        });
+        if (!pick) return;
+        const p = pick as Pose;
+        const out = { x: p.x + (p.x - 50) * 0.08, y: p.y + (p.y - 50) * 0.08 };
+        Object.assign(chore, { phase: 'go', t0: now, from: { ...home }, to: out });
+        busy = true;
+        return;
+      }
+      busy = true;
+      const span = chore.phase === 'push' ? 520 : 340;
+      const k = Math.min(1, (now - chore.t0) / span);
+      const e = k * k * (3 - 2 * k);
+      const target = { x: chore.from.x + (chore.to.x - chore.from.x) * e, y: chore.from.y + (chore.to.y - chore.from.y) * e };
+      if (chore.phase === 'push') sweep(target, target.x - pos.x, target.y - pos.y, 0.9);
+      rivalAt.current[rival * 2] = target;
+      if (el) {
+        el.style.opacity = '1';
+        const at = scene.current?.project(target.x, target.y, FELT_Z + TILE_T + 6);
+        if (at) {
+          el.style.left = `${at.x}px`;
+          el.style.top = `${at.y}px`;
+          el.style.transform = `translate(-50%, -50%) rotate(${RIVAL_PAWS[rival * 2].turn}deg) scale(${at.f})`;
+        }
+      }
+      if (k < 1) return;
+      if (chore.phase === 'go') {
+        const dx = 50 - chore.to.x, dy = 50 - chore.to.y, len = Math.hypot(dx, dy) || 1;
+        Object.assign(chore, { phase: 'push', t0: now, from: { ...chore.to }, to: { x: chore.to.x + (dx / len) * 17, y: chore.to.y + (dy / len) * 17 } });
+      } else if (chore.phase === 'push') {
+        Object.assign(chore, { phase: 'back', t0: now, from: { ...chore.to }, to: home });
+      } else {
+        if (el) el.style.opacity = '0';
+        Object.assign(chore, { phase: 'idle', rest: now + 260 });
+      }
+    });
+    return busy;
+  }, [sweep]);
+
   const step = useCallback(() => {
     frame.current = 0;
     let energy = 0;
     moveRivals(performance.now());
+    const tending = tend(performance.now());
     const v = vel.current;
     poses.current.forEach((pose, index) => {
       const vx = v[index * 3];
@@ -218,7 +301,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
     });
     scene.current?.invalidate();
     if (energy > 0) {
-      moved.current += rivalClock.current.active ? energy * 0.2 : energy;
+      moved.current += rivalClock.current.active ? energy * 0.2 : tending && !pointer.current.down ? 0 : energy;
       setProgress(Math.min(1, moved.current / 2700));
     }
     // the second hand trails the first, so the pair feels like two palms mixing
@@ -228,8 +311,8 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
       lag.current.y += (pointer.current.y + 18 - lag.current.y) * 0.16;
       hand2.style.transform = `translate(${lag.current.x}px, ${lag.current.y}px) translate(-50%, -50%) scaleX(-1) rotate(${pointer.current.down ? 8 : 3}deg)`;
     }
-    if (energy > 0.05 || pointer.current.inside || rivalClock.current.active) frame.current = requestAnimationFrame(step);
-  }, [moveRivals]);
+    if (energy > 0.05 || pointer.current.inside || rivalClock.current.active || tending) frame.current = requestAnimationFrame(step);
+  }, [moveRivals, tend]);
 
   const wake = useCallback(() => {
     if (!frame.current) frame.current = requestAnimationFrame(step);
@@ -281,6 +364,20 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
       g.tile(pose.x, pose.y, pose.rot, FELT_Z + (pose.h ?? 0) * TILE_T, { order: pose.y * 100 + (pose.z % 1000) * 0.01 });
     });
     g.flush();
+    // the rival cats sit just past each edge, under the canvas so the table hides their laps
+    const a = g.project(35, 50, FELT_Z);
+    const b = g.project(65, 50, FELT_Z);
+    const unit = Math.abs(b.x - a.x) / 30;
+    RIVAL_CATS.forEach((seat, i) => {
+      const el = catEls.current[i];
+      if (!el) return;
+      const at = g.project(seat.x, seat.y, FELT_Z);
+      const w = (seat.view === 'front' ? 30 : 33) * unit * at.f / (a.f || 1);
+      el.style.width = `${w}px`;
+      el.style.left = `${at.x}px`;
+      el.style.top = `${at.y}px`;
+      el.style.transform = `translate(-50%, -${seat.view === 'front' ? 92 : 88}%)${seat.mirror ? ' scaleX(-1)' : ''}`;
+    });
   }, []);
 
   // Keyboard- and tap-friendly alternative to sweeping: one shove across the whole felt.
@@ -307,6 +404,15 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
         onPointerUp={() => { pointer.current.down = false; }}
         onPointerDown={(event) => { pointer.current.down = true; setTouched(true); moveHand(event.clientX, event.clientY); }}
       >
+        {RIVAL_CATS.map((seat, i) => (
+          <img
+            key={seat.fur}
+            className="deck-cat"
+            ref={(el) => { catEls.current[i] = el; }}
+            src={`../assets/illustrations/cats/${theme}-${seat.fur}${seat.view === 'side' ? '-side' : ''}-${done ? (seat.view === 'side' ? 'excited' : 'excited') : seat.view === 'side' ? 'calm' : 'smile'}.svg`}
+            alt=""
+          />
+        ))}
         <IsoCanvas ref={scene} draw={draw} handlers={{ onPointerMove: onSweep, onPointerDown: onSweepDown }} />
         {RIVAL_PAWS.map((paw, hand) => (
           <span key={`rival-${hand}`} className="deck-rival-hand" ref={(el) => { rivalHands.current[hand] = el; }} style={{ opacity: 0 }}><Palm look={RIVAL_LOOKS[paw.rival]} /></span>

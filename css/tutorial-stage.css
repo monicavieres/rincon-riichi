@@ -2060,3 +2060,15 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .intro-seats .intro-table { border: 0; display: grid; justify-items: center; gap: 2px; }
 .seat-compass { width: clamp(70px, 12cqw, 130px); height: auto; filter: drop-shadow(0 3px 3px rgba(0,0,0,.3)); }
 .intro-dealer { margin: 0; padding: 4px 12px; border-radius: 10px; background: #f2b42c; color: #23203f; font: 700 max(11px, 1.5cqw) / 1.35 var(--font-sans); max-width: 62ch; }
+
+/* Rival cats around the shuffle table: under the canvas so the table hides their laps */
+.deck-cat {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: auto;
+    max-width: none;
+    pointer-events: none;
+    user-select: none;
+    transform-origin: 50% 100%;
+}
