@@ -14,9 +14,11 @@ P, Scene, shade = g["P"], g["Scene"], g["shade"]
 TABLE_SRC = SRC[SRC.index("def scene_table(t):"):SRC.index("def scene_dice(t):")]
 TABLE_BODY = [l[4:] for l in TABLE_SRC.splitlines()[1:] if "return s.svg" not in l and "open_drawer(s)" not in l]
 
-FURS = {  # fur, shade, belly
-    "orange": ("#f39a45", "#d27326", "#fff3e2"), "grey": ("#b9bdc8", "#8e94a4", "#f1f2f6"),
-    "black": ("#45455a", "#2c2c3b", "#7a7a90"), "white": ("#fffaf2", "#e6d8c2", "#ffffff"),
+FURS = {  # fur, stripe/shade, white parts, pattern, eye colour
+    "orange": ("#f2a35c", "#d27a35", "#fff4e6", "tabby", "#7fb4e0"),
+    "grey": ("#9ea5b2", "#7d8492", "#ffffff", "blaze", "#86bde8"),
+    "white": ("#a38c74", "#5f4c3d", "#f6eadb", "tabby", "#8cc0e6"),
+    "black": ("#2e2e3a", "#1e1e28", "#ffffff", "tuxedo", "#7fb7e3"),
 }
 OUTFITS = {
     "light": ["#e0457f", "#55bdeb", "#7b5cc4", "#f2b42c"], "dark": ["#ff2d95", "#00e5ff", "#9d4edd", "#ffd400"],
@@ -72,47 +74,70 @@ def accessory(theme, outfit, ink, back):
     return (f'<path d="M-50 -104 Q0 -82 50 -104 L50 -88 Q0 -66 -50 -88Z" fill="{outfit}" stroke="{ink}" stroke-width="4.5"/>'
             + ('' if back else f'<path d="M18 -86 L28 -40 L44 -46 L34 -90Z" fill="{outfit}" stroke="{ink}" stroke-width="4.5"/>'))
 
-def cat_sprite(theme, fur, outfit, ink, back=False, glasses=False, eye="#2b2540", tiles_back="#f3c63d"):
-    f, f2, belly = FURS[fur]
+def cat_sprite(theme, fur, outfit, ink, back=False, glasses=False, eye=None, tiles_back="#f3c63d"):
+    f, stripe, white, pattern, iris = FURS[fur]
     uid = f"{theme}{fur}{int(back)}{abs(hash(outfit)) % 9999}"
-    def grad(name, base, k_lo=0.74, k_hi=1.14):
-        hi = shade(base, k_hi) if base.lower() not in ("#ffffff",) else base
-        return (f'<radialGradient id="{name}{uid}" cx=".34" cy=".28" r=".85">'
-                f'<stop offset="0" stop-color="{hi}"/><stop offset=".55" stop-color="{base}"/><stop offset="1" stop-color="{shade(base, k_lo)}"/></radialGradient>')
-    o = [f'<defs>{grad("o", outfit)}{grad("f", f)}{grad("b", belly, 0.86, 1.04)}</defs>',
-         f'<ellipse cx="6" cy="34" rx="78" ry="16" fill="#000" opacity=".16"/>']
-    # fluffy body in its outfit, with a furry chest showing at the collar
-    o.append(f'<path d="{fluff(0, -40, 78, 72, 16, 0.07)}" fill="url(#o{uid})" stroke="{ink}" stroke-width="2.4" stroke-linejoin="round"/>')
+    def grad(name, base, k_lo=0.78, k_hi=1.12):
+        return (f'<radialGradient id="{name}{uid}" cx=".36" cy=".30" r=".85">'
+                f'<stop offset="0" stop-color="{shade(base, k_hi)}"/><stop offset=".6" stop-color="{base}"/><stop offset="1" stop-color="{shade(base, k_lo)}"/></radialGradient>')
+    line = shade(ink, 1.0)
+    o = [f'<defs>{grad("o", outfit)}{grad("f", f)}{grad("w", white, 0.9, 1.02)}'
+         f'<clipPath id="h{uid}"><path d="{fluff(0, -150, 66, 56, 20, 0.05, math.pi / 20)}"/></clipPath></defs>',
+         f'<ellipse cx="6" cy="34" rx="78" ry="15" fill="#000" opacity=".15"/>']
+    # body: a soft, round sweater, with a white bib on the white-chested coats
+    o.append(f'<path d="{fluff(0, -40, 78, 72, 18, 0.06)}" fill="url(#o{uid})" stroke="{line}" stroke-width="2.2" stroke-linejoin="round"/>')
     if back:
-        o.append(f'<path d="M58 -6 Q120 -10 112 -70 Q106 -100 86 -92 Q98 -60 54 -40Z" fill="{f}" stroke="{ink}" stroke-width="2.4" stroke-linejoin="round"/>')  # tail
-        o.append(f'<path d="M-40 -60 Q0 -48 40 -60" fill="none" stroke="{shade(outfit, 0.7)}" stroke-width="2.4" stroke-linecap="round"/>')
+        tail_f = stripe if pattern == "tuxedo" else f
+        o.append(f'<path d="M56 -4 Q124 -6 116 -74 Q110 -104 88 -94 Q100 -60 52 -40Z" fill="{tail_f}" stroke="{line}" stroke-width="2.2" stroke-linejoin="round"/>')
+        if pattern == "tabby":
+            o.append(f'<path d="M84 -26 l14 -6 M96 -52 l14 -3 M100 -78 l12 2" stroke="{stripe}" stroke-width="5" stroke-linecap="round"/>')
+        o.append(f'<path d="M-40 -58 Q0 -46 40 -58" fill="none" stroke="{shade(outfit, 0.72)}" stroke-width="2.4" stroke-linecap="round"/>')
     else:
-        o.append(f'<path d="{fluff(0, -88, 36, 26, 10, 0.12, math.pi / 10)}" fill="url(#b{uid})" stroke="{ink}" stroke-width="2"/>')
-    # ears
+        bib = white if pattern in ("blaze", "tuxedo") else shade(f, 1.12)
+        o.append(f'<path d="{fluff(0, -90, 34, 24, 10, 0.12, math.pi / 10)}" fill="{bib}" stroke="{line}" stroke-width="1.8"/>')
+    # ears: tall, with a pink inside and little fur tufts
     for sx in (-1, 1):
-        o.append(f'<path d="M{sx*24} -192 L{sx*54} -232 L{sx*60} -170Z" fill="{shade(f, 0.92) if sx > 0 else f}" stroke="{ink}" stroke-width="2.4" stroke-linejoin="round"/>')
+        o.append(f'<path d="M{sx*20} -194 Q{sx*40} -244 {sx*58} -238 Q{sx*68} -204 {sx*62} -172Z" fill="{f if sx < 0 else shade(f, 0.9)}" stroke="{line}" stroke-width="2.2" stroke-linejoin="round"/>')
         if not back:
-            o.append(f'<path d="M{sx*32} -192 L{sx*51} -219 L{sx*53} -180Z" fill="#f4a6b8"/>')
-    # fluffy head with cheek tufts
-    o.append(f'<path d="{fluff(0, -150, 64, 54, 18, 0.06, math.pi / 18)}" fill="url(#f{uid})" stroke="{ink}" stroke-width="2.4" stroke-linejoin="round"/>')
-    o.append(f'<ellipse cx="-22" cy="-176" rx="22" ry="11" fill="#fff" opacity=".22"/>')
-    if back:
-        o.append(f'<path d="M-22 -190 Q0 -176 22 -190 M-28 -176 Q0 -162 28 -176" fill="none" stroke="{f2}" stroke-width="2.4" stroke-linecap="round"/>')
-    else:
-        o.append(f'<path d="{fluff(0, -128, 30, 18, 8, 0.12)}" fill="{belly}"/>')
+            o.append(f'<path d="M{sx*28} -192 Q{sx*42} -228 {sx*55} -228 Q{sx*60} -204 {sx*56} -182Z" fill="#f6b3c2"/>')
+            o.append(f'<path d="M{sx*36} -196 l{sx*6} -12 M{sx*42} -192 l{sx*8} -10" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".9"/>')
+    # round head with fluffy cheeks, clipped markings on top
+    o.append(f'<path d="{fluff(0, -150, 66, 56, 20, 0.05, math.pi / 20)}" fill="url(#f{uid})" stroke="{line}" stroke-width="2.2" stroke-linejoin="round"/>')
+    marks = []
+    if pattern == "tabby":
+        marks.append(f'<path d="M-12 -204 l4 20 M0 -207 v22 M12 -204 l-4 20" stroke="{stripe}" stroke-width="5" stroke-linecap="round"/>')  # the forehead "M"
         for sx in (-1, 1):
-            o.append(f'<ellipse cx="{sx*24}" cy="-154" rx="10" ry="13" fill="{eye}"/><circle cx="{sx*24+3}" cy="-159" r="4" fill="#fff"/>')
-            o.append(f'<ellipse cx="{sx*40}" cy="-132" rx="9" ry="5" fill="#f4a6b8" opacity=".7"/>')
-            o.append(f'<path d="M{sx*34} -130 L{sx*74} -138 M{sx*34} -124 L{sx*74} -120" stroke="{ink}" stroke-width="1.6" stroke-linecap="round"/>')
-        o.append(f'<path d="M-7 -138 H7 L0 -131Z" fill="#e0457f" stroke="{ink}" stroke-width="1.6" stroke-linejoin="round"/>')
-        o.append(f'<path d="M0 -131 V-126 M0 -126 Q-6 -119 -12 -124 M0 -126 Q6 -119 12 -124" fill="none" stroke="{ink}" stroke-width="1.6" stroke-linecap="round"/>')
+            marks.append(f'<path d="M{sx*66} -160 q{-sx*14} 2 {-sx*22} 8 M{sx*66} -146 q{-sx*12} 2 {-sx*20} 7" stroke="{stripe}" stroke-width="4.5" stroke-linecap="round" fill="none"/>')
+    if pattern in ("blaze", "tuxedo"):
+        marks.append(f'<path d="M0 -196 Q-10 -160 -36 -132 Q-40 -96 0 -96 Q40 -96 36 -132 Q10 -160 0 -196Z" fill="{white}"/>')  # white blaze down the face
+    if back and pattern == "tabby":
+        marks.append(f'<path d="M-30 -190 Q0 -178 30 -190 M-38 -172 Q0 -160 38 -172 M-34 -154 Q0 -144 34 -154" fill="none" stroke="{stripe}" stroke-width="5" stroke-linecap="round"/>')
+    if back and pattern == "tuxedo":
+        marks = []
+    o.append(f'<g clip-path="url(#h{uid})">{"".join(marks)}</g>')
+    o.append(f'<ellipse cx="-24" cy="-182" rx="24" ry="10" fill="#fff" opacity=".2"/>')
+    if not back:
+        # muzzle puffs, big shiny eyes, pink nose
+        o.append(f'<ellipse cx="-11" cy="-124" rx="15" ry="11" fill="url(#w{uid})"/><ellipse cx="11" cy="-124" rx="15" ry="11" fill="url(#w{uid})"/>')
+        for sx in (-1, 1):
+            ex = sx * 26
+            o.append(f'<ellipse cx="{ex}" cy="-152" rx="14" ry="16" fill="#fff" stroke="{line}" stroke-width="1.8"/>')
+            o.append(f'<ellipse cx="{ex}" cy="-151" rx="11" ry="14" fill="{iris}"/>')
+            o.append(f'<ellipse cx="{ex}" cy="-150" rx="6" ry="9" fill="#1b1b26"/>')
+            o.append(f'<circle cx="{ex + 4}" cy="-157" r="4.2" fill="#fff"/><circle cx="{ex - 4}" cy="-145" r="2" fill="#fff" opacity=".9"/>')
+            o.append(f'<ellipse cx="{sx*44}" cy="-128" rx="9" ry="5" fill="#f6a3b6" opacity=".55"/>')
+            o.append(f'<path d="M{sx*26} -126 Q{sx*52} -132 {sx*80} -128 M{sx*26} -120 Q{sx*52} -120 {sx*80} -114" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".95"/>')
+            o.append(f'<path d="M{sx*26} -126 Q{sx*52} -132 {sx*80} -128 M{sx*26} -120 Q{sx*52} -120 {sx*80} -114" fill="none" stroke="{line}" stroke-width=".8" stroke-linecap="round" opacity=".5"/>')
+        o.append(f'<path d="M-6 -134 Q0 -137 6 -134 Q4 -128 0 -127 Q-4 -128 -6 -134Z" fill="#ef8aa0" stroke="{line}" stroke-width="1.4" stroke-linejoin="round"/>')
+        o.append(f'<path d="M0 -127 V-123 M0 -123 Q-5 -117 -10 -121 M0 -123 Q5 -117 10 -121" fill="none" stroke="{line}" stroke-width="1.6" stroke-linecap="round"/>')
         if glasses:
-            o.append(f'<circle cx="-24" cy="-154" r="17" fill="none" stroke="{ink}" stroke-width="2"/><circle cx="24" cy="-154" r="17" fill="none" stroke="{ink}" stroke-width="2"/><path d="M-7 -156 H7" stroke="{ink}" stroke-width="2"/>')
-    o.append(accessory(theme, outfit, ink, back))
-    # paws resting on the table edge (the tiles stay on the table, not in their paws)
+            o.append(f'<circle cx="-26" cy="-152" r="19" fill="#fff" fill-opacity=".12" stroke="{line}" stroke-width="2.2"/><circle cx="26" cy="-152" r="19" fill="#fff" fill-opacity=".12" stroke="{line}" stroke-width="2.2"/><path d="M-7 -154 H7" stroke="{line}" stroke-width="2.2"/>')
+    o.append(accessory(theme, outfit, line, back))
     if not back:
         for sx in (-1, 1):
-            o.append(f'<path d="{fluff(sx*44, -12, 17, 12, 7, 0.1)}" fill="{f}" stroke="{ink}" stroke-width="2"/>')
+            paw = white if pattern in ("blaze", "tuxedo") else f
+            o.append(f'<path d="{fluff(sx*44, -12, 17, 12, 8, 0.1)}" fill="{paw}" stroke="{line}" stroke-width="1.8"/>')
+            o.append(f'<path d="M{sx*44 - 6} -8 v-6 M{sx*44} -7 v-7 M{sx*44 + 6} -8 v-6" stroke="{shade(paw, 0.75)}" stroke-width="1.4" stroke-linecap="round"/>')
     return "".join(o)
 
 def scene(theme):

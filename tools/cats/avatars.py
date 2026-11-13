@@ -13,7 +13,7 @@ for theme, outfits in ns["OUTFITS"].items():
     t = ns["g"]["THEMES"][theme]
     for i, fur in enumerate(ORDER):
         outfit = outfits[[3, 0, 1, 2][i]]
-        body = ns["cat_sprite"](theme, fur, outfit, t["ink"], False, fur == "grey", "#ffd84a" if fur == "black" else "#2b2540")
+        body = ns["cat_sprite"](theme, fur, outfit, t["ink"], False, fur == "grey")
         svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="-104 -252 208 260">{body}</svg>'
         (OUT / f"{theme}-{fur}.svg").write_text(svg, encoding="utf8")
 print("ok", len(list(OUT.glob("*.svg"))))
