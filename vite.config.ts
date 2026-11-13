@@ -10,6 +10,7 @@ const pages = [
   'aprender/tutorial.html', 'aprender/tiles.html', 'aprender/machi.html',
   'aprender/yaku-reference.html', 'aprender/score.html', 'aprender/dora.html',
   'aprender/defensa.html', 'aprender/reglas.html',
+  'aprender/demo-a.html', 'aprender/demo-b.html', 'aprender/demo-c.html',
   'practicar/yaku.html', 'practicar/waits.html', 'practicar/han.html', 'practicar/calc.html',
   'practicar/valores.html', 'practicar/furiten.html', 'practicar/fu.html', 'practicar/espera-tipo.html',
   'practicar/espera-fichas.html', 'practicar/chinitsu.html', 'practicar/que-ficha-es.html',

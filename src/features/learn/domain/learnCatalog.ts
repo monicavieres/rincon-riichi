@@ -1,4 +1,4 @@
-export type LearnKind = 'tutorial' | 'tiles' | 'machi' | 'dora' | 'defensa' | 'reglas' | 'yakuReference' | 'score' | 'reference';
+export type LearnKind = 'tutorial' | 'tiles' | 'machi' | 'dora' | 'defensa' | 'reglas' | 'yakuReference' | 'score' | 'demoA' | 'demoB' | 'demoC' | 'reference';
 export type LearnDefinition = { kind: LearnKind; title: string; bodyClass: string; shellClass: string };
 
 const byFile: Record<string, LearnDefinition> = {
@@ -10,6 +10,9 @@ const byFile: Record<string, LearnDefinition> = {
   'dora.html': { kind: 'dora', title: 'Dora', bodyClass: 'ref-body', shellClass: 'ref-shell' },
   'defensa.html': { kind: 'defensa', title: 'Defensa', bodyClass: 'ref-body', shellClass: 'ref-shell' },
   'reglas.html': { kind: 'reglas', title: 'Reglas Especiales', bodyClass: 'ref-body', shellClass: 'ref-shell' },
+  'demo-a.html': { kind: 'demoA', title: 'Tutorial DEMO A', bodyClass: 'ref-body demo-body', shellClass: 'demo-shell' },
+  'demo-b.html': { kind: 'demoB', title: 'Tutorial DEMO B', bodyClass: 'ref-body demo-body', shellClass: 'demo-shell' },
+  'demo-c.html': { kind: 'demoC', title: 'Tutorial DEMO C', bodyClass: 'ref-body demo-body', shellClass: 'demo-shell' },
 };
 
 export function getLearnDefinition(pathname: string): LearnDefinition {
