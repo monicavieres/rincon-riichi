@@ -118,9 +118,9 @@ const RIVAL_LOOKS: PawLook[] = ['orange', 'grey', 'black'];
 
 /** The three rival cats around the table: right and left are seen side-on, the far one faces us. */
 const RIVAL_CATS = [
-  { fur: 'orange', x: 109, y: 50, view: 'side', mirror: true },
+  { fur: 'orange', x: 105, y: 54, view: 'side', mirror: true },
   { fur: 'grey', x: 50, y: 9, view: 'front', mirror: false },
-  { fur: 'black', x: -9, y: 50, view: 'side', mirror: false },
+  { fur: 'black', x: -5, y: 54, view: 'side', mirror: false },
 ] as const;
 /** Tiles that drift into a rival's edge band get pushed back towards the middle by that cat. */
 const EDGE = 4.5;
@@ -407,7 +407,7 @@ export function DeckBoard({ language, onStatus }: { language: TutorialLanguage; 
         {RIVAL_CATS.map((seat, i) => (
           <img
             key={seat.fur}
-            className="deck-cat"
+            className={`deck-cat is-${seat.view}`}
             ref={(el) => { catEls.current[i] = el; }}
             src={`../assets/illustrations/cats/${theme}-${seat.fur}${seat.view === 'side' ? '-side' : ''}-${done ? (seat.view === 'side' ? 'excited' : 'excited') : seat.view === 'side' ? 'calm' : 'smile'}.svg`}
             alt=""

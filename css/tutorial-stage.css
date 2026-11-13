@@ -2072,3 +2072,5 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
     user-select: none;
     transform-origin: 50% 100%;
 }
+/* side cats lean on the table, so they sit in front of its rim; the far cat stays behind it */
+.deck-cat.is-side { z-index: 2; }

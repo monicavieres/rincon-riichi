@@ -143,8 +143,9 @@ def kitten_side(theme, fur_key, outfit, expr="calm", uid=None):
     thin = f'stroke="{INK}" stroke-width="1.4" fill="none" stroke-linecap="round"'
     W2 = f' stroke="{INK}" fill="none" stroke-linecap="round" stroke-linejoin="round"'
     body = "M100 138 C68 150 52 194 56 228 C58 250 80 256 112 254 L158 254 C164 232 160 196 150 158 Z"
-    head = ("M62 100 C56 62 88 36 126 36 C164 36 192 62 190 100 L200 108 L191 114 L198 124 L184 126 "
-            "C174 146 150 154 124 154 C98 154 74 146 64 126 C60 118 60 108 62 100 Z")
+    # head turned ~32° towards the table: features sit on a sphere, so they bunch up towards the right contour
+    head = ("M60 98 C58 60 90 38 124 38 C160 38 188 60 188 96 C190 104 196 112 196 120 C196 130 188 138 176 142 "
+            "C164 150 144 156 124 156 C102 156 82 150 72 142 L62 140 L68 134 L54 128 L64 123 L52 115 L62 111 C59 106 59 102 60 98 Z")
     D = [f'<clipPath id="h{uid}"><path d="{head}"/></clipPath>', f'<clipPath id="b{uid}"><path d="{body}"/></clipPath>']
     G = ['<ellipse cx="112" cy="256" rx="76" ry="9" fill="#000" opacity=".14" filter="url(#blur3)"/>']
     tail = "M70 248 C22 252 14 204 36 178"
@@ -182,51 +183,61 @@ def kitten_side(theme, fur_key, outfit, expr="calm", uid=None):
     # scarf around the neck, knot at the front
     G.append(f'<path d="M92 144 Q122 160 150 148 L148 158 Q120 170 94 156 Z"{ST} fill="{scarf}"/>')
     G.append(f'<path d="M146 154 L156 182 L140 174 Z"{ST} fill="{sh(scarf, .88)}"/><circle cx="146" cy="154" r="5"{ST} fill="{sh(scarf, .82)}"/>')
-    # ears: both on top like the front view, the far one a little smaller and darker
-    G.append(f'<g transform="translate(12 6) scale(.9) translate(6 4)"><path d="{EAR_L}"{ST} fill="{shade}"/></g>')
-    G.append(f'<g transform="translate(6 0)"><path d="{mirror(EAR_L)}"{ST} fill="{fur}"/><path d="{mirror(EAR_L_IN)}" fill="{PINK}" opacity=".9"/>'
-             f'<path d="M166 56 q3 -10 1 -16 M171 58 q2 -9 -1 -14" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>')
+    import math
+    TH, CX, RX = math.radians(24), 124, 64
+    px = lambda phi: CX + RX * math.sin(TH + math.radians(phi))
+    fx = px(0)                      # face centre line (~158)
+    exl, exr = px(-27), px(27)      # near eye (full) and far eye (foreshortened, close to the contour)
+    kr = math.cos(TH + math.radians(27))
+    # ears: near ear seen from the front with its pink inside; far ear seen edge-on at the contour
+    G.append(f'<path d="M154 48 C166 34 180 20 192 12 C194 32 190 52 182 70 Z"{ST} fill="{shade}"/>')
+    G.append(f'<path d="M168 42 C176 34 184 27 189 22 C189 34 187 46 184 56 Z" fill="{PINK}" opacity=".55"/>')
+    G.append(f'<path d="M80 72 C77 50 79 28 87 8 C103 18 117 32 126 48 Z"{ST} fill="{fur}"/>')
+    G.append(f'<path d="M88 62 C86 46 87 32 91 20 C101 28 109 36 116 48 Z" fill="{PINK}" opacity=".9"/>')
+    G.append(f'<path d="M96 54 q-1 -10 2 -16 M102 56 q0 -9 4 -13 M91 56 q-2 -8 -1 -12" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round"/>')
     G.append(f'<path d="{head}"{ST} fill="{fur}"/>')
     G.append(f'<g clip-path="url(#h{uid})">')
-    fx = 136  # face centre, shifted towards the side the cat faces
     if pat == "tabby":
-        G.append(f'<path d="M{fx-26} 40 q-2 10 2 22 M{fx-10} 38 v24 M{fx+6} 40 q2 10 -2 22" stroke="{stripe}" stroke-width="5" fill="none" stroke-linecap="round" opacity=".75"/>')
-        G.append(f'<path d="M62 100 q10 1 18 5 M64 112 q10 0 16 4" stroke="{stripe}" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/>')
-        G.append(f'<ellipse cx="{fx+4}" cy="128" rx="30" ry="20" fill="{white}" opacity=".85" filter="url(#blur3)"/>')
+        G.append(f'<path d="M122 42 q-2 10 2 22 M136 40 v24 M150 42 q2 10 -2 21" stroke="{stripe}" stroke-width="5" fill="none" stroke-linecap="round" opacity=".75"/>')
+        G.append(f'<path d="M60 100 q10 1 18 5 M62 112 q10 0 16 4" stroke="{stripe}" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/>')
+        G.append(f'<ellipse cx="{fx+4}" cy="128" rx="28" ry="19" fill="{white}" opacity=".85" filter="url(#blur3)"/>')
     else:
-        G.append(f'<path d="M{fx} 62 C{fx+8} 86 {fx+48} 98 {fx+52} 160 L{fx-60} 160 C{fx-56} 98 {fx-8} 86 {fx} 62 Z" fill="{white}"/>')
-    G.append(f'<ellipse cx="100" cy="58" rx="34" ry="14" fill="{light}" opacity=".55" filter="url(#blur4)"/>')
-    G.append(f'<ellipse cx="110" cy="150" rx="70" ry="14" fill="{shade}" opacity=".5" filter="url(#blur4)"/>')
+        G.append(f'<path d="M{fx-2} 62 C{fx+6} 86 {fx+42} 98 {fx+44} 162 L{fx-34} 162 C{fx-36} 104 {fx-8} 88 {fx-2} 62 Z" fill="{white}"/>')
+    G.append(f'<ellipse cx="104" cy="60" rx="36" ry="15" fill="{light}" opacity=".55" filter="url(#blur4)"/>')
+    G.append(f'<ellipse cx="96" cy="120" rx="30" ry="30" fill="{shade}" opacity=".25" filter="url(#blur4)"/>')
+    G.append(f'<ellipse cx="124" cy="152" rx="70" ry="14" fill="{shade}" opacity=".5" filter="url(#blur4)"/>')
     G.append('</g>')
-    G.append(f'<path d="M104 40 l4 -8 l2 7 l5 -7 l1 8" {thin}/>')
+    G.append(f'<path d="M110 42 l4 -8 l2 7 l5 -7 l1 8" {thin}/>')
     ey = 102
-    eyes = ((fx - 22, .82), (fx + 20, 1.0))  # far eye a little narrower
-    for i, (x, k) in enumerate(eyes):
+    for x, k, i in ((exl, 1.0, 0), (exr, kr * 1.15, 1)):
         if expr in ("happy", "smile"):
             G.append(f'<path d="M{x-13*k} {ey+4} Q{x} {ey-10} {x+13*k} {ey+4}"{W2} stroke-width="3.2"/>')
         elif expr == "excited":
-            s = 1 if i == 0 else -1
-            G.append(f'<path d="M{x - s*9*k} {ey-6} L{x + s*9*k} {ey+2} L{x - s*9*k} {ey+10}"{W2} stroke-width="3.2"/>')
+            sgn = 1 if i == 0 else -1
+            G.append(f'<path d="M{x - sgn*9*k} {ey-6} L{x + sgn*9*k} {ey+2} L{x - sgn*9*k} {ey+10}"{W2} stroke-width="3.2"/>')
         else:
             r = 7.6
-            G.append(f'<ellipse cx="{x+2}" cy="{ey+3}" rx="{r*k}" ry="{r*1.15}" fill="#2a2026"/>'
-                     f'<circle cx="{x+2+r*.35}" cy="{ey+3-r*.4}" r="{r*.38}" fill="#fff"/><circle cx="{x+2-r*.4*k}" cy="{ey+3+r*.45}" r="{r*.16}" fill="#fff"/>')
-    for x, k in ((fx - 40, .7), (fx + 40, 1)):
-        G.append(f'<ellipse cx="{x}" cy="{ey+18}" rx="{11*k}" ry="6" fill="{PINK}" opacity=".75" filter="url(#blur2)"/>')
-    nx = fx + 6
-    G.append(f'<path d="M{nx-4} 113 Q{nx} 111 {nx+4} 113 L{nx} 117.5 Z" fill="#e2879a" stroke="{INK}" stroke-width="1.2" stroke-linejoin="round"/>')
+            G.append(f'<ellipse cx="{x}" cy="{ey+3}" rx="{r*k}" ry="{r*1.15}" fill="#2a2026"/>'
+                     f'<circle cx="{x+r*.3*k}" cy="{ey+3-r*.4}" r="{r*.38*max(k, .7)}" fill="#fff"/><circle cx="{x-r*.35*k}" cy="{ey+3+r*.45}" r="{r*.16}" fill="#fff"/>')
+    G.append(f'<ellipse cx="{px(-52)}" cy="{ey+18}" rx="11" ry="6" fill="{PINK}" opacity=".75" filter="url(#blur2)"/>')
+    G.append(f'<ellipse cx="{px(48)-2}" cy="{ey+18}" rx="4" ry="5" fill="{PINK}" opacity=".6" filter="url(#blur2)"/>')
+    nx = fx + 2
+    G.append(f'<ellipse cx="{nx-8}" cy="124" rx="9" ry="6.5" fill="{white}" opacity=".9"/><ellipse cx="{nx+6}" cy="124" rx="6" ry="6" fill="{white}" opacity=".9"/>')
+    G.append(f'<path d="M{nx-4} 113 Q{nx} 111 {nx+3} 113 L{nx-0.5} 117.5 Z" fill="#e2879a" stroke="{INK}" stroke-width="1.2" stroke-linejoin="round"/>')
     if expr in ("happy", "excited"):
-        G.append(f'<path d="M{nx-11} 121 Q{nx-5} 125 {nx} 120 Q{nx+5} 125 {nx+11} 121 Q{nx+8} 137 {nx} 137 Q{nx-8} 137 {nx-11} 121 Z" fill="#a8434f" stroke="{INK}" stroke-width="1.8" stroke-linejoin="round"/>'
-                 f'<path d="M{nx-7} 130 Q{nx} 125 {nx+7} 130 Q{nx+4} 137 {nx} 137 Q{nx-4} 137 {nx-7} 130 Z" fill="#f08a9a"/>')
+        G.append(f'<path d="M{nx-11} 121 Q{nx-5} 125 {nx} 120 Q{nx+4} 124 {nx+7} 121 Q{nx+6} 137 {nx-1} 137 Q{nx-8} 137 {nx-11} 121 Z" fill="#a8434f" stroke="{INK}" stroke-width="1.8" stroke-linejoin="round"/>'
+                 f'<path d="M{nx-7} 130 Q{nx-1} 125 {nx+5} 130 Q{nx+3} 137 {nx-1} 137 Q{nx-5} 137 {nx-7} 130 Z" fill="#f08a9a"/>')
     else:
-        G.append(f'<path d="M{nx} 117.5 v3 M{nx-7} 122 Q{nx-3} 126 {nx} 121 Q{nx+3} 126 {nx+7} 122"{W2} stroke-width="1.7"/>')
+        G.append(f'<path d="M{nx} 117.5 v3 M{nx-7} 122 Q{nx-3} 126 {nx} 121 Q{nx+2} 125 {nx+5} 122"{W2} stroke-width="1.7"/>')
     for k in (-3, 4):
-        G.append(f'<path d="M{fx+52} {ey+16+k} q16 {-2+k*.4} 30 {k*1.2-4}" {thin} stroke-width="1.1"/>'.replace('stroke-width="1.4" fill="none" stroke-linecap="round" stroke-width="1.1"', 'stroke-width="1.1" fill="none" stroke-linecap="round"'))
-    G.append(f'<g transform="translate(14 0)">{accessory(theme, outfit, False)}</g>')
+        G.append(f'<path d="M{188} {ey+16+k} q14 {-2+k*.4} 28 {k*1.2-4}" stroke="{INK}" stroke-width="1.1" fill="none" stroke-linecap="round"/>')
+    shift = {"cyberpunk": 26, "frutiger": 26, "samurai": 14, "cute": 10}.get(theme, 6)
+    G.append(f'<g transform="translate({shift} 0)">{accessory(theme, outfit, False)}</g>')
     if name == "grey":
-        for x, r in ((fx - 22, 14), (fx + 20, 17)):
-            G.append(f'<circle cx="{x+2}" cy="{ey+2}" r="{r}" fill="#fff" fill-opacity=".14" stroke="{INK}" stroke-width="2"/>')
-        G.append(f'<path d="M{fx-6} {ey-1} Q{fx} {ey-5} {fx+4} {ey-1}" stroke="{INK}" stroke-width="2" fill="none"/>')
+        G.append(f'<circle cx="{exl}" cy="{ey+2}" r="16" fill="#fff" fill-opacity=".14" stroke="{INK}" stroke-width="2"/>')
+        G.append(f'<ellipse cx="{exr}" cy="{ey+2}" rx="{16*kr*1.1}" ry="16" fill="#fff" fill-opacity=".14" stroke="{INK}" stroke-width="2"/>')
+        G.append(f'<path d="M{exl+16} {ey} Q{(exl+exr)/2} {ey-5} {exr-16*kr*1.1} {ey}" stroke="{INK}" stroke-width="2" fill="none"/>')
+        G.append(f'<path d="M{exl-16} {ey} L{exl-36} {ey-6}" stroke="{INK}" stroke-width="2" fill="none" stroke-linecap="round"/>')
     return f'<defs>{"".join(D)}</defs><g filter="url(#ink)">{"".join(G)}</g>'
 
 
