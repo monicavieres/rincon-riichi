@@ -8,6 +8,7 @@ import { paintDealtTable } from './HandSort';
 import { FELT_Z, IsoCanvas, shade, type IsoHandle, type Painter } from './iso3d';
 import { useGate } from './useGate';
 import { STICK_LOOK, STICK_LENGTH, STICK_THICK, paintStickFace } from './sticks';
+import { withTiles } from './TileText';
 
 type Value = 10000 | 5000 | 1000 | 500 | 100;
 type Wallet = Record<Value, number>;
@@ -263,8 +264,8 @@ export function PointsBoard({ language }: { language: TutorialLanguage }) {
           <button type="button" className="sort-button" onClick={() => { void play(scenario); }}>↻ {t('Reiniciar animación', 'Restart animation', 'Reiniciar animação')}</button>
         </div>
         <p className="sort-win is-top is-note" role="status">
-          <b>{note?.title}</b>
-          <span>{note?.body}</span>
+          <b>{withTiles(note?.title)}</b>
+          <span>{withTiles(note?.body)}</span>
         </p>
       </div>
     </div>

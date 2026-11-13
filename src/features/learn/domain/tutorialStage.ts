@@ -156,7 +156,7 @@ const handRows: Record<string, RackRow[]> = {
         { tiles: ['3p', '4p', '5p'], tone: 'pin' },
         { tiles: ['6s', '7s', '8s'], tone: 'sou' },
         { tiles: ['5p', '5p', '5p'], tone: 'pin' },
-        { tiles: ['4s', '4s'], tone: 'gold', label: L('Sin 1, 9 ni honores', 'No 1s, 9s or honors', 'Sem 1, 9 nem honras') },
+        { tiles: ['4s', '4s'], tone: 'gold', label: L('Sin 1, 9 ni honores', 'No ones, nines or honors', 'Sem 1, 9 nem honras') },
       ],
     },
     {
@@ -476,7 +476,7 @@ export const tutorialStops: TutorialStop[] = [
       'Você pode se perguntar o que é esse **yaku** que mencionamos. Um **yaku** é uma condição de vitória: ter 4 grupos e 1 par não basta, a mão precisa de pelo menos um. Existem vários, mas para iniciantes os três mais fáceis de lembrar são **tanyao** (todas simples), **riichi** e **yakuhai**.',
     ),
     bullets: [
-      L('**Tanyao** (todas simples): toda la mano son fichas del 2 al 8, sin 1, 9 ni honores.', '**Tanyao** (all simples): the whole hand is tiles from 2 to 8, no 1s, 9s or honors.', '**Tanyao** (todas simples): a mão toda são peças de 2 a 8, sem 1, 9 nem honras.'),
+      L('**Tanyao** (todas simples): toda la mano son fichas del 2 al 8, sin 1, 9 ni honores.', '**Tanyao** (all simples): the whole hand is tiles from 2 to 8, no ones, nines or honors.', '**Tanyao** (todas simples): a mão toda são peças de 2 a 8, sem 1, 9 nem honras.'),
       L('**Riichi**: con la mano cerrada y a una ficha de ganar, declaras riichi y esperas tu ficha.', '**Riichi**: with a closed hand one tile from winning, you declare riichi and wait for your tile.', '**Riichi**: com a mão fechada e a uma peça de ganhar, você declara riichi e espera sua peça.'),
       L('**Yakuhai**: un trío (o cuarteto) de dragones, del **viento de la ronda** o de tu **propio viento**.', '**Yakuhai**: a triplet (or quad) of dragons, of the round wind or of your own wind.', '**Yakuhai**: um trio (ou quarteto) de dragões, do vento da rodada ou do seu próprio vento.'),
     ],

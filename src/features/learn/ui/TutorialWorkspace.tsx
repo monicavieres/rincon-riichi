@@ -3,6 +3,7 @@ import { TableStage, ZoneThumb } from '../../../shared/ui/TableStage';
 import { localize, type LocalizedText, type TutorialLanguage } from '../domain/tutorialContent';
 import { GLOSSARY, glossaryIdFor } from '../domain/glossary';
 import { PlayMode } from './PlayMode';
+import { withTiles } from './stages/TileText';
 import { docHref } from '../../../shared/docs';
 import { stepSubtitles, tutorialParts, tutorialStops, type TutorialStop } from '../domain/tutorialStage';
 import { RackStage } from './stages/RackStage';
@@ -26,7 +27,8 @@ import { SortBoard, tilePath, type SortStatus } from './stages/SortBoard';
 
 /** **word** marks a highlighted term. */
 const rich = (text: string) => text.split('**').map((part, i) => {
-  if (i % 2 === 0) return part;
+  if (i % 2 === 0) return <span key={i}>{withTiles(part)}</span>;
+  if (/^[0-9][mpsz]( (o|or|ou) [0-9][mpsz])?$/.test(part)) return <strong key={i}>{withTiles(part)}</strong>;
   const mark = /^(yaku|tanyao|riichi|yakuhai)\b/i.test(part);
   const inner = mark ? <mark className="term-mark">{part}</mark> : <strong>{part}</strong>;
   const id = glossaryIdFor(part);
@@ -519,7 +521,7 @@ export function TutorialWorkspace() {
             <header><h2>? {t(UI.howTo)}</h2><button type="button" onClick={() => setHelp(false)} aria-label={t(UI.close)}>✕</button></header>
             <div className="help-body">
               <p className="mode-chip is-tutorial">🎓 {t(UI.inTutorial)}</p>
-              <p>{t(practiceCopy)}</p>
+              <p>{withTiles(t(practiceCopy))}</p>
               {spec.kind === 'deck' && REAL_DIFF[spec.mode] && <p className="mode-diff">{t(REAL_DIFF[spec.mode])}</p>}
               {readout && <p className="sort-readout"><b>{t(UI.progress)}:</b> {readout}</p>}
             </div>

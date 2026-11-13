@@ -6,6 +6,7 @@ import { DEALT, HAND_VIEW, HAND_Y, WIDE_VIEW, WIDTH, byKey, handX, pondPos, slee
 import { paintDealtTable } from './HandSort';
 import { FELT_Z, IsoCanvas, picture, type IsoHandle, type Painter } from './iso3d';
 import { useGate } from './useGate';
+import { withTiles } from './TileText';
 
 /** A hand that waits on 4p or 7p, with a 7p already in your own river: furiten. */
 const HAND = ['2m', '3m', '4m', '4p', '5p', '6p', '7s', '8s', '9s', '1z', '1z', '5p', '6p'];
@@ -196,7 +197,7 @@ export function FuritenBoard({ language }: { language: TutorialLanguage }) {
         const xs = pair.map((piece) => shown.current.get(piece.id)).filter((x): x is number => x !== undefined);
         if (xs.length) {
           const pos = g.project(Math.min(...xs) + (Math.max(...xs) - Math.min(...xs)) / 2, HAND_Y, FELT_Z + 14);
-          g.pill(pos.x, pos.y - 6, t('Esperas 4p · 7p', 'You wait 4p · 7p', 'Espera 4p · 7p'), { bg: p.gold, fg: p.ink, size: 12, border: p.ink });
+          g.pill(pos.x, pos.y - 6, t('Esperas: 4 o 7 pinzu', 'You wait: 4 or 7 pinzu', 'Espera: 4 ou 7 pinzu'), { bg: p.gold, fg: p.ink, size: 12, border: p.ink });
         }
       }
       if (reveal) {
@@ -249,8 +250,8 @@ export function FuritenBoard({ language }: { language: TutorialLanguage }) {
           </div>
         )}
         <p className="sort-win is-top is-note" role="status">
-          <b>{note?.title}</b>
-          <span>{note?.body}</span>
+          <b>{withTiles(note?.title)}</b>
+          <span>{withTiles(note?.body)}</span>
         </p>
       </div>
     </div>

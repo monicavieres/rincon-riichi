@@ -4,6 +4,7 @@ import { ROT, dealAssignments, drawOrder, handSlot } from './DealBoard';
 import { DEALT, HAND_VIEW, HAND_Y, WIDE_VIEW, WIDTH, byKey, handX, pondPos, sleep, startHand, tileName, tagsOf, TAG_LOOK, wallPos, type Fly, type Piece } from './DrawBoard';
 import { paintDealtTable } from './HandSort';
 import { FELT_Z, IsoCanvas, picture, type IsoHandle, type Painter } from './iso3d';
+import { withTiles } from './TileText';
 
 type Part = 'tsumo' | 'ron';
 
@@ -332,8 +333,8 @@ export function WinBoard({ language }: { language: TutorialLanguage }) {
           </div>
         )}
         <p className={`sort-win is-top${finished ? '' : ' is-note'}`} role="status">
-          <b>{note?.title ?? ''}</b>
-          <span>{note?.body ?? ''}</span>
+          <b>{withTiles(note?.title ?? '')}</b>
+          <span>{withTiles(note?.body ?? '')}</span>
         </p>
       </div>
     </div>

@@ -6,6 +6,7 @@ import { sleep } from './DrawBoard';
 import { paintDealtTable } from './HandSort';
 import { FELT_Z, IsoCanvas, type IsoHandle, type Painter } from './iso3d';
 import { useGate } from './useGate';
+import { withTiles } from './TileText';
 
 type Case = 'keeps' | 'passes' | 'round' | 'types';
 
@@ -200,8 +201,8 @@ export function RoundsBoard({ language }: { language: TutorialLanguage }) {
             </div>
           )}
           <p className="sort-win is-top is-note" role="status">
-            <b>{note?.title}</b>
-            <span>{note?.body}</span>
+            <b>{withTiles(note?.title)}</b>
+            <span>{withTiles(note?.body)}</span>
           </p>
         </div>
       )}

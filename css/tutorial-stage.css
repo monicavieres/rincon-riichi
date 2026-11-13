@@ -1954,3 +1954,6 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .pt-big-sticks { display: grid; gap: 4px; } .pt-big-sticks > span { display: flex; align-items: center; gap: 12px; } .pt-big-sticks .stick-svg { width: clamp(120px, 24vmin, 220px); } .pt-big-sticks b { font: 800 clamp(13px, 2.4vmin, 20px) / 1 var(--font-sans); min-width: 4.5em; }
 .pt-detail ul { margin: 0; padding: 0 0 0 18px; width: min(100%, 680px); display: grid; gap: 4px; font: 500 clamp(12px, 2vmin, 17px) / 1.35 Palatino, Georgia, serif; }
 .pt-detail-nav { display: flex; gap: 8px; }
+
+/* A tile picture inside a sentence, as tall as the letters around it */
+.inline-tile { display: inline-block; height: 1.35em; width: auto; vertical-align: -0.32em; margin: 0 0.08em; filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.25)); }

@@ -6,6 +6,7 @@ import { DEALT, HAND_Y, WIDE_VIEW, WIDTH, byKey, handX, pondPos, sleep, wallPos,
 import { paintDealtTable } from './HandSort';
 import { useGate } from './useGate';
 import { FELT_Z, IsoCanvas, picture, type IsoHandle, type Painter } from './iso3d';
+import { withTiles } from './TileText';
 
 type Call = 'chii' | 'pon' | 'kan';
 
@@ -325,8 +326,8 @@ export function CallsBoard({ language }: { language: TutorialLanguage }) {
           </div>
         )}
         <p className="sort-win is-top is-note" role="status">
-          <b>{note?.title}</b>
-          <span>{note?.body}</span>
+          <b>{withTiles(note?.title)}</b>
+          <span>{withTiles(note?.body)}</span>
         </p>
       </div>
     </div>

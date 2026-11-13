@@ -8,6 +8,7 @@ import { paintDealtTable } from './HandSort';
 import { FELT_Z, IsoCanvas, picture, type IsoHandle, type Painter } from './iso3d';
 import { useGate } from './useGate';
 import { STICK_LOOK, STICK_LENGTH, STICK_THICK, paintStickFace } from './sticks';
+import { withTiles } from './TileText';
 
 type Mode = 'tanyao' | 'riichi' | 'yakuhai';
 type Sub = 'yes' | 'no' | 'dragon' | 'wind';
@@ -276,8 +277,8 @@ export function YakuBoard({ language }: { language: TutorialLanguage }) {
             </div>
           )}
           <p className="sort-win is-top is-note" role="status">
-            <b>{note?.title}</b>
-            <span>{note?.body}</span>
+            <b>{withTiles(note?.title)}</b>
+            <span>{withTiles(note?.body)}</span>
           </p>
         </div>
       ) : (

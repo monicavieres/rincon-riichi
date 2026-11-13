@@ -5,6 +5,7 @@ import { ROT, around, dealAssignments, drawOrder, handSlot, turn } from './DealB
 import { wallSlot } from './DeckBoard';
 import { paintDealtTable } from './HandSort';
 import { FELT_Z, IsoCanvas, TILE_T, picture, type IsoHandle, type Painter } from './iso3d';
+import { withTiles } from './TileText';
 
 export const WIDTH = 3.6;
 export const HAND_Y = 94.4;
@@ -396,7 +397,7 @@ export function DrawBoard({ language }: { language: TutorialLanguage }) {
           {phase === 'won' && <button type="button" className="sort-button" onClick={restart}>{t('Repetir', 'Again', 'Repetir')}</button>}
         </div>
         <p className={`sort-win is-top${phase === 'won' ? '' : ' is-note'}`} role="status">
-          <b>{note?.title ?? (phase === 'start' ? t('Tu mano ordenada', 'Your sorted hand', 'Sua mão ordenada') : phase === 'choose' ? t('¿Te sirve este robo?', 'Does this draw help?', 'Essa compra serve?') : t('Robando del muro…', 'Drawing from the wall…', 'Comprando do muro…'))}</b>
+          <b>{withTiles(note?.title ?? (phase === 'start' ? t('Tu mano ordenada', 'Your sorted hand', 'Sua mão ordenada') : phase === 'choose' ? t('¿Te sirve este robo?', 'Does this draw help?', 'Essa compra serve?') : t('Robando del muro…', 'Drawing from the wall…', 'Comprando do muro…')))}</b>
           <span>{note?.body ?? (phase === 'start'
             ? t('Ya robaste tu ficha 14 al repartir, así que solo falta botar. Mira: tres grupos, dos parejas… y una ficha suelta. Toca o arrastra hacia arriba la que sobra.', 'You already drew your 14th tile in the deal, so all that is left is to throw. Look: three sets, two pairs… and one loose tile. Tap or drag up the spare one.', 'Você já comprou sua 14ª peça na distribuição, então só falta descartar. Veja: três grupos, dois pares… e uma peça solta. Toque ou arraste para cima a que sobra.')
             : phase === 'choose'

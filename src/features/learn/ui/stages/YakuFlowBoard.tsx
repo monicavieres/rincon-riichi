@@ -6,6 +6,7 @@ import { DEALT, HAND_VIEW, HAND_Y, WIDE_VIEW, WIDTH, byKey, handX, pondPos, slee
 import { paintDealtTable } from './HandSort';
 import { drawStick } from './YakuBoard';
 import { FELT_Z, IsoCanvas, picture, type IsoHandle, type Painter } from './iso3d';
+import { withTiles } from './TileText';
 
 const PRE_TAKEN = 12;
 const PRE_PONDS = [['9s', '2p'], ['4z', '8s'], ['3z', '7p']];
@@ -334,8 +335,8 @@ export function YakuFlowBoard({ flowId, language, replayLabel }: { flowId: strin
           </div>
         )}
         <p className={`sort-win is-top${reveal ? '' : ' is-note'}`} role="status">
-          <b>{note?.title}</b>
-          <span>{note?.body}</span>
+          <b>{withTiles(note?.title)}</b>
+          <span>{withTiles(note?.body)}</span>
         </p>
       </div>
     </div>
