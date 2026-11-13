@@ -17,20 +17,45 @@
   const TILE_BACK = /assets\/tile-back-[a-z]+\.svg/;
   const backFor = (theme) => `assets/tile-back-${THEME_TILES[theme] ? theme : "default"}.svg`;
 
+  // Tiles can carry their number (or the honor's initial, in the page language) in the top-left corner.
+  // The choice lives on <html data-tile-labels="on|off" data-tile-lang="es|en|pt"> and is remembered.
+  const LABELED = /assets\/tiles-labeled\/[a-z-]+\/(?:(?:es|en|pt)\/)?([^/?#]+\.svg)/;
+  const LABEL_KEY = "rincon-riichi-tile-labels";
+  const root = document.documentElement;
+  const readStored = (key, fallback) => { try { return localStorage.getItem(key) || fallback; } catch (error) { return fallback; } };
+  root.dataset.tileLabels = readStored(LABEL_KEY, "on") === "off" ? "off" : "on";
+  const storedLang = readStored("rincon-riichi-language", "en");
+  root.dataset.tileLang = ["es", "en", "pt"].includes(storedLang) ? storedLang : "en";
+
   const syncTile = (img) => {
     const src = img.getAttribute("src") || "";
     if (TILE_BACK.test(src)) {
-      const nextBack = src.replace(TILE_BACK, backFor(document.documentElement.getAttribute("data-theme")));
+      const nextBack = src.replace(TILE_BACK, backFor(root.getAttribute("data-theme")));
       if (nextBack !== src) img.setAttribute("src", nextBack);
       return;
     }
-    if (!isTileSrc(src)) return;
+    const labeled = LABELED.test(src);
+    if (!isTileSrc(src) && !labeled) return;
 
-    if (!THEMED_TILE.test(src)) img.dataset.rinconTileSrc = src;
-    const original = img.dataset.rinconTileSrc || src;
-    const theme = document.documentElement.getAttribute("data-theme");
+    // a plain tile path is the original one (React may set it again on a re-render)
+    if (!labeled && !THEMED_TILE.test(src)) img.dataset.rinconTileSrc = src;
+    let original = img.dataset.rinconTileSrc;
+    if (!original) {
+      if (THEMED_TILE.test(src)) original = src.replace(THEMED_TILE, "assets/tiles-fluffystuff-composite/$1");
+      else return;
+    }
+    const file = (original.match(NORMAL_TILE) || [])[1];
+    if (!file) return;
+    const theme = root.getAttribute("data-theme");
     const folder = THEME_TILES[theme] || null;
-    const next = folder ? original.replace(NORMAL_TILE, `assets/${folder}/$1`) : original;
+    const code = file.replace(/\.svg$/, "");
+    let next;
+    if (root.dataset.tileLabels !== "off" && /^[0-9][mpsz]$/.test(code)) {
+      const set = folder || "tiles-fluffystuff-composite";
+      next = original.replace(NORMAL_TILE, `assets/tiles-labeled/${set}/${code.endsWith("z") ? `${root.dataset.tileLang}/` : ""}${file}`);
+    } else {
+      next = folder ? original.replace(NORMAL_TILE, `assets/${folder}/$1`) : original;
+    }
     if (next !== src) img.setAttribute("src", next);
   };
 
@@ -61,8 +86,32 @@
       attributes: true,
       attributeFilter: ["src"],
     });
-    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "data-tile-labels", "data-tile-lang"] });
     syncAllTiles();
+
+    const labelToggle = document.querySelector("#tileLabelToggle");
+    const showLabelState = () => { if (labelToggle) labelToggle.setAttribute("aria-pressed", String(root.dataset.tileLabels !== "off")); };
+    showLabelState();
+    labelToggle?.addEventListener("click", () => {
+      root.dataset.tileLabels = root.dataset.tileLabels === "off" ? "on" : "off";
+      try { localStorage.setItem(LABEL_KEY, root.dataset.tileLabels); } catch (error) { /* ignore storage failures */ }
+      showLabelState();
+    });
+    const languageSelect = document.querySelector("#languageSelect");
+    const LABEL_TEXT = { es: "Número en las fichas", en: "Numbers on tiles", pt: "Número nas peças" };
+    const followLanguage = () => {
+      const lang = languageSelect && languageSelect.value;
+      if (["es", "en", "pt"].includes(lang)) root.dataset.tileLang = lang;
+      const text = LABEL_TEXT[root.dataset.tileLang] || LABEL_TEXT.en;
+      if (labelToggle) {
+        labelToggle.title = text;
+        const span = labelToggle.querySelector(".tile-label-text");
+        if (span) span.textContent = text;
+      }
+    };
+    languageSelect?.addEventListener("change", followLanguage);
+    // pages set the select from storage after mounting; pick that value up too
+    setTimeout(followLanguage, 0);
 
     const toggle = document.querySelector("#menuToggle");
     const topbar = document.querySelector("#topbar");

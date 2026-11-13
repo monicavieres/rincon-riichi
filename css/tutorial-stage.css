@@ -281,14 +281,14 @@
 .deck-tile > .bx-f {
     box-sizing: border-box;
     border: 0.2cqw solid var(--tile-ink);
-    background: linear-gradient(var(--tile-back) 0 30%, var(--tile-cream) 30% 70%, var(--tile-back) 70%);
+    background: linear-gradient(var(--tile-back) 0 40%, var(--tile-cream) 40%);
 }
 
 .tile-top {
     box-sizing: border-box;
     border: 0.24cqw solid var(--tile-ink);
     border-radius: 0.4cqw;
-    background: var(--tile-emblem) center / 66% no-repeat, var(--tile-back);
+    background: var(--tile-back);
     box-shadow: inset 0 0 0 0.16cqw rgba(255, 255, 255, 0.3);
 }
 
@@ -949,7 +949,7 @@
     box-sizing: border-box;
     border: 1.1px solid var(--tile-ink);
     border-radius: 2px;
-    background: var(--tile-emblem) center / 74% no-repeat, var(--tile-back);
+    background: var(--tile-back);
     box-shadow: 0 2.4px 0 -0.3px var(--tile-cream), 0 3.6px 0 -0.3px var(--tile-ink);
 }
 

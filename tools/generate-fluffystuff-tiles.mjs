@@ -28,9 +28,9 @@ function composite(tileId) {
       <feDropShadow dx="0" dy="3" stdDeviation="1.4" flood-color="#4b3a2d" flood-opacity=".28"/>
     </filter>
   </defs>
-  <rect x="10" y="7" width="76" height="113" rx="7" fill="#cdc7ba"/>
+  <rect x="10" y="7" width="76" height="113" rx="7" fill="#f3c63d"/>
   <rect x="10" y="7" width="76" height="105" rx="7" fill="url(#face)" stroke="#171513" stroke-width="3.4" filter="url(#shadow)"/>
-  <path d="M17 112h62l-6 8H23z" fill="#988d81" opacity=".55"/>
+  <path d="M17 112h62l-6 8H23z" fill="#c98f14" opacity=".55"/>
   <image href="data:image/png;base64,${tilePng}" x="15" y="14" width="66" height="88" preserveAspectRatio="xMidYMid meet"/>
 </svg>
 `;

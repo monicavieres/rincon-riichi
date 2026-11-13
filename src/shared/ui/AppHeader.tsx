@@ -98,6 +98,10 @@ export function AppHeader({ title, headline, backTo = 'aprender', home = false }
           ))}
         </nav>
         <div className="side-rail-bottom" id="topbar-controls">
+          <button type="button" className="side-rail-tilelabel" id="tileLabelToggle" aria-pressed="true" title="Número en las fichas">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="2.6" /><path d="M8.4 6.2h1.3v4.4" /><path d="M11.5 14.5h3M13 13v3" /></svg>
+            <span className="side-rail-label tile-label-text">Número en las fichas</span>
+          </button>
           <ThemePicker assetBase={home ? '' : '../'} />
           <label className="side-rail-lang" title="Idioma">
             <span className="sr-only" data-i18n={home ? 'language.short' : 'language'}>Idioma</span>

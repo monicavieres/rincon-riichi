@@ -57,7 +57,18 @@ const bitmaps = new Map<string, HTMLCanvasElement>();
 let onImage: (() => void) | null = null;
 
 /** A picture rasterised once to a canvas, so it can be drawn many times cheaply and at any angle. */
-export function picture(path: string): HTMLCanvasElement | null {
+/** With tile labels on, a tile face is taken from the labelled set (honors in the page language). */
+function labeledPath(path: string) {
+  const root = document.documentElement;
+  if (root.dataset.tileLabels === 'off') return path;
+  const m = /assets\/(tiles-[a-z-]+)\/([0-9][mpsz])\.svg$/.exec(path);
+  if (!m || m[1] === 'tiles-labeled') return path;
+  const set = m[1] === 'tiles' ? 'tiles-fluffystuff-composite' : m[1];
+  return path.replace(m[0], `assets/tiles-labeled/${set}/${m[2].endsWith('z') ? `${root.dataset.tileLang || 'en'}/` : ''}${m[2]}.svg`);
+}
+
+export function picture(source: string): HTMLCanvasElement | null {
+  const path = labeledPath(source);
   const cached = bitmaps.get(path);
   if (cached) return cached;
   let img = images.get(path);
@@ -263,25 +274,12 @@ export class Painter {
     this.add(opts.order ?? y * 100 + z0 + lift, () => {
       const g = this.box(x, y, z0 + lift, w * squeeze, l, t, rot);
       g.sides.forEach((face) => {
-        this.bandedFace(face, [[0, 0.3, sideBack], [0.3, 0.7, sideCream], [0.7, 1, sideBack]], lit(face.n), p.ink);
+        // a real tile is a white body with a coloured back layer: one band of each, the colour on the back's side
+        this.bandedFace(face, faceUp ? [[0, 0.6, sideCream], [0.6, 1, sideBack]] : [[0, 0.4, sideBack], [0.4, 1, sideCream]], lit(face.n), p.ink);
       });
       this.poly(g.top, faceUp ? '#fffdf6' : back, opts.gold ? p.gold : p.ink, opts.gold ? this.lw * 2 : this.lw);
       if (faceUp && opts.face) {
         this.textured(opts.face, x, y, w * squeeze, l, rot, z0 + lift + t, 6, faceCrop(opts.face));
-      } else {
-        const emblem = picture(p.emblem);
-        if (emblem && !opts.counting) {
-          this.onQuad(g.top, () => {
-            const s = 0.64;
-            this.ctx.drawImage(emblem, 0.5 - s / 2, 0.5 - (s * w) / l / 2, s, (s * w) / l);
-          });
-        }
-        this.onQuad(g.top, () => {
-          const { ctx } = this;
-          ctx.strokeStyle = 'rgba(255,255,255,0.32)';
-          ctx.lineWidth = 0.04;
-          ctx.strokeRect(0.1, 0.08, 0.8, 0.84);
-        });
       }
     });
   }
@@ -456,10 +454,13 @@ export class Painter {
           }
         } else if (f.name === 'back') {
           this.poly(quad, shade(p.back, k), p.ink);
-          const emblem = picture(p.emblem);
-          if (emblem) this.onQuad(quad, () => { const sz = 0.64; this.ctx.drawImage(emblem, 0.5 - sz / 2, 0.5 - (sz * w) / l / 2, sz, (sz * w) / l); });
         } else {
-          this.poly(quad, shade(p.cream, k), p.ink);
+          // the sides: white body toward the face, the coloured back layer toward the back
+          const split = t * 0.6;
+          const part = (clamp: (z: number) => number) => f.pts.map(([lx, ly, lz]) => vertex(lx, ly, clamp(lz)));
+          this.poly(part((z) => Math.min(z, split)), shade(p.cream, k), null);
+          this.poly(part((z) => Math.max(z, split)), shade(p.back, k), null);
+          this.poly(quad, null, p.ink);
         }
       });
     });
@@ -688,7 +689,7 @@ export const IsoCanvas = forwardRef<IsoHandle, { draw: (g: Painter) => void; han
     const observer = new ResizeObserver(() => invalidate());
     if (canvas) observer.observe(canvas);
     const theme = new MutationObserver(() => invalidate());
-    theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-tile-labels', 'data-tile-lang'] });
     invalidate();
     return () => {
       onImage = null;

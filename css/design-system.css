@@ -2082,3 +2082,11 @@ body:has(.side-rail) {
 :root[data-theme="fox"] .slide-text h2 {
     color: var(--felt-strong);
 }
+
+/* Side rail: show or hide the number / letter in the corner of every tile */
+.side-rail-tilelabel { display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 0; border: 0; background: transparent; color: var(--muted); cursor: pointer; justify-content: center; }
+.side-rail-tilelabel svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.side-rail-tilelabel[aria-pressed="true"] { color: var(--ink); }
+.side-rail-tilelabel[aria-pressed="true"] svg rect { fill: var(--gold, #f2b42c); fill-opacity: .35; }
+.side-rail-tilelabel[aria-pressed="false"] svg path { opacity: .35; }
+.side-rail-tilelabel .side-rail-label { font: 600 12px/1.2 var(--font-sans); }
