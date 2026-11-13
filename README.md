@@ -54,7 +54,14 @@ Validaciones disponibles:
 ```bash
 npm run typecheck
 npm run build
+npm test
 ```
+
+## IA de mahjong
+
+`POST /api/mahjong/advise` recomienda descartes, llamadas y riichi con un motor propio de shanten y ukeire
+(`backend/mahjong-ai/`, función de Vercel en `api/mahjong/advise.js`). Está preparado para conectar Mortal como
+servicio aparte. Detalles, opciones evaluadas y licencias en [`docs/mahjong-ai.md`](./docs/mahjong-ai.md).
 
 ## Despliegue en GitHub Pages
 
