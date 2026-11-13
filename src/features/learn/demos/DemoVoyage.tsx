@@ -2,24 +2,28 @@ import { useEffect, useMemo, useState } from 'react';
 import { Burst, Cat, codes, DemoFrame, groupKind, L, Rich, shuffle, Tile, useDemo, useStored, useVoice, type Expr, type Tx } from './kit';
 import { ALL_TILES, isComplete, sortHand, startingHand, waitsOf } from '../domain/playRules';
 import { PlayMode } from '../ui/PlayMode';
+import { BaseLesson, FlowBar, QuizRun, QUIZ, STOP_STAGE, type FlowStage } from './syllabus';
 
 /**
  * DEMO C · "Journey to Riichi". A map of islands that unlock one by one, each teaching a single idea. You play first
  * and the explanation comes after (one line), mistakes cost nothing and a hint appears after two misses.
  */
 
-type IslandId = 'tiles' | 'sets' | 'hand' | 'discard' | 'wait' | 'calls' | 'win' | 'boss';
-type Island = { id: IslandId; kanji: string; name: Tx; goal: Tx; learned: Tx };
+type IslandId = 'tiles' | 'setup' | 'sets' | 'hand' | 'discard' | 'wait' | 'calls' | 'win' | 'points' | 'boss';
+/** `lessons`: base tutorial steps taught (explained and shown) before the island's challenge. */
+type Island = { id: IslandId; kanji: string; name: Tx; goal: Tx; learned: Tx; stage: FlowStage; lessons: string[] };
 
 const ISLANDS: Island[] = [
-  { id: 'tiles', kanji: '牌', name: L('Isla Ficha', 'Tile Island', 'Ilha Peça'), goal: L('Lleva cada ficha a su cesta.', 'Put each tile in its basket.', 'Leve cada peça à sua cesta.'), learned: L('Hay 3 palos numerados del 1 al 9 (caracteres, círculos y bambúes) y los honores: 4 vientos y 3 dragones. En total, 136 fichas.', 'There are 3 suits numbered 1 to 9 (characters, circles and bamboo) plus the honors: 4 winds and 3 dragons. 136 tiles in all.', 'Há 3 naipes numerados de 1 a 9 (caracteres, círculos e bambus) e as honras: 4 ventos e 3 dragões. Ao todo, 136 peças.') },
-  { id: 'sets', kanji: '組', name: L('Isla Grupo', 'Set Island', 'Ilha Grupo'), goal: L('Elige 3 fichas que vayan juntas.', 'Pick 3 tiles that belong together.', 'Escolha 3 peças que combinem.'), learned: L('Un grupo es una **secuencia** (3 seguidas del mismo palo) o un **trío** (3 iguales).', 'A set is a **sequence** (3 in a row, same suit) or a **triplet** (3 identical).', 'Um grupo é uma **sequência** (3 seguidas do mesmo naipe) ou um **trio** (3 iguais).') },
-  { id: 'hand', kanji: '手', name: L('Isla Mano', 'Hand Island', 'Ilha Mão'), goal: L('Divide las 14 fichas en grupos y una pareja.', 'Split the 14 tiles into sets and one pair.', 'Divida as 14 peças em grupos e um par.'), learned: L('Una mano ganadora tiene **4 grupos y 1 pareja**. Hay una excepción curiosa: **siete parejas** también gana.', 'A winning hand has **4 sets and 1 pair**. One curious exception: **seven pairs** also wins.', 'Uma mão vencedora tem **4 grupos e 1 par**. Há uma exceção curiosa: **sete pares** também ganha.') },
-  { id: 'discard', kanji: '捨', name: L('Isla Descarte', 'Discard Island', 'Ilha Descarte'), goal: L('Roba y bota hasta completar tu mano.', 'Draw and discard until your hand is complete.', 'Compre e descarte até completar a mão.'), learned: L('Cada turno: **robas 1, botas 1**. Bota primero las fichas solas; cuando la ficha 14 completa tu mano, dices **tsumo** y ganas.', 'Every turn: **draw 1, discard 1**. Throw lonely tiles first; when the 14th tile completes your hand, you say **tsumo** and win.', 'A cada vez: **compre 1, descarte 1**. Descarte primeiro as peças sozinhas; quando a 14ª peça completa a mão, você diz **tsumo** e ganha.') },
-  { id: 'wait', kanji: '待', name: L('Isla Espera', 'Wait Island', 'Ilha Espera'), goal: L('Marca TODAS las fichas que completan la mano.', 'Mark EVERY tile that completes the hand.', 'Marque TODAS as peças que completam a mão.'), learned: L('A 1 ficha de ganar estás en **tenpai**. Muchas manos esperan más de una ficha: conocerlas todas es clave.', 'One tile from winning, you are **tenpai**. Many hands wait for more than one tile: knowing them all is key.', 'A 1 peça de ganhar você está em **tenpai**. Muitas mãos esperam mais de uma peça: conhecer todas é fundamental.') },
-  { id: 'calls', kanji: '鳴', name: L('Isla Llamada', 'Call Island', 'Ilha Chamada'), goal: L('Un rival bota una ficha. ¿Qué haces?', 'A rival discards a tile. What do you do?', 'Um rival descarta uma peça. O que você faz?'), learned: L('**Pon** toma la ficha de cualquiera para un trío; **chii** solo del jugador a tu izquierda, para una secuencia. Al llamar, tu mano queda abierta.', '**Pon** takes anyone’s tile for a triplet; **chii** only from the player on your left, for a sequence. Calling opens your hand.', '**Pon** pega a peça de qualquer um para um trio; **chii** só do jogador à sua esquerda, para uma sequência. Ao chamar, a mão fica aberta.') },
-  { id: 'win', kanji: '和', name: L('Isla Victoria', 'Victory Island', 'Ilha Vitória'), goal: L('Un rival bota tu ficha. ¿Puedes ganar?', 'A rival discards your tile. Can you win?', 'Um rival descarta sua peça. Você pode ganhar?'), learned: L('Para ganar por **ron** necesitas **1 yaku** (riichi, tanyao, yakuhai…) y no estar en **furiten**.', 'To win by **ron** you need **1 yaku** (riichi, tanyao, yakuhai…) and must not be **furiten**.', 'Para ganhar por **ron** você precisa de **1 yaku** (riichi, tanyao, yakuhai…) e não estar em **furiten**.') },
-  { id: 'boss', kanji: '王', name: L('Isla Final', 'Final Island', 'Ilha Final'), goal: L('Juega una mano completa contra los tres gatos.', 'Play a full hand against the three cats.', 'Jogue uma mão completa contra os três gatos.'), learned: L('¡Llegaste! Ya sabes jugar una mano de riichi de principio a fin.', 'You made it! You can now play a riichi hand from start to finish.', 'Você chegou! Já sabe jogar uma mão de riichi do começo ao fim.') },
+  { id: 'tiles', stage: 'setup', lessons: ['intro'], kanji: '牌', name: L('Isla Ficha', 'Tile Island', 'Ilha Peça'), goal: L('Lleva cada ficha a su cesta.', 'Put each tile in its basket.', 'Leve cada peça à sua cesta.'), learned: L('Hay 3 palos numerados del 1 al 9 (caracteres, círculos y bambúes) y los honores: 4 vientos y 3 dragones. En total, 136 fichas.', 'There are 3 suits numbered 1 to 9 (characters, circles and bamboo) plus the honors: 4 winds and 3 dragons. 136 tiles in all.', 'Há 3 naipes numerados de 1 a 9 (caracteres, círculos e bambus) e as honras: 4 ventos e 3 dragões. Ao todo, 136 peças.') },
+  { id: 'setup', stage: 'setup', lessons: ['shuffle', 'walls', 'dealer', 'compass', 'compass-tour', 'dice', 'deal-draw'], kanji: '備', name: L('Isla Preparación', 'Setup Island', 'Ilha Preparação'), goal: L('Prepara la mesa: muros, dealer y reparto.', 'Set the table: walls, dealer and deal.', 'Prepare a mesa: muros, dealer e distribuição.'), learned: L('Se mezclan las 136 fichas, cada uno arma un muro de 17 pilas, el dado más alto elige al **dealer** (Este), los dados abren el muro, se aparta el **muro muerto** y cada uno recibe 13 fichas.', 'The 136 tiles are mixed, everyone builds a wall of 17 stacks, the highest die picks the **dealer** (East), the dice open the wall, the **dead wall** is set apart and everyone gets 13 tiles.', 'As 136 peças são misturadas, cada um monta um muro de 17 pilhas, o dado mais alto escolhe o **dealer** (Leste), os dados abrem o muro, o **muro morto** fica separado e cada um recebe 13 peças.') },
+  { id: 'sets', stage: 'deal', lessons: ['goal'], kanji: '組', name: L('Isla Grupo', 'Set Island', 'Ilha Grupo'), goal: L('Elige 3 fichas que vayan juntas.', 'Pick 3 tiles that belong together.', 'Escolha 3 peças que combinem.'), learned: L('Un grupo es una **secuencia** (3 seguidas del mismo palo) o un **trío** (3 iguales).', 'A set is a **sequence** (3 in a row, same suit) or a **triplet** (3 identical).', 'Um grupo é uma **sequência** (3 seguidas do mesmo naipe) ou um **trio** (3 iguais).') },
+  { id: 'hand', stage: 'deal', lessons: ['sort'], kanji: '手', name: L('Isla Mano', 'Hand Island', 'Ilha Mão'), goal: L('Divide las 14 fichas en grupos y una pareja.', 'Split the 14 tiles into sets and one pair.', 'Divida as 14 peças em grupos e um par.'), learned: L('Una mano ganadora tiene **4 grupos y 1 pareja**. Hay una excepción curiosa: **siete parejas** también gana.', 'A winning hand has **4 sets and 1 pair**. One curious exception: **seven pairs** also wins.', 'Uma mão vencedora tem **4 grupos e 1 par**. Há uma exceção curiosa: **sete pares** também ganha.') },
+  { id: 'discard', stage: 'turn', lessons: ['draw'], kanji: '捨', name: L('Isla Descarte', 'Discard Island', 'Ilha Descarte'), goal: L('Roba y bota hasta completar tu mano.', 'Draw and discard until your hand is complete.', 'Compre e descarte até completar a mão.'), learned: L('Cada turno: **robas 1, botas 1**. Bota primero las fichas solas; cuando la ficha 14 completa tu mano, dices **tsumo** y ganas.', 'Every turn: **draw 1, discard 1**. Throw lonely tiles first; when the 14th tile completes your hand, you say **tsumo** and win.', 'A cada vez: **compre 1, descarte 1**. Descarte primeiro as peças sozinhas; quando a 14ª peça completa a mão, você diz **tsumo** e ganha.') },
+  { id: 'wait', stage: 'win', lessons: [], kanji: '待', name: L('Isla Espera', 'Wait Island', 'Ilha Espera'), goal: L('Marca TODAS las fichas que completan la mano.', 'Mark EVERY tile that completes the hand.', 'Marque TODAS as peças que completam a mão.'), learned: L('A 1 ficha de ganar estás en **tenpai**. Muchas manos esperan más de una ficha: conocerlas todas es clave.', 'One tile from winning, you are **tenpai**. Many hands wait for more than one tile: knowing them all is key.', 'A 1 peça de ganhar você está em **tenpai**. Muitas mãos esperam mais de uma peça: conhecer todas é fundamental.') },
+  { id: 'calls', stage: 'calls', lessons: ['calls'], kanji: '鳴', name: L('Isla Llamada', 'Call Island', 'Ilha Chamada'), goal: L('Un rival bota una ficha. ¿Qué haces?', 'A rival discards a tile. What do you do?', 'Um rival descarta uma peça. O que você faz?'), learned: L('**Pon** toma la ficha de cualquiera para un trío; **chii** solo del jugador a tu izquierda, para una secuencia. Al llamar, tu mano queda abierta.', '**Pon** takes anyone’s tile for a triplet; **chii** only from the player on your left, for a sequence. Calling opens your hand.', '**Pon** pega a peça de qualquer um para um trio; **chii** só do jogador à sua esquerda, para uma sequência. Ao chamar, a mão fica aberta.') },
+  { id: 'win', stage: 'win', lessons: ['ron-tsumo', 'yaku', 'furiten'], kanji: '和', name: L('Isla Victoria', 'Victory Island', 'Ilha Vitória'), goal: L('Un rival bota tu ficha. ¿Puedes ganar?', 'A rival discards your tile. Can you win?', 'Um rival descarta sua peça. Você pode ganhar?'), learned: L('Para ganar por **ron** necesitas **1 yaku** (riichi, tanyao, yakuhai…) y no estar en **furiten**.', 'To win by **ron** you need **1 yaku** (riichi, tanyao, yakuhai…) and must not be **furiten**.', 'Para ganhar por **ron** você precisa de **1 yaku** (riichi, tanyao, yakuhai…) e não estar em **furiten**.') },
+  { id: 'points', stage: 'points', lessons: ['sticks', 'points', 'rounds'], kanji: '点', name: L('Isla Puntos', 'Points Island', 'Ilha Pontos'), goal: L('Cobra, paga y avanza las rondas.', 'Collect, pay and move the rounds on.', 'Receba, pague e avance as rodadas.'), learned: L('Todos empiezan con 25 000 en **palitos**; quien gana cobra (el dealer, más). Si el dealer no gana, el puesto rota, y tras cuatro dealers la ronda **Este** da paso a la **Sur**.', 'Everyone starts with 25,000 in **sticks**; the winner collects (the dealer, more). If the dealer does not win the seat rotates, and after four dealers the **East** round gives way to **South**.', 'Todos começam com 25 000 em **palitos**; quem ganha recebe (o dealer, mais). Se o dealer não ganha o posto roda, e depois de quatro dealers a rodada **Leste** dá lugar à **Sul**.') },
+  { id: 'boss', stage: 'rounds', lessons: [], kanji: '王', name: L('Isla Final', 'Final Island', 'Ilha Final'), goal: L('Juega una mano completa contra los tres gatos.', 'Play a full hand against the three cats.', 'Jogue uma mão completa contra os três gatos.'), learned: L('¡Llegaste! Ya sabes jugar una mano de riichi de principio a fin.', 'You made it! You can now play a riichi hand from start to finish.', 'Você chegou! Já sabe jogar uma mão de riichi do começo ao fim.') },
 ];
 
 const UI = {
@@ -30,7 +34,7 @@ const UI = {
   next: L('Siguiente isla', 'Next island', 'Próxima ilha'),
   retry: L('Jugar otra vez', 'Play again', 'Jogar de novo'),
   locked: L('Completa la isla anterior', 'Finish the previous island', 'Complete a ilha anterior'),
-  intro: L('Ayuda a Nieve a cruzar el mar hasta la Isla Final. En cada isla, primero juegas; la explicación llega después.', 'Help Snow cross the sea to the Final Island. On each island you play first; the explanation comes after.', 'Ajude a Neve a cruzar o mar até a Ilha Final. Em cada ilha, primeiro você joga; a explicação vem depois.'),
+  intro: L('Ayuda a Nieve a cruzar el mar hasta la Isla Final. En cada isla primero aprendes cómo funciona esa parte de la partida y después lo pruebas con un desafío.', 'Help Snow cross the sea to the Final Island. On each island you first learn how that part of a game works, then you try it in a challenge.', 'Ajude a Neve a cruzar o mar até a Ilha Final. Em cada ilha você primeiro aprende como funciona essa parte da partida e depois experimenta num desafio.'),
   check: L('Comprobar', 'Check', 'Verificar'),
   reset: L('Empezar de nuevo', 'Start over', 'Recomeçar'),
   pair: L('Es la pareja', 'That is the pair', 'É o par'),
@@ -358,7 +362,8 @@ export function DemoVoyage() {
   const voice = useVoice(language);
   const [best, setBest] = useStored<Progress>('rincon-riichi-demo-c', {});
   const [open, setOpen] = useState<number | null>(null);
-  const [phase, setPhase] = useState<'play' | 'learned'>('play');
+  const [phase, setPhase] = useState<'learn' | 'play' | 'learned'>('play');
+  const [lesson, setLesson] = useState(0);
   const [misses, setMisses] = useState(0);
   const [roundMisses, setRoundMisses] = useState(0);
   const [mood, setMood] = useState<Expr>('smile');
@@ -371,10 +376,10 @@ export function DemoVoyage() {
 
   useEffect(() => {
     if (!island) voice.say(t(UI.intro));
-    else voice.say(phase === 'play' ? t(island.goal) : `${t(UI.learned)}. ${t(island.learned)}`);
+    else if (phase !== 'learn') voice.say(phase === 'play' ? t(island.goal) : `${t(UI.learned)}. ${t(island.learned)}`);
   }, [open, phase, language]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const start = (i: number) => { setOpen(i); setPhase('play'); setMisses(0); setRoundMisses(0); setMood('smile'); setNonce((n) => n + 1); };
+  const start = (i: number) => { setOpen(i); setLesson(0); setPhase(ISLANDS[i].lessons.length ? 'learn' : 'play'); setMisses(0); setRoundMisses(0); setMood('smile'); setNonce((n) => n + 1); };
   const miss = () => { setMisses((m) => m + 1); setRoundMisses((m) => m + 1); setMood('surprised'); window.setTimeout(() => setMood('thinking'), 900); };
   const hit = () => { setRoundMisses(0); setMood('happy'); };
   const win = () => {
@@ -383,6 +388,7 @@ export function DemoVoyage() {
     setPhase('learned'); setMood('excited');
   };
   const play: Play = { t, miss, hit, win, hint: roundMisses >= 2 };
+  const flowStage: FlowStage | null = island ? (phase === 'learn' ? STOP_STAGE[island.lessons[lesson]] : island.stage) : null;
 
   return (
     <DemoFrame
@@ -396,7 +402,7 @@ export function DemoVoyage() {
         <div className="vc-sea">
           <p className="vc-intro"><Rich text={t(UI.intro)} /></p>
           <div className="vc-map">
-            <svg className="vc-route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M9 82 C 14 70, 18 64, 22 60 S 32 74, 36 72 S 36 40, 40 36 S 52 46, 55 50 S 68 72, 72 70 S 72 38, 76 34 S 88 20, 91 18" /></svg>
+            <svg className="vc-route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M7 82 C 10 70, 14 62, 17 58 S 25 80, 28 80 S 33 50, 36 46 S 44 70, 47 72 S 52 34, 55 30 S 62 58, 65 62 S 70 84, 74 80 S 78 46, 80 42 S 88 24, 90 20" /></svg>
             {ISLANDS.map((it, i) => {
               const ok = unlocked(i);
               const got = best[it.id] ?? 0;
@@ -414,7 +420,8 @@ export function DemoVoyage() {
       )}
 
       {island && open !== null && (
-        <div className={`vc-level is-${island.id}`}>
+        <div className={`vc-level is-${island.id}${phase === 'learn' ? ' is-learning' : ''}`}>
+          <FlowBar stage={flowStage} t={t} className="vc-flow" />
           <header className="vc-level-head">
             <span className="vc-level-kanji">{island.kanji}</span>
             <div>
@@ -424,8 +431,29 @@ export function DemoVoyage() {
             <Cat theme={theme} fur="white" expr={mood} className="vc-coach" />
           </header>
 
+          {phase === 'learn' && (
+            <div className="vc-learn" key={`${open}-${lesson}`}>
+              <BaseLesson
+                stopId={island.lessons[lesson]}
+                language={language}
+                t={t}
+                className="is-voyage"
+                aside={(
+                  <div className="vc-tools vc-learn-tools">
+                    {lesson > 0 && <button type="button" className="demo-btn" onClick={() => setLesson(lesson - 1)}>←</button>}
+                    <button type="button" className="demo-btn is-primary" onClick={() => { if (lesson + 1 < island.lessons.length) setLesson(lesson + 1); else setPhase('play'); }}>
+                      {lesson + 1 < island.lessons.length ? `${t(L('Siguiente', 'Next', 'Próximo'))} ${lesson + 1}/${island.lessons.length}` : t(L('¡Al desafío!', 'To the challenge!', 'Ao desafio!'))} →
+                    </button>
+                  </div>
+                )}
+              />
+            </div>
+          )}
+
           {phase === 'play' && (
             <div className="vc-board" key={nonce}>
+              {island.id === 'setup' && <QuizRun items={[...QUIZ.setup, ...QUIZ.deal]} t={t} onRight={hit} onWrong={miss} onDone={win} className="is-voyage" />}
+              {island.id === 'points' && <QuizRun items={[...QUIZ.points, ...QUIZ.rounds]} t={t} onRight={hit} onWrong={miss} onDone={win} className="is-voyage" />}
               {island.id === 'tiles' && <Baskets {...play} />}
               {island.id === 'sets' && <PickSet {...play} />}
               {island.id === 'hand' && <SplitHand {...play} />}

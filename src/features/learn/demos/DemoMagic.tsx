@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Burst, Cat, codes, DemoFrame, L, Rich, shuffle, Tile, useDemo, useStored, useVoice, type Expr, type Tx } from './kit';
 import { waitsOf } from '../domain/playRules';
+import { BaseLesson, FlowBar, Quiz, QUIZ, STOP_STAGE, type FlowStage, type QuizItem } from './syllabus';
 
 /**
  * DEMO B · "The magic of mahjong". In the spirit of the old CD-ROM reading games: a guide character walks you through
@@ -12,9 +13,11 @@ type Item =
   | { kind: 'pickAll'; tiles: string[]; match: string }
   | { kind: 'choose'; show: string[]; options: string[]; answer: string[] }
   | { kind: 'yesno'; show: string[]; yes: boolean; why: Tx }
-  | { kind: 'odd'; show: string[]; odd: number };
+  | { kind: 'odd'; show: string[]; odd: number }
+  | { kind: 'quiz'; quiz: QuizItem };
 type Exercise = { instr: Tx; items: Item[]; explain: Tx };
-type Room = { id: string; kanji: string; name: Tx; intro: Tx; exercises: Exercise[] };
+/** `lessons` are base tutorial steps shown (explained and demonstrated) before the room's exercises. */
+type Room = { id: string; kanji: string; name: Tx; intro: Tx; stage: FlowStage; lessons: string[]; exercises: Exercise[] };
 
 const isSuit = (s: string) => (code: string) => code[1] === s;
 const MATCH: Record<string, (code: string) => boolean> = { p: isSuit('p'), s: isSuit('s'), m: isSuit('m'), z: isSuit('z') };
@@ -23,6 +26,8 @@ const ROOMS: Room[] = [
   {
     id: 'tiles',
     kanji: '牌',
+    stage: 'setup',
+    lessons: ['intro'],
     name: L('La casa de las fichas', 'The house of tiles', 'A casa das peças'),
     intro: L('¡Hola! Soy Mandarina. En esta casa viven las fichas. Hay tres familias con números del 1 al 9, y una familia sin números: los honores.', 'Hi! I am Tangerine. The tiles live in this house. There are three families numbered 1 to 9, and one family without numbers: the honors.', 'Oi! Eu sou a Tangerina. Nesta casa moram as peças. Há três famílias com números de 1 a 9, e uma família sem números: as honras.'),
     exercises: [
@@ -32,8 +37,22 @@ const ROOMS: Room[] = [
     ],
   },
   {
+    id: 'setup',
+    kanji: '備',
+    name: L('El salón de la preparación', 'The setup hall', 'O salão da preparação'),
+    intro: L('Antes de jugar hay que preparar la mesa: mezclar, armar los muros, elegir al dealer, abrir el muro y repartir. ¡Vamos paso a paso!', 'Before playing, the table must be set: mix, build the walls, choose the dealer, open the wall and deal. Step by step!', 'Antes de jogar é preciso preparar a mesa: misturar, montar os muros, escolher o dealer, abrir o muro e distribuir. Passo a passo!'),
+    stage: 'setup',
+    lessons: ['shuffle', 'walls', 'dealer', 'compass', 'compass-tour', 'dice', 'deal-draw'],
+    exercises: [
+      { instr: L('¿Te acuerdas? Elige la respuesta correcta.', 'Do you remember? Pick the right answer.', 'Lembra? Escolha a resposta certa.'), items: QUIZ.setup.map((quiz) => ({ kind: 'quiz' as const, quiz })), explain: L('La mesa está lista: muros, dealer y reparto.', 'The table is ready: walls, dealer and deal.', 'A mesa está pronta: muros, dealer e distribuição.') },
+      { instr: L('Ahora, el reparto.', 'Now, the deal.', 'Agora, a distribuição.'), items: QUIZ.deal.map((quiz) => ({ kind: 'quiz' as const, quiz })), explain: L('13 fichas para cada uno y el dealer empieza con 14.', '13 tiles each and the dealer starts with 14.', '13 peças para cada um e o dealer começa com 14.') },
+    ],
+  },
+  {
     id: 'groups',
     kanji: '組',
+    stage: 'deal',
+    lessons: ['goal', 'sort'],
     name: L('El jardín de los grupos', 'The garden of sets', 'O jardim dos grupos'),
     intro: L('En este jardín las fichas se juntan de a tres. Un grupo puede ser una secuencia, como 3m 4m 5m, o un trío, como 7z 7z 7z.', 'In this garden tiles gather in threes. A set can be a sequence, like 3m 4m 5m, or a triplet, like 7z 7z 7z.', 'Neste jardim as peças se juntam de três em três. Um grupo pode ser uma sequência, como 3m 4m 5m, ou um trio, como 7z 7z 7z.'),
     exercises: [
@@ -49,6 +68,8 @@ const ROOMS: Room[] = [
   {
     id: 'turn',
     kanji: '卓',
+    stage: 'turn',
+    lessons: ['draw'],
     name: L('La mesa del té', 'The tea table', 'A mesa do chá'),
     intro: L('En la mesa cada turno robas una ficha y botas otra. ¿Cuál botas? La que no sirve para ningún grupo.', 'At the table, each turn you draw a tile and discard one. Which one? The one that does not help any set.', 'Na mesa, a cada vez você compra uma peça e descarta outra. Qual? A que não serve para nenhum grupo.'),
     exercises: [
@@ -59,8 +80,19 @@ const ROOMS: Room[] = [
     ],
   },
   {
+    id: 'calls',
+    kanji: '鳴',
+    name: L('El puente de las llamadas', 'The bridge of calls', 'A ponte das chamadas'),
+    intro: L('A veces puedes tomar la ficha que otro bota: **chii**, **pon** o **kan**. ¡Pero tu mano queda abierta!', 'Sometimes you can take a tile someone discards: **chii**, **pon** or **kan**. But your hand becomes open!', 'Às vezes você pode pegar a peça que outro descarta: **chii**, **pon** ou **kan**. Mas sua mão fica aberta!'),
+    stage: 'calls',
+    lessons: ['calls'],
+    exercises: [{ instr: L('¿Se puede llamar?', 'Can you call?', 'Dá para chamar?'), items: QUIZ.calls.map((quiz) => ({ kind: 'quiz' as const, quiz })), explain: L('Chii solo con el jugador de tu izquierda; pon y kan con cualquiera.', 'Chii only with the player on your left; pon and kan with anyone.', 'Chii só com o jogador à sua esquerda; pon e kan com qualquer um.') }],
+  },
+  {
     id: 'tenpai',
     kanji: '聴',
+    stage: 'win',
+    lessons: [],
     name: L('La torre del tenpai', 'The tenpai tower', 'A torre do tenpai'),
     intro: L('Cuando te falta solo 1 ficha para ganar, estás en **tenpai**. Desde lo alto de esta torre se ve qué ficha esperas.', 'When you need just 1 tile to win, you are **tenpai**. From the top of this tower you can see which tile you are waiting for.', 'Quando falta só 1 peça para ganhar, você está em **tenpai**. Do alto desta torre dá para ver qual peça você espera.'),
     exercises: [
@@ -73,6 +105,8 @@ const ROOMS: Room[] = [
   {
     id: 'yaku',
     kanji: '役',
+    stage: 'win',
+    lessons: ['ron-tsumo', 'yaku', 'furiten'],
     name: L('El castillo del yaku', 'The yaku castle', 'O castelo do yaku'),
     intro: L('Para ganar necesitas al menos 1 **yaku**, una condición especial. Dos fáciles: **tanyao** (solo fichas del 2 al 8) y **yakuhai** (un trío de dragones).', 'To win you need at least 1 **yaku**, a special condition. Two easy ones: **tanyao** (only tiles 2 to 8) and **yakuhai** (a triplet of dragons).', 'Para ganhar você precisa de pelo menos 1 **yaku**, uma condição especial. Dois fáceis: **tanyao** (só peças de 2 a 8) e **yakuhai** (um trio de dragões).'),
     exercises: [
@@ -91,6 +125,8 @@ const ROOMS: Room[] = [
   {
     id: 'dora',
     kanji: '宝',
+    stage: 'win',
+    lessons: [],
     name: L('El bosque del tesoro', 'The treasure forest', 'A floresta do tesouro'),
     intro: L('En el muro se da vuelta una ficha: el **indicador**. La ficha que le sigue es el **dora**, un tesoro que da puntos extra.', 'One tile on the wall is turned face up: the **indicator**. The tile right after it is the **dora**, a treasure worth extra points.', 'No muro uma peça é virada: o **indicador**. A peça seguinte é o **dora**, um tesouro que dá pontos extras.'),
     exercises: [
@@ -100,6 +136,15 @@ const ROOMS: Room[] = [
         { kind: 'choose', show: codes('2z'), options: codes('1z 3z 2z'), answer: ['3z'] },
       ], explain: L('Después del 9 vuelve el 1, y los vientos giran: Este → Sur → Oeste → Norte → Este.', 'After 9 comes 1 again, and winds go round: East → South → West → North → East.', 'Depois do 9 volta o 1, e os ventos giram: Leste → Sul → Oeste → Norte → Leste.') },
     ],
+  },
+  {
+    id: 'points',
+    kanji: '点',
+    name: L('El salón de los puntos', 'The hall of points', 'O salão dos pontos'),
+    intro: L('Cuando alguien gana, los demás le pagan con **palitos**. Y la partida sigue en **rondas** hasta que todos han sido dealer.', 'When someone wins, the others pay them in **sticks**. And the game goes on in **rounds** until everyone has been dealer.', 'Quando alguém ganha, os outros pagam com **palitos**. E a partida segue em **rodadas** até todos terem sido dealer.'),
+    stage: 'points',
+    lessons: ['sticks', 'points', 'rounds'],
+    exercises: [{ instr: L('Sobre los puntos…', 'About points…', 'Sobre os pontos…'), items: QUIZ.points.map((quiz) => ({ kind: 'quiz' as const, quiz })), explain: L('25 000 para empezar; quien gana cobra.', '25,000 to start; the winner collects.', '25 000 para começar; quem ganha recebe.') }, { instr: L('Y sobre las rondas…', 'And about rounds…', 'E sobre as rodadas…'), items: QUIZ.rounds.map((quiz) => ({ kind: 'quiz' as const, quiz })), explain: L('El dealer rota y las rondas avanzan: Este, luego Sur.', 'The dealer rotates and the rounds move on: East, then South.', 'O dealer roda e as rodadas avançam: Leste, depois Sul.') }],
   },
 ];
 
@@ -124,7 +169,7 @@ const UI = {
   hear: L('Escuchar', 'Listen', 'Ouvir'),
 };
 
-type View = { kind: 'map' } | { kind: 'intro'; room: number } | { kind: 'ex'; room: number; ex: number; item: number } | { kind: 'done'; room: number } | { kind: 'memo' };
+type View = { kind: 'map' } | { kind: 'intro'; room: number } | { kind: 'lesson'; room: number; k: number } | { kind: 'ex'; room: number; ex: number; item: number } | { kind: 'done'; room: number } | { kind: 'memo' };
 
 function stars(mistakes: number) { return mistakes === 0 ? 3 : mistakes <= 2 ? 2 : 1; }
 
@@ -291,6 +336,7 @@ export function DemoMagic() {
     if (view.kind === 'map') return t(UI.welcome);
     if (view.kind === 'memo') return t(UI.memoInstr);
     if (view.kind === 'intro' && room) return t(room.intro);
+    if (view.kind === 'lesson' && room) return t(L('Lee la explicación y prueba la escena. Cuando quieras, pulsa «Seguir».', 'Read the explanation and try the scene. When you are ready, press “Continue”.', 'Leia a explicação e experimente a cena. Quando quiser, toque em «Continuar».'));
     if (view.kind === 'done' && room) return `${t(UI.done)} ${t(room.name)}.`;
     if (note) return note;
     return exercise ? t(exercise.instr) : '';
@@ -332,6 +378,7 @@ export function DemoMagic() {
   const enter = (r: number) => { mistakes.current = 0; setSolved(false); setNote(null); setMood('smile'); setView({ kind: 'intro', room: r }); };
   const repeat = () => { setSolved(false); setNote(null); setMood('thinking'); setNonce((n) => n + 1); if (exercise) voice.say(t(exercise.instr), true); };
 
+  const flowStage: FlowStage | null = !room ? null : view.kind === 'lesson' ? STOP_STAGE[room.lessons[view.k]] : room.stage;
   const progress = view.kind === 'ex' && room ? (() => {
     const all = room.exercises.flatMap((e, ei) => e.items.map((_, ii) => `${ei}-${ii}`));
     return { at: all.indexOf(`${view.ex}-${view.item}`), total: all.length };
@@ -345,21 +392,22 @@ export function DemoMagic() {
       voice={voice}
       extra={view.kind !== 'map' && <button type="button" className="demo-btn is-small" onClick={() => { setView({ kind: 'map' }); setMood('smile'); }}>🗺 {t(UI.map)}</button>}
     >
-      <div className="mb-scene">
+      {room && <FlowBar stage={flowStage} t={t} className="mb-flow" />}
+      <div className={`mb-scene${view.kind === 'lesson' ? ' is-lesson' : ''}`}>
         {room && <span className="mb-backdrop" aria-hidden="true">{room.kanji}</span>}
 
-        <Guide
+        {view.kind !== 'lesson' && <Guide
           theme={theme}
           expr={view.kind === 'map' ? 'smile' : view.kind === 'done' ? 'excited' : view.kind === 'intro' ? 'happy' : mood}
           text={line}
           onHear={voice.supported ? () => voice.say(line, true) : undefined}
           hearLabel={t(UI.hear)}
-        />
+        />}
 
         <div className="mb-play">
           {view.kind === 'map' && (
             <div className="mb-map">
-              <svg className="mb-path" viewBox="0 0 100 60" preserveAspectRatio="none" aria-hidden="true"><path d="M6 48 C 20 10, 32 10, 40 30 S 62 56, 70 30 S 88 6, 96 18" /></svg>
+              <svg className="mb-path" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M8 82 C 12 62, 14 52, 18 46 S 26 78, 30 80 S 36 46, 40 42 S 48 74, 52 76 S 58 40, 62 36 S 68 70, 72 72 S 78 34, 82 30 S 90 62, 92 66" /></svg>
               {ROOMS.map((r, i) => (
                 <button key={r.id} type="button" className={`mb-place p${i}${best[r.id] ? ' is-done' : ''}`} onClick={() => enter(i)}>
                   <span className="mb-place-kanji">{r.kanji}</span>
@@ -374,11 +422,30 @@ export function DemoMagic() {
             </div>
           )}
 
+          {view.kind === 'lesson' && room && (
+            <div className="mb-lesson" key={`${view.room}-${view.k}`}>
+              <BaseLesson
+                stopId={room.lessons[view.k]}
+                language={language}
+                t={t}
+                className="is-magic"
+                aside={(
+                  <div className="mb-lesson-guide">
+                    <Cat theme={theme} fur="orange" expr="happy" className="mb-mini-cat" />
+                    <div className="mb-actions">
+                      {view.k > 0 && <button type="button" className="demo-btn" onClick={() => setView({ ...view, k: view.k - 1 })}>←</button>}
+                      <button type="button" className="demo-btn is-primary" onClick={() => setView(view.k + 1 < room.lessons.length ? { ...view, k: view.k + 1 } : { kind: 'ex', room: view.room, ex: 0, item: 0 })}>{t(UI.next)} → <small>{view.k + 1}/{room.lessons.length}</small></button>
+                    </div>
+                  </div>
+                )}
+              />
+            </div>
+          )}
           {view.kind === 'intro' && room && (
             <div className="mb-intro">
               <span className="mb-intro-kanji">{room.kanji}</span>
               <h2>{t(room.name)}</h2>
-              <button type="button" className="demo-btn is-primary is-big" onClick={() => setView({ kind: 'ex', room: view.room, ex: 0, item: 0 })}>{t(UI.start)} ▶</button>
+              <button type="button" className="demo-btn is-primary is-big" onClick={() => setView(room.lessons.length ? { kind: 'lesson', room: view.room, k: 0 } : { kind: 'ex', room: view.room, ex: 0, item: 0 })}>{t(UI.start)} ▶</button>
             </div>
           )}
 
@@ -389,6 +456,7 @@ export function DemoMagic() {
               {item.kind === 'choose' && <Choose item={item} onRight={onRight} onWrong={onWrong} done={solved} />}
               {item.kind === 'yesno' && <YesNo item={item} t={t} onRight={onRight} onWrong={onWrong} done={solved} />}
               {item.kind === 'odd' && <Odd item={item} onRight={onRight} onWrong={onWrong} done={solved} />}
+              {item.kind === 'quiz' && <Quiz item={item.quiz} t={t} onRight={() => onRight(true)} onWrong={onWrong} className="is-magic" />}
               <div className="mb-actions">
                 <button type="button" className="demo-btn" onClick={repeat}>↺ {t(UI.repeat)}</button>
                 {solved && <button type="button" className="demo-btn is-primary" onClick={advance}>{t(UI.next)} →</button>}

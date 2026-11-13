@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties }
 import { Burst, Cat, codes, DemoFrame, L, Rich, Tile, useDemo, useStored, useVoice, type Expr, type Fur, type Tx } from './kit';
 import { isComplete, sortHand } from '../domain/playRules';
 import { discardHint } from './DemoVoyage';
+import { BaseLesson, FlowBar, QuizRun, QUIZ, STOP_STAGE, type FlowStage, type QuizItem } from './syllabus';
 
 /**
  * DEMO E · "Kitten Mahjong Adventure". For children: bright, moving and playful. Six short missions (catch the tiles,
@@ -45,16 +46,21 @@ type Sfx = ReturnType<typeof useSfx>;
 
 /* ── Missions ──────────────────────────────────────────────────────────── */
 
-type MissionId = 'catch' | 'train' | 'triplets' | 'magic' | 'play' | 'diploma';
-type Mission = { id: MissionId; emoji: string; name: Tx; intro: Tx; learned: Tx; sticker: { fur: Fur; expr: Expr } };
+type MissionId = 'catch' | 'setup' | 'train' | 'triplets' | 'magic' | 'play' | 'calls' | 'win' | 'points' | 'diploma';
+/** `learn`: base tutorial steps explained and shown before the game; `quiz`: review questions used as the game. */
+type Mission = { id: MissionId; emoji: string; name: Tx; intro: Tx; learned: Tx; sticker: { fur: Fur; expr: Expr }; stage: FlowStage; learn: string[]; quiz?: QuizItem[] };
 
 const MISSIONS: Mission[] = [
-  { id: 'catch', emoji: '🫧', name: L('¡Atrapa las fichas!', 'Catch the tiles!', 'Pegue as peças!'), intro: L('Las fichas de mahjong tienen familias. ¡Atrapa las que te pido!', 'Mahjong tiles come in families. Catch the ones I ask for!', 'As peças de mahjong têm famílias. Pegue as que eu pedir!'), learned: L('¡Ya conoces las familias: **círculos**, **bambúes**, **caracteres** y los **honores**!', 'You know the families now: **circles**, **bamboo**, **characters** and the **honors**!', 'Agora você conhece as famílias: **círculos**, **bambus**, **caracteres** e as **honras**!'), sticker: { fur: 'orange', expr: 'excited' } },
-  { id: 'train', emoji: '🚂', name: L('El tren de los números', 'The number train', 'O trem dos números'), intro: L('Este tren lleva números seguidos de la misma familia. ¡Pon el vagón que falta!', 'This train carries numbers in a row from the same family. Add the missing wagon!', 'Este trem leva números seguidos da mesma família. Coloque o vagão que falta!'), learned: L('¡Tres números seguidos se llaman **secuencia**!', 'Three numbers in a row are called a **sequence**!', 'Três números seguidos se chamam **sequência**!'), sticker: { fur: 'grey', expr: 'happy' } },
-  { id: 'triplets', emoji: '👯', name: L('Busca los trillizos', 'Find the triplets', 'Ache os trigêmeos'), intro: L('Hay 3 fichas iguales escondidas. ¡Encuéntralas!', 'Three identical tiles are hiding. Find them!', 'Há 3 peças iguais escondidas. Encontre-as!'), learned: L('¡3 iguales son un **trío**! Y 2 iguales son una **pareja**.', '3 the same make a **triplet**! And 2 the same make a **pair**.', '3 iguais são um **trio**! E 2 iguais são um **par**.'), sticker: { fur: 'black', expr: 'wink' } },
-  { id: 'magic', emoji: '✨', name: L('La mano mágica', 'The magic hand', 'A mão mágica'), intro: L('Una mano ganadora tiene **4 grupos y 1 pareja**. ¡Le falta una ficha! ¿Cuál es?', 'A winning hand has **4 sets and 1 pair**. One tile is missing! Which one?', 'Uma mão vencedora tem **4 grupos e 1 par**. Falta uma peça! Qual é?'), learned: L('¡4 grupos + 1 pareja = mano ganadora! ¡**Mahjong**!', '4 sets + 1 pair = a winning hand! **Mahjong**!', '4 grupos + 1 par = mão vencedora! **Mahjong**!'), sticker: { fur: 'white', expr: 'excited' } },
-  { id: 'play', emoji: '🐾', name: L('¡Juega con los gatitos!', 'Play with the kittens!', 'Jogue com os gatinhos!'), intro: L('Tu turno: **roba 1** ficha y **bota 1** que esté solita. ¡Completa tu mano antes que los gatitos!', 'Your turn: **draw 1** tile and **throw 1** that is all alone. Finish your hand before the kittens!', 'Sua vez: **compre 1** peça e **descarte 1** que esteja sozinha. Complete sua mão antes dos gatinhos!'), learned: L('¡Ganaste robando tu ficha: eso es **tsumo**! Si un gatito te la bota, gritas **ron**.', 'You won by drawing your tile: that is **tsumo**! If a kitten throws it to you, shout **ron**.', 'Você ganhou comprando a sua peça: isso é **tsumo**! Se um gatinho descartar, grite **ron**.'), sticker: { fur: 'orange', expr: 'happy' } },
-  { id: 'diploma', emoji: '🏅', name: L('¡Tu diploma!', 'Your diploma!', 'Seu diploma!'), intro: L('¡Lo lograste! Escribe tu nombre para tu diploma de maestro gatito.', 'You did it! Write your name for your kitten master diploma.', 'Você conseguiu! Escreva seu nome no seu diploma de mestre gatinho.'), learned: L('¡Felicitaciones!', 'Congratulations!', 'Parabéns!'), sticker: { fur: 'grey', expr: 'excited' } },
+  { id: 'catch', stage: 'setup', learn: ['intro'], emoji: '🫧', name: L('¡Atrapa las fichas!', 'Catch the tiles!', 'Pegue as peças!'), intro: L('Las fichas de mahjong tienen familias. ¡Atrapa las que te pido!', 'Mahjong tiles come in families. Catch the ones I ask for!', 'As peças de mahjong têm famílias. Pegue as que eu pedir!'), learned: L('¡Ya conoces las familias: **círculos**, **bambúes**, **caracteres** y los **honores**!', 'You know the families now: **circles**, **bamboo**, **characters** and the **honors**!', 'Agora você conhece as famílias: **círculos**, **bambus**, **caracteres** e as **honras**!'), sticker: { fur: 'orange', expr: 'excited' } },
+  { id: 'setup', stage: 'setup', learn: ['shuffle', 'walls', 'dealer', 'compass', 'compass-tour', 'dice', 'deal-draw'], quiz: [...QUIZ.setup, ...QUIZ.deal], emoji: '🧱', name: L('¡Prepara la mesa!', 'Set the table!', 'Prepare a mesa!'), intro: L('Antes de jugar hay que **mezclar**, armar los **muros**, elegir al **dealer** y **repartir**. ¡Hazlo tú con los gatitos!', 'Before playing you **mix**, build the **walls**, choose the **dealer** and **deal**. Do it yourself with the kittens!', 'Antes de jogar é preciso **misturar**, montar os **muros**, escolher o **dealer** e **distribuir**. Faça você com os gatinhos!'), learned: L('¡Mesa lista! Muros de 17 pilas, el **dealer** en Este y 13 fichas para cada uno.', 'Table ready! Walls of 17 stacks, the **dealer** sits East and everyone gets 13 tiles.', 'Mesa pronta! Muros de 17 pilhas, o **dealer** no Leste e 13 peças para cada um.'), sticker: { fur: 'white', expr: 'happy' } },
+  { id: 'train', stage: 'deal', learn: [], emoji: '🚂', name: L('El tren de los números', 'The number train', 'O trem dos números'), intro: L('Este tren lleva números seguidos de la misma familia. ¡Pon el vagón que falta!', 'This train carries numbers in a row from the same family. Add the missing wagon!', 'Este trem leva números seguidos da mesma família. Coloque o vagão que falta!'), learned: L('¡Tres números seguidos se llaman **secuencia**!', 'Three numbers in a row are called a **sequence**!', 'Três números seguidos se chamam **sequência**!'), sticker: { fur: 'grey', expr: 'happy' } },
+  { id: 'triplets', stage: 'deal', learn: [], emoji: '👯', name: L('Busca los trillizos', 'Find the triplets', 'Ache os trigêmeos'), intro: L('Hay 3 fichas iguales escondidas. ¡Encuéntralas!', 'Three identical tiles are hiding. Find them!', 'Há 3 peças iguais escondidas. Encontre-as!'), learned: L('¡3 iguales son un **trío**! Y 2 iguales son una **pareja**.', '3 the same make a **triplet**! And 2 the same make a **pair**.', '3 iguais são um **trio**! E 2 iguais são um **par**.'), sticker: { fur: 'black', expr: 'wink' } },
+  { id: 'magic', stage: 'deal', learn: ['goal', 'sort'], emoji: '✨', name: L('La mano mágica', 'The magic hand', 'A mão mágica'), intro: L('Una mano ganadora tiene **4 grupos y 1 pareja**. ¡Le falta una ficha! ¿Cuál es?', 'A winning hand has **4 sets and 1 pair**. One tile is missing! Which one?', 'Uma mão vencedora tem **4 grupos e 1 par**. Falta uma peça! Qual é?'), learned: L('¡4 grupos + 1 pareja = mano ganadora! ¡**Mahjong**!', '4 sets + 1 pair = a winning hand! **Mahjong**!', '4 grupos + 1 par = mão vencedora! **Mahjong**!'), sticker: { fur: 'white', expr: 'excited' } },
+  { id: 'play', stage: 'turn', learn: ['draw'], emoji: '🐾', name: L('¡Juega con los gatitos!', 'Play with the kittens!', 'Jogue com os gatinhos!'), intro: L('Tu turno: **roba 1** ficha y **bota 1** que esté solita. ¡Completa tu mano antes que los gatitos!', 'Your turn: **draw 1** tile and **throw 1** that is all alone. Finish your hand before the kittens!', 'Sua vez: **compre 1** peça e **descarte 1** que esteja sozinha. Complete sua mão antes dos gatinhos!'), learned: L('¡Ganaste robando tu ficha: eso es **tsumo**! Si un gatito te la bota, gritas **ron**.', 'You won by drawing your tile: that is **tsumo**! If a kitten throws it to you, shout **ron**.', 'Você ganhou comprando a sua peça: isso é **tsumo**! Se um gatinho descartar, grite **ron**.'), sticker: { fur: 'orange', expr: 'happy' } },
+  { id: 'calls', stage: 'calls', learn: ['calls'], quiz: QUIZ.calls, emoji: '📣', name: L('¡Pon, chii, kan!', 'Pon, chii, kan!', 'Pon, chii, kan!'), intro: L('¡Puedes tomar la ficha que bota un gatito! Grita **pon**, **chii** o **kan**.', 'You can take the tile a kitten throws! Shout **pon**, **chii** or **kan**.', 'Você pode pegar a peça que um gatinho descarta! Grite **pon**, **chii** ou **kan**.'), learned: L('**Pon** y **kan** con cualquiera; **chii** solo con el gatito de tu izquierda.', '**Pon** and **kan** with anyone; **chii** only with the kitten on your left.', '**Pon** e **kan** com qualquer um; **chii** só com o gatinho à sua esquerda.'), sticker: { fur: 'black', expr: 'excited' } },
+  { id: 'win', stage: 'win', learn: ['ron-tsumo', 'yaku', 'furiten'], quiz: QUIZ.win, emoji: '🏆', name: L('¿Cómo se gana?', 'How do you win?', 'Como se ganha?'), intro: L('Para ganar necesitas tu mano completa **y** un **yaku**. ¡Y cuidado con el **furiten**!', 'To win you need a complete hand **and** a **yaku**. And watch out for **furiten**!', 'Para ganhar você precisa da mão completa **e** de um **yaku**. E cuidado com o **furiten**!'), learned: L('**Tsumo** si la robas tú, **ron** si te la botan, siempre con un **yaku**.', '**Tsumo** if you draw it, **ron** if it is thrown to you, always with a **yaku**.', '**Tsumo** se você comprar, **ron** se descartarem, sempre com um **yaku**.'), sticker: { fur: 'grey', expr: 'wink' } },
+  { id: 'points', stage: 'points', learn: ['sticks', 'points', 'rounds'], quiz: [...QUIZ.points, ...QUIZ.rounds], emoji: '🪙', name: L('Puntos y rondas', 'Points and rounds', 'Pontos e rodadas'), intro: L('Los puntos son **palitos** de colores. ¡Quien gana cobra! Y el **dealer** va rotando.', 'Points are coloured **sticks**. The winner collects! And the **dealer** keeps rotating.', 'Os pontos são **palitos** coloridos. Quem ganha recebe! E o **dealer** vai rodando.'), learned: L('Todos empiezan con **25 000**. Si el dealer no gana, le toca al siguiente: así avanzan las **rondas**.', 'Everyone starts with **25,000**. If the dealer does not win, the next player takes over: that is how the **rounds** go on.', 'Todos começam com **25 000**. Se o dealer não ganha, é a vez do próximo: assim avançam as **rodadas**.'), sticker: { fur: 'orange', expr: 'wink' } },
+  { id: 'diploma', stage: 'rounds', learn: [], emoji: '🏅', name: L('¡Tu diploma!', 'Your diploma!', 'Seu diploma!'), intro: L('¡Lo lograste! Escribe tu nombre para tu diploma de maestro gatito.', 'You did it! Write your name for your kitten master diploma.', 'Você conseguiu! Escreva seu nome no seu diploma de mestre gatinho.'), learned: L('¡Felicitaciones!', 'Congratulations!', 'Parabéns!'), sticker: { fur: 'grey', expr: 'excited' } },
 ];
 
 const UI = {
@@ -70,6 +76,9 @@ const UI = {
   yay: [L('¡Bien!', 'Yay!', 'Isso!'), L('¡Súper!', 'Super!', 'Super!'), L('¡Genial!', 'Awesome!', 'Demais!'), L('¡Wow!', 'Wow!', 'Uau!')],
   combo: L('seguidas', 'in a row', 'seguidas'),
   unlocked: L('¡Nuevo sticker!', 'New sticker!', 'Novo adesivo!'),
+  learnFirst: L('¡Aprender!', 'Learn!', 'Aprender!'),
+  gotIt: L('¡Entendido!', 'Got it!', 'Entendi!'),
+  toGame: L('¡A jugar!', 'Let’s play!', 'Vamos jogar!'),
 };
 
 const FAMILY: Record<string, Tx> = {
@@ -376,7 +385,8 @@ export function DemoKids() {
   const sfx = useSfx();
   const [done, setDone] = useStored<string[]>('rincon-riichi-demo-e', []);
   const [open, setOpen] = useState<number | null>(null);
-  const [phase, setPhase] = useState<'intro' | 'play' | 'win'>('intro');
+  const [phase, setPhase] = useState<'intro' | 'learn' | 'play' | 'win'>('intro');
+  const [lesson, setLesson] = useState(0);
   const [streak, setStreak] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
   const [mood, setMood] = useState<Expr>('happy');
@@ -406,7 +416,7 @@ export function DemoKids() {
     setPhase('win');
     say(t(UI.unlocked));
   };
-  const start = (i: number) => { setOpen(i); setPhase(MISSIONS[i].id === 'diploma' ? 'play' : 'intro'); setStreak(0); setMood('happy'); setNonce((n) => n + 1); sfx.tap(); };
+  const start = (i: number) => { setLesson(0); setOpen(i); setPhase(MISSIONS[i].id === 'diploma' ? 'play' : 'intro'); setStreak(0); setMood('happy'); setNonce((n) => n + 1); sfx.tap(); };
   const unlocked = (i: number) => i === 0 || done.includes(MISSIONS[i - 1].id);
   const earned = MISSIONS.filter((m) => done.includes(m.id) && m.id !== 'diploma');
   const play: Play = { t, sfx, theme, good, bad, done: finish };
@@ -442,14 +452,15 @@ export function DemoKids() {
             ))}
           </div>
           <div className="ke-book">
-            <strong>{t(UI.stickers)} · {earned.length}/5</strong>
-            <div>{MISSIONS.slice(0, 5).map((m) => (done.includes(m.id) ? <Cat key={m.id} theme={theme} fur={m.sticker.fur} expr={m.sticker.expr} className="ke-sticker" /> : <span key={m.id} className="ke-sticker is-empty">?</span>))}</div>
+            <strong>{t(UI.stickers)} · {earned.length}/{MISSIONS.length - 1}</strong>
+            <div>{MISSIONS.slice(0, -1).map((m) => (done.includes(m.id) ? <Cat key={m.id} theme={theme} fur={m.sticker.fur} expr={m.sticker.expr} className="ke-sticker" /> : <span key={m.id} className="ke-sticker is-empty">?</span>))}</div>
           </div>
         </div>
       )}
 
       {mission && open !== null && (
         <div className={`ke-stage is-${mission.id}`} key={`${open}-${nonce}`}>
+          <FlowBar stage={phase === 'learn' ? STOP_STAGE[mission.learn[lesson]] : mission.stage} t={t} className="ke-flow" />
           <header className="ke-head">
             <span className="ke-emoji is-big">{mission.emoji}</span>
             <h2>{t(mission.name)}</h2>
@@ -459,12 +470,32 @@ export function DemoKids() {
           {phase === 'intro' && (
             <div className="ke-intro">
               <p><Rich text={t(mission.intro)} /></p>
-              <button type="button" className="ke-btn is-huge" onClick={() => { sfx.pop(); setPhase('play'); }}>▶ {t(UI.play)}</button>
+              <button type="button" className="ke-btn is-huge" onClick={() => { sfx.pop(); setPhase(mission.learn.length ? 'learn' : 'play'); }}>▶ {mission.learn.length ? t(UI.learnFirst) : t(UI.play)}</button>
+            </div>
+          )}
+
+          {phase === 'learn' && (
+            <div className="ke-learn" key={`${open}-${lesson}`}>
+              <BaseLesson
+                stopId={mission.learn[lesson]}
+                language={language}
+                t={t}
+                className="is-kids"
+                aside={(
+                  <div className="ke-actions ke-learn-actions">
+                    {lesson > 0 && <button type="button" className="ke-btn is-alt" onClick={() => setLesson(lesson - 1)}>←</button>}
+                    <button type="button" className="ke-btn" onClick={() => { sfx.pop(); if (lesson + 1 < mission.learn.length) setLesson(lesson + 1); else setPhase('play'); }}>
+                      {lesson + 1 < mission.learn.length ? `${t(UI.gotIt)} ${lesson + 1}/${mission.learn.length}` : t(UI.toGame)} →
+                    </button>
+                  </div>
+                )}
+              />
             </div>
           )}
 
           {phase === 'play' && (
             <div className="ke-arena">
+              {mission.quiz && <QuizRun items={mission.quiz} t={t} onRight={good} onWrong={bad} onDone={finish} className="is-kids" />}
               {mission.id === 'catch' && <CatchGame {...play} />}
               {mission.id === 'train' && <TrainGame {...play} />}
               {mission.id === 'triplets' && <TripletGame {...play} />}

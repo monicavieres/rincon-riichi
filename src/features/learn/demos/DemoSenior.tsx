@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Cat, codes, DemoFrame, L, Rich, Tile, TileRow, useDemo, useStored, useVoice, type Fur, type Tx } from './kit';
+import { BaseLesson, FlowBar, Quiz, QUIZ, STOP_STAGE, stopById, type FlowStage, type QuizItem } from './syllabus';
 
 /**
  * DEMO D · "Step by step, no hurry". For someone who has never played and may be older: very large text (with a size
@@ -13,17 +14,24 @@ type Screen =
   | { kind: 'pick'; lesson: number; title: Tx; body: Tx; show?: string; options: string[]; answer: string; right: Tx }
   | { kind: 'odd'; lesson: number; title: Tx; body: Tx; hand: string[]; odd: number; right: Tx }
   | { kind: 'goal'; lesson: number; title: Tx; body: Tx }
-  | { kind: 'summary'; lesson: number; title: Tx; body: Tx };
+  | { kind: 'summary'; lesson: number; title: Tx; body: Tx }
+  | { kind: 'lesson'; lesson: number; stop: string }
+  | { kind: 'quiz'; lesson: number; stage: FlowStage; quiz: QuizItem };
 
 const LESSONS: Tx[] = [
   L('Bienvenida', 'Welcome', 'Boas-vindas'),
   L('Las fichas', 'The tiles', 'As peças'),
+  L('Preparar la mesa', 'Setting the table', 'Preparar a mesa'),
   L('Escalas y tríos', 'Runs and triplets', 'Sequências e trincas'),
   L('La mano ganadora', 'The winning hand', 'A mão vencedora'),
   L('Su turno', 'Your turn', 'A sua vez'),
+  L('Pedir una ficha', 'Calling a tile', 'Pedir uma peça'),
   L('Cómo se gana', 'How to win', 'Como se ganha'),
+  L('Puntos y rondas', 'Points and rounds', 'Pontos e rodadas'),
   L('Resumen', 'Summary', 'Resumo'),
 ];
+/** Where in a game each of these lessons sits, for the flow bar. */
+const LESSON_STAGE: FlowStage[] = ['setup', 'setup', 'setup', 'deal', 'deal', 'turn', 'calls', 'win', 'points', 'rounds'];
 
 const FOUR: Fur[] = ['white', 'orange', 'grey', 'black'];
 
@@ -57,6 +65,7 @@ const SCREENS = (theme: string, t: (v: Tx) => string): Screen[] => [
     ),
     visual: () => <Table theme={theme} />,
   },
+  { kind: 'lesson', lesson: 0, stop: 'intro' },
   {
     kind: 'text', lesson: 1,
     title: L('Primera familia: círculos', 'First family: circles', 'Primeira família: círculos'),
@@ -88,32 +97,42 @@ const SCREENS = (theme: string, t: (v: Tx) => string): Screen[] => [
     options: codes('5s 5p 5m'), answer: '5p',
     right: L('¡Muy bien! Tiene 5 círculos.', 'Well done! It has 5 circles.', 'Muito bem! Tem 5 círculos.'),
   },
+  { kind: 'lesson', lesson: 2, stop: 'shuffle' },
+  { kind: 'lesson', lesson: 2, stop: 'walls' },
+  { kind: 'lesson', lesson: 2, stop: 'dealer' },
+  { kind: 'lesson', lesson: 2, stop: 'compass' },
+  { kind: 'lesson', lesson: 2, stop: 'compass-tour' },
+  { kind: 'lesson', lesson: 2, stop: 'dice' },
+  { kind: 'lesson', lesson: 2, stop: 'deal-draw' },
+  { kind: 'quiz', lesson: 2, stage: 'setup', quiz: QUIZ.setup[0] },
+  { kind: 'quiz', lesson: 2, stage: 'deal', quiz: QUIZ.deal[0] },
   {
-    kind: 'text', lesson: 2,
+    kind: 'text', lesson: 3,
     title: L('La escala', 'The run', 'A sequência'),
     body: L('Una **escala** son **3 números seguidos** de la misma familia. Igual que en la Carioca.', 'A **run** is **3 numbers in a row** from the same family. Just like in rummy.', 'Uma **sequência** são **3 números seguidos** da mesma família. Igual ao buraco.'),
     visual: () => <TileRow className="sd-row is-big" codes={codes('3m 4m 5m')} />,
   },
   {
-    kind: 'text', lesson: 2,
+    kind: 'text', lesson: 3,
     title: L('El trío y la pareja', 'The triplet and the pair', 'A trinca e o par'),
     body: L('Un **trío** son **3 fichas iguales**. Una **pareja** son **2 fichas iguales**.', 'A **triplet** is **3 identical tiles**. A **pair** is **2 identical tiles**.', 'Uma **trinca** são **3 peças iguais**. Um **par** são **2 peças iguais**.'),
     visual: () => <div className="sd-pair"><TileRow className="sd-row is-big" codes={codes('7p 7p 7p')} /><TileRow className="sd-row is-big" codes={codes('1z 1z')} /></div>,
   },
   {
-    kind: 'pick', lesson: 2,
+    kind: 'pick', lesson: 3,
     title: L('Pruebe usted', 'Your turn to try', 'Experimente'),
     body: L('¿Qué ficha completa la escala?', 'Which tile completes the run?', 'Qual peça completa a sequência?'),
     show: '4s 5s', options: codes('6p 6s 2s'), answer: '6s',
     right: L('¡Exacto! 4, 5 y 6, todos bambúes.', 'Exactly! 4, 5 and 6, all bamboo.', 'Exato! 4, 5 e 6, todos bambus.'),
   },
   {
-    kind: 'goal', lesson: 3,
+    kind: 'goal', lesson: 4,
     title: L('Así se ve una mano ganadora', 'This is a winning hand', 'Assim é uma mão vencedora'),
     body: L('Cada persona tiene 13 fichas. Para ganar necesita **14 fichas** que formen **4 grupos y 1 pareja**. Pulse el botón para ordenarlas.', 'Everyone holds 13 tiles. To win you need **14 tiles** that make **4 sets and 1 pair**. Press the button to arrange them.', 'Cada pessoa tem 13 peças. Para ganhar precisa de **14 peças** que formem **4 grupos e 1 par**. Toque no botão para organizá-las.'),
   },
+  { kind: 'lesson', lesson: 4, stop: 'sort' },
   {
-    kind: 'text', lesson: 4,
+    kind: 'text', lesson: 5,
     title: L('Su turno, en dos pasos', 'Your turn, in two steps', 'A sua vez, em dois passos'),
     body: L('**1.** Saque una ficha del muro.  **2.** Bote una ficha que no le sirva. Así siempre vuelve a tener 13.', '**1.** Draw a tile from the wall.  **2.** Discard a tile you do not need. That way you always go back to 13.', '**1.** Compre uma peça do muro.  **2.** Descarte uma peça que não sirva. Assim você volta sempre a 13.'),
     visual: () => (
@@ -123,15 +142,18 @@ const SCREENS = (theme: string, t: (v: Tx) => string): Screen[] => [
       </div>
     ),
   },
+  { kind: 'lesson', lesson: 5, stop: 'draw' },
   {
-    kind: 'odd', lesson: 4,
+    kind: 'odd', lesson: 5,
     title: L('Pruebe usted', 'Your turn to try', 'Experimente'),
     body: L('Tiene 14 fichas. Toque la que está **sola**, sin compañeras, para botarla.', 'You have 14 tiles. Tap the one that is **alone**, with no partners, to discard it.', 'Você tem 14 peças. Toque na que está **sozinha**, sem parceiras, para descartá-la.'),
     hand: codes('2m 3m 4m 6m 7m 5p 6p 7p 3s 4s 5s 8s 8s 1z'), odd: 13,
     right: L('¡Muy bien! El viento Este estaba solo: no forma escala ni trío con nada.', 'Well done! The East wind was alone: it makes no run or triplet with anything.', 'Muito bem! O vento Leste estava sozinho: não forma sequência nem trinca com nada.'),
   },
+  { kind: 'lesson', lesson: 6, stop: 'calls' },
+  { kind: 'quiz', lesson: 6, stage: 'calls', quiz: QUIZ.calls[0] },
   {
-    kind: 'text', lesson: 5,
+    kind: 'text', lesson: 7,
     title: L('¡Ganar!', 'Winning!', 'Ganhar!'),
     body: L('Cuando llega la ficha que le falta, ¡gana! Si la **saca usted** del muro, dice **«tsumo»**. Si la **bota otra persona**, dice **«ron»**.', 'When the tile you are missing arrives, you win! If **you draw it** from the wall, say **“tsumo”**. If **someone else discards it**, say **“ron”**.', 'Quando chega a peça que falta, você ganha! Se **você a comprar** do muro, diga **«tsumo»**. Se **outra pessoa a descartar**, diga **«ron»**.'),
     visual: () => (
@@ -142,13 +164,22 @@ const SCREENS = (theme: string, t: (v: Tx) => string): Screen[] => [
     ),
   },
   {
-    kind: 'text', lesson: 5,
+    kind: 'text', lesson: 7,
     title: L('Un último detalle', 'One last detail', 'Um último detalhe'),
     body: L('Además de los grupos, la mano necesita una **condición especial**, llamada «yaku». La más fácil: no pedir fichas a nadie y decir **«riichi»** cuando le falte solo una.', 'Besides the sets, the hand needs a **special condition**, called “yaku”. The easiest: take no tiles from anyone and say **“riichi”** when you need just one more.', 'Além dos grupos, a mão precisa de uma **condição especial**, chamada «yaku». A mais fácil: não pedir peças a ninguém e dizer **«riichi»** quando faltar só uma.'),
     visual: () => <Cat theme={theme} fur="grey" expr="wink" className="sd-hero-cat" />,
   },
+  { kind: 'lesson', lesson: 7, stop: 'ron-tsumo' },
+  { kind: 'lesson', lesson: 7, stop: 'yaku' },
+  { kind: 'lesson', lesson: 7, stop: 'furiten' },
+  { kind: 'quiz', lesson: 7, stage: 'win', quiz: QUIZ.win[0] },
+  { kind: 'lesson', lesson: 8, stop: 'sticks' },
+  { kind: 'lesson', lesson: 8, stop: 'points' },
+  { kind: 'lesson', lesson: 8, stop: 'rounds' },
+  { kind: 'quiz', lesson: 8, stage: 'points', quiz: QUIZ.points[0] },
+  { kind: 'quiz', lesson: 8, stage: 'rounds', quiz: QUIZ.rounds[0] },
   {
-    kind: 'summary', lesson: 6,
+    kind: 'summary', lesson: 9,
     title: L('¡Lo logró!', 'You did it!', 'Você conseguiu!'),
     body: L('Esto es lo que aprendió. Puede **imprimir** esta hoja para tenerla en la mesa mientras juega.', 'This is what you learned. You can **print** this sheet to keep it on the table while you play.', 'Isto é o que você aprendeu. Pode **imprimir** esta folha para tê-la na mesa enquanto joga.'),
   },
@@ -159,10 +190,14 @@ const SUMMARY: Array<{ text: Tx; tiles?: string }> = [
   { text: L('Tres familias del 1 al 9: círculos, bambúes y caracteres.', 'Three families from 1 to 9: circles, bamboo and characters.', 'Três famílias de 1 a 9: círculos, bambus e caracteres.'), tiles: '5p 5s 5m' },
   { text: L('Fichas sin número: 4 vientos y 3 dragones.', 'Tiles without numbers: 4 winds and 3 dragons.', 'Peças sem número: 4 ventos e 3 dragões.'), tiles: '1z 5z' },
   { text: L('Escala: 3 seguidas. Trío: 3 iguales. Pareja: 2 iguales.', 'Run: 3 in a row. Triplet: 3 the same. Pair: 2 the same.', 'Sequência: 3 seguidas. Trinca: 3 iguais. Par: 2 iguais.'), tiles: '3m 4m 5m' },
+  { text: L('Preparación: se mezclan las fichas, cada uno arma un muro, el dado elige al dealer (Este) y cada uno recibe 13 fichas.', 'Setup: tiles are mixed, everyone builds a wall, the die picks the dealer (East) and everyone gets 13 tiles.', 'Preparação: as peças são misturadas, cada um monta um muro, o dado escolhe o dealer (Leste) e cada um recebe 13 peças.') },
   { text: L('Para ganar: 4 grupos + 1 pareja (14 fichas).', 'To win: 4 sets + 1 pair (14 tiles).', 'Para ganhar: 4 grupos + 1 par (14 peças).') },
   { text: L('En su turno: saque 1 y bote 1.', 'On your turn: draw 1 and discard 1.', 'Na sua vez: compre 1 e descarte 1.') },
+  { text: L('Puede pedir la ficha que otro bota: pon (trío, de cualquiera) o chii (escala, solo del jugador de su izquierda). Su mano queda abierta.', 'You can call a discarded tile: pon (triplet, from anyone) or chii (run, only from the player on your left). Your hand becomes open.', 'Pode pedir a peça que outro descarta: pon (trinca, de qualquer um) ou chii (sequência, só do jogador à sua esquerda). A mão fica aberta.') },
   { text: L('«Tsumo» si la saca usted; «ron» si la bota otro.', '“Tsumo” if you draw it; “ron” if someone discards it.', '«Tsumo» se você comprar; «ron» se outro descartar.') },
   { text: L('Necesita un «yaku»: el más fácil es decir «riichi».', 'You need a “yaku”: the easiest is saying “riichi”.', 'Precisa de um «yaku»: o mais fácil é dizer «riichi».') },
+  { text: L('Furiten: si ya botó una ficha que le hacía ganar, solo puede ganar con tsumo.', 'Furiten: if you already threw a tile that wins for you, you can only win by tsumo.', 'Furiten: se já descartou uma peça que te fazia ganhar, só pode ganhar com tsumo.') },
+  { text: L('Todos empiezan con 25 000 puntos; quien gana cobra. Si el dealer no gana, el puesto pasa al siguiente.', 'Everyone starts with 25,000 points; the winner collects. If the dealer does not win, the seat passes on.', 'Todos começam com 25 000 pontos; quem ganha recebe. Se o dealer não ganha, o posto passa adiante.') },
 ];
 
 const UI = {
@@ -209,11 +244,13 @@ export function DemoSenior() {
   const [picked, setPicked] = useState<string | number | null>(null);
   const index = Math.min(Math.max(0, at), screens.length - 1);
   const s = screens[index];
-  const solved = (s.kind === 'pick' && picked === s.answer) || (s.kind === 'odd' && picked === s.odd);
+  const solved = (s.kind === 'pick' && picked === s.answer) || (s.kind === 'odd' && picked === s.odd) || (s.kind === 'quiz' && picked === 'ok');
   const missed = picked !== null && !solved;
   const go = (next: number) => { setPicked(null); setAt(Math.min(Math.max(0, next), screens.length - 1)); };
 
-  const said = `${t(s.title)}. ${t(s.body)}`;
+  const head = s.kind === 'lesson' ? { title: stopById(s.stop).title, body: stopById(s.stop).body } : s.kind === 'quiz' ? { title: L('Repaso', 'Review', 'Revisão'), body: s.quiz.q } : { title: s.title, body: s.body };
+  const said = `${t(head.title)}. ${t(head.body)}`;
+  const flowStage: FlowStage = s.kind === 'lesson' ? STOP_STAGE[s.stop] : s.kind === 'quiz' ? s.stage : LESSON_STAGE[s.lesson];
   useEffect(() => { voice.say(said); }, [index, language]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (solved && 'right' in s) voice.say(t(s.right)); }, [solved]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -233,11 +270,14 @@ export function DemoSenior() {
         <div className="sd-bar"><i style={{ width: `${((index + 1) / screens.length) * 100}%` }} /></div>
       </div>
 
-      <main className="sd-page" key={`${index}-${language}`}>
-        <h1 className="sd-title">{t(s.title)}</h1>
-        <p className="sd-body"><Rich text={t(s.body)} /></p>
+      <FlowBar stage={flowStage} t={t} className="sd-flow" />
+      <main className={`sd-page${s.kind === 'lesson' ? ' is-lesson' : ''}`} key={`${index}-${language}`}>
+        {s.kind === 'lesson' && <BaseLesson stopId={s.stop} language={language} t={t} className="is-senior" />}
+        {s.kind !== 'lesson' && <h1 className="sd-title">{t(head.title)}</h1>}
+        {s.kind !== 'lesson' && s.kind !== 'quiz' && <p className="sd-body"><Rich text={t(head.body)} /></p>}
+        {s.kind === 'quiz' && <Quiz item={s.quiz} t={t} className="is-senior" onRight={() => setPicked('ok')} />}
 
-        <div className="sd-visual">
+        {s.kind !== 'lesson' && s.kind !== 'quiz' && <div className="sd-visual">
           {s.kind === 'text' && s.visual?.()}
           {s.kind === 'goal' && <Goal t={t} />}
           {s.kind === 'pick' && (
@@ -268,7 +308,7 @@ export function DemoSenior() {
               </div>
             </div>
           )}
-        </div>
+        </div>}
 
         {(solved || missed) && 'right' in s && (
           <p className={`sd-feedback${solved ? ' is-right' : ''}`} role="status"><Rich text={solved ? t(s.right) : t(UI.tryAgain)} /></p>
