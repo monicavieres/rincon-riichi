@@ -2017,3 +2017,23 @@ body.quick-pad .practice-lab .practice-felt:has(#quickPad.is-around) { align-con
 .ct-step small { margin-left: 6px; font: 800 max(11px, 1.5cqw) / 1 var(--font-sans); text-transform: uppercase; letter-spacing: .04em; }
 @media (max-width: 760px) { .cat-flow { grid-template-columns: 1fr; justify-items: center; } }
 .cat-flow .intro-note { margin-top: 18px; }
+
+/* Intro slides: bigger tiles, and the cats joining in */
+.intro-board .intro-tile { width: max(30px, 5.6cqw); }
+.intro-board .intro-row.is-big .intro-tile { width: max(54px, 11cqw); }
+.intro-board .at-row .intro-tile.sm { width: max(24px, 3.9cqw); }
+.intro-board .at-row.is-named .intro-tile.sm { width: max(30px, 4.6cqw); }
+.intro-board .ct-step .intro-tile { width: max(26px, 4.2cqw); }
+.intro-board .intro-card .intro-row .intro-tile { width: max(26px, 4cqw); }
+.all-tiles { position: relative; }
+.tiles-cat { position: absolute; right: -6%; bottom: 12%; width: clamp(54px, 9cqw, 96px); transform: rotate(6deg); }
+.sum-cat { width: clamp(46px, 7cqw, 78px); vertical-align: middle; margin-right: 10px; }
+.intro-seats { width: min(74%, 470px); aspect-ratio: 16 / 10; }
+.intro-seat { grid-template-columns: auto auto; align-items: end; column-gap: 2px; }
+.intro-seat .seat-cat { width: clamp(42px, 7cqw, 72px); grid-row: span 2; }
+.intro-seat .intro-tile { width: max(22px, 3.6cqw); }
+.intro-seat span { grid-column: 1 / -1; justify-self: center; }
+.intro-seat.is-top { top: -10%; } .intro-seat.is-me { bottom: -12%; }
+.intro-hands i { display: grid; justify-items: center; width: auto; height: auto; padding: 2px; background: transparent; }
+.intro-hands i img { width: max(28px, 3.8cqw); }
+.intro-hands i small { font: 800 9px/1 var(--font-sans); color: #fff; }

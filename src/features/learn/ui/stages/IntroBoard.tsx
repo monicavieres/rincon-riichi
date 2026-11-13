@@ -73,6 +73,7 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
               <figcaption>{t('Dragones', 'Dragons', 'Dragões')}</figcaption>
             </figure>
           </div>
+          <img className="tiles-cat" src={cat('orange')} alt="" />
           <p className="intro-note">{t('27 fichas numeradas (3 palos × 9) + 7 honores (4 vientos y 3 dragones) = 34 clases.', '27 numbered tiles (3 suits × 9) + 7 honors (4 winds and 3 dragons) = 34 kinds.', '27 peças numeradas (3 naipes × 9) + 7 honras (4 ventos e 3 dragões) = 34 tipos.')}</p>
         </div>
       ),
@@ -82,7 +83,7 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
       body: (
         <>
           <div className="intro-row is-big">{[0, 1, 2, 3].map((n) => tile('5p', `n${n}`))}</div>
-          <p className="intro-sum">34 × 4 = <b>136</b></p>
+          <p className="intro-sum"><img className="sum-cat" src={cat('grey')} alt="" />34 × 4 = <b>136</b></p>
           <p className="intro-note">{t('Cuatro 5 de círculos idénticos: por eso se puede ir contando cuántas quedan.', 'Four identical 5 of circles: that is how you can keep track of how many are left.', 'Quatro 5 de círculos idênticos: assim dá para contar quantas restam.')}</p>
         </>
       ),
@@ -92,13 +93,13 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
       body: (
         <>
           <div className="intro-seats">
-            <div className="intro-seat is-top">{tile('3z')}<span>{t('Oeste', 'West', 'Oeste')}</span></div>
-            <div className="intro-seat is-left">{tile('4z')}<span>{t('Norte', 'North', 'Norte')}</span></div>
-            <div className="intro-seat is-right">{tile('2z')}<span>{t('Sur', 'South', 'Sul')}</span></div>
-            <div className="intro-seat is-me">{tile('1z')}<span>{t('Tú · Este', 'You · East', 'Você · Leste')}</span></div>
+            <div className="intro-seat is-top"><img className="seat-cat" src={cat('grey')} alt="" />{tile('3z')}<span>{t('Oeste', 'West', 'Oeste')}</span></div>
+            <div className="intro-seat is-left"><img className="seat-cat" src={cat('black')} alt="" />{tile('4z')}<span>{t('Norte', 'North', 'Norte')}</span></div>
+            <div className="intro-seat is-right"><img className="seat-cat" src={cat('orange')} alt="" />{tile('2z')}<span>{t('Sur', 'South', 'Sul')}</span></div>
+            <div className="intro-seat is-me"><img className="seat-cat" src={cat('white')} alt="" />{tile('1z')}<span>{t('Tú · Este', 'You · East', 'Você · Leste')}</span></div>
             <div className="intro-table"><b>{t('Compass', 'Compass', 'Compass')}</b><small>{t('cada viento mira a su asiento', 'each wind faces its seat', 'cada vento olha para o seu assento')}</small></div>
           </div>
-          <p className="intro-note">{t('Cada asiento tiene un viento: el viento de asiento. Se marca con el compass, en el centro de la mesa. El turno va en sentido antihorario: Este → Sur → Oeste → Norte.', 'Each seat has a wind: the seat wind. The compass in the centre of the table marks it. Play goes counter-clockwise: East → South → West → North.', 'Cada assento tem um vento: o vento do assento. O compass, no centro da mesa, o indica. O jogo vai no sentido anti-horário: Leste → Sul → Oeste → Norte.')}</p>
+          <p className="intro-note">{t('Cada gato tiene el viento de su asiento. El turno gira: Este → Sur → Oeste → Norte.', 'Each cat has its seat’s wind. Turns go round: East → South → West → North.', 'Cada gato tem o vento do seu assento. A vez gira: Leste → Sul → Oeste → Norte.')}</p>
         </>
       ),
     },
@@ -125,11 +126,11 @@ export function IntroBoard({ language }: { language: TutorialLanguage }) {
               <div className="intro-round" key={r}>
                 <span className="intro-plate is-small" data-wind={r === 0 ? 'east' : 'south'}>{r === 0 ? '東' : '南'}</span>
                 <b>{r === 0 ? t('Ronda Este', 'East round', 'Rodada Leste') : t('Ronda Sur', 'South round', 'Rodada Sul')}</b>
-                <span className="intro-hands">{[1, 2, 3, 4].map((n) => <i key={n}>{n}</i>)}</span>
+                <span className="intro-hands">{(['white', 'orange', 'grey', 'black'] as const).map((fur, n) => <i key={fur}><img src={cat(fur)} alt="" /><small>{n + 1}</small></i>)}</span>
               </div>
             ))}
           </div>
-          <p className="intro-note">{t('Una ronda son cuatro manos, una por cada dealer. Cómo se juega una mano lo veremos más adelante.', 'A round is four hands, one for each dealer. How a hand is played comes later.', 'Uma rodada são quatro mãos, uma para cada dealer. Como se joga uma mão veremos mais adiante.')}</p>
+          <p className="intro-note">{t('Una ronda son cuatro manos: cada gato es dealer una vez.', 'A round is four hands: each cat is dealer once.', 'Uma rodada são quatro mãos: cada gato é dealer uma vez.')}</p>
         </>
       ),
     },
